@@ -6,6 +6,7 @@ import xmlrpclib
 import time
 import sys
 import os
+import itertools
 
 #usage
 #import rtorrent
@@ -48,16 +49,28 @@ class Peer:
         self.peer_total = peer_total
 
 class Torrent:
-    def __init__(self, torrent_id, name, uploaded, downloaded, size, ratio, created, trackers, peers):
-        self.torrent_id = torrent_id
+    def __init__(self, id, name, base_path, size_chunks, chunk_size, completed_bytes, creation_date, down_rate, up_rate, peers_connected, peers_total, seeders_connected, seeders_total, priority, ratio, size, up_total, down_total, status, private):
+        self.torrent_id = id
         self.name = name
-        self.uploaded = uploaded
-        self.downloaded = downloaded
-        self.size = size
+        self.base_path = base_path
+        self.chunk_size = chunk_size
+        self.completed_bytes = completed_bytes
+        self.created = creation_date
+        self.down_rate = down_rate
+        self.down_total = down_total
+        self.up_rate = up_rate
+        self.up_total = up_total
+        self.peers_connected = peers_connected
+        self.peers_total = peers_total
+        self.seeds_connected = seeders_connected
+        self.seeds_total = seeders_total
+        self.priority = priority
+        self.priority_str = {0:"off", 1:"low", 2:"normal", 3:"high"}[priority]
         self.ratio = ratio
-        self.created = created
-        self.trackers = trackers
-        self.peers = peers
+        self.size = size
+        self.size_chunks = size_chunks
+        self.status = status
+        self.private = bool(private)
 
 class rtorrent:
     def __init__(self, port):
@@ -66,6 +79,65 @@ class rtorrent:
         self.conn = xmlrpc.RTorrentXMLRPCClient("scgi://localhost:%i" % self.port)
         self.conn.system.listMethods()
 
+    def getTorrentList2(self,view):
+        torrentlist = self.conn.d.multicall(
+            view,
+            "d.get_hash=",
+            "d.get_name=",
+            "d.get_base_path=",
+            "d.get_size_chunks=",
+            "d.get_chunk_size=",
+            "d.get_completed_bytes=",
+            "d.get_creation_date=",
+            "d.get_down_rate=",
+            "d.get_up_rate=",
+            "d.get_priority=",
+            "d.get_ratio=",
+            "d.get_size_bytes=",
+            "d.get_up_total=",
+            "d.get_down_total=",
+            "d.is_private=",
+            "d.get_peers_complete=",
+            "d.get_peers_accounted=",
+        )
+        torrentList = []
+        for tor in torrentlist:
+            #deal with peers
+            trackers = self.getTrackers(tor[0])
+            peers_total = sum([i.leechs for i in trackers])
+            seeds_total = sum([i.seeds for i in trackers])
+            #deal with status
+            status = self.getStateStr(tor[0])
+            torrentList += [
+                Torrent(
+                    tor[0],
+                    tor[1],
+                    tor[2],
+                    tor[3],
+                    tor[4],
+                    tor[5],
+                    tor[6],
+                    tor[7],
+                    tor[8],
+                    tor[16],
+                    peers_total,
+                    tor[15],
+                    seeds_total,
+                    tor[9],
+                    tor[10],
+                    tor[11],
+                    tor[12],
+                    tor[13],
+                    status,
+                    tor[14],
+                )
+            ]
+#            0 "d.get_hash=","d.get_name=","d.get_base_path=","d.get_size_chunks=","d.get_chunk_size=", 4
+#            5 "d.get_completed_bytes=","d.get_creation_date=","d.get_down_rate=","d.get_up_rate=", 8
+#            9 "d.get_priority=","d.get_ratio=","d.get_size_bytes=","d.get_up_total=","d.get_down_total=", 13
+#           14 "d.is_private=","d.get_peers_complete=","d.get_peers_accounted=", 16
+        return torrentList
+#id, name, base_path, size_chunks, chunk_size, completed_bytes, creation_date, down_rate, up_rate, peers_connected, peers_total, seeders_connected, seeders_total, priority, ratio, size, up_total, down_total, status, private
     def getTorrentList(self):
         torrentlist = self.conn.download_list("main")
         torrentdict = {}
