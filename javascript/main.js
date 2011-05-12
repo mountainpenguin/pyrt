@@ -1,7 +1,7 @@
 var xmlhttp;
 
 function select_torrent(elem) {
-    elem.style.backgroundColor = "#37FDFC";
+    elem.style.backgroundColor = "#00CCFF";
     elem.style.cursor = "help";
 }
 function deselect_torrent(elem) {
@@ -12,6 +12,7 @@ function deselect_torrent(elem) {
 function htmlify(json, cell) {
     var obj = JSON.parse(json);
     var new_html = new String();
+    new_html += "<div class='drop_down'>"
     new_html += "<div class='column-1'>ID:</div><div class='column-2'>" + obj.torrent_id + "</div>"
     new_html += "<div class='column-1'>Size:</div><div class='column-2'>" + obj.size + " MB</div>"
     new_html += "<div class='column-1'>Downloaded:</div><div class='column-2'>" + obj.downloaded  + " MB</div>"
@@ -19,16 +20,31 @@ function htmlify(json, cell) {
     new_html += "<div class='column-1'>Ratio:</div><div class='column-2'>" + obj.ratio + "</div>"
     new_html += "<div class='column-1'>Peers:</div><div class='column-2'>" + obj.peers.length + "</div>"
     new_html += "<div class='column-1'>Created:</div><div class='column-2'>" + obj.created + "</div>"
-    new_html += "<div class='column-2' style='clear : left;'><a href='detail.py?torrent_id=" + obj.torrent_id + "'>Detailed View</a></div>"
-
+    new_html += "<div class='column-2' style='clear : left;'><span class='fakelink' onClick='removerow(\"" + obj.torrent_id + "\")'>Close</span> <a href='detail.py?torrent_id=" + obj.torrent_id + "'>Detailed View</a></div>"
+    new_html += "</div>"
     cell.innerHTML = new_html;
+    cell.style.borderLeft="1px dotted";
+    cell.style.borderRight="1px dotted";
+    cell.style.backgroundColor = "white";
+}
+function removerow(torrent_id) {
+    if (row = document.getElementById("newrow_torrent_id_" + torrent_id)) {
+        var table = document.getElementById("torrent_list");
+        table.deleteRow(row.rowIndex);
+    }
+    
 }
 function view_torrent(elem) {
     var torrent_id = elem.id.split("torrent_id_")[1];
     var table = document.getElementById("torrent_list");
+    if (oldrow = document.getElementById('newrow_torrent_id_' + torrent_id)) {
+        table.deleteRow(oldrow.rowIndex);
+    }
     var newrow = table.insertRow(elem.rowIndex + 1);
     var newcell = newrow.insertCell(0);
-    newcell.innerHTML = "<img src='http://mountainpenguin.org.uk/pyj/loading.gif'> <span style='color:red;'>Loading</span>";
+    newrow.id = "newrow_torrent_id_" + torrent_id;
+    newcell.innerHTML = "<img src='images/loading.gif'> <span style='color:red;'>Loading</span>";
+    newcell.colSpan = "6";
     xmlhttp = new XMLHttpRequest();
     var url="ajax.py"
     xmlhttp.open("POST",url,true);

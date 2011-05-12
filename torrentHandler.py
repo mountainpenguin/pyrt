@@ -7,6 +7,48 @@ class Handler:
     def __init__(self):
         pass
 
+    def humanSize(self, bytes):
+        """
+            takes a int/float value of <bytes>
+            returns a string of <bytes> in a human readable unit (with two decimal places)
+            (currently supports TB, GB, MB, KB and B)
+        """
+        if bytes > 1024*1024*1024*1024:
+            return "%.02f TB" % (float(bytes) / 1024 / 1024 / 1024)
+        elif bytes > 1024*1024*1024:
+            return "%.02f GB" % (float(bytes) / 1024 / 1024 / 1024)
+        elif bytes > 1024*1024:
+            return "%.02f MB" % (float(bytes) / 1024 / 1024)
+        elif bytes > 1024:
+            return "%.02f KB" % (float(bytes) / 1024)
+        else:
+            return "%i B" % bytes
+
+    def getState(self, t):
+        """
+            outputs a more 'advanced' status from an inputted <t> (rtorrent.Torrent object)
+            possible outcomes:
+                'Stopped'         # torrent is closed
+                'Paused'          # torrent is open but inactive
+                'Seeding (idle)'  # torrent is active and complete, but no connected peers
+                'Seeding'         # torrent is active, complete, and has connected peers
+                'Leeching (idle)' # torrent is active and incomplete, but no connected peers
+                'Leeching'        # torrent is active, incomplete, and has connected peers
+        """
+        status_actual = t.status
+        if status_actual == "Active":
+            if t.completed_bytes == t.size:
+                status = "Seeding"
+                if t.peers_connected == 0:
+                    status = "Seeding (idle)"
+            else:
+                status = "Leeching"
+                if t.seeds_connected == 0 and t.peers_connected == 0:
+                    status = "Leeching (idle)"
+        else:
+            status = t.status
+        return status
+
     def torrentHTML(self, torrentList, sort, reverse=False):
         """
             Sorts a list of torrent_ids with default information
@@ -33,15 +75,16 @@ class Handler:
                 peers_total
                 priority
                 status
+                tracker
         """
-        self.methods = ["name","size","ratio","uprate","uptotal","downrate","downtotal",
+        self.SORT_METHODS = ["name","size","ratio","uprate","uptotal","downrate","downtotal",
                         "leechs","leechs_connected","leechs_total","seeds",
                         "seeds_connected","seeds_total", "peers","peers_connected",
-                        "peers_total","priority","status"]
+                        "peers_total","priority","status", "tracker"]
         if sort not in ["name","size","ratio","uprate","uptotal","downrate","downtotal",
                         "leechs","leechs_connected","leechs_total","seeds",
                         "seeds_connected","seeds_total", "peers","peers_connected",
-                        "peers_total","priority","status"]:
+                        "peers_total","priority","status","tracker"]:
             sort = "name"
 
         if sort == "name":
@@ -52,6 +95,7 @@ class Handler:
             torrentList = sorted(torrentList, key=lambda x:x.ratio)
         elif sort == "uprate":
             torrentList = sorted(torrentList, key=lambda x:x.up_rate)
+            torrentList.reverse()
         elif sort == "downrate":
             torrentList = sorted(torrentList, key=lambda x:x.down_rate)
         elif sort == "uptotal":
@@ -74,56 +118,69 @@ class Handler:
             torrentList = sorted(torrentList, key=lambda x:x.priority)
         elif sort == "status":
             torrentList = sorted(torrentList, key=lambda x:x.status)
+        elif sort == "tracker":
+            #sort by the first listed tracker only
+            torrentList = sorted(torrentList, key=lambda x:x.trackers[0].url)
+
+        if reverse:
+            torrentList.reverse()
 
         torrent_html = """
             <table id='torrent_list'>
                 <tr>
-                    <td class='heading'>Name <img src='http://bits.wikimedia.org/skins-1.17/common/images/sort_up.gif'></td>
-                    <td class='heading'>Size <img src='http://bits.wikimedia.org/skins-1.17/common/images/sort_none.gif'></td>
-                    <td class='heading'>Ratio <img src='http://bits.wikimedia.org/skins-1.17/common/images/sort_none.gif'></td>
-                    <td class='heading'>Upload speed <img src='http://bits.wikimedia.org/skins-1.17/common/images/sort_none.gif'></td>
-                    <td class='heading'>Download speed <img src='http://bits.wikimedia.org/skins-1.17/common/images/sort_none.gif'></td>
+                    <td class='heading'>Name</td>
+                    <td class='heading'>Size</td>
+                    <td class='heading'>Ratio</td>
+                    <td class='heading'>Upload speed</td>
+                    <td class='heading'>Download speed</td>
+                    <td class='heading'>Status</td>
                 </tr>
             """
         div_colour_array = ["blue", "green"]
         for t in torrentList:
             colour = div_colour_array.pop(0)
             div_colour_array += [colour]
+            status = self.getState(t)
+                
             torrent_html += """
-                <tr onmouseover='select_torrent(this);' 
-                    onmouseout='deselect_torrent(this);' 
-                    onclick='view_torrent(this);' 
-                    class='torrent-div %(colour)s' 
-                    id='torrent_id_%(t_id)s'>
-                    <td>%(t_name)s</td>
-                    <td>%(t_size)s MiB</td>
-                    <td title='%(t_uploaded).02f up / %(t_downloaded).02f down'>%(t_ratio).02f</td>
-                    <td>%(t_uprate)s KB/s</td><td>%(t_downrate)s KB/s</td>
-                </tr>""" % {
+            <tr onmouseover='select_torrent(this);' 
+                onmouseout='deselect_torrent(this);' 
+                onclick='view_torrent(this);' 
+                class='torrent-div %(colour)s' 
+                id='torrent_id_%(t_id)s'>
+                <td>%(t_name)s</td>
+                <td>%(t_size)s</td>
+                <td title='%(t_uploaded)s up / %(t_downloaded)s down'>%(t_ratio).02f</td>
+                <td>%(t_uprate)s/s</td>
+                <td>%(t_downrate)s/s</td>
+                <td>%(t_status)s</td>
+            </tr>
+                        """ % {
                             "colour" : colour,
                             "t_id" : t.torrent_id,
                             "t_name" : t.name,
-                            "t_size" : int(float(t.size)/1024/1024),
-                            "t_uploaded" : float(t.up_total)/1024/1024,
-                            "t_downloaded" : float(t.down_total)/1024/1024,
+                            "t_size" : self.humanSize(t.size),
+                            "t_uploaded" : self.humanSize(t.up_total),
+                            "t_downloaded" : self.humanSize(t.down_total),
                             "t_ratio" : float(t.ratio)/1000,
-                            "t_uprate" : int(float(t.up_rate)/1024),
-                            "t_downrate" : int(float(t.down_rate)/1024),
+                            "t_uprate" : self.humanSize(t.up_rate),
+                            "t_downrate" : self.humanSize(t.down_rate),
+                            "t_status" : status,
                         }
-        torrent_html += "           </table>"
+        torrent_html += "\n           </table>"
 
         html = """Content-Type: text/html\n\n
-    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-    <html>
-        <head>
-            <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-            <title>rTorrent - webUI</title>
-            <link rel="stylesheet" type="text/css" href="css/main.css">
-            <script src="javascript/main.js" type="text/javascript"></script>
-        </head>
-        <body>
-            %s
-        </body>
-    </html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+        <title>rTorrent - webUI</title>
+        <link rel="stylesheet" type="text/css" href="css/main.css">
+        <script src="javascript/main.js" type="text/javascript"></script>
+    </head>
+    <body>
+        %s
+    </body>
+</html>
         """ % torrent_html 
         return html

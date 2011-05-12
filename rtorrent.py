@@ -49,7 +49,7 @@ class Peer:
         self.peer_total = peer_total
 
 class Torrent:
-    def __init__(self, id, name, base_path, size_chunks, chunk_size, completed_bytes, creation_date, down_rate, up_rate, peers_connected, peers_total, seeders_connected, seeders_total, priority, ratio, size, up_total, down_total, status, private):
+    def __init__(self, id, name, base_path, size_chunks, chunk_size, completed_bytes, creation_date, down_rate, up_rate, peers_connected, peers_total, seeders_connected, seeders_total, priority, ratio, size, up_total, down_total, status, private, trackers):
         self.torrent_id = id
         self.name = name
         self.base_path = base_path
@@ -71,6 +71,7 @@ class Torrent:
         self.size_chunks = size_chunks
         self.status = status
         self.private = bool(private)
+        self.trackers = trackers
 
 class rtorrent:
     def __init__(self, port):
@@ -130,6 +131,7 @@ class rtorrent:
                     tor[13],
                     status,
                     tor[14],
+                    trackers
                 )
             ]
 #            0 "d.get_hash=","d.get_name=","d.get_base_path=","d.get_size_chunks=","d.get_chunk_size=", 4
