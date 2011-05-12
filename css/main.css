@@ -1,0 +1,123 @@
+body {
+    font-family : "Trebuchet MS", "sans-serif";
+    font-size : 14px;
+}
+
+td.torrentid {
+    font-size : 12px;
+}
+
+td.heading {
+    font-weight : bold;
+}
+
+tr.torrent-div {
+    border : 1px solid;
+    -webkit-border-radius : 10px;
+    padding : 0.5em; 
+    margin : 0.5em;
+}
+
+tr.blue {
+    background-color : #B4CDCD;
+}
+tr.green {
+    background-color : #78AB46;
+}
+tr.red {
+    background-color : red;
+}
+
+.column-1 {
+    float : left;
+    clear : left;
+    min-width : 9em;
+    font-weight : bold;
+}
+
+.column-2 {
+    float : left;
+    min-width : 9em;
+}
+
+.down-1 {
+    float : left;
+    margin-top : 1em;
+    clear : left;
+}
+
+div.topbar-tab {
+    float : left;
+    padding : 0em 1em;
+    border : 1px solid;
+    border-bottom : 0px none;
+    border-top-right-radius : 25px 50px;
+    border-top-left-radius: 25px 50px;
+    cursor : pointer;
+}
+
+#topbar {
+    float : left;
+}
+
+#main {
+    float : left;
+    clear : left;
+    border : 1px solid;
+    padding : 1em;
+    min-width : 80%;
+}
+
+#peers_table {
+     float : left;
+     clear : left;
+     margin-top : 1em;
+}
+
+.folder {
+    float : left;
+    clear : left;
+    color : blue;
+}
+.file {
+    color : green;
+}
+
+.level-1 {
+    padding-left : 0em;
+}
+
+.level-2 {
+    padding-left : 1em;
+}
+
+.level-3 {
+    padding-left : 2em;
+}
+
+#files_div {
+    float : left;
+    clear : left;
+    margin-top : 1em;
+}
+div.topbar-tab.selected{
+    background-color : #79CDCD;
+}
+
+span.file_priority {
+    float : left;
+    clear : left;
+    min-width : 4em;
+}
+span.file_completion {
+    float : left;
+    min-width : 4em;
+}
+span.file_size {
+    float : left;
+    min-width : 6em;
+}
+span.file_name {
+    float : left;
+    min-width : 4em;
+}
