@@ -13,11 +13,11 @@ torrentList = RT.getTorrentList()
 torrent_html = """
             <table id='torrent_list'>
                 <tr>
-                    <td class='heading'>Name</td>
-                    <td class='heading'>Size</td>
-                    <td class='heading'>Ratio</td>
-                    <td class='heading'>Upload speed</td>
-                    <td class='heading'>Download speed</td>
+                    <td class='heading'>Name <img src='http://bits.wikimedia.org/skins-1.17/common/images/sort_up.gif'></td>
+                    <td class='heading'>Size <img src='http://bits.wikimedia.org/skins-1.17/common/images/sort_none.gif'></td>
+                    <td class='heading'>Ratio <img src='http://bits.wikimedia.org/skins-1.17/common/images/sort_none.gif'></td>
+                    <td class='heading'>Upload speed <img src='http://bits.wikimedia.org/skins-1.17/common/images/sort_none.gif'></td>
+                    <td class='heading'>Download speed <img src='http://bits.wikimedia.org/skins-1.17/common/images/sort_none.gif'></td>
                 </tr>
             """
 div_colour_array = ["blue", "green"]

@@ -65,7 +65,7 @@ class rtorrent:
         #test connection
         self.conn = xmlrpc.RTorrentXMLRPCClient("scgi://localhost:%i" % self.port)
         self.conn.system.listMethods()
-        
+
     def getTorrentList(self):
         torrentlist = self.conn.download_list("main")
         torrentdict = {}
