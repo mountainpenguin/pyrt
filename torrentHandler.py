@@ -128,15 +128,15 @@ class Handler:
             torrentList.reverse()
 
         torrent_html = """
-                <table id='torrent_list'>
-                    <tr>
-                        <td class='heading'>Name</td>
-                        <td class='heading'>Size</td>
-                        <td class='heading'>Ratio</td>
-                        <td class='heading'>Upload speed</td>
-                        <td class='heading'>Download speed</td>
-                        <td class='heading'>Status</td>
-                    </tr>
+            <table id='torrent_list'>
+                <tr>
+                    <td class='heading'>Name</td>
+                    <td class='heading'>Size</td>
+                    <td class='heading'>Ratio</td>
+                    <td class='heading'>Upload speed</td>
+                    <td class='heading'>Download speed</td>
+                    <td class='heading'>Status</td>
+                </tr>
             """
         div_colour_array = ["blue", "green"]
         for t in torrentList:
