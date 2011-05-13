@@ -359,7 +359,7 @@ def trackers(torrent_id):
 </html>""" % info_dict
 
 if __name__ == "__main__":
-    RT = rtorrent.rtorrent(5000)
+    RT = rtorrent.rtorrent("/home/torrent/.session/rpc.socket")
     form = cgi.FieldStorage()
     torrent_id = form.getfirst("torrent_id")
     view = form.getfirst("view")

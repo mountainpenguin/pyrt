@@ -20,7 +20,7 @@ REVERSED = form.getfirst("reverse")
 if not REVERSED:
     REVERSED = False
 
-RT = rtorrent.rtorrent(5000)
+RT = rtorrent.rtorrent("/home/torrent/.session/rpc.socket")
 handler = torrentHandler.Handler()
 
 torrentList = RT.getTorrentList2(VIEW)

@@ -75,9 +75,13 @@ class Torrent:
 
 class rtorrent:
     def __init__(self, port):
-        self.port = port
+        if type(port) == int:
+            self.port = port
         #test connection
-        self.conn = xmlrpc.RTorrentXMLRPCClient("scgi://localhost:%i" % self.port)
+            self.conn = xmlrpc.RTorrentXMLRPCClient("scgi://localhost:%i" % self.port)
+        else:
+            #path defined
+            self.conn = xmlrpc.RTorrentXMLRPCClient(port)
         self.conn.system.listMethods()
 
     def getTorrentList2(self,view):

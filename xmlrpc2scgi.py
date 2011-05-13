@@ -181,7 +181,9 @@ class RTorrentXMLRPCClient(object):
         elif scheme == 'http':
             raise Exception('Unsupported protocol')
         elif scheme == '':
-            raise Exception('Unsupported protocol')
+            xmlresp = SCGIRequest(self.url).send(xmlreq).replace("<i8>","<i4>").replace("</i8>","</i4>")
+            return xmlrpclib.loads(xmlresp)[0][0]
+            #raise Exception('Unsupported protocol')
         else:
             raise Exception('Unsupported protocol')
     
