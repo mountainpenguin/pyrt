@@ -87,7 +87,7 @@ def get_torrent_info(torrent_id):
 if __name__ == "__main__":
     form = cgi.FieldStorage()
     request = form.getfirst("request")
-    RT = rtorrent.rtorrent(5000)
+    RT = rtorrent.rtorrent("/home/torrent/.session/rpc.socket")
     
     if request == "get_torrent_info":
         t_id = form.getfirst("torrent_id")
