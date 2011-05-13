@@ -54,6 +54,7 @@ def main(torrent_id):
     </head>
     <body>
         <div id="topbar">
+            <div class="topbar-tab_home" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate_home();" title="Home" id="home">Home</div>
             <div class="topbar-tab selected" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" id="info" title="Info">Info</div>
             <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="Peers" id="peers">Peers</div>
             <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="File List" id="files">File List</div>
@@ -124,6 +125,7 @@ def peers(torrent_id):
     </head>
     <body>
         <div id="topbar">
+            <div class="topbar-tab_home" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate_home();" title="Home" id="home">Home</div>
             <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" id="info" title="Info">Info</div>
             <div class="topbar-tab selected" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="Peers" id="peers">Peers</div>
             <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="File List" id="files">File List</div>
@@ -223,7 +225,7 @@ def files(torrent_id):
             folder_contents_keys.sort()
             for folder_name_sub in folder_contents_keys:
                 if "_size" in folder[folder_name][folder_name_sub].keys():
-                    file_html += "\t\t\t\t\t<div class='folder level-2'>\n\t\t\t\t\t\t<div class='folder_name'>\\n\t\t\t\t\t\t\t<span class='file_completion'>%s%%</span>\n\t\t\t\t\t\t\t<span class='file_size'>%s</span>\n\t\t\t\t\t\t\t<span class='file_name'>%s</span>\n\t\t\t\t\t\t</div>\n" % (int(folder[folder_name][folder_name_sub]["_completion"]), _humanSize(folder[folder_name][folder_name_sub]["_size"]), folder_name_sub)
+                    file_html += "\t\t\t\t\t<div class='folder level-2'>\n\t\t\t\t\t\t<div class='folder_name'>\n\t\t\t\t\t\t\t<span class='file_completion'>%s%%</span>\n\t\t\t\t\t\t\t<span class='file_size'>%s</span>\n\t\t\t\t\t\t\t<span class='file_name'>%s</span>\n\t\t\t\t\t\t</div>\n" % (int(folder[folder_name][folder_name_sub]["_completion"]), _humanSize(folder[folder_name][folder_name_sub]["_size"]), folder_name_sub)
 
 #~                    file_html += "\t\t\t\t\t<div class='folder level-2'>\n\t\t\t\t\t\t<div class='folder_name'>\n\t\t\t\t\t\t\t<span class='file_priority'>%s</span>\n\t\t\t\t\t\t\t<span class='file_completion'>%s%%</span>\n\t\t\t\t\t\t\t<span class='file_size'>%s</span>\n\t\t\t\t\t\t\t<span class='file_name'>%s</span>\n\t\t\t\t\t\t</div>\n" % ("/".join(sorted(folder[folder_name][folder_name_sub]["_priority"], key=lambda x:x)), int(folder[folder_name][folder_name_sub]["_completion"]), _humanSize(folder[folder_name][folder_name_sub]["_size"]), folder_name_sub)
    
@@ -264,6 +266,7 @@ def files(torrent_id):
     </head>
     <body>
         <div id="topbar">
+            <div class="topbar-tab_home" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate_home();" title="Home" id="home">Home</div>
             <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" id="info" title="Info">Info</div>
             <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="Peers" id="peers">Peers</div>
             <div class="topbar-tab selected" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="File List" id="files">File List</div>
@@ -324,10 +327,12 @@ def trackers(torrent_id):
     </head>
     <body>
         <div id="topbar">
+            <div class="topbar-tab_home" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate_home();" title="Home" id="home">Home</div>
             <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" id="info" title="Info">Info</div>
             <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="Peers" id="peers">Peers</div>
             <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="File List" id="files">File List</div>
             <div class="topbar-tab selected" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="Trackers" id="trackers">Tracker List</div>
+
         </div>
         <div id="main">
             <div class="column-1">Name:</div><div class="column-2">%(tname)s</div>

@@ -11,7 +11,7 @@ cgitb.enable()
 form = cgi.FieldStorage()
 
 VIEW = form.getfirst("view")
-if not VIEW or VIEW not in ["main","name","started","stopped","complete","incomplete","hashing","seeding","active"]:
+if not VIEW or VIEW not in ["main","started","stopped","complete","incomplete","hashing","seeding","active"]:
     VIEW = "main"
 SORTBY = form.getfirst("sortby")
 if not SORTBY:
@@ -24,5 +24,43 @@ RT = rtorrent.rtorrent(5000)
 handler = torrentHandler.Handler()
 
 torrentList = RT.getTorrentList2(VIEW)
-print handler.torrentHTML(torrentList, SORTBY, REVERSED)
+html = handler.torrentHTML(torrentList, SORTBY, REVERSED)
+
+def genHTML(type, VIEW):
+    if VIEW == type:
+        return  '<div class="topbar-tab selected" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_tab(this);" title="%s" id="tab_%s">%s</div>' % (type, type, type.capitalize())
+    else:
+        return '<div class="topbar-tab" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_tab(this);" title="%s" id="tab_%s">%s</div>' % (type, type, type.capitalize())
+   
+
+ttmain = genHTML("main", VIEW)
+ttstarted = genHTML("started",VIEW)
+ttstopped = genHTML("stopped",VIEW)
+ttcomplete = genHTML("complete",VIEW)
+ttincomplete = genHTML("incomplete",VIEW)
+tthashing = genHTML("hashing",VIEW)
+ttseeding = genHTML("seeding",VIEW)
+ttactive = genHTML("active",VIEW)
+html_insert = """
+        <div id="topbar">
+            %(main)s
+            %(started)s
+            %(stopped)s
+            %(complete)s
+            %(incomplete)s
+            %(hashing)s
+            %(seeding)s
+            %(active)s
+        </div>
+""" % {
+    "main" : ttmain,
+    "started" : ttstarted,
+    "stopped" : ttstopped,
+    "complete" : ttcomplete,
+    "incomplete" : ttincomplete,
+    "hashing" : tthashing,
+    "seeding" : ttseeding,
+    "active" : ttactive,
+}
+print html.replace("<!-- BODY PLACEHOLDER -->",html_insert)
 

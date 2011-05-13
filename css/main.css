@@ -69,6 +69,16 @@ div.topbar-tab {
     background-color : white;
 }
 
+div.topbar-tab_home {
+    float : left;
+    padding : 0em 1em;
+    border : 1px dotted;
+    border-bottom : 0px none;
+    border-top-right-radius : 25px 50px;
+    border-top-left-radius : 25px 50px;
+    cursor : pointer;
+    background-color : #cccccc;
+}
 #topbar {
     float : left;
 }
@@ -80,6 +90,13 @@ div.topbar-tab {
     padding : 1em;
     min-width : 80%;
     background-color : white;
+}
+
+#torrent_table {
+    float : left;
+    clear : left;
+    border : 1px solid;
+    padding : 1em;
 }
 
 #peers_table {

@@ -8,6 +8,21 @@ function deselect_torrent(elem) {
     elem.style.backgroundColor = null;
     elem.style.cursor = "default";
 }
+function select_tab(elem) {
+   elem.style.backgroundColor = "#37FDFC"; 
+}
+
+function deselect_tab(elem) {
+    elem.style.backgroundColor = null;
+}
+
+function navigate_tab(elem) {
+    window.location = "?view=" + elem.id.split("tab_")[1];
+}
+
+function navigate_torrent(elem) {
+    window.location = "detail.py?torrent_id=" + elem.id.split("torrent_id_")[1]
+}
 
 function htmlify(json, cell) {
     var obj = JSON.parse(json);
