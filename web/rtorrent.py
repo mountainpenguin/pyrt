@@ -154,6 +154,7 @@ class rtorrent:
         return torrentdict
 		
     def getTorrentInfo(self, id):
+        #this is slower than the alternative
         allTorrents = self.getTorrentList2("main")
         for t in allTorrents:
             if t.torrent_id == id:

@@ -4,6 +4,7 @@ import cgi
 import rtorrent
 import simplejson as json
 import time
+import torrentHandler
 
 class Peer:
     def __init__(self, address, client_version, completed_percent, down_rate, down_total, up_rate, up_total, port):
@@ -21,9 +22,9 @@ class Torrent:
         self.torrent_id = torrent_id
 
         self.name = RT.getNameByID(torrent_id)
-        self.uploaded = "%.02f" % (float(RT.getUploadBytes(torrent_id))/1024/1024)
-        self.downloaded = "%.02f" % (float(RT.getDownloadBytes(torrent_id))/1024/1024)
-        self.size = "%.02f" % (float(RT.getSizeBytes(torrent_id))/1024/1024)
+        self.uploaded = Handler.humanSize(RT.getUploadBytes(torrent_id))
+        self.downloaded = Handler.humanSize(RT.getDownloadBytes(torrent_id)))
+        self.size = Handler.humanSize(float(RT.getSizeBytes(torrent_id)))
         self.ratio = "%.02f" % (float(RT.getRatio(torrent_id))/1000)
         self.created = RT.conn.d.get_creation_date(torrent_id)
         self.trackers = []
@@ -33,9 +34,9 @@ class Torrent:
             except:
                 break
         self.peers = []
-        peer_exchange_len = RT.conn.d.get_peer_exchange(torrent_id)
-        peers_accounted_len = RT.conn.d.get_peers_accounted(torrent_id)
-        peers_complete_len = RT.conn.d.get_peers_complete(torrent_id)
+        # peer_exchange_len = RT.conn.d.get_peer_exchange(torrent_id)
+        # peers_accounted_len = RT.conn.d.get_peers_accounted(torrent_id)
+        # peers_complete_len = RT.conn.d.get_peers_complete(torrent_id)
         peers_connected_len = RT.conn.d.get_peers_connected(torrent_id)
     
         if peers_connected_len > 0:
@@ -60,14 +61,7 @@ class Torrent:
 def get_torrent_info(torrent_id):
     t = Torrent(torrent_id)
     c = time.localtime(t.created)
-    created = "%02i/%02i/%i %02i:%02i:%02i" % (
-        c.tm_mday,
-        c.tm_mon,
-        c.tm_year,
-        c.tm_hour,
-        c.tm_min,
-        c.tm_sec,
-    )
+    created = time.strftime("%d/%m/%Y %H:%M:%S", c)
     jsonObject = {
         "name" : t.name,
         "uploaded" : t.uploaded,
@@ -88,6 +82,7 @@ if __name__ == "__main__":
     form = cgi.FieldStorage()
     request = form.getfirst("request")
     RT = rtorrent.rtorrent("/home/torrent/.session/rpc.socket")
+    Handler = torrentHandler.Handler()
     
     if request == "get_torrent_info":
         t_id = form.getfirst("torrent_id")

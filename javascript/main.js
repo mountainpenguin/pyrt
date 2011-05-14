@@ -29,9 +29,9 @@ function htmlify(json, cell) {
     var new_html = new String();
     new_html += "<div class='drop_down'>"
     new_html += "<div class='column-1'>ID:</div><div class='column-2'>" + obj.torrent_id + "</div>"
-    new_html += "<div class='column-1'>Size:</div><div class='column-2'>" + obj.size + " MB</div>"
-    new_html += "<div class='column-1'>Downloaded:</div><div class='column-2'>" + obj.downloaded  + " MB</div>"
-    new_html += "<div class='column-1'>Uploaded:</div><div class='column-2'>" + obj.uploaded + " MB</div>"
+    new_html += "<div class='column-1'>Size:</div><div class='column-2'>" + obj.size + "</div>"
+    new_html += "<div class='column-1'>Downloaded:</div><div class='column-2'>" + obj.downloaded  + "</div>"
+    new_html += "<div class='column-1'>Uploaded:</div><div class='column-2'>" + obj.uploaded + "</div>"
     new_html += "<div class='column-1'>Ratio:</div><div class='column-2'>" + obj.ratio + "</div>"
     new_html += "<div class='column-1'>Peers:</div><div class='column-2'>" + obj.peers.length + "</div>"
     new_html += "<div class='column-1'>Created:</div><div class='column-2'>" + obj.created + "</div>"
