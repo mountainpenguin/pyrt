@@ -367,8 +367,8 @@ RT = rtorrent.rtorrent("/home/torrent/.session/rpc.socket")
 Handler = torrentHandler.Handler()
 form = cgi.FieldStorage()
 
-torrent_id = form.getfirst("torrent_id")
-view = form.getfirst("view")
+torrent_id = form.getfirst("torrent_id", None)
+view = form.getfirst("view", None)
 
 L = login.Login()
 test = L.checkLogin(os.environ)
@@ -390,7 +390,12 @@ if view not in ["info", "peers", "files", "trackers"]:
     view = "info"
 
 if not torrent_id:
-    print "ERROR/Not Implemented"
+    if os.environ.get("REQUEST_METHOD") == "POST":
+        torrent_id = os.environ.get("QUERY_STRING").split("torrent_id=")[1].split("&")[0]
+        view = os.environ.get("QUERY_STRING").split("view=")[1].split("&")[0]
+
+if not torrent_id:
+    print "Content-Type:text/plain\n\nERROR/Not Implemented"
 elif not view or view == "info":
     main(torrent_id)
 elif view == "peers":
