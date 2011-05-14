@@ -5,6 +5,7 @@ import rtorrent
 import simplejson as json
 import time
 import torrentHandler
+import login
 
 class Peer:
     def __init__(self, address, client_version, completed_percent, down_rate, down_total, up_rate, up_total, port):
@@ -83,6 +84,12 @@ if __name__ == "__main__":
     request = form.getfirst("request")
     RT = rtorrent.rtorrent("/home/torrent/.session/rpc.socket")
     Handler = torrentHandler.Handler()
+    
+    L = login.Login()
+    test = L.checkLogin(os.environ)
+
+    if not test:
+        sys.exit()
     
     if request == "get_torrent_info":
         t_id = form.getfirst("torrent_id")

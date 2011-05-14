@@ -7,6 +7,7 @@ import random
 import string
 import os
 import time
+import login
 
 def _humanSize(bytes):
     if bytes > 1024*1024*1024:
@@ -364,6 +365,22 @@ if __name__ == "__main__":
     RT = rtorrent.rtorrent("/home/torrent/.session/rpc.socket")
     Handler = torrentHandler.Handler()
     form = cgi.FieldStorage()
+    
+    L = login.Login()
+    test = L.checkLogin(os.environ)
+
+    if not test and not form.getfirst("password"):
+        L.loginHTML()
+        sys.exit()
+    elif not test and form.getfirst("password"):
+        #check password
+        pwcheck = L.checkPassword(form.getfirst("password"))
+        if not pwcheck:
+            L.loginHTML("Incorrect password")
+            sys.exit()
+        else:
+            L.sendCookie()
+    
     torrent_id = form.getfirst("torrent_id")
     view = form.getfirst("view")
 
