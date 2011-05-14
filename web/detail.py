@@ -82,7 +82,7 @@ def main(torrent_id):
            
             <div class="down-1"><div class="column-1">Leechers:</div><div class="column-2">%(tleechs_connected)s (%(tleechs_total)s)</div></div>
             <div class="column-1">Seeders:</div><div class="column-2">%(tseeds_connected)s (%(tseeds_total)s)</div>
-            <div class="down-1><div class="column-1">Debug:</div><div class="column-2>%(debug)r</div></div>
+            <div class="down-1><div class="column-1">Debug:</div><div class="column-2">%(debug)r</div></div>
         </div>
     </body>
 </html>""" % info_dict
