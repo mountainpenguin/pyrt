@@ -153,11 +153,11 @@ class rtorrent:
             torrentdict[i] = name
         return torrentdict
 		
-	def getTorrentInfo(self, id):
-		allTorrents = self.getTorrentList("main")
-		for t in allTorrents:
-			if t.torrent_id == id:
-				return t
+    def getTorrentInfo(self, id):
+        allTorrents = self.getTorrentList("main")
+        for t in allTorrents:
+            if t.torrent_id == id:
+                return t
 
     def getIDByName(self, filename):
         alldownloads = self.conn.download_list("main")
