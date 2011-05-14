@@ -154,6 +154,14 @@ span.file_name {
 }
 
 #login_div {
-    float : left;
-    margin : 0 auto;
+    position : absolute;
+    top : 50%;
+    left : 50%;
+    width : 30em;
+    height : 10em;
+    margin-left : -15em;
+    margin-top : -10em;
+    background-color : #eeeeee;
+    padding : 3em;
+    border : 1px solid #545454;
 }

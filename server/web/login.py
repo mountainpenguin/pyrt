@@ -60,9 +60,10 @@ class Login:
             </head>
             <body style="background-color : #545454;">
                 <div id="login_div">
+                    <h1>Login to your rTorrent webUI</h1>
                     <form>
-                        <div class="column-1">Password: </div>
-                        <div class="column-2"><input type="password" value="password" name="password"></div>
+                        <div class="column-1">Enter Password: </div>
+                        <div class="column-2"><input type="password" name="password"></div>
                     </form>
                 </div>
             </body>
