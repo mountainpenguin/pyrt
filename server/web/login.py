@@ -55,13 +55,14 @@ class Login:
             <head>
                 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
                 <title>rTorrent - webUI Login</title>
-                <link rel="stylesheet" href="/css/login.css">
+                <link rel="stylesheet" href="/css/main.css">
                 <!-- <script type="text/javascript" src="/javascript/login.js"></script> -->
             </head>
             <body>
                 <div id="login_div">
                     <form>
-                        <input type="password" value="password" name="password">
+                        <div class="column-1">Password: </div>
+                        <div class="column-2"><input type="password" value="password" name="password"></div>
                     </form>
                 </div>
             </body>
