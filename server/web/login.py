@@ -58,7 +58,7 @@ class Login:
                 <link rel="stylesheet" href="/css/main.css">
                 <!-- <script type="text/javascript" src="/javascript/login.js"></script> -->
             </head>
-            <body>
+            <body style="background-color : #545454;">
                 <div id="login_div">
                     <form>
                         <div class="column-1">Password: </div>
