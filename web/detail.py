@@ -1,12 +1,12 @@
 #!/usr/bin/python2.5
 
 import cgi
-
 import rtorrent
 import torrentHandler
 import random
 import string
 import os
+import time
 
 def _humanSize(bytes):
     if bytes > 1024*1024*1024:
@@ -19,10 +19,11 @@ def _humanSize(bytes):
         return "%i B" % bytes
 
 def main(torrent_id):
+    start = time.time()
     trackers = RT.getTrackers(torrent_id)
     seeds = 0
     leechs = 0
-    tInfo = RT.getTorrentInfo(torrent_id)
+    #tInfo = RT.getTorrentInfo(torrent_id)
     for tracker in trackers:
         seeds += tracker.seeds
         leechs += tracker.leechs
@@ -44,7 +45,9 @@ def main(torrent_id):
         "tseeds_total" : seeds,
         "tleechs_connected" : RT.conn.d.get_peers_accounted(torrent_id),
         "tleechs_total" : leechs,
-        "debug" : tInfo.__dict__,
+        #"debug" : tInfo.__dict__,
+        "debug" : "blah",
+        "timetaken" : time.time() - start
     }
     print """
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -82,7 +85,8 @@ def main(torrent_id):
            
             <div class="down-1"><div class="column-1">Leechers:</div><div class="column-2">%(tleechs_connected)s (%(tleechs_total)s)</div></div>
             <div class="column-1">Seeders:</div><div class="column-2">%(tseeds_connected)s (%(tseeds_total)s)</div>
-            <div class="down-1><div class="column-1">Debug:</div><div class="column-2">%(debug)r</div></div>
+            <div class="down-1"><div class="column-1">Debug:</div><div class="column-2">%(debug)r</div></div>
+            <div class="column-1">Time Taken:</div><div class="column-1">%(timetaken)i seconds</div>
         </div>
     </body>
 </html>""" % info_dict
