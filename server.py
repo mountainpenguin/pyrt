@@ -2,6 +2,8 @@
 
 import BaseHTTPServer
 import CGIHTTPServer
+import os
+os.chdir("server")
 
 class Handler(CGIHTTPServer.CGIHTTPRequestHandler):
 	cgi_directories = ["/web"]

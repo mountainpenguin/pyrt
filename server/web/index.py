@@ -5,8 +5,6 @@ import os
 import sys
 import rtorrent
 import torrentHandler
-import cgitb
-cgitb.enable()
 
 form = cgi.FieldStorage()
 
