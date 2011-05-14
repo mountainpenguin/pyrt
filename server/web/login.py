@@ -39,11 +39,11 @@ class Login:
         try:
             cookstr = env.get("HTTP_COOKIE")
             cookies = Cookie.SimpleCookie(cookstr)
-            session_id = cookies.get("sess_id")
+            session_id = cookies.get("sess_id").value
             if session_id == self.USER.sess_id:
                 return True
             else:
-                return "session_id : %r, self.USER.sess_id : %r" % (session_id, self.USER.sess_id)
+                return False
         except:
             return False
         
