@@ -40,7 +40,7 @@ class Login:
             cookstr = env.get("HTTP_COOKIE")
             cookies = Cookie.SimpleCookie(cookstr)
             session_id = cookies.get("sess_id")
-            if session_id == self.USER.password:
+            if session_id == self.USER.sess_id:
                 return True
             else:
                 return False
