@@ -5,7 +5,14 @@ import os
 import sys
 import rtorrent
 import torrentHandler
+import login
 
+L = login.Login()
+test = L.checkLogin(os.environ)
+if not test:
+    L.loginHTML()
+    sys.exit()
+    
 form = cgi.FieldStorage()
 
 VIEW = form.getfirst("view")
