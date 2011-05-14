@@ -86,5 +86,5 @@ class Login:
         #add sess_id to self.USER
         self.USER.sess_id = randstring
         self._flush()
-        print cook
+        print new_cookie
         
