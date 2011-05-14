@@ -3,6 +3,7 @@
 import cgi
 
 import rtorrent
+import torrentHandler
 import random
 import string
 import os
@@ -21,6 +22,7 @@ def main(torrent_id):
     trackers = RT.getTrackers(torrent_id)
     seeds = 0
     leechs = 0
+	tInfo = RT.getTorrentInfo(torrent_id)
     for tracker in trackers:
         seeds += tracker.seeds
         leechs += tracker.leechs
@@ -42,6 +44,7 @@ def main(torrent_id):
         "tseeds_total" : seeds,
         "tleechs_connected" : RT.conn.d.get_peers_accounted(torrent_id),
         "tleechs_total" : leechs,
+		"debug" : tInfo.__dict__,
     }
     print """
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -79,6 +82,7 @@ def main(torrent_id):
            
             <div class="down-1"><div class="column-1">Leechers:</div><div class="column-2">%(tleechs_connected)s (%(tleechs_total)s)</div></div>
             <div class="column-1">Seeders:</div><div class="column-2">%(tseeds_connected)s (%(tseeds_total)s)</div>
+			<div class="down-1><div class="column-1">Debug:</div><div class="column-2>%(debug)r</div></div>
         </div>
     </body>
 </html>""" % info_dict
@@ -360,6 +364,7 @@ def trackers(torrent_id):
 
 if __name__ == "__main__":
     RT = rtorrent.rtorrent("/home/torrent/.session/rpc.socket")
+	Handler = torrentHandler.Handler()
     form = cgi.FieldStorage()
     torrent_id = form.getfirst("torrent_id")
     view = form.getfirst("view")

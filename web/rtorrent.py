@@ -144,6 +144,7 @@ class rtorrent:
 #           14 "d.is_private=","d.get_peers_complete=","d.get_peers_accounted=", 16
         return torrentList
 #id, name, base_path, size_chunks, chunk_size, completed_bytes, creation_date, down_rate, up_rate, peers_connected, peers_total, seeders_connected, seeders_total, priority, ratio, size, up_total, down_total, status, private
+
     def getTorrentList(self):
         torrentlist = self.conn.download_list("main")
         torrentdict = {}
@@ -151,6 +152,12 @@ class rtorrent:
             name = self.getNameByID(i)
             torrentdict[i] = name
         return torrentdict
+		
+	def getTorrentInfo(self, id):
+		allTorrents = self.getTorrentList("main")
+		for t in allTorrents:
+			if t.torrent_id == id:
+				return t
 
     def getIDByName(self, filename):
         alldownloads = self.conn.download_list("main")
