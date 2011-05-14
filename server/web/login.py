@@ -22,7 +22,7 @@ class Login:
         hash = self.USER.password
         salt = base64.b64decode(hash.split("$")[1])
         result = self.hashPassword(pw, salt=salt)
-        if pw == result:
+        if result == self.USER.password:
             return True
         else:
             return False
@@ -61,10 +61,10 @@ class Login:
             <body style="background-color : #545454;">
                 <div id="login_div">
                     <h1>Login to your rTorrent webUI</h1>
-                    <form>
+                    <form method="POST" action="">
                         <div class="column-1">Enter Password: </div>
                         <div class="column-2"><input type="password" name="password"></div>
-                        <div id="login_message">%s</div>
+                        <div class="column-2" id="login-message">%s</div>
                     </form>
                 </div>
             </body>

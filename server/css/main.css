@@ -166,7 +166,9 @@ span.file_name {
     border : 1px solid #545454;
 }
 
-#login_message {
+#login-message {
+    width : 30em;
     font-weight : bold;
     color : red;
+    margin-top : 1em;
 }

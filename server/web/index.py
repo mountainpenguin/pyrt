@@ -18,7 +18,7 @@ elif not test and form.getfirst("password"):
     #check password
     pwcheck = L.checkPassword(form.getfirst("password"))
     if not pwcheck:
-        L.loginHTML("Incorrect password")
+        L.loginHTML("password: %s, response: %s" % (form.getfirst("password"), pwcheck))
         sys.exit()
     else:
         L.loginHTML("Woo it worked")
