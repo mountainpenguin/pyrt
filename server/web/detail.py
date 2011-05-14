@@ -381,6 +381,7 @@ if __name__ == "__main__":
             sys.exit()
         else:
             L.sendCookie()
+            print Handler.HTMLredirect("/web/index.py")
     
     torrent_id = form.getfirst("torrent_id")
     view = form.getfirst("view")
