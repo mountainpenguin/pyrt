@@ -3,5 +3,7 @@
 import BaseHTTPServer
 import CGIHTTPServer
 
-server = BaseHTTPServer.HTTPServer(("mountainpenguin.org.uk",8000), CGIHTTPServer.CGIHTTPRequestHandler)
+class Handler(CGIHTTPServer.CGIHTTPRequestHandler):
+	cgi_directories = ["web"]
+server = BaseHTTPServer.HTTPServer(("mountainpenguin.org.uk",8000), Handler)
 server.serve_forever()

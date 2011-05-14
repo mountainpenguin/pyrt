@@ -58,7 +58,7 @@ function view_torrent(elem) {
     var newrow = table.insertRow(elem.rowIndex + 1);
     var newcell = newrow.insertCell(0);
     newrow.id = "newrow_torrent_id_" + torrent_id;
-    newcell.innerHTML = "<img src='images/loading.gif'> <span style='color:red;'>Loading</span>";
+    newcell.innerHTML = "<img src='../images/loading.gif'> <span style='color:red;'>Loading</span>";
     newcell.colSpan = "6";
     xmlhttp = new XMLHttpRequest();
     var url="ajax.py"

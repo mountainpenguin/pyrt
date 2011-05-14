@@ -49,8 +49,8 @@ def main(torrent_id):
     <head>
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
         <title>rTorrent - %(tname)s</title>
-        <link rel="stylesheet" type="text/css" href="css/main.css">
-        <script src="javascript/detail.js" type="text/javascript"></script>
+        <link rel="stylesheet" type="text/css" href="../css/main.css">
+        <script src="../javascript/detail.js" type="text/javascript"></script>
     </head>
     <body>
         <div id="topbar">
@@ -120,8 +120,8 @@ def peers(torrent_id):
     <head>
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
         <title>rTorrent - %(tname)s</title>
-        <link rel="stylesheet" type="text/css" href="css/main.css">
-        <script src="javascript/detail.js" type="text/javascript"></script>
+        <link rel="stylesheet" type="text/css" href="../css/main.css">
+        <script src="../javascript/detail.js" type="text/javascript"></script>
     </head>
     <body>
         <div id="topbar">
@@ -261,8 +261,8 @@ def files(torrent_id):
     <head>
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
         <title>rTorrent - %(tname)s</title>
-        <link rel="stylesheet" type="text/css" href="css/main.css">
-        <script src="javascript/detail.js" type="text/javascript"></script>
+        <link rel="stylesheet" type="text/css" href="../css/main.css">
+        <script src="../javascript/detail.js" type="text/javascript"></script>
     </head>
     <body>
         <div id="topbar">
@@ -322,8 +322,8 @@ def trackers(torrent_id):
     <head>
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
         <title>rTorrent - %(tname)s</title>
-        <link rel="stylesheet" type="text/css" href="css/main.css">
-        <script src="javascript/detail.js" type="text/javascript"></script>
+        <link rel="stylesheet" type="text/css" href="../css/main.css">
+        <script src="../javascript/detail.js" type="text/javascript"></script>
     </head>
     <body>
         <div id="topbar">

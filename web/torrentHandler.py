@@ -179,8 +179,8 @@ class Handler:
         <!-- HEAD PLACEHOLDER -->
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
         <title>rTorrent - webUI</title>
-        <link rel="stylesheet" type="text/css" href="css/main.css">
-        <script src="javascript/main.js" type="text/javascript"></script>
+        <link rel="stylesheet" type="text/css" href="../css/main.css">
+        <script src="../javascript/main.js" type="text/javascript"></script>
     </head>
     <body>
         <!-- BODY PLACEHOLDER -->
