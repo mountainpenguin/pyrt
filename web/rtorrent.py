@@ -154,7 +154,7 @@ class rtorrent:
         return torrentdict
 		
     def getTorrentInfo(self, id):
-        allTorrents = self.getTorrentList("main")
+        allTorrents = self.getTorrentList2("main")
         for t in allTorrents:
             if t.torrent_id == id:
                 return t
