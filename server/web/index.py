@@ -12,7 +12,7 @@ form = cgi.FieldStorage()
 L = login.Login()
 test = L.checkLogin(os.environ)
 if not test and not form.getfirst("password"):
-    L.loginHTML()
+    L.loginHTML(test)
     sys.exit()
 elif not test and form.getfirst("password"):
     #check password

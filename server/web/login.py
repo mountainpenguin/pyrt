@@ -43,7 +43,7 @@ class Login:
             if session_id == self.USER.sess_id:
                 return True
             else:
-                return False
+                return "session_id : %r, self.USER.sess_id : %r" % (session_id, self.USER.sess_id)
         except:
             return False
         
