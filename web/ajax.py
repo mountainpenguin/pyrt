@@ -23,7 +23,7 @@ class Torrent:
 
         self.name = RT.getNameByID(torrent_id)
         self.uploaded = Handler.humanSize(RT.getUploadBytes(torrent_id))
-        self.downloaded = Handler.humanSize(RT.getDownloadBytes(torrent_id)))
+        self.downloaded = Handler.humanSize(RT.getDownloadBytes(torrent_id))
         self.size = Handler.humanSize(float(RT.getSizeBytes(torrent_id)))
         self.ratio = "%.02f" % (float(RT.getRatio(torrent_id))/1000)
         self.created = RT.conn.d.get_creation_date(torrent_id)
