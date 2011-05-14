@@ -7,6 +7,7 @@ import time
 import torrentHandler
 import login
 import os
+import sys
 
 class Peer:
     def __init__(self, address, client_version, completed_percent, down_rate, down_total, up_rate, up_total, port):
