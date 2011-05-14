@@ -384,6 +384,8 @@ if __name__ == "__main__":
     
     torrent_id = form.getfirst("torrent_id")
     view = form.getfirst("view")
+    if view not in ["info", "peers", "files", "trackers"]:
+        view = "info"
 
     if not torrent_id:
         print "ERROR/Not Implemented"
