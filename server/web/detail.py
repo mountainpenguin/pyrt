@@ -362,39 +362,40 @@ def trackers(torrent_id):
     </body>
 </html>""" % info_dict
 
-if __name__ == "__main__":
-    RT = rtorrent.rtorrent("/home/torrent/.session/rpc.socket")
-    Handler = torrentHandler.Handler()
-    form = cgi.FieldStorage()
-    
-    L = login.Login()
-    test = L.checkLogin(os.environ)
+#if __name__ == "__main__":
+RT = rtorrent.rtorrent("/home/torrent/.session/rpc.socket")
+Handler = torrentHandler.Handler()
+form = cgi.FieldStorage()
 
-    if not test and not form.getfirst("password"):
-        L.loginHTML()
+torrent_id = form.getfirst("torrent_id")
+view = form.getfirst("view")
+
+L = login.Login()
+test = L.checkLogin(os.environ)
+
+if not test and not form.getfirst("password"):
+    L.loginHTML()
+    sys.exit()
+elif not test and form.getfirst("password"):
+    #check password
+    pwcheck = L.checkPassword(form.getfirst("password"))
+    if not pwcheck:
+        L.loginHTML("Incorrect password")
         sys.exit()
-    elif not test and form.getfirst("password"):
-        #check password
-        pwcheck = L.checkPassword(form.getfirst("password"))
-        if not pwcheck:
-            L.loginHTML("Incorrect password")
-            sys.exit()
-        else:
-            L.sendCookie()
-            print Handler.HTMLredirect("/web/index.py")
-    
-    torrent_id = form.getfirst("torrent_id")
-    view = form.getfirst("view")
-    if view not in ["info", "peers", "files", "trackers"]:
-        view = "info"
+    else:
+        L.sendCookie()
+        print Handler.HTMLredirect("/web/index.py")
 
-    if not torrent_id:
-        print "ERROR/Not Implemented"
-    elif not view or view == "info":
-        main(torrent_id)
-    elif view == "peers":
-        peers(torrent_id)
-    elif view == "files":
-        files(torrent_id)
-    elif view == "trackers":
-        trackers(torrent_id)
+if view not in ["info", "peers", "files", "trackers"]:
+    view = "info"
+
+if not torrent_id:
+    print "ERROR/Not Implemented"
+elif not view or view == "info":
+    main(torrent_id)
+elif view == "peers":
+    peers(torrent_id)
+elif view == "files":
+    files(torrent_id)
+elif view == "trackers":
+    trackers(torrent_id)
