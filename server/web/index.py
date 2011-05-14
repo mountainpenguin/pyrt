@@ -7,13 +7,22 @@ import rtorrent
 import torrentHandler
 import login
 
+form = cgi.FieldStorage()
+
 L = login.Login()
 test = L.checkLogin(os.environ)
-if not test:
+if not test and not form.getfirst("password"):
     L.loginHTML()
     sys.exit()
-    
-form = cgi.FieldStorage()
+elif not test and form.getfirst("password"):
+    #check password
+    pwcheck = L.checkPassword(form.getfirst("password"))
+    if not pwcheck:
+        L.loginHTML("Incorrect password")
+        sys.exit()
+    else:
+        L.loginHTML("Woo it worked")
+        sys.exit()
 
 VIEW = form.getfirst("view")
 if not VIEW or VIEW not in ["main","started","stopped","complete","incomplete","hashing","seeding","active"]:

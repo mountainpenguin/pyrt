@@ -18,7 +18,7 @@ class Login:
         #get this from a pickled object
         self.USER = User("mountainpenguin", self.hashPassword("testing"))
         
-    def checkPassword(self, username, pw):
+    def checkPassword(self, pw):
         hash = self.USER.password
         salt = base64.b64decode(hash.split("$")[1])
         result = self.hashPassword(pw, salt=salt)
@@ -48,7 +48,7 @@ class Login:
         md5_encoded = base64.b64encode(md5_2)
         return "$%s$%s" % (salt_encoded, md5_encoded)
         
-    def loginHTML(self):
+    def loginHTML(self, msg=""):
         print """Content-Type : text/html\n
         <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
         <html>
@@ -64,8 +64,9 @@ class Login:
                     <form>
                         <div class="column-1">Enter Password: </div>
                         <div class="column-2"><input type="password" name="password"></div>
+                        <div id="login_message">%s</div>
                     </form>
                 </div>
             </body>
         </html>
-        """
+        """ % msg

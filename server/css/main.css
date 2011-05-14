@@ -165,3 +165,8 @@ span.file_name {
     padding : 3em;
     border : 1px solid #545454;
 }
+
+#login_message {
+    font-weight : bold;
+    color : red;
+}
