@@ -6,6 +6,8 @@ import cPickle as pickle
 import os
 import md5
 import base64
+import random
+import string
 
 class User:
     def __init__(self, username, pass_hash, sess_id=None):
@@ -16,7 +18,13 @@ class User:
 class Login:
     def __init__(self):
         #get this from a pickled object
-        self.USER = User("mountainpenguin", self.hashPassword("testing"))
+        try:
+            self.USER = pickle.load(open("/home/torrent/pyrt/.user.pickle"))
+        except:
+            self.USER = User("mountainpenguin", self.hashPassword("testing"))
+        
+    def _flush(self):
+        pickle.dump(self.USER, open("/home/torrent/pyrt/.user.pickle","w"))
         
     def checkPassword(self, pw):
         hash = self.USER.password
@@ -70,3 +78,13 @@ class Login:
             </body>
         </html>
         """ % msg
+        
+    def sendCookie(self):
+        randstring = "".join([random.choice(string.letters + string.digits) for i in range(20)])
+        new_cookie = Cookie.SimpleCookie()
+        new_cookie["sess_id"] = randstring
+        #add sess_id to self.USER
+        self.USER.sess_id = randstring
+        self._flush()
+        print cook
+        

@@ -18,11 +18,10 @@ elif not test and form.getfirst("password"):
     #check password
     pwcheck = L.checkPassword(form.getfirst("password"))
     if not pwcheck:
-        L.loginHTML("password: %s, response: %s" % (form.getfirst("password"), pwcheck))
+        L.loginHTML("Incorrect password")
         sys.exit()
     else:
-        L.loginHTML("Woo it worked")
-        sys.exit()
+        L.sendCookie()
 
 VIEW = form.getfirst("view")
 if not VIEW or VIEW not in ["main","started","stopped","complete","incomplete","hashing","seeding","active"]:
