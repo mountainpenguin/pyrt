@@ -391,8 +391,11 @@ if view not in ["info", "peers", "files", "trackers"]:
 
 if not torrent_id:
     if os.environ.get("REQUEST_METHOD") == "POST":
-        torrent_id = os.environ.get("QUERY_STRING").split("torrent_id=")[1].split("&")[0]
-        view = os.environ.get("QUERY_STRING").split("view=")[1].split("&")[0]
+        try:
+            torrent_id = os.environ.get("QUERY_STRING").split("torrent_id=")[1].split("&")[0]
+            view = os.environ.get("QUERY_STRING").split("view=")[1].split("&")[0]
+        except:
+            pass
 
 if not torrent_id:
     print "Content-Type:text/plain\n\nERROR/Not Implemented"
