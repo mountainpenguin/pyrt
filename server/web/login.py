@@ -44,7 +44,7 @@ class Login:
             salt = os.urandom(6)
         salt_encoded = base64.b64encode(salt)
         md5_1 = md5.new(pw).digest()
-        md5_2 = md5.new(md5+1 + salt).digest()
+        md5_2 = md5.new(md5_1 + salt).digest()
         md5_encoded = base64.b64encode(md5_2)
         return "$%s$%s" % (salt_encoded, md5_encoded)
         
