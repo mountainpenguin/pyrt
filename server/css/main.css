@@ -211,3 +211,7 @@ img.control_image {
     height : 20px;
     border : none;
 }
+
+.control_button {
+    cursor : pointer;
+}
