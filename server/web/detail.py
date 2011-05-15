@@ -94,7 +94,7 @@ def peers(torrent_id):
     for peer in RT.getPeers(torrent_id):
         colour = colours.pop(0)
         colours += [colour]
-        peer.address = ".".join(peer.address.split(".")[:2]) + ".x.x"
+        #peer.address = ".".join(peer.address.split(".")[:2]) + ".x.x"
         peer.down_rate = "%s/s" % _humanSize(peer.down_rate)
         peer.down_total = _humanSize(peer.down_total)
         peer.up_rate = "%s/s" % _humanSize(peer.up_rate)
@@ -301,7 +301,7 @@ def trackers(torrent_id):
         tracker_html += "\t\t\t\t\t\t<td>%(url)s</td>\n\t\t\t\t\t\t<td>%(type)s</td>\n\t\t\t\t\t\t<td>%(interval)s</td>\n\t\t\t\t\t\t<td>%(seeds)s</td>\n\t\t\t\t\t\t<td>%(leechs)s</td>\n\t\t\t\t\t\t<td>%(enabled)s</td>" % (
             {
                 "type" : {1:"HTTP",2:"UDP",3:"DHT"}[tracker.type],
-                "url" : tracker.url.split("//")[0] + "//" + "***",
+                "url" : tracker.url, #tracker.url.split("//")[0] + "//" + "***",
                 #~"url" : tracker.url.split("//")[0] + "//" + tracker.url.split("//")[1].split("/")[0] + "/***"*len(tracker.url.split("//")[1].split("/")[1:]),
                 "interval" : tracker.interval,
                 "seeds" : tracker.seeds,
