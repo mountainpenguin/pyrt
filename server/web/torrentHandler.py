@@ -179,9 +179,9 @@ class Handler:
             div_colour_array += [colour]
             status = self.getState(t)
             if status == "Stopped" or status == "Paused":
-                stopstart = "<span id='control_start' class='control_button' title='Start Torrent'><img onclick='command(\"start_torrent\",\"%s\")' class='control_image' alt='Start' src='../images/start.png'></span>" % t.torrent_id
+                stopstart = "<span id='control_start' class='control_button' title='Start Torrent'><img onclick='event.cancelBubble = true; command(\"start_torrent\",\"%s\")' class='control_image' alt='Start' src='../images/start.png'></span>" % t.torrent_id
             else:
-                stopstart = "<span id='control_pause' class='control_button' title='Pause Torrent'><img onclick='command(\"pause_torrent\",\"%s\")'class='control_image' alt='Pause' src='../images/pause.png'></span>" % t.torrent_id
+                stopstart = "<span id='control_pause' class='control_button' title='Pause Torrent'><img onclick='event.cancelBubble = true; command(\"pause_torrent\",\"%s\")'class='control_image' alt='Pause' src='../images/pause.png'></span>" % t.torrent_id
             torrent_html += """
                 <tr onmouseover='select_torrent(this);' 
                     onmouseout='deselect_torrent(this);' 
