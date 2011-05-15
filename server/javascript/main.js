@@ -74,3 +74,20 @@ function view_torrent(elem) {
     var params = "request=get_torrent_info&torrent_id=" + torrent_id;
     xmlhttp.send(params);
 }
+
+function command(cmd, t_id) {
+    if (cmd === "pause_torrent" || cmd === "start_torrent" || cmd === "stop_torrent" || cmd === "remove_torrent") {
+        xmlhttp = new XMLHttpRequest();
+        var url="ajax.py";
+        xmlhttp.open("POST",url,true);
+        xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                alert("Successful");
+            }
+        }
+        var params = "request=" + cmd + "&torrent_id=" + t_id;
+    } else {
+        alert("invalid command or command not implemented");
+    }
+}
