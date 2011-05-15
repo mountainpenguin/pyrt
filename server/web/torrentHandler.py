@@ -185,7 +185,7 @@ class Handler:
             torrent_html += """
                 <tr onmouseover='select_torrent(this);' 
                     onmouseout='deselect_torrent(this);' 
-                    onclick='function(e) { if (e.className == "clickable") { view_torrent(this) } else { return false; } };'
+                    onclick='view_torrent(this);'
                     ondblclick='navigate_torrent(this);'
                     class='torrent-div %(colour)s' 
                     id='torrent_id_%(t_id)s'>
@@ -209,9 +209,9 @@ class Handler:
                             "t_downrate" : self.humanSize(t.down_rate),
                             "t_status" : status,
                             "control_startpause" : stopstart,
-                            "control_stop" : "<span id='control_stop' class='control_button' title='Stop Torrent'><img onclick='command(\"stop_torrent\",\"%s\")' class='control_image' alt='Stop' src='../images/stop.png'></span>" % t.torrent_id,
-                            "control_remove" : "<span id='control_remove' class='control_button' title='Remove Torrent'><img onclick='command(\"remove_torrent\",\"%s\")' class='control_image' alt='Remove' src='../images/remove.png'></span>" % t.torrent_id,
-                            "control_delete" : "<span id='control_delete' class='control_button' title='Remove Torrent and Files'><img onclick='command(\"delete_torrent\",\"%s\")' class='control_image' alt='Delete' src='../images/delete.png'></span>" % t.torrent_id,
+                            "control_stop" : "<span id='control_stop' class='control_button' title='Stop Torrent'><img onclick='event.cancelBubble = true; command(\"stop_torrent\",\"%s\")' class='control_image' alt='Stop' src='../images/stop.png'></span>" % t.torrent_id,
+                            "control_remove" : "<span id='control_remove' class='control_button' title='Remove Torrent'><img onclick='event.cancelBubble = true; command(\"remove_torrent\",\"%s\")' class='control_image' alt='Remove' src='../images/remove.png'></span>" % t.torrent_id,
+                            "control_delete" : "<span id='control_delete' class='control_button' title='Remove Torrent and Files'><img onclick='event.cancelBubble = true; command(\"delete_torrent\",\"%s\")' class='control_image' alt='Delete' src='../images/delete.png'></span>" % t.torrent_id,
                         }
         torrent_html += "\n             </table>"
 
