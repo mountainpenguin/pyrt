@@ -59,7 +59,7 @@ function view_torrent(elem) {
     var newcell = newrow.insertCell(0);
     newrow.id = "newrow_torrent_id_" + torrent_id;
     newcell.innerHTML = "<img src='../images/loading.gif'> <span style='color:red;'>Loading</span>";
-    newcell.colSpan = "6";
+    newcell.colSpan = "7";
     xmlhttp = new XMLHttpRequest();
     var url="ajax.py"
     xmlhttp.open("POST",url,true);
