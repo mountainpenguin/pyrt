@@ -103,21 +103,19 @@ div.topbar-tab_home {
     background-color : white;
 }
 
+#main_body {
+    border : 1px solid;
+}
+
 #torrent_table {
     float : left;
     clear : left;
-    border-left : 1px solid;
-    border-right : 1px solid;
-    border-bottom : 1px solid;
     padding : 1em;
 }
 
 #global_stats {
     float : left;
     clear : left;
-    border-left : 1px solid;
-    border-right : 1px solid;
-    border-top : 1px solid;
     padding : 0em 1em 1em 1em;
 }
 

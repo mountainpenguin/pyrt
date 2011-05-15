@@ -73,13 +73,14 @@ html_insert = """
             %(active)s
         </div>
         
-        <div id="global_stats">
-            <h2>Global Stats</h2>
-            <div class="column-1">Upload Rate:</div><div class="column-2">%(uprate)s/s</div>
-            <div class="column-1">Download Rate:</div><div class="column-2">%(downrate)s/s</div>
-            <div class="column-3">Total Uploaded:</div><div class="column-4">%(uptot)s</div>
-            <div class="column-3">Total Downloaded:</div><div class="column-4">%(downtot)s</div>
-        </div>
+        <div id="main_body">
+            <div id="global_stats">
+                <h2>Global Stats</h2>
+                <div class="column-1">Upload Rate:</div><div class="column-2">%(uprate)s/s</div>
+                <div class="column-3">Total Uploaded:</div><div class="column-4">%(uptot)s</div>
+                <div class="column-1">Download Rate:</div><div class="column-2">%(downrate)s/s</div>
+                <div class="column-3">Total Downloaded:</div><div class="column-4">%(downtot)s</div>
+            </div>
 """ % {
     "main" : ttmain,
     "started" : ttstarted,
@@ -94,5 +95,5 @@ html_insert = """
     "uptot" : global_up_total,
     "downtot" : global_down_total,
 }
-print html.replace("<!-- BODY PLACEHOLDER -->",html_insert)
+print html.replace("<!-- BODY PLACEHOLDER -->",html_insert).replace("</body>","</div></body>")
 
