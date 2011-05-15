@@ -55,6 +55,12 @@ ttincomplete = genHTML("incomplete",VIEW)
 tthashing = genHTML("hashing",VIEW)
 ttseeding = genHTML("seeding",VIEW)
 ttactive = genHTML("active",VIEW)
+
+global_up_rate = handler.humanSize(RT.getGlobalUpRate())
+global_down_rate = handler.humanSize(RT.getGlobalDownRate())
+global_up_total = handler.humanSize(RT.getGlobalUpBytes())
+global_down_total = handler.humanSize(RT.getGlobalDownBytes())
+
 html_insert = """
         <div id="topbar">
             %(main)s
@@ -66,6 +72,14 @@ html_insert = """
             %(seeding)s
             %(active)s
         </div>
+        
+        <div id="global_stats">
+            <h2>Global Stats</h2>
+            <div class="column-1">Upload Rate:</div><div class="column-2">%(uprate)s</div>
+            <div class="column-1">Download Rate:</div><div class="column-2">%(downrate)s</div>
+            <div class="column-1">Total Uploaded:</div><div class="column-2">%(uptot)s</div>
+            <div class="column-1">Total Downloaded:</div><div class="column-2">%(downtot)s</div>
+        </div>
 """ % {
     "main" : ttmain,
     "started" : ttstarted,
@@ -75,6 +89,10 @@ html_insert = """
     "hashing" : tthashing,
     "seeding" : ttseeding,
     "active" : ttactive,
+    "uprate" : global_up_rate,
+    "downrate" : global_down_rate,
+    "uptot" : global_up_total,
+    "downtot" : global_down_total,
 }
 print html.replace("<!-- BODY PLACEHOLDER -->",html_insert)
 

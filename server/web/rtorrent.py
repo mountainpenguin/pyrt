@@ -316,6 +316,18 @@ class rtorrent:
     def getRootDir(self):
         return self.conn.get_directory()
 
+    def getGlobalUpBytes(self):
+        return self.conn.get_up_total()
+    
+    def getGlobalDownBytes(self):
+        return self.conn.get_down_total()
+    
+    def getGlobalUpRate(self):
+        return self.conn.get_up_rate()
+    
+    def getGlobalDownRate(self):
+        return self.conn.get_down_rate()
+
     def wait_completed(self, Id):
         time.sleep(2)
         
