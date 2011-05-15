@@ -85,13 +85,14 @@ def get_torrent_info(torrent_id):
 if __name__ == "__main__":
     form = cgi.FieldStorage()
     request = form.getfirst("request")
+    
+    L = login.Login()
+    test = L.checkLogin(os.environ)
+    
     Config = config.Config()
     RT = rtorrent.rtorrent(Config.get("rtorrent_socket"))
     Handler = torrentHandler.Handler()
     
-    L = login.Login()
-    test = L.checkLogin(os.environ)
-
     if not test:
         sys.exit()
     
@@ -99,3 +100,23 @@ if __name__ == "__main__":
         t_id = form.getfirst("torrent_id")
         print "Content-type : text/plain\n"
         print get_torrent_info(t_id)
+        
+    elif request == "pause_torrent":
+        t_id = form.getfirst("torrent_id")
+        RT.pause(t_id)
+        
+    elif request == "stop_torrent":
+        t_id = form.getfirst("torrent_id")
+        RT.stop(t_id)
+        
+    elif request == "start_torrent":
+        t_id = form.getfirst("torrent_id")
+        RT.resume(t_id)
+    
+    elif request == "remove_torrent":
+        t_id = form.getfirst("torrent_id")
+        RT.remove(t_id)
+        
+    elif request == "delete_torrent":
+        t_id = form.getfirst("torrent_id")
+        

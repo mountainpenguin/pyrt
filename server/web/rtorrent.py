@@ -190,9 +190,6 @@ class rtorrent:
         ratio = self.conn.d.get_ratio(id)
         return ratio
     
-    def remove(self,id):
-        self.conn.d.erase(id)
-    
     def getSizeBytes(self, id):
         size = self.conn.d.get_size_bytes(id)
         return size
@@ -346,3 +343,17 @@ class rtorrent:
             else:
                 print "100%"
                 return True
+
+                    
+    def remove(self,id):
+        self.conn.d.erase(id)
+        
+    def pause(self, id):
+        self.conn.d.pause(id)
+        
+    def resume(self, id):
+        self.conn.d.resume(id)
+        
+    def stop(self, id):
+        self.conn.d.stop(id)
+        self.conn.d.close(id)
