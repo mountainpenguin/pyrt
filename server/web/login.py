@@ -21,8 +21,6 @@ class Login:
         #get this from a pickled object
         try:
             self.USER = pickle.load(open("/home/torrent/pyrt/.user.pickle"))
-            #testing:
-            self.USER.testing = [self.USER.sess_id]
         except:
             #self.USER = User("mountainpenguin", self.hashPassword("testing"))
             self.USER = User("mountainpenguin", self.hashPassword("testing"),[self.hashPassword("testing")])
