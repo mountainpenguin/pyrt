@@ -105,6 +105,8 @@ div.topbar-tab_home {
 
 #main_body {
     border : 1px solid;
+    float : left;
+    clear : left;
 }
 
 #torrent_table {
