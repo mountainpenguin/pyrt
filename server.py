@@ -4,12 +4,14 @@ import BaseHTTPServer
 import CGIHTTPServer
 import os
 import sys
-os.chdir("server")
-import web.config as config
+
+sys.path.append("server/web")
+import config
 Config = config.Config()
+Config.test()
 Config.loadconfig()
 
-Config.test()
+os.chdir("server")
 class Handler(CGIHTTPServer.CGIHTTPRequestHandler):
 	cgi_directories = ["/web"]
 server = BaseHTTPServer.HTTPServer(("mountainpenguin.org.uk",Config.get("port")), Handler)
