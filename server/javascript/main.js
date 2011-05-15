@@ -82,8 +82,8 @@ function command(cmd, t_id) {
         xmlhttp.open("POST",url,true);
         xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xmlhttp.onreadystatechange = function() {
-            alert(xmlhttp.responseText);
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                alert(xmlhttp.responseText);
                 if (xmlhttp.responseText.trim() === "OK") {
                     alert("Successful");
                 } else {
