@@ -92,9 +92,9 @@ html_insert = """
                 
                 <div class="column-1">Load Average:</div>
                 <div class="column-2">
-                    <span title="Last minute">%(load1)s,</span>
-                    <span title="Last 5 minutes">%(load5)s,</span>,
-                    <span title="Last 15 minutes">%(load15)s,</span>,
+                    <span title="Last minute">%(load1)s</span>,
+                    <span title="Last 5 minutes">%(load5)s</span>,
+                    <span title="Last 15 minutes">%(load15)s</span>,
                 </div>
                 <div class="column-3">Uptime</div><div class="column-4">%(uptime)s</div>
                 <div class="column-5">CPU Usage:</div><div class="column-6">%(cpuusage)s%%</div>
