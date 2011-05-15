@@ -87,6 +87,7 @@ function command(cmd, t_id) {
             }
         }
         var params = "request=" + cmd + "&torrent_id=" + t_id;
+        xmlhttp.send(params);
     } else {
         alert("invalid command or command not implemented");
     }
