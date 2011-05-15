@@ -8,7 +8,6 @@ import sys
 sys.path.append("server/web")
 import config
 Config = config.Config()
-Config.test()
 Config.loadconfig()
 
 os.chdir("server")
