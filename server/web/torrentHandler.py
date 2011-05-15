@@ -119,7 +119,9 @@ class Handler:
                         "peers_total","priority","status","tracker","created"]:
             sort = None
 
-        if sort == "name":
+        if not sort:
+            torrentList.reverse()
+        elif sort == "name":
             torrentList = sorted(torrentList, key=lambda x:x.name)
         elif sort == "size":
             torrentList = sorted(torrentList, key=lambda x:x.size)
@@ -155,6 +157,7 @@ class Handler:
             torrentList = sorted(torrentList, key=lambda x:x.trackers[0].url)
         elif sort == "created":
             torrentList = sorted(torrentList, key=lambda x:x.created)
+      
         if reverse:
             torrentList.reverse()
 

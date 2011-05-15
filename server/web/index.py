@@ -83,20 +83,20 @@ html_insert = """
             <div id="global_stats">
                 <h2>Global Stats</h2>
                 <div class="column-1">Upload Rate:</div><div class="column-2">%(uprate)s/s</div>
-                <div class="column-3">Total Uploaded:</div><div class="column-4">%(uptot)s</div>
+                <div class="column-3">Total Up:</div><div class="column-4">%(uptot)s</div>
                 <div class="column-5">Disk Usage:</div><div class="column-6">%(diskused)s / %(disktotal)s</div>
                 
                 <div class="column-1">Download Rate:</div><div class="column-2">%(downrate)s/s</div>
-                <div class="column-3">Total Downloaded:</div><div class="column-4">%(downtot)s</div>
+                <div class="column-3">Total Down:</div><div class="column-4">%(downtot)s</div>
                 <div class="column-5">Mem Usage:</div><div class="column-6">%(memused)s / %(memtotal)s</div>
                 
                 <div class="column-1">Load Average:</div>
                 <div class="column-2">
                     <span title="Last minute">%(load1)s</span>,
                     <span title="Last 5 minutes">%(load5)s</span>,
-                    <span title="Last 15 minutes">%(load15)s</span>,
+                    <span title="Last 15 minutes">%(load15)s</span>
                 </div>
-                <div class="column-3">Uptime</div><div class="column-4">%(uptime)s</div>
+                <div class="column-3">Uptime:</div><div class="column-4">%(uptime)s</div>
                 <div class="column-5">CPU Usage:</div><div class="column-6">%(cpuusage)s%%</div>
             </div>
 """ % {
@@ -122,5 +122,5 @@ html_insert = """
     "cpuusage" : "None",
     "uptime" : uptime,
 }
-print html.replace("<!-- BODY PLACEHOLDER -->",html_insert).replace("</body>","</div></body>")
+print html.replace("<!-- BODY PLACEHOLDER -->",html_insert).replace("</body>","</div>\n\t</body>")
 

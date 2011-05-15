@@ -10,10 +10,11 @@ import random
 import string
 
 class User:
-    def __init__(self, username, pass_hash, sess_id=None):
+    def __init__(self, username, pass_hash, sess_id=None, testing=[]):
         self.username = username
         self.password = pass_hash
         self.sess_id = sess_id
+        self.testing = testing
         
 class Login:
     def __init__(self):
@@ -21,7 +22,8 @@ class Login:
         try:
             self.USER = pickle.load(open("/home/torrent/pyrt/.user.pickle"))
         except:
-            self.USER = User("mountainpenguin", self.hashPassword("testing"))
+            #self.USER = User("mountainpenguin", self.hashPassword("testing"))
+            self.USER = User("mountainpenguin", self.hashPassword("testing"),[self.hashPassword("testing")])
         
     def _flush(self):
         pickle.dump(self.USER, open("/home/torrent/pyrt/.user.pickle","w"))
@@ -40,7 +42,9 @@ class Login:
             cookstr = env.get("HTTP_COOKIE")
             cookies = Cookie.SimpleCookie(cookstr)
             session_id = cookies.get("sess_id").value
-            if session_id == self.USER.sess_id:
+            # if session_id == self.USER.sess_id:
+                # return True
+            if session_id in self.USER.testing:
                 return True
             else:
                 return False
@@ -85,6 +89,7 @@ class Login:
         new_cookie["sess_id"] = randstring
         #add sess_id to self.USER
         self.USER.sess_id = randstring
+        self.USER.testing += [randstring]
         self._flush()
         print new_cookie
  
