@@ -52,6 +52,17 @@ tr.red {
     min-width : 9em;
 }
 
+.column-3 {
+    float : left;
+    min-width : 9em;
+    font-weight : bold;
+}
+
+.column-4 {
+    float : left;
+    min-width : 9em;
+}
+
 .down-1 {
     float : left;
     margin-top : 1em;
@@ -95,15 +106,19 @@ div.topbar-tab_home {
 #torrent_table {
     float : left;
     clear : left;
-    border : 1px solid;
+    border-left : 1px solid;
+    border-right : 1px solid;
+    border-bottom : 1px solid;
     padding : 1em;
 }
 
 #global_stats {
     float : left;
     clear : left;
-    border : 1px solid;
-    padding : 1em;
+    border-left : 1px solid;
+    border-right : 1px solid;
+    border-top : 1px solid;
+    padding : 0em 1em 1em 1em;
 }
 
 #peers_table {
