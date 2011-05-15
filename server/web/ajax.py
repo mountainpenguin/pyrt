@@ -8,6 +8,7 @@ import torrentHandler
 import login
 import os
 import sys
+import config
 
 class Peer:
     def __init__(self, address, client_version, completed_percent, down_rate, down_total, up_rate, up_total, port):
@@ -84,7 +85,8 @@ def get_torrent_info(torrent_id):
 if __name__ == "__main__":
     form = cgi.FieldStorage()
     request = form.getfirst("request")
-    RT = rtorrent.rtorrent("/home/torrent/.session/rpc.socket")
+    Config = config.Config()
+    RT = rtorrent.rtorrent(Config.get("rtorrent_socket"))
     Handler = torrentHandler.Handler()
     
     L = login.Login()

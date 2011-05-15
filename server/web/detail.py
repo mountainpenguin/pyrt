@@ -9,6 +9,7 @@ import os
 import sys
 import time
 import login
+import config
 
 def _humanSize(bytes):
     if bytes > 1024*1024*1024:
@@ -362,48 +363,49 @@ def trackers(torrent_id):
     </body>
 </html>""" % info_dict
 
-#if __name__ == "__main__":
-RT = rtorrent.rtorrent("/home/torrent/.session/rpc.socket")
-Handler = torrentHandler.Handler()
-form = cgi.FieldStorage()
+if __name__ == "__main__":
+    Config = config.Config()
+    RT = rtorrent.rtorrent(Config.get("rtorrent_socket"))
+    Handler = torrentHandler.Handler()
+    form = cgi.FieldStorage()
 
-torrent_id = form.getfirst("torrent_id", None)
-view = form.getfirst("view", None)
+    torrent_id = form.getfirst("torrent_id", None)
+    view = form.getfirst("view", None)
 
-L = login.Login()
-test = L.checkLogin(os.environ)
+    L = login.Login()
+    test = L.checkLogin(os.environ)
 
-if not test and not form.getfirst("password"):
-    L.loginHTML()
-    sys.exit()
-elif not test and form.getfirst("password"):
-    #check password
-    pwcheck = L.checkPassword(form.getfirst("password"))
-    if not pwcheck:
-        L.loginHTML("Incorrect password")
+    if not test and not form.getfirst("password"):
+        L.loginHTML()
         sys.exit()
-    else:
-        L.sendCookie()
-        print Handler.HTMLredirect("/web/index.py")
+    elif not test and form.getfirst("password"):
+        #check password
+        pwcheck = L.checkPassword(form.getfirst("password"))
+        if not pwcheck:
+            L.loginHTML("Incorrect password")
+            sys.exit()
+        else:
+            L.sendCookie()
+            print Handler.HTMLredirect("/web/index.py")
 
-if view not in ["info", "peers", "files", "trackers"]:
-    view = "info"
+    if view not in ["info", "peers", "files", "trackers"]:
+        view = "info"
 
-if not torrent_id:
-    if os.environ.get("REQUEST_METHOD") == "POST":
-        try:
-            torrent_id = os.environ.get("QUERY_STRING").split("torrent_id=")[1].split("&")[0]
-            view = os.environ.get("QUERY_STRING").split("view=")[1].split("&")[0]
-        except:
-            pass
+    if not torrent_id:
+        if os.environ.get("REQUEST_METHOD") == "POST":
+            try:
+                torrent_id = os.environ.get("QUERY_STRING").split("torrent_id=")[1].split("&")[0]
+                view = os.environ.get("QUERY_STRING").split("view=")[1].split("&")[0]
+            except:
+                pass
 
-if not torrent_id:
-    print "Content-Type:text/plain\n\nERROR/Not Implemented"
-elif not view or view == "info":
-    main(torrent_id)
-elif view == "peers":
-    peers(torrent_id)
-elif view == "files":
-    files(torrent_id)
-elif view == "trackers":
-    trackers(torrent_id)
+    if not torrent_id:
+        print "Content-Type:text/plain\n\nERROR/Not Implemented"
+    elif not view or view == "info":
+        main(torrent_id)
+    elif view == "peers":
+        peers(torrent_id)
+    elif view == "files":
+        files(torrent_id)
+    elif view == "trackers":
+        trackers(torrent_id)

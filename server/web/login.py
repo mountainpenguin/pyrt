@@ -8,6 +8,7 @@ import md5
 import base64
 import random
 import string
+import config
 
 class User:
     def __init__(self, username, pass_hash, sess_id=None, testing=[]):

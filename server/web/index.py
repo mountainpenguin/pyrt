@@ -7,6 +7,7 @@ import rtorrent
 import torrentHandler
 import login
 import system
+import config
 
 form = cgi.FieldStorage()
 
@@ -35,7 +36,9 @@ REVERSED = form.getfirst("reverse")
 if not REVERSED:
     REVERSED = False
 
-RT = rtorrent.rtorrent("/home/torrent/.session/rpc.socket")
+Config = config.Config()
+
+RT = rtorrent.rtorrent(Config.get("rtorrent_socket"))
 handler = torrentHandler.Handler()
 
 torrentList = RT.getTorrentList2(VIEW)
