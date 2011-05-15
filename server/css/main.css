@@ -63,6 +63,17 @@ tr.red {
     min-width : 9em;
 }
 
+.column-5 {
+    float : left;
+    min-width : 9em;
+    font-weight : bold;
+}
+
+.column-6 {
+    float : left;
+    min-width : 9em;
+}
+
 .down-1 {
     float : left;
     margin-top : 1em;
