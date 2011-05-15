@@ -185,16 +185,16 @@ class Handler:
             torrent_html += """
                 <tr onmouseover='select_torrent(this);' 
                     onmouseout='deselect_torrent(this);' 
-                    onclick='function(e) { if (e.target == this) { view_torrent(this) } else { return false; } };'
+                    onclick='function(e) { if (e.className == "clickable") { view_torrent(this) } else { return false; } };'
                     ondblclick='navigate_torrent(this);'
                     class='torrent-div %(colour)s' 
                     id='torrent_id_%(t_id)s'>
-                    <td>%(t_name)s</td>
-                    <td>%(t_size)s</td>
-                    <td title='%(t_uploaded)s up / %(t_downloaded)s down'>%(t_ratio).02f</td>
-                    <td>%(t_uprate)s/s</td>
-                    <td>%(t_downrate)s/s</td>
-                    <td>%(t_status)s</td>
+                    <td class="clickable">%(t_name)s</td>
+                    <td class="clickable">%(t_size)s</td>
+                    <td class="clickable" title='%(t_uploaded)s up / %(t_downloaded)s down'>%(t_ratio).02f</td>
+                    <td class="clickable">%(t_uprate)s/s</td>
+                    <td class="clickable">%(t_downrate)s/s</td>
+                    <td class="clickable">%(t_status)s</td>
                     <td>%(control_startpause)s %(control_stop)s %(control_remove)s %(control_delete)s</td>
                 </tr>
                         """ % {
