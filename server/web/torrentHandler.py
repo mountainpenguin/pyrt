@@ -178,13 +178,6 @@ class Handler:
             colour = div_colour_array.pop(0)
             div_colour_array += [colour]
             status = self.getState(t)
-                
-                'Stopped'         # torrent is closed
-                'Paused'          # torrent is open but inactive
-                'Seeding (idle)'  # torrent is active and complete, but no connected peers
-                'Seeding'         # torrent is active, complete, and has connected peers
-                'Leeching (idle)' # torrent is active and incomplete, but no connected peers
-                'Leeching'        # torrent is active, incomplete, and has connected peers
             if status == "Stopped" or status == "Paused":
                 stopstart = "<span id='control_start' class='control_button'><img class='control_image' alt='Start' src='../images/start.jpg'></span>"
             else:
