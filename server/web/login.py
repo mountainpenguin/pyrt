@@ -21,13 +21,13 @@ class Login:
     def __init__(self):
         #get this from a pickled object
         try:
-            self.USER = pickle.load(open("/home/torrent/pyrt/.user.pickle"))
+            self.USER = pickle.load(open(os.path.join(os.getcwd(), ".user.pickle")))
         except:
             #self.USER = User("mountainpenguin", self.hashPassword("testing"))
             self.USER = User("mountainpenguin", self.hashPassword("testing"),[self.hashPassword("testing")])
         
     def _flush(self):
-        pickle.dump(self.USER, open("/home/torrent/pyrt/.user.pickle","w"))
+        pickle.dump(self.USER, open(os.path.join(os.getcwd(), ".user.pickle"), "w"))
         
     def checkPassword(self, pw):
         hash = self.USER.password

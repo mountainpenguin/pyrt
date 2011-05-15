@@ -7,9 +7,6 @@ try:
 except ImportError:
     import simplejson as json
 
-def test():
-    print os.getcwd()
-    
 class ConfigError(Exception):
     def __init__(self, value):
         self.parameter = value
