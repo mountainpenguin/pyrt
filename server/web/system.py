@@ -4,7 +4,7 @@ import statvfs
 import os
 import psutil
 
-def hdd(self, path="/"):
+def hdd(path="/"):
     """
         Stats the root filesystem
         Inputs:
@@ -21,7 +21,7 @@ def hdd(self, path="/"):
     
     return (used*block_size, total*block_size)
     
-def mem(self):
+def mem():
     """
         returns a tuple:
             index 0 : the used bytes of memory
