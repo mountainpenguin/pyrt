@@ -170,6 +170,7 @@ class Handler:
                     <td class='heading'>Upload speed</td>
                     <td class='heading'>Download speed</td>
                     <td class='heading'>Status</td>
+                    <td class='heading'></td>
                 </tr>
             """
         div_colour_array = ["blue", "green"]
@@ -178,6 +179,16 @@ class Handler:
             div_colour_array += [colour]
             status = self.getState(t)
                 
+                'Stopped'         # torrent is closed
+                'Paused'          # torrent is open but inactive
+                'Seeding (idle)'  # torrent is active and complete, but no connected peers
+                'Seeding'         # torrent is active, complete, and has connected peers
+                'Leeching (idle)' # torrent is active and incomplete, but no connected peers
+                'Leeching'        # torrent is active, incomplete, and has connected peers
+            if status == "Stopped" or status == "Paused":
+                stopstart = "<span id='control_start' class='control_button'><img class='control_image' alt='Start' src='../images/start.jpg'></span>"
+            else:
+                stopstart = "<span id='control_pause' class='control_button'><img class='control_image' alt='Pause' src='../images/pause.jpg'></span>"
             torrent_html += """
                 <tr onmouseover='select_torrent(this);' 
                     onmouseout='deselect_torrent(this);' 
@@ -191,6 +202,7 @@ class Handler:
                     <td>%(t_uprate)s/s</td>
                     <td>%(t_downrate)s/s</td>
                     <td>%(t_status)s</td>
+                    <td>%(control_startpause)s %(control_stop)s %(control_remove)s %(control_delete)s</td>
                 </tr>
                         """ % {
                             "colour" : colour,
@@ -203,6 +215,10 @@ class Handler:
                             "t_uprate" : self.humanSize(t.up_rate),
                             "t_downrate" : self.humanSize(t.down_rate),
                             "t_status" : status,
+                            "control_startpause" : stopstart,
+                            "control_stop" : "<span id='control_stop' class='control_button'><img class='control_image' alt='Stop' src='../images/stop.jpg'></span>",
+                            "control_remove" : "<span id='control_remove' class='control_button'><img class='control_image' alt='Remove' src='../images/remove.jpg'></span>",
+                            "control_delete" : "<span id='control_delete' class='control_button'><img class='control_image' alt='Delete' src='../images/delete.jpg'></span>",
                         }
         torrent_html += "\n             </table>"
 

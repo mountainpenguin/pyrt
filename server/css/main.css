@@ -205,3 +205,9 @@ span.file_name {
     color : red;
     margin-top : 1em;
 }
+
+img.control_image {
+    width : 20px;
+    height : 20px;
+    border : none;
+}
