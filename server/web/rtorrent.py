@@ -352,7 +352,8 @@ class rtorrent:
         self.conn.d.pause(id)
         
     def resume(self, id):
-        self.conn.d.resume(id)
+        #self.conn.d.resume(id)
+        self.conn.d.start(id)
         
     def stop(self, id):
         self.conn.d.stop(id)

@@ -104,19 +104,24 @@ if __name__ == "__main__":
     elif request == "pause_torrent":
         t_id = form.getfirst("torrent_id")
         RT.pause(t_id)
+        print "Content-Type: text/plain\n\nOK"
         
     elif request == "stop_torrent":
         t_id = form.getfirst("torrent_id")
         RT.stop(t_id)
+        print "Content-Type: text/plain\n\nOK"
         
     elif request == "start_torrent":
         t_id = form.getfirst("torrent_id")
         RT.resume(t_id)
+        print "Content-Type: text/plain\n\nOK"
     
     elif request == "remove_torrent":
         t_id = form.getfirst("torrent_id")
         RT.remove(t_id)
+        print "Content-Type: text/plain\n\nOK"
         
     elif request == "delete_torrent":
         t_id = form.getfirst("torrent_id")
+        print "Content-Type: text/plain\n\nOK"
         
