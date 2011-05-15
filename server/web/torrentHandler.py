@@ -209,7 +209,7 @@ class Handler:
                             "t_downrate" : self.humanSize(t.down_rate),
                             "t_status" : status,
                             "control_startpause" : stopstart,
-                            "control_stop" : "<span id='control_stop' class='control_button' title='Stop Torrent'><img style='width:15px;height:15px;' class='control_image' alt='Stop' src='../images/stop.png'></span>",
+                            "control_stop" : "<span id='control_stop' class='control_button' title='Stop Torrent'><img class='control_image' alt='Stop' src='../images/stop.png'></span>",
                             "control_remove" : "<span id='control_remove' class='control_button' title='Remove Torrent'><img class='control_image' alt='Remove' src='../images/remove.png'></span>",
                             "control_delete" : "<span id='control_delete' class='control_button' title='Remove Torrent and Files'><img class='control_image' alt='Delete' src='../images/delete.png'></span>",
                         }
