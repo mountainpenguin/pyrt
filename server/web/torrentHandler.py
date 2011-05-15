@@ -22,7 +22,7 @@ class Handler:
         mins = secs / 60
         secs -= mins * 60
         
-        time_str += "%02iH:%02iM:%02iS" % (hrs, mins, sec)
+        time_str += "%02iH:%02iM:%02iS" % (hrs, mins, secs)
         
         return time_str
         
