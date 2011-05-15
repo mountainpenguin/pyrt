@@ -7,6 +7,25 @@ class Handler:
     def __init__(self):
         pass
 
+    def humanTimeDiff(self, secs):
+        time_str = ""
+        if secs > 60*60*24*7:
+            wks = secs / (60 * 60 * 24 * 7)
+            time_str += "%iw " % wks
+            secs -= wks * (60*60*24*7)
+        if secs > 60*60*24:
+            dys = secs / (60 * 60 * 24)
+            time_str += "%id " % dys
+            secs -= dys * (60 * 60 * 24)
+        hrs = secs / (60*60)
+        secs -= hrs * (60 * 60)
+        mins = secs / 60
+        secs -= mins * 60
+        
+        time_str += "%02iH:%02iM:%02iS" % (hrs, mins, sec)
+        
+        return time_str
+        
     def humanSize(self, bytes):
         """
             takes a int/float value of <bytes>

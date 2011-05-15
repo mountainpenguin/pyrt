@@ -65,6 +65,7 @@ global_down_total = handler.humanSize(RT.getGlobalDownBytes())
 diskused, disktotal = system.hdd()
 memused, memtotal = system.mem()
 load1, load5, load15 = os.getloadavg()
+uptime = handler.humanTimeDiff(system.uptime())
 
 html_insert = """
         <div id="topbar">
@@ -91,10 +92,12 @@ html_insert = """
                 
                 <div class="column-1">Load Average:</div>
                 <div class="column-2">
-                    <span title="Last minute">%(load1)s</span>
-                    <span title="Last 5 minutes">%(load5)s</span>
-                    <span title="Last 15 minutes">%(load15)s</span>
+                    <span title="Last minute">%(load1)s,</span>
+                    <span title="Last 5 minutes">%(load5)s,</span>,
+                    <span title="Last 15 minutes">%(load15)s,</span>,
                 </div>
+                <div class="column-3">Uptime</div><div class="column-4">%(uptime)s</div>
+                <div class="column-5">CPU Usage:</div><div class="column-6">%(cpuusage)s%%</div>
             </div>
 """ % {
     "main" : ttmain,
@@ -116,6 +119,8 @@ html_insert = """
     "load1" : "%.02f" % load1,
     "load5" : "%.02f" % load5,
     "load15" : "%.02f" % load15,
+    "cpuusage" : "None",
+    "uptime" : uptime,
 }
 print html.replace("<!-- BODY PLACEHOLDER -->",html_insert).replace("</body>","</div></body>")
 

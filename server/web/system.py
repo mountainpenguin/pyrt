@@ -3,6 +3,7 @@
 import statvfs
 import os
 import psutil
+import time
 
 def hdd(path="/"):
     """
@@ -30,3 +31,9 @@ def mem():
     used = psutil.used_phymem()
     total = psutil.TOTAL_PHYMEM
     return (used, total)
+    
+def uptime():
+    """
+        returns the number of seconds since the system was booted
+    """
+    return int(time.time() - psutil.BOOT_TIME)
