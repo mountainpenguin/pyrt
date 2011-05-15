@@ -179,9 +179,9 @@ class Handler:
             div_colour_array += [colour]
             status = self.getState(t)
             if status == "Stopped" or status == "Paused":
-                stopstart = "<span id='control_start' class='control_button' title='Start Torrent'><img onclick='command(\"start_torrent\",\"%(t_id)s\")' class='control_image' alt='Start' src='../images/start.png'></span>"
+                stopstart = "<span id='control_start' class='control_button' title='Start Torrent'><img onclick='command(\"start_torrent\",\"%s\")' class='control_image' alt='Start' src='../images/start.png'></span>" % t.torrent_id
             else:
-                stopstart = "<span id='control_pause' class='control_button' title='Pause Torrent'><img onclick='command(\"pause_torrent\",\"%(t_id)s\")'class='control_image' alt='Pause' src='../images/pause.png'></span>"
+                stopstart = "<span id='control_pause' class='control_button' title='Pause Torrent'><img onclick='command(\"pause_torrent\",\"%s\")'class='control_image' alt='Pause' src='../images/pause.png'></span>" % t.torrent_id
             torrent_html += """
                 <tr onmouseover='select_torrent(this);' 
                     onmouseout='deselect_torrent(this);' 
@@ -209,9 +209,9 @@ class Handler:
                             "t_downrate" : self.humanSize(t.down_rate),
                             "t_status" : status,
                             "control_startpause" : stopstart,
-                            "control_stop" : "<span id='control_stop' class='control_button' title='Stop Torrent'><img onclick='command(\"stop_torrent\",\"%(t_id)s\")' class='control_image' alt='Stop' src='../images/stop.png'></span>",
-                            "control_remove" : "<span id='control_remove' class='control_button' title='Remove Torrent'><img onclick='command(\"remove_torrent\",\"%(t_id)s\")' class='control_image' alt='Remove' src='../images/remove.png'></span>",
-                            "control_delete" : "<span id='control_delete' class='control_button' title='Remove Torrent and Files'><img onclick='command(\"delete_torrent\",\"%(t_id)s\")' class='control_image' alt='Delete' src='../images/delete.png'></span>",
+                            "control_stop" : "<span id='control_stop' class='control_button' title='Stop Torrent'><img onclick='command(\"stop_torrent\",\"%s\")' class='control_image' alt='Stop' src='../images/stop.png'></span>" % t.torrent_id,
+                            "control_remove" : "<span id='control_remove' class='control_button' title='Remove Torrent'><img onclick='command(\"remove_torrent\",\"%s\")' class='control_image' alt='Remove' src='../images/remove.png'></span>" % t.torrent_id,
+                            "control_delete" : "<span id='control_delete' class='control_button' title='Remove Torrent and Files'><img onclick='command(\"delete_torrent\",\"%s\")' class='control_image' alt='Delete' src='../images/delete.png'></span>" % t.torrent_id,
                         }
         torrent_html += "\n             </table>"
 
