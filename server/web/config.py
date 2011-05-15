@@ -28,7 +28,7 @@ class ConfigStore:
 class Config:
     def __init__(self):
         #look for saved config file
-        if os.path.exists(os.path.expanduser("~/.pyrtconfig"):
+        if os.path.exists(os.path.expanduser("~/.pyrtconfig")):
             self.CONFIG = pickle.load(open(os.path.expanduser("~/.pyrtconfig")))
         else:
             self.loadconfig()
