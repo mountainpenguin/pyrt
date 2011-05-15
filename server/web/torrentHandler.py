@@ -185,7 +185,7 @@ class Handler:
             torrent_html += """
                 <tr onmouseover='select_torrent(this);' 
                     onmouseout='deselect_torrent(this);' 
-                    onclick='view_torrent(this);'
+                    onclick='function(e) { if (e.target == this) { view_torrent(this) } else { return false; } };'
                     ondblclick='navigate_torrent(this);'
                     class='torrent-div %(colour)s' 
                     id='torrent_id_%(t_id)s'>
