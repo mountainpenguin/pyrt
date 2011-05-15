@@ -75,8 +75,8 @@ html_insert = """
         
         <div id="global_stats">
             <h2>Global Stats</h2>
-            <div class="column-1">Upload Rate:</div><div class="column-2">%(uprate)s</div>
-            <div class="column-1">Download Rate:</div><div class="column-2">%(downrate)s</div>
+            <div class="column-1">Upload Rate:</div><div class="column-2">%(uprate)s/s</div>
+            <div class="column-1">Download Rate:</div><div class="column-2">%(downrate)s/s</div>
             <div class="column-1">Total Uploaded:</div><div class="column-2">%(uptot)s</div>
             <div class="column-1">Total Downloaded:</div><div class="column-2">%(downtot)s</div>
         </div>

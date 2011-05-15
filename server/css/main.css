@@ -99,6 +99,13 @@ div.topbar-tab_home {
     padding : 1em;
 }
 
+#global_stats {
+    float : left;
+    clear : left;
+    border : 1px solid;
+    padding : 1em;
+}
+
 #peers_table {
      float : left;
      clear : left;
