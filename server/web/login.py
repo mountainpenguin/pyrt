@@ -11,11 +11,10 @@ import string
 import config
 
 class User:
-    def __init__(self, username, pass_hash, sess_id=None, testing=[]):
+    def __init__(self, username, pass_hash, sess_id=None):
         self.username = username
         self.password = pass_hash
         self.sess_id = sess_id
-        self.testing = testing
         
 class Login:
     def __init__(self):
@@ -28,7 +27,7 @@ class Login:
             self.USER = pickle.load(open(os.path.join(self.PYRTROOT, ".user.pickle")))
         except:
             #self.USER = User("mountainpenguin", self.hashPassword("testing"))
-            self.USER = User("mountainpenguin", c.CONFIG.password,[])
+            self.USER = User("mountainpenguin", c.CONFIG.password)
         
     def _flush(self):
         pickle.dump(self.USER, open(os.path.join(self.PYRTROOT, ".user.pickle"), "w"))
@@ -94,6 +93,5 @@ class Login:
         new_cookie["sess_id"] = randstring
         #add sess_id to self.USER
         self.USER.sess_id = randstring
-        self.USER.testing += [randstring]
         self._flush()
         print new_cookie
