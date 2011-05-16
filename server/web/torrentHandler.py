@@ -170,7 +170,7 @@ class Handler:
             "status" : "",
         }
         for type in sorts.keys():
-            sorts[type] == "?view=%s&sortby=%s" % (view, type)
+            sorts[type] = "?view=%s&sortby=%s" % (view, type)
             if type == sort and not reverse:
                 sorts[type] += "&reverse=1"
                     
@@ -187,6 +187,7 @@ class Handler:
                     <td class='heading'></td>
                 </tr>
             """ % sorts
+        torrent_html += "<!-- %r -->" % sorts
             
         div_colour_array = ["blue", "green"]
         for t in torrentList:
