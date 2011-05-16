@@ -3,6 +3,7 @@
 from modules import config, indexPage
 
 import cherrypy
+import os
 
 c = config.Config()
 c.loadconfig()
@@ -14,6 +15,7 @@ global_config = {
 app_config = {
     "/css" : {
         "tools.staticdir.on" : True,
+        "tools.staticdir.root" : os.getcwd(),
         "tools.staticdir.dir" : "static/css/",
     }
 }
