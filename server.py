@@ -28,6 +28,11 @@ app_config = {
         "tools.staticdir.on" : True,
         "tools.staticdir.root" : os.getcwd(),
         "tools.staticdir.dir" : "static/images",
+    },
+    "/favicon.ico" : {
+        "tools.staticfile.on" : True,
+        "tools.staticfile.root" : os.getcwd(),
+        "tools.staticfile.filename" : "static/favicon.ico",
     }
 }
 
