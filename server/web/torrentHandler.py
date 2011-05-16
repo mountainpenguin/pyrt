@@ -163,27 +163,38 @@ class Handler:
 
         sorts = {
             "name":"",
+            "namesort" : "none",
             "size":"",
+            "sizesort" : "none",
             "ratio":"",
+            "ratiosort" : "none",
             "uprate" : "",
+            "upratesort" : "none",
             "downrate" : "",
+            "downratesort" : "none",
             "status" : "",
+            "statussort" : "none",
         }
         for type in sorts.keys():
             sorts[type] = "?view=%s&sortby=%s" % (view, type)
             if type == sort and not reverse:
                 sorts[type] += "&reverse=1"
+        if sort in sorts.keys():
+            if reverse:
+                sorts[sort + "sort"] = "down"
+            else:
+                sorts[sort + "sort"] = "up"
                     
         
         torrent_html = """
             <table id='torrent_list'>
                 <tr>
-                    <td class='heading' id="sortby_name" onclick="window.location='%(name)s';">Name</td>
-                    <td class='heading' id="sortby_size" onclick="window.location='%(size)s';">Size</td>
-                    <td class='heading' id="sortby_ratio" onclick="window.location='%(ratio)s';">Ratio</td>
-                    <td class='heading' id="sortby_uprate" onclick="window.location='%(uprate)s';">Upload speed</td>
-                    <td class='heading' id="sortby_downrate" onclick="window.location='%(downrate)s';">Download speed</td>
-                    <td class='heading' id="sortby_status" onclick="window.location='%(status)s';">Status</td>
+                    <td class='heading' id="sortby_name" onclick="window.location='%(name)s';">Name <img alt="Sort By Name" src="../images/sort%(namesort)s.png" class="control_button"></td>
+                    <td class='heading' id="sortby_size" onclick="window.location='%(size)s';">Size <img alt="Sort By Size" src="../images/sort%(sizesort)s.png" class="control_button"></td>
+                    <td class='heading' id="sortby_ratio" onclick="window.location='%(ratio)s';">Ratio <img alt="Sort By Ratio" src="../images/sort%(ratiosort)s.png" class="control_button"></td>
+                    <td class='heading' id="sortby_uprate" onclick="window.location='%(uprate)s';">Upload speed <img alt="Sort By Upload Speed" src="../images/sort%(upratesort)s.png" class="control_button"></td>
+                    <td class='heading' id="sortby_downrate" onclick="window.location='%(downrate)s';">Download speed <img alt="Sort By Download Speed" src="../images/sort%(downratesort)s.png" class="control_button"></td>
+                    <td class='heading' id="sortby_status" onclick="window.location='%(status)s';">Status <img alt="Sort By Status" src="../images/sort%(statussort)s.png" class="control_button"></td>
                     <td class='heading'></td>
                 </tr>
             """ % sorts
@@ -211,7 +222,21 @@ class Handler:
                     <td>%(t_uprate)s/s</td>
                     <td>%(t_downrate)s/s</td>
                     <td>%(t_status)s</td>
-                    <td>%(control_startpause)s %(control_stop)s %(control_remove)s %(control_delete)s</td>
+                    <td>
+                        %(control_startpause)s
+                        <span id='control_stop' class='control_button' title='Stop Torrent'>
+                            <img onclick='event.cancelBubble = true; command(\"stop_torrent\",\"%(t_id)s\")'
+                                 class='control_image' alt='Stop' src='../images/stop.png'>
+                        </span>
+                        <span id='control_remove' class='control_button' title='Remove Torrent'>
+                            <img onclick='event.cancelBubble = true; command(\"remove_torrent\",\"%(t_id)s\")'
+                                 class='control_image' alt='Remove' src='../images/remove.png'>
+                        </span>
+                        <span id='control_delete' class='control_button' title='Remove Torrent and Files'>
+                            <img onclick='event.cancelBubble = true; command(\"delete_torrent\",\"%(t_id)s\")'
+                                 class='control_image' alt='Delete' src='../images/delete.png'>
+                        </span>
+                    </td>
                 </tr>
                         """ % {
                             "colour" : colour,
@@ -225,9 +250,6 @@ class Handler:
                             "t_downrate" : self.humanSize(t.down_rate),
                             "t_status" : status,
                             "control_startpause" : stopstart,
-                            "control_stop" : "<span id='control_stop' class='control_button' title='Stop Torrent'><img onclick='event.cancelBubble = true; command(\"stop_torrent\",\"%s\")' class='control_image' alt='Stop' src='../images/stop.png'></span>" % t.torrent_id,
-                            "control_remove" : "<span id='control_remove' class='control_button' title='Remove Torrent'><img onclick='event.cancelBubble = true; command(\"remove_torrent\",\"%s\")' class='control_image' alt='Remove' src='../images/remove.png'></span>" % t.torrent_id,
-                            "control_delete" : "<span id='control_delete' class='control_button' title='Remove Torrent and Files'><img onclick='event.cancelBubble = true; command(\"delete_torrent\",\"%s\")' class='control_image' alt='Delete' src='../images/delete.png'></span>" % t.torrent_id,
                         }
         torrent_html += "\n             </table>"
 
