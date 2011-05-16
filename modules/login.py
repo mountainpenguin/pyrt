@@ -11,8 +11,7 @@ import string
 import config
 
 class User:
-    def __init__(self, username, pass_hash, sess_id=None, testing=[]):
-        self.username = username
+    def __init__(self, pass_hash, sess_id=None, testing=[]):
         self.password = pass_hash
         self.sess_id = sess_id
         self.testing = testing
@@ -22,16 +21,15 @@ class Login:
         c = config.Config()
         #get this from a pickled object
         #get pyrt root dir
-        self.PYRTROOT = "/".join(os.getcwd().split("/")[:-1])
         try:
             
-            self.USER = pickle.load(open(os.path.join(self.PYRTROOT, ".user.pickle")))
+            self.USER = pickle.load(open(".user.pickle"))
         except:
             #self.USER = User("mountainpenguin", self.hashPassword("testing"))
-            self.USER = User("mountainpenguin", c.CONFIG.password,[])
+            self.USER = User(c.CONFIG.password,[])
         
     def _flush(self):
-        pickle.dump(self.USER, open(os.path.join(self.PYRTROOT, ".user.pickle"), "w"))
+        pickle.dump(self.USER, open(".user.pickle", "w"))
         
     def checkPassword(self, pw):
         hash = self.USER.password
