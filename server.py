@@ -25,6 +25,5 @@ class mainHandler:
     index.exposed = True
 
 if __name__ == "__main__":
-    cherrypy.root = mainHandler()
     cherrypy.config.update(app_config)
-    cherrypy.server.start()
+    cherrypy.quickstart(mainHandler())
