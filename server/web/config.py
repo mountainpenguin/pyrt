@@ -38,12 +38,25 @@ class Config:
         if not os.path.exists(os.path.expanduser("~/.pyrtrc")):
             raise ConfigError("Config File doesn't exist")
             
+        config_ = open(os.path.expanduser("~/.pyrtrc")).read()
+        config_stripped = ""
+        for line in config_.split("\n"):
+            if line == "":
+                pass
+            else:
+                for char in line:
+                    if char == "#":
+                        break
+                    else:
+                        config_stripped += char
+                config_stripped += "\n"
         try:
-            configfile = json.loads(open(os.path.expanduser("~/.pyrtrc")).read())
+            configfile = json.loads(config_stripped)
             self.CONFIG = ConfigStore(
                         sockpath = configfile["rtorrent_socket"],
                         serverport = configfile["port"],
                         password = configfile["password"],
+                        host = configfile["host"],
                         )
             self._flush()
         except KeyError:
