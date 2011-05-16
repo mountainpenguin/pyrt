@@ -19,6 +19,7 @@ class User:
         
 class Login:
     def __init__(self):
+        c = config.Config()
         #get this from a pickled object
         #get pyrt root dir
         self.PYRTROOT = "/".join(os.getcwd().split("/")[:-1])
@@ -27,7 +28,7 @@ class Login:
             self.USER = pickle.load(open(os.path.join(self.PYRTROOT, ".user.pickle")))
         except:
             #self.USER = User("mountainpenguin", self.hashPassword("testing"))
-            self.USER = User("mountainpenguin", self.hashPassword("testing"),[self.hashPassword("testing")])
+            self.USER = User("mountainpenguin", c.CONFIG.password,[])
         
     def _flush(self):
         pickle.dump(self.USER, open(os.path.join(self.PYRTROOT, ".user.pickle"), "w"))

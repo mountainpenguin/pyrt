@@ -37,12 +37,16 @@ class Config:
         if not os.path.exists(os.path.expanduser("~/.pyrtrc")):
             raise ConfigError("Config File doesn't exist")
             
-        configfile = json.loads(open(os.path.expanduser("~/.pyrtrc")).read())
-        self.CONFIG = ConfigStore(
+        try:
+            configfile = json.loads(open(os.path.expanduser("~/.pyrtrc")).read())
+            self.CONFIG = ConfigStore(
                         sockpath = configfile["rtorrent_socket"],
                         serverport = configfile["port"],
+                        uipassword = configfile["password"],
                         )
-        self._flush()
+            self._flush()
+        except KeyError:
+            raise ConfigError("Config File is malformed")
         
     def get(self, conf):
         if conf in self.CONFIG.__dict__.keys():
