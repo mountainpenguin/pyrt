@@ -112,9 +112,11 @@ function sortby(elem) {
         if (sortedby == elem.id.split("sortby_")[0]) {
             // reverse
             if (document.URL.indexOf("reverse") == -1) {
+                alert("reverse is set");
                 window.location = document.URL + "&reverse=1";
             } else {
                 // unreverse
+                alert("reverse is not set");
                 var getargs = document.URL.split("?")[1].split("&");
                 var newargs = new Array();
                 for (i=0;i<getargs.length;i++) {
