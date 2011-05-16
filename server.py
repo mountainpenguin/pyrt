@@ -7,9 +7,11 @@ import cherrypy
 c = config.Config()
 c.loadconfig()
 
-app_config = {
+global_config = {
     "server.socket_host" : str(c.get("host")),
     "server.socket_port" : c.get("port"),
+}
+app_config = {
     "/css" : {
         "tools.static_filter.on" : True,
         "tools.static_filter.dir" : "static/css/",
@@ -26,5 +28,5 @@ class mainHandler:
     index.exposed = True
 
 if __name__ == "__main__":
-    cherrypy.config.update(app_config)
+    cherrypy.config.update(global_config)
     cherrypy.quickstart(mainHandler(), config=app_config)
