@@ -94,4 +94,4 @@ class Login:
         self.USER.sess_id = randstring
         self.USER.testing += [randstring]
         self._flush()
-        print new_cookie
+        return new_cookie

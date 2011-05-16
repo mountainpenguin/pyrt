@@ -32,8 +32,9 @@ app_config = {
 
 class mainHandler:
     def index(self, password=None, view=None, sortby=None, reverse=None):
-        print "index called"
-        #call indexPage
+        #check cookies
+        client_cookie = cherrypy.request.cookie
+        print type(client_cookie)
         Index = indexPage.Index()
         return Index.index(password, view, sortby, reverse)
         
