@@ -326,7 +326,7 @@ class rtorrent:
         return self.conn.get_down_rate()
 
     def getCreationDate(self, id):
-        return self.conn.d.get_creation_date(torrent_id)
+        return self.conn.d.get_creation_date(id)
         
     def wait_completed(self, Id):
         time.sleep(2)
