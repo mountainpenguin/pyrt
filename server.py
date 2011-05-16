@@ -15,7 +15,8 @@ app_config = {
 class mainHandler:
     def index(self, password=None, view=None, sortby=None, reverse=None):
         #call indexPage
-        return indexPage.Index.index(password, view, sortby, reverse)
+        Index = indexPage.Index()
+        return Index.index(password, view, sortby, reverse)
         
     index.exposed = True
 

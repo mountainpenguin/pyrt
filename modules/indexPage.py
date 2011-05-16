@@ -10,6 +10,8 @@ import system
 import config
 
 class Index:
+    def __init__(self):
+        pass
     def index(self, password=None, view=None, sortby=None, reverse=False):
         L = login.Login()
         test = L.checkLogin(os.environ)
