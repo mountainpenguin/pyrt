@@ -13,10 +13,11 @@ app_config = {
 }
 
 class mainHandler:
-    @cherrypy.exposed
     def index(self, password=None, view=None, sortby=None, reverse=None):
         #call indexPage
         return indexPage.Index(password, view, sortby, reverse)
+        
+    index.exposed = True
         
 cherrypy.root = mainHandler()
 
