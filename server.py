@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from modules import config, indexPage
+from modules import config, indexPage, detailPage
 
 import cherrypy
 import os
@@ -38,6 +38,21 @@ class mainHandler:
         return Index.index(password, view, sortby, reverse)
         
     index.exposed = True
+    
+    def detail(self, view=None, torrent_id=None):
+        print "detail called"
+        Detail = detailPage.Detail()
+        if not torrent_id:
+            return "ERROR/Not Implemented"
+        elif not view or view == "info":
+            return Detail.main(torrent_id)
+        elif view == "peers":
+            return Detail.peers(torrent_id)
+        elif view == "files":
+            return Detail.files(torrent_id)
+        elif view == "trackers":
+            return Detail.trackers(torrent_id)
+    detail.exposed = True
 
 if __name__ == "__main__":
     cherrypy.config.update(global_config)
