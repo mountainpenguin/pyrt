@@ -97,5 +97,3 @@ class Login:
         self.USER.testing += [randstring]
         self._flush()
         print new_cookie
- 
-        

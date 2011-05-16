@@ -18,9 +18,10 @@ class ConfigError(Exception):
         return self.__repr__()
         
 class ConfigStore:
-    def __init__(self, sockpath, serverport):
+    def __init__(self, sockpath, serverport, password):
         self.rtorrent_socket = sockpath
         self.port = serverport
+        self.password = password
         
 class Config:
     def __init__(self):
