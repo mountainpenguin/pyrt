@@ -28,7 +28,7 @@ class Config:
     def __init__(self):
         self.PYRTROOT = "/".join(os.getcwd().split("/")[:-1])
         #look for saved config file
-        if os.path.exists(os.path.expanduser("~/.pyrtconfig")):
+        if os.path.exists(os.path.join(self.PYRTROOT,".pyrtconfig")):
             self.CONFIG = pickle.load(open(os.path.join(self.PYRTROOT,".pyrtconfig")))
         else:
             self.loadconfig()
