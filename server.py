@@ -10,6 +10,10 @@ c.loadconfig()
 app_config = {
     "server.socket_host" : c.get("host"),
     "server.socket_port" : c.get("port"),
+    "/css/main.css" : {
+        "static_filter.on" : True,
+        "static_filter.file" : "static/css/main.css",
+    }
 }
 
 class mainHandler:
@@ -21,5 +25,6 @@ class mainHandler:
     index.exposed = True
 
 if __name__ == "__main__":
+    cherrypy.root = mainHandler()
     cherrypy.config.update(app_config)
-    cherrypy.quickstart(mainHandler())
+    cherrypy.server.start()
