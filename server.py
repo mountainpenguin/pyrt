@@ -27,4 +27,4 @@ class mainHandler:
 
 if __name__ == "__main__":
     cherrypy.config.update(app_config)
-    cherrypy.quickstart(mainHandler())
+    cherrypy.quickstart(mainHandler(), config=app_config)
