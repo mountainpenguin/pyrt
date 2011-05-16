@@ -164,13 +164,13 @@ class Handler:
         torrent_html = """
             <table id='torrent_list'>
                 <tr>
-                    <td class='heading'>Name</td>
-                    <td class='heading'>Size</td>
-                    <td class='heading'>Ratio</td>
-                    <td class='heading'>Upload speed</td>
-                    <td class='heading'>Download speed</td>
-                    <td class='heading'>Status</td>
-                    <td class='heading'></td>
+                    <td class='heading' id="sortby_name" onclick="sortby(this);">Name</td>
+                    <td class='heading' id="sortby_name" onclick="sortby(this);">Size</td>
+                    <td class='heading' id="sortby_name" onclick="sortby(this);">Ratio</td>
+                    <td class='heading' id="sortby_name" onclick="sortby(this);">Upload speed</td>
+                    <td class='heading' id="sortby_name" onclick="sortby(this);">Download speed</td>
+                    <td class='heading' id="sortby_name" onclick="sortby(this);">Status</td>
+                    <td class='heading' id="sortby_name" onclick="sortby(this);"></td>
                 </tr>
             """
         div_colour_array = ["blue", "green"]
@@ -189,12 +189,12 @@ class Handler:
                     ondblclick='navigate_torrent(this);'
                     class='torrent-div %(colour)s' 
                     id='torrent_id_%(t_id)s'>
-                    <td class="clickable">%(t_name)s</td>
-                    <td class="clickable">%(t_size)s</td>
-                    <td class="clickable" title='%(t_uploaded)s up / %(t_downloaded)s down'>%(t_ratio).02f</td>
-                    <td class="clickable">%(t_uprate)s/s</td>
-                    <td class="clickable">%(t_downrate)s/s</td>
-                    <td class="clickable">%(t_status)s</td>
+                    <td>%(t_name)s</td>
+                    <td>%(t_size)s</td>
+                    <td title='%(t_uploaded)s up / %(t_downloaded)s down'>%(t_ratio).02f</td>
+                    <td>%(t_uprate)s/s</td>
+                    <td>%(t_downrate)s/s</td>
+                    <td>%(t_status)s</td>
                     <td>%(control_startpause)s %(control_stop)s %(control_remove)s %(control_delete)s</td>
                 </tr>
                         """ % {

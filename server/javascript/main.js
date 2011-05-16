@@ -96,3 +96,47 @@ function command(cmd, t_id) {
         alert("invalid command or command not implemented");
     }
 }
+
+function sortby(elem) {
+    // check if URL is sorted already
+    if (document.URL.indexOf("sortby") == -1) {
+        if (document.URL.indexOf("?") == -1) {
+            window.location = document.URL + "?sortby=" + elem.id.split("sortby_")[1];            
+        } else {
+            window.location = document.URL + "&sortby=" + elem.id.split("sortby_")[1];
+        }
+    } else {
+        // what is it sorted by
+        sortedby = document.URL.split("sortby=")[1].split("&")[0]
+        if (sortedby == elem.id.split("sortby_")[0]) {
+            // reverse
+            if (document.URL.indexOf("reverse") == -1) {
+                window.location = document.URL + "&reverse=1";
+            } else {
+                var getargs = document.URL.split("?")[1].split("&");
+                var newargs = new Array();
+                for (i=0;i<getargs.length;i++) {
+                    arg = getargs[i];
+                    key = arg.split("=")[0];
+                    value = arg.split("=")[1];
+                    if (!(key == "reverse")) {
+                       newargs.push(key + "=" + value);
+                    }
+                }
+                window.location = document.URL + "?" + newargs.join("&");
+            }
+        } else {
+            var getargs = document.URL.split("?")[1].split("&");
+            var newargs = new Array();
+            for (i=0;i<getargs.length;i++) {
+                arg = getargs[i];
+                key = arg.split("=")[0]
+                value = arg.split("=")[1];
+                if (!(key == "reverse") && !(key == "sortby")) {
+                    newargs.push(key + "=" + value);
+                }
+            }
+            window.location = document.URL + "?" + newargs.join("&");
+        }
+    }
+}
