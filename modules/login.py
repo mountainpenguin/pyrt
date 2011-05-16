@@ -11,8 +11,8 @@ import string
 import config
 
 class User:
+<<<<<<< HEAD:server/web/login.py
     def __init__(self, username, pass_hash, sess_id=None):
-        self.username = username
         self.password = pass_hash
         self.sess_id = sess_id
         
@@ -21,16 +21,14 @@ class Login:
         c = config.Config()
         #get this from a pickled object
         #get pyrt root dir
-        self.PYRTROOT = "/".join(os.getcwd().split("/")[:-1])
         try:
-            
-            self.USER = pickle.load(open(os.path.join(self.PYRTROOT, ".user.pickle")))
+            self.USER = pickle.load(open(".user.pickle"))
         except:
             #self.USER = User("mountainpenguin", self.hashPassword("testing"))
-            self.USER = User("mountainpenguin", c.CONFIG.password)
+            self.USER = User(c.CONFIG.password)
         
     def _flush(self):
-        pickle.dump(self.USER, open(os.path.join(self.PYRTROOT, ".user.pickle"), "w"))
+        pickle.dump(self.USER, open(".user.pickle", "w"))
         
     def checkPassword(self, pw):
         hash = self.USER.password
@@ -41,10 +39,8 @@ class Login:
         else:
             return False
                 
-    def checkLogin(self, env):
+    def checkLogin(self, cookies):
         try:
-            cookstr = env.get("HTTP_COOKIE")
-            cookies = Cookie.SimpleCookie(cookstr)
             session_id = cookies.get("sess_id").value
             if session_id == self.USER.sess_id:
                 return True
@@ -63,7 +59,7 @@ class Login:
         return "$%s$%s" % (salt_encoded, md5_encoded)
         
     def loginHTML(self, msg=""):
-        print """Content-Type : text/html\n
+        return """
         <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
         <html>
             <head>
@@ -92,4 +88,4 @@ class Login:
         #add sess_id to self.USER
         self.USER.sess_id = randstring
         self._flush()
-        print new_cookie
+        return new_cookie

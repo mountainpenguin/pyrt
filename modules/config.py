@@ -18,30 +18,44 @@ class ConfigError(Exception):
         return self.__repr__()
         
 class ConfigStore:
-    def __init__(self, sockpath, serverport, password):
+    def __init__(self, sockpath, serverhost, serverport, password):
         self.rtorrent_socket = sockpath
+        self.host = serverhost
         self.port = serverport
         self.password = password
         
 class Config:
     def __init__(self):
         #look for saved config file
-        if os.path.exists(os.path.expanduser("~/.pyrtconfig")):
-            self.CONFIG = pickle.load(open(os.path.expanduser("~/.pyrtconfig")))
+        if os.path.exists(os.path.join("config",".pyrtconfig")):
+            self.CONFIG = pickle.load(open(os.path.join("config",".pyrtconfig")))
         else:
             self.loadconfig()
     
     def _flush(self):
-        pickle.dump(self.CONFIG, open(os.path.expanduser("~/.pyrtconfig"),"w"))
+        pickle.dump(self.CONFIG, open(os.path.join("config",".pyrtconfig"),"w"))
         
     def loadconfig(self):
-        if not os.path.exists(os.path.expanduser("~/.pyrtrc")):
+        if not os.path.exists(os.path.join("config",".pyrtrc")):
             raise ConfigError("Config File doesn't exist")
             
+        config_ = open(os.path.join("config",".pyrtrc")).read()
+        config_stripped = ""
+        for line in config_.split("\n"):
+            if line == "":
+                pass
+            else:
+                for char in line:
+                    if char == "#":
+                        break
+                    else:
+                        config_stripped += char
+                config_stripped += "\n"
         try:
-            configfile = json.loads(open(os.path.expanduser("~/.pyrtrc")).read())
+            configfile = json.loads(config_stripped)
             self.CONFIG = ConfigStore(
                         sockpath = configfile["rtorrent_socket"],
+                        serverhost = configfile["host"],
                         serverport = configfile["port"],
                         password = configfile["password"],
                         )
