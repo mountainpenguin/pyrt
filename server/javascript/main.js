@@ -135,6 +135,8 @@ function sortby(elem) {
                 }
             }
         } else {
+            alert("sortedby != elem.id");
+            alert("elem.id = " + elem.id.split("sortby_"));
             var getargs = document.URL.split("?")[1].split("&");
             var newargs = new Array("sortby=" + elem.id.split("sortby_"));
             for (i=0;i<getargs.length;i++) {
