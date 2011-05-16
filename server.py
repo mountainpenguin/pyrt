@@ -10,9 +10,9 @@ c.loadconfig()
 app_config = {
     "server.socket_host" : c.get("host"),
     "server.socket_port" : c.get("port"),
-    "/css/main.css" : {
+    "/css" : {
         "static_filter.on" : True,
-        "static_filter.file" : "static/css/main.css",
+        "static_filter.dir" : "static/css/",
     }
 }
 
