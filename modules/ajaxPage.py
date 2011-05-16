@@ -64,7 +64,7 @@ class Torrent:
 class Ajax:
     def __init__(self):
         self.Config = config.Config()
-        self.RT = rtorrent.rtorrent(Config.get("rtorrent_socket"))
+        self.RT = rtorrent.rtorrent(self.Config.get("rtorrent_socket"))
         self.Handler = torrentHandler.Handler()
         
     def get_torrent_info(self, torrent_id):
