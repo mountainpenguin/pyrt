@@ -42,7 +42,7 @@ RT = rtorrent.rtorrent(Config.get("rtorrent_socket"))
 handler = torrentHandler.Handler()
 
 torrentList = RT.getTorrentList2(VIEW)
-html = handler.torrentHTML(torrentList, SORTBY, REVERSED)
+html = handler.torrentHTML(torrentList, SORTBY, VIEW, REVERSED)
 
 def genHTML(type, VIEW):
     if VIEW == type:

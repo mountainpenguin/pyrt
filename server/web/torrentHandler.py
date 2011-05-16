@@ -80,7 +80,7 @@ class Handler:
         </html>
         """ % url
         
-    def torrentHTML(self, torrentList, sort, reverse=False):
+    def torrentHTML(self, torrentList, sort, view, reverse=False):
         """
             Sorts a list of torrent_ids with default information
             Arguments:
@@ -161,18 +161,33 @@ class Handler:
         if reverse:
             torrentList.reverse()
 
+        sorts = {
+            "name":"",
+            "size":"",
+            "ratio":"",
+            "uprate" : "",
+            "downrate" : "",
+            "status" : "",
+        }
+        for type in sorts.keys():
+            sorts[type] == "?view=%s&sortby=%s" % (view, type)
+            if type == sort and not reverse:
+                sorts[type] += "&reverse=1"
+                    
+        
         torrent_html = """
             <table id='torrent_list'>
                 <tr>
-                    <td class='heading' id="sortby_name" onclick="sortby(this);">Name</td>
-                    <td class='heading' id="sortby_size" onclick="sortby(this);">Size</td>
-                    <td class='heading' id="sortby_ratio" onclick="sortby(this);">Ratio</td>
-                    <td class='heading' id="sortby_uprate" onclick="sortby(this);">Upload speed</td>
-                    <td class='heading' id="sortby_downrate" onclick="sortby(this);">Download speed</td>
-                    <td class='heading' id="sortby_status" onclick="sortby(this);">Status</td>
+                    <td class='heading' id="sortby_name" onclick="window.location='%(name)s';">Name</td>
+                    <td class='heading' id="sortby_size" onclick="window.location='%(size)s';">Size</td>
+                    <td class='heading' id="sortby_ratio" onclick="window.location='%(ratio)s';">Ratio</td>
+                    <td class='heading' id="sortby_uprate" onclick="window.location='%(uprate)s';">Upload speed</td>
+                    <td class='heading' id="sortby_downrate" onclick="window.location='%(downrate)s';">Download speed</td>
+                    <td class='heading' id="sortby_status" onclick="window.location='%(status)s';">Status</td>
                     <td class='heading'></td>
                 </tr>
-            """
+            """ % sorts
+            
         div_colour_array = ["blue", "green"]
         for t in torrentList:
             colour = div_colour_array.pop(0)
