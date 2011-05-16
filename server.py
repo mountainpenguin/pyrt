@@ -8,16 +8,17 @@ c = config.Config()
 c.loadconfig()
 
 app_config = {
-    "server.socket_host" : c.get("host"),
+    "server.socket_host" : str(c.get("host")),
     "server.socket_port" : c.get("port"),
     "/css" : {
-        "static_filter.on" : True,
-        "static_filter.dir" : "static/css/",
+        "tools.static_filter.on" : True,
+        "tools.static_filter.dir" : "static/css/",
     }
 }
 
 class mainHandler:
     def index(self, password=None, view=None, sortby=None, reverse=None):
+        print "index called"
         #call indexPage
         Index = indexPage.Index()
         return Index.index(password, view, sortby, reverse)
