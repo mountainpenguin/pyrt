@@ -404,7 +404,7 @@ if __name__ == "__main__":
                 pass
 
     if not torrent_id:
-        print "Content-Type:text/plain\n\nERROR/Not Implemented"
+        print "ERROR/Not Implemented"
     elif not view or view == "info":
         main(torrent_id)
     elif view == "peers":

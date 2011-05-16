@@ -69,7 +69,7 @@ class Handler:
         return status
     
     def HTMLredirect(self, url):
-        html = """Content-Type: text/html\n\n
+        html = """
         <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
         <html>
             <head>
@@ -79,6 +79,7 @@ class Handler:
             </head>
         </html>
         """ % url
+        return html
         
     def torrentHTML(self, torrentList, sort, view, reverse=False):
         """
@@ -254,7 +255,7 @@ class Handler:
                         }
         torrent_html += "\n             </table>"
 
-        html = """Content-Type: text/html\n\n
+        html = """
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
     <head>
