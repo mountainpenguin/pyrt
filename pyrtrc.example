@@ -1,0 +1,20 @@
+# This is an example config file for pyrt
+# this file should be edited and moved into your $HOME directory with filename .pyrtrc
+#    mv pyrtrc.example ~/.pyrtrc
+# config syntax is JSON with comments allowed
+# comments are prefixed with a # sign
+{
+    # the path to the rtorrent socket file
+    # this is defined in .rtorrent.rc as scgi_local
+    "rtorrent_socket" : "/path/to/rtorrent/socket",
+    
+    # the port that the server should run on
+    "port" : 8000,
+    
+    # the host that the server should run on
+    "host" : "server.bytesized-hosting.com",
+    
+    # hashed password that pyrt will use
+    # currently this uses unrealirc style md5 hashing
+    "password" : "$5DFFfrLC$fkPjAF0rOpiL83gHzgIwcQ==" # this corresponds to a plaintext password of 'testing'
+}

@@ -18,21 +18,23 @@ class ConfigError(Exception):
         return self.__repr__()
         
 class ConfigStore:
-    def __init__(self, sockpath, serverport, password):
+    def __init__(self, sockpath, serverhost, serverport, password):
         self.rtorrent_socket = sockpath
+        self.host = serverhost
         self.port = serverport
         self.password = password
         
 class Config:
     def __init__(self):
+        self.PYRTROOT = "/".join(os.getcwd().split("/")[:-1])
         #look for saved config file
         if os.path.exists(os.path.expanduser("~/.pyrtconfig")):
-            self.CONFIG = pickle.load(open(os.path.expanduser("~/.pyrtconfig")))
+            self.CONFIG = pickle.load(open(os.path.join(self.PYRTROOT,".pyrtconfig")))
         else:
             self.loadconfig()
     
     def _flush(self):
-        pickle.dump(self.CONFIG, open(os.path.expanduser("~/.pyrtconfig"),"w"))
+        pickle.dump(self.CONFIG, open(os.path.join(self.PYRTROOT, ".pyrtconfig"),"w"))
         
     def loadconfig(self):
         if not os.path.exists(os.path.expanduser("~/.pyrtrc")):
@@ -54,9 +56,9 @@ class Config:
             configfile = json.loads(config_stripped)
             self.CONFIG = ConfigStore(
                         sockpath = configfile["rtorrent_socket"],
+                        serverhost = configfile["host"],
                         serverport = configfile["port"],
                         password = configfile["password"],
-                        host = configfile["host"],
                         )
             self._flush()
         except KeyError:
