@@ -17,6 +17,16 @@ app_config = {
         "tools.staticdir.on" : True,
         "tools.staticdir.root" : os.getcwd(),
         "tools.staticdir.dir" : "static/css/",
+    },
+    "/javascript" : {
+        "tools.staticdir.on" : True,
+        "tools.staticdir.root" : os.getcwd(),
+        "tools.staticdir.dir" : "static/javascript",
+    },
+    "/images" : {
+        "tools.staticdir.on" : True,
+        "tools.staticdir.root" : os.getcwd(),
+        "tools.staticdir.dir" : "static/images",
     }
 }
 
