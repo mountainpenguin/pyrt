@@ -174,39 +174,7 @@ class Detail:
     def files(self, torrent_id=None):
         file_html = "\n"
         files = self.RT.getFiles(torrent_id)
-        folder = {}
-        files_dict = {}
-        rtorrent_root = self.RT.getRootDir()
-        priority_lookup = {"high" : 2, "normal" : 1, "off" : 0}
-        for file in files:
-            random_id = "".join([random.choice(string.letters + string.digits) for i in range(10)])
-            files_dict[random_id] = file
-            if file.base_path == rtorrent_root:
-                folder["."] = {"_files" : [random_id]}
-            else:
-                if len(file.path_components) == 1:
-                    if os.path.basename(file.base_path) not in folder.keys():
-                        folder[os.path.basename(file.base_path)] = {"_files" : [random_id], "_size" : file.size, "_priority" : [file.priority], "_completion" : file.percentage_complete}
-                    else:
-                        folder[os.path.basename(file.base_path)]["_files"] += [random_id]
-                        folder[os.path.basename(file.base_path)]["_size"] += file.size
-                        if file.priority not in folder[os.path.basename(file.base_path)]["_priority"]:
-                            folder[os.path.basename(file.base_path)]["_priority"] += [file.priority]
-                        prev = folder[os.path.basename(file.base_path)]["_completion"]
-                        new = (prev + file.percentage_complete) / 2
-                        folder[os.path.basename(file.base_path)]["_completion"] = new
-                else:
-                    if os.path.basename(file.base_path) not in folder.keys():
-                        folder[os.path.basename(file.base_path)] = {file.path_components[0] : {"_files" : [random_id], "_size" : file.size, "_priority" : [file.priority], "_completion" : file.percentage_complete}}
-                    else:
-                        if file.path_components[0] not in folder[os.path.basename(file.base_path)].keys():
-                            folder[os.path.basename(file.base_path)][file.path_components[0]] = {"_files" : [random_id], "_size" : file.size, "_priority" : [file.priority], "_completion" : file.percentage_complete}
-                        else:
-                            folder[os.path.basename(file.base_path)][file.path_components[0]]["_files"] += [random_id]
-                            folder[os.path.basename(file.base_path)][file.path_components[0]]["_size"] += file.size
-                            if file.priority not in folder[os.path.basename(file.base_path)][file.path_components[0]]["_priority"]:
-                                folder[os.path.basename(file.base_path)][file.path_components[0]]["_priority"] += [file.priority]
-                            folder[os.path.basename(file.base_path)][file.path_components[0]]["_completion"] = (folder[os.path.basename(file.base_path)][file.path_components[0]]["_completion"] + file.percentage_complete) / 2
+        folder, files_dict = self.Handler.getFileStructure(files, self.RT.getRootDir())
         folder_keys = folder.keys()
         folder_keys.sort()
         for folder_name in folder_keys:
