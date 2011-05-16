@@ -100,6 +100,7 @@ function command(cmd, t_id) {
 function sortby(elem) {
     // check if URL is sorted already
     if (document.URL.indexOf("sortby") == -1) {
+        alert("indexOf sortby == -1");
         if (document.URL.indexOf("?") == -1) {
             window.location = document.URL + "?sortby=" + elem.id.split("sortby_")[1];            
         } else {
@@ -135,7 +136,7 @@ function sortby(elem) {
             }
         } else {
             var getargs = document.URL.split("?")[1].split("&");
-            var newargs = new Array();
+            var newargs = new Array("sortby=" + elem.id.split("sortby_"));
             for (i=0;i<getargs.length;i++) {
                 arg = getargs[i];
                 key = arg.split("=")[0]
@@ -144,11 +145,7 @@ function sortby(elem) {
                     newargs.push(key + "=" + value);
                 }
             }
-            if (newargs.length == 0) {
-                window.location = document.URL.split("?")[0];
-            } else {
-                window.location = document.URL.split("?")[0] + "?" + newargs.join("&");
-            }
+            window.location = document.URL.split("?")[0] + "?" + newargs.join("&");
         }
     }
 }
