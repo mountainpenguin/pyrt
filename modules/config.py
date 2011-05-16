@@ -26,21 +26,20 @@ class ConfigStore:
         
 class Config:
     def __init__(self):
-        self.PYRTROOT = "/".join(os.getcwd().split("/")[:-1])
         #look for saved config file
-        if os.path.exists(os.path.join(self.PYRTROOT,".pyrtconfig")):
-            self.CONFIG = pickle.load(open(os.path.join(self.PYRTROOT,".pyrtconfig")))
+        if os.path.exists(os.path.join("config",".pyrtconfig")):
+            self.CONFIG = pickle.load(open(os.path.join("config",".pyrtconfig")))
         else:
             self.loadconfig()
     
     def _flush(self):
-        pickle.dump(self.CONFIG, open(os.path.join(self.PYRTROOT, ".pyrtconfig"),"w"))
+        pickle.dump(self.CONFIG, open(os.path.join("config",".pyrtconfig"),"w"))
         
     def loadconfig(self):
-        if not os.path.exists(os.path.expanduser("~/.pyrtrc")):
+        if not os.path.exists(os.path.join("config",".pyrtrc")):
             raise ConfigError("Config File doesn't exist")
             
-        config_ = open(os.path.expanduser("~/.pyrtrc")).read()
+        config_ = open(os.path.join("config",".pyrtrc")).read()
         config_stripped = ""
         for line in config_.split("\n"):
             if line == "":

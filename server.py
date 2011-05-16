@@ -1,18 +1,25 @@
-#!/usr/bin/python2.5
+#!/usr/bin/env python
 
-import BaseHTTPServer
-import CGIHTTPServer
-import os
-import sys
+from modules import config, indexPage
 
-sys.path.append("server/web")
-import config
-Config = config.Config()
-Config.loadconfig()
-os.remove(".user.pickle")
+import cherrypy
 
-os.chdir("server")
-class Handler(CGIHTTPServer.CGIHTTPRequestHandler):
-	cgi_directories = ["/web"]
-server = BaseHTTPServer.HTTPServer((Config.get("host"),Config.get("port")), Handler)
-server.serve_forever()
+c = config.Config()
+c.loadconfig()
+
+app_config = {
+    "server.socket_host" : c.get("host"),
+    "server.socket_port" : c.get("port"),
+}
+
+class mainHandler:
+    @cherrypy.exposed
+    def index(self, password=None, view=None, sortby=None, reverse=None):
+        #call indexPage
+        return indexPage.Index(password, view, sortby, reverse)
+        
+cherrypy.root = mainHandler()
+
+if __name__ == "__main__":
+    cherrypy.config.update(app_config)
+    cherrypy.server.start()
