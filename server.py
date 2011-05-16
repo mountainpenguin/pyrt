@@ -111,6 +111,8 @@ class mainHandler:
             return Ajax.start_torrent(torrent_id)
         elif request == "remove_torrent":
             return Ajax.remove_torrent(torrent_id)
+        elif request == "get_files":
+            return Ajax.get_files(torrent_id)
         else:
             return "ERROR/Invalid method"
     ajax.exposed = True
