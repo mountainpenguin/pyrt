@@ -61,5 +61,9 @@ class Ajax:
         except:
             return "ERROR"
         else:
-            return "OK"
-        
+                return "OK"
+            
+    def get_files(self, torrent_id):
+        files = self.RT.getFiles(torrent_id)
+        structure, files_dict = self.Handler.getFileStructure(files, self.RT.getRootDir())
+        return repr(structure)
