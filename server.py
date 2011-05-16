@@ -18,9 +18,7 @@ class mainHandler:
         return indexPage.Index(password, view, sortby, reverse)
         
     index.exposed = True
-        
-cherrypy.root = mainHandler()
 
 if __name__ == "__main__":
     cherrypy.config.update(app_config)
-    cherrypy.server.start()
+    cherrypy.quickstart(mainHandler())
