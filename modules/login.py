@@ -22,7 +22,6 @@ class Login:
         #get this from a pickled object
         #get pyrt root dir
         try:
-            
             self.USER = pickle.load(open(".user.pickle"))
         except:
             #self.USER = User("mountainpenguin", self.hashPassword("testing"))
@@ -40,10 +39,8 @@ class Login:
         else:
             return False
                 
-    def checkLogin(self, env):
+    def checkLogin(self, cookies):
         try:
-            cookstr = env.get("HTTP_COOKIE")
-            cookies = Cookie.SimpleCookie(cookstr)
             session_id = cookies.get("sess_id").value
             # if session_id == self.USER.sess_id:
                 # return True

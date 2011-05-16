@@ -13,18 +13,6 @@ class Index:
     def __init__(self):
         pass
     def index(self, password=None, view=None, sortby=None, reverse=False):
-        L = login.Login()
-        test = L.checkLogin(os.environ)
-        if not test and not password:
-            return L.loginHTML()
-        elif not test and password:
-            #check password
-            pwcheck = L.checkPassword(password)
-            if not pwcheck:
-                return L.loginHTML("Incorrect password")
-            else:
-                L.sendCookie()
-
         if not view or view not in ["main","started","stopped","complete","incomplete","hashing","seeding","active"]:
             view = "main"
         if not sortby:
@@ -120,5 +108,4 @@ class Index:
             "uptime" : uptime,
         }
         return html.replace("<!-- BODY PLACEHOLDER -->",html_insert).replace("</body>","</div>\n\t</body>")
-    index.exposed = True
 

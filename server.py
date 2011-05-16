@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-from modules import config, indexPage, detailPage
+from modules import config, login           # 'real' modules
+from modules import indexPage, detailPage   #pages
 
 import cherrypy
 import os
@@ -33,15 +34,41 @@ app_config = {
 class mainHandler:
     def index(self, password=None, view=None, sortby=None, reverse=None):
         #check cookies
+        L = login.Login()
         client_cookie = cherrypy.request.cookie
-        print type(client_cookie)
+        Lcheck = L.checkLogin(client_cookie)
+        if not Lcheck and not password:
+            return L.loginHTML()
+        elif not Lcheck and password:
+            #check password
+            Pcheck = L.checkPassword(password)
+            if Pcheck:
+                #set a cookie
+                cherrypy.response.cookie = L.sendCookie()
+            else:
+                return L.loginHTML("Incorrect Password")
+                
         Index = indexPage.Index()
         return Index.index(password, view, sortby, reverse)
         
     index.exposed = True
     
     def detail(self, view=None, torrent_id=None):
-        print "detail called"
+        #check cookies
+        L = login.Login()
+        client_cookie = cherrypy.request.cookie
+        Lcheck = L.checkLogin(client_cookie)
+        if not Lcheck and not password:
+            return L.loginHTML()
+        elif not Lcheck and password:
+            #check password
+            Pcheck = L.checkPassword(password)
+            if Pcheck:
+                #set a cookie
+                cherrypy.response.cookie = L.sendCookie()
+            else:
+                return L.loginHTML("Incorrect Password")
+        
         Detail = detailPage.Detail()
         if not torrent_id:
             return "ERROR/Not Implemented"
