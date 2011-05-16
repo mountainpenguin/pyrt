@@ -176,9 +176,10 @@ class Handler:
             "statussort" : "none",
         }
         for type in sorts.keys():
-            sorts[type] = "?view=%s&sortby=%s" % (view, type)
-            if type == sort and not reverse:
-                sorts[type] += "&reverse=1"
+            if type in self.SORT_METHODS:
+                sorts[type] = "?view=%s&sortby=%s" % (view, type)
+                if type == sort and not reverse:
+                    sorts[type] += "&reverse=1"
         if sort in sorts.keys():
             if reverse:
                 sorts[sort + "sort"] = "down"
