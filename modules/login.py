@@ -11,7 +11,6 @@ import string
 import config
 
 class User:
-<<<<<<< HEAD:server/web/login.py
     def __init__(self, username, pass_hash, sess_id=None):
         self.password = pass_hash
         self.sess_id = sess_id
