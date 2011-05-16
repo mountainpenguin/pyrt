@@ -43,7 +43,7 @@ class Config:
             self.CONFIG = ConfigStore(
                         sockpath = configfile["rtorrent_socket"],
                         serverport = configfile["port"],
-                        uipassword = configfile["password"],
+                        password = configfile["password"],
                         )
             self._flush()
         except KeyError:
