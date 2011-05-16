@@ -61,67 +61,56 @@ class Torrent:
             for i in range(peers_connected_len):
                 self.peers += [Peer(resp[i][0], resp[i][1], resp[i][2], resp[i][3], resp[i][4], resp[i][5], resp[i][6], resp[i][7]).__dict__]
 
-
-def get_torrent_info(torrent_id):
-    t = Torrent(torrent_id)
-    c = time.localtime(t.created)
-    created = time.strftime("%d/%m/%Y %H:%M:%S", c)
-    jsonObject = {
-        "name" : t.name,
-        "uploaded" : t.uploaded,
-        "downloaded" : t.downloaded,
-        "trackers" : [
-            "http://" + x.replace("http://","").split("/",1)[0] + "/..." for x in t.trackers
-        ],
-        "peers" : t.peers,
-        "torrent_id" : t.torrent_id,
-        "created" : created,
-        "size" : t.size,
-        "ratio" : t.ratio,
-    }
-    return json.dumps(jsonObject)
-    
-
-if __name__ == "__main__":
-    form = cgi.FieldStorage()
-    request = form.getfirst("request")
-    
-    L = login.Login()
-    test = L.checkLogin(os.environ)
-    
-    Config = config.Config()
-    RT = rtorrent.rtorrent(Config.get("rtorrent_socket"))
-    Handler = torrentHandler.Handler()
-    
-    if not test:
-        sys.exit()
-    
-    if request == "get_torrent_info":
-        t_id = form.getfirst("torrent_id")
-        print "Content-type : text/plain\n"
-        print get_torrent_info(t_id)
+class Ajax:
+    def __init__(self):
+        self.Config = config.Config()
+        self.RT = rtorrent.rtorrent(Config.get("rtorrent_socket"))
+        self.Handler = torrentHandler.Handler()
         
-    elif request == "pause_torrent":
-        t_id = form.getfirst("torrent_id")
-        RT.pause(t_id)
-        print "Content-Type: text/plain\n\nOK"
+    def get_torrent_info(self, torrent_id):
+        c = time.localtime(self.RT.getCreationDate(torrent_id))
+        created = time.strftime("%d/%m/%Y %H:%M:%S", c)
+        jsonObject = {
+            "name" : self.RT.getNameById(torrent_id),
+            "uploaded" : self.Handler.humanSize(self.RT.getUploadBytes(torrent_id)),
+            "downloaded" : self.Handler.humanSize(self.RT.getDownloadBytes(torrent_id)),
+            "peers" : self.RT.getPeers(torrent_id),
+            "torrent_id" : torrent_id,
+            "created" : created,
+            "size" : self.Handler.humanSize(self.RT.getSizeBytes(torrent_id)),
+            "ratio" : "%.02f" % (float(self.RT.getRatio(torrent_id))/1000),
+        }
+        return json.dumps(jsonObject)
         
-    elif request == "stop_torrent":
-        t_id = form.getfirst("torrent_id")
-        RT.stop(t_id)
-        print "Content-Type: text/plain\n\nOK"
-        
-    elif request == "start_torrent":
-        t_id = form.getfirst("torrent_id")
-        RT.resume(t_id)
-        print "Content-Type: text/plain\n\nOK"
+    def pause_torrent(self, torrent_id):
+        try:
+            self.RT.pause(torrent_id)
+        except:
+            return "ERROR"
+        else:
+            return "OK"
     
-    elif request == "remove_torrent":
-        t_id = form.getfirst("torrent_id")
-        RT.remove(t_id)
-        print "Content-Type: text/plain\n\nOK"
+    def stop_torrent(self, torrent_id):
+        try:
+            self.RT.stop(torrent_id)
+        except:
+            return "ERROR"
+        else:
+            return "OK"
         
-    elif request == "delete_torrent":
-        t_id = form.getfirst("torrent_id")
-        print "Content-Type: text/plain\n\nOK"
+    def start_torrent(self, torrent_id):
+        try:
+            self.RT.resume(torrent_id)
+        except:
+            return "ERROR"
+        else:
+            return "OK"
+        
+    def remove_torrent(self, torrent_id):
+        try:
+            self.RT.remove(torrent_id)
+        except:
+            return "ERROR"
+        else:
+            return "OK"
         

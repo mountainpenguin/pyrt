@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from modules import config, login           # 'real' modules
-from modules import indexPage, detailPage   #pages
+from modules import config, login                       # 'real' modules
+from modules import indexPage, detailPage, ajaxPage     #pages
 
 import cherrypy
 import os
@@ -81,6 +81,34 @@ class mainHandler:
         elif view == "trackers":
             return Detail.trackers(torrent_id)
     detail.exposed = True
+    
+    def ajax(self, request=None, torrent_id=None):
+        #check cookies
+        L = login.Login()
+        client_cookie = cherrypy.request.cookie
+        Lcheck = L.checkLogin(client_cookie)
+        if not Lcheck:
+            return
+                
+        if not request:
+            return "ERROR/No method specified"
+        if not torrent_id:
+            return "ERROR/No torrent_id specified"
+        
+        Ajax = ajaxPage.Ajax()
+        if request == "get_torrent_info":
+            return Ajax.get_torrent_info(torrent_id)
+        elif request == "pause_torrent":
+            return Ajax.pause_torrent(torrent_id)
+        elif request == "stop_torrent":
+            return Ajax.stop_torrent(torrent_id)
+        elif request == "start_torrent":
+            return Ajax.start_torrent(torrent_id)
+        elif request == "remove_torrent":
+            return Ajax.remove_torrent(torrent_id)
+        else:
+            return "ERROR/Invalid method"
+    ajax.exposed = True
 
 if __name__ == "__main__":
     cherrypy.config.update(global_config)

@@ -21,7 +21,7 @@ function navigate_tab(elem) {
 }
 
 function navigate_torrent(elem) {
-    window.location = "detail.py?torrent_id=" + elem.id.split("torrent_id_")[1]
+    window.location = "detail?torrent_id=" + elem.id.split("torrent_id_")[1]
 }
 
 function htmlify(json, cell) {
@@ -35,7 +35,7 @@ function htmlify(json, cell) {
     new_html += "<div class='column-1'>Ratio:</div><div class='column-2'>" + obj.ratio + "</div>"
     new_html += "<div class='column-1'>Peers:</div><div class='column-2'>" + obj.peers.length + "</div>"
     new_html += "<div class='column-1'>Created:</div><div class='column-2'>" + obj.created + "</div>"
-    new_html += "<div class='column-2' style='clear : left;'><span class='fakelink' onClick='removerow(\"" + obj.torrent_id + "\")'>Close</span> <a href='detail.py?torrent_id=" + obj.torrent_id + "'>Detailed View</a></div>"
+    new_html += "<div class='column-2' style='clear : left;'><span class='fakelink' onClick='removerow(\"" + obj.torrent_id + "\")'>Close</span> <a href='detail?torrent_id=" + obj.torrent_id + "'>Detailed View</a></div>"
     new_html += "</div>"
     cell.innerHTML = new_html;
     cell.style.borderLeft="1px dotted";
@@ -58,10 +58,10 @@ function view_torrent(elem) {
     var newrow = table.insertRow(elem.rowIndex + 1);
     var newcell = newrow.insertCell(0);
     newrow.id = "newrow_torrent_id_" + torrent_id;
-    newcell.innerHTML = "<img src='../images/loading.gif'> <span style='color:red;'>Loading</span>";
+    newcell.innerHTML = "<img src='/images/loading.gif'> <span style='color:red;'>Loading</span>";
     newcell.colSpan = "7";
     xmlhttp = new XMLHttpRequest();
-    var url="ajax.py"
+    var url="ajax"
     xmlhttp.open("POST",url,true);
     xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     xmlhttp.onreadystatechange = function () {
@@ -78,15 +78,16 @@ function view_torrent(elem) {
 function command(cmd, t_id) {
     if (cmd === "pause_torrent" || cmd === "start_torrent" || cmd === "stop_torrent") {
         xmlhttp = new XMLHttpRequest();
-        var url="ajax.py";
+        var url="ajax";
         xmlhttp.open("POST",url,true);
         xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                if (xmlhttp.responseText.trim() === "OK") {
+                var resp = xmlhttp.responseText.trim()
+                if (resp === "OK") {
                     location.reload(true);
                 } else {
-                    alert("Command Failed");
+                    alert("Command Failed with reason: " + resp);
                 }
             }
         }
