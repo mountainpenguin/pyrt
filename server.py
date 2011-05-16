@@ -13,8 +13,8 @@ global_config = {
 }
 app_config = {
     "/css" : {
-        "tools.static_filter.on" : True,
-        "tools.static_filter.dir" : "static/css/",
+        "tools.staticdir.on" : True,
+        "tools.staticdir.dir" : "static/css/",
     }
 }
 
