@@ -165,12 +165,12 @@ class Handler:
             <table id='torrent_list'>
                 <tr>
                     <td class='heading' id="sortby_name" onclick="sortby(this);">Name</td>
-                    <td class='heading' id="sortby_name" onclick="sortby(this);">Size</td>
-                    <td class='heading' id="sortby_name" onclick="sortby(this);">Ratio</td>
-                    <td class='heading' id="sortby_name" onclick="sortby(this);">Upload speed</td>
-                    <td class='heading' id="sortby_name" onclick="sortby(this);">Download speed</td>
-                    <td class='heading' id="sortby_name" onclick="sortby(this);">Status</td>
-                    <td class='heading' id="sortby_name" onclick="sortby(this);"></td>
+                    <td class='heading' id="sortby_size" onclick="sortby(this);">Size</td>
+                    <td class='heading' id="sortby_ratio" onclick="sortby(this);">Ratio</td>
+                    <td class='heading' id="sortby_uprate" onclick="sortby(this);">Upload speed</td>
+                    <td class='heading' id="sortby_downrate" onclick="sortby(this);">Download speed</td>
+                    <td class='heading' id="sortby_status" onclick="sortby(this);">Status</td>
+                    <td class='heading'></td>
                 </tr>
             """
         div_colour_array = ["blue", "green"]

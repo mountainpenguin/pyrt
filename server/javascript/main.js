@@ -108,11 +108,13 @@ function sortby(elem) {
     } else {
         // what is it sorted by
         sortedby = document.URL.split("sortby=")[1].split("&")[0]
+        alert("sortedby=" + sortedby);
         if (sortedby == elem.id.split("sortby_")[0]) {
             // reverse
             if (document.URL.indexOf("reverse") == -1) {
                 window.location = document.URL + "&reverse=1";
             } else {
+                // unreverse
                 var getargs = document.URL.split("?")[1].split("&");
                 var newargs = new Array();
                 for (i=0;i<getargs.length;i++) {
@@ -123,7 +125,11 @@ function sortby(elem) {
                        newargs.push(key + "=" + value);
                     }
                 }
-                window.location = document.URL + "?" + newargs.join("&");
+                if (newargs.length == 0) {
+                    window.location = document.URL.split("?")[0]
+                } else {
+                    window.location = document.URL.split("?")[0] + "?" + newargs.join("&");
+                }
             }
         } else {
             var getargs = document.URL.split("?")[1].split("&");
@@ -136,7 +142,11 @@ function sortby(elem) {
                     newargs.push(key + "=" + value);
                 }
             }
-            window.location = document.URL + "?" + newargs.join("&");
+            if (newargs.length == 0) {
+                window.location = document.URL.split("?")[0];
+            } else {
+                window.location = document.URL.split("?")[0] + "?" + newargs.join("&");
+            }
         }
     }
 }
