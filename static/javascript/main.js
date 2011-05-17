@@ -118,7 +118,9 @@ function show_add_dialogue(elem) {
         var cancelSpan = document.createElement("span");
         cancelSpan.id = "add_text";
         cancelSpan.innerHTML = "Cancel";
-        cancelSpan.addEventListener("onclick", show_add_dialogue(this.parentNode));
+        cancelSpan.addEventListener("onclick", function () {
+            alert("remove elems!");
+        });
         elem.appendChild(cancelSpan);
         
         var dialog = document.createElement("span");
