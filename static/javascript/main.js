@@ -117,7 +117,7 @@ function show_add_dialogue(elem) {
         cancel.id = "add_text";
         cancel.innerHTML = "Cancel";
         cancel.addEventListener("onclick", show_add_dialogue(this.parentNode));
-        elem.appendChild(dialog);
+        elem.appendChild(cancel);
         var dialog = document.createElement("span");
         dialog.id = "add_torrent_dialogue";
         dialog.style.cssFloat = "left";
