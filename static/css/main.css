@@ -230,10 +230,11 @@ img.control_image {
 #add_text {
 }
 
-.add_torrent_text {
+.add_torrent_button {
     text-decoration : underline;
     float : left;
     clear : left;
+    cursor : pointer;
 }
 
 /* #add_torrent_input {

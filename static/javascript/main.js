@@ -111,23 +111,27 @@ function command(cmd, t_id) {
 function _remove_add_dialogue() {
     var parent = document.getElementById("add_torrent")
     var children = parent.children;
+    var remove = new Array();
     for (i=0; i<children.length; i++) {
         if (children[i].id != "add_img") {
-            parent.removeChild(children[i]);
+            remove.push(children[i]);
         }
+    }
+    for (i=0; i<remove.length; i++) {
+        parent.removeChild(i);
     }
 }
 function show_add_dialogue(elem) {
     if (!(document.getElementById("add_torrent_dialogue"))) {
         var addSpan = document.createElement("span");
         addSpan.id = "add_text";
-        addSpan.className = "add_torrent_text";
-        addSpan.innerHTML = "Add a torrent";
+        addSpan.className = "add_torrent_button";
+        addSpan.innerHTML = "Add torrent";
         elem.appendChild(addSpan);
         
         var cancelSpan = document.createElement("span");
         cancelSpan.id = "cancel_add";
-        cancelSpan.className = "add_torrent_text";
+        cancelSpan.className = "add_torrent_button";
         cancelSpan.innerHTML = "Cancel";
         cancelSpan.addEventListener("click", function () {
             _remove_add_dialogue();
