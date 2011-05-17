@@ -9,6 +9,7 @@ import login
 import os
 import sys
 import config
+import shutil
 
 class Ajax:
     def __init__(self):
@@ -64,16 +65,25 @@ class Ajax:
                 return "OK"
                 
     def delete_torrent(self, torrent_id):
-        files = self.RT.getFiles(torrent_id)
-        if len(files) == 1:
-            #single file
-            if files[0].base_path == self.RT.getRootDir():
-                delete = files[0].abs_path
+        response = self.remove_torrent(torrent_id)
+        if response == "OK":
+            files = self.RT.getFiles(torrent_id)
+            if len(files) == 1:
+                #single file
+                if files[0].base_path == self.RT.getRootDir():
+                    delete = files[0].abs_path
+            else:
+                delete = files[0].base_path
+            
+            if not os.path.exists(delete):
+                return "ERROR/no such file"
+            else:
+                try:
+                    if os.path.isfile(delete):
+                        os.remove(delete)
+                    else:
+                        shutil.rmtree(delete)
+                except:
+                    return "ERROR/unknown"
         else:
-            delete = files[0].base_path
-        return delete
-        
-    def get_files(self, torrent_id):
-        files = self.RT.getFiles(torrent_id)
-        structure, files_dict = self.Handler.getFileStructure(files, self.RT.getRootDir())
-        return repr(structure)
+            return "ERROR/could not remove torrent"
