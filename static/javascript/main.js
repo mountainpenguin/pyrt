@@ -1,5 +1,3 @@
-var xmlhttp;
-
 function select_torrent(elem) {
     elem.style.backgroundColor = "#00CCFF";
     elem.style.cursor = "help";
@@ -60,7 +58,7 @@ function view_torrent(elem) {
     newrow.id = "newrow_torrent_id_" + torrent_id;
     newcell.innerHTML = "<img src='/images/loading.gif'> <span style='color:red;'>Loading</span>";
     newcell.colSpan = "7";
-    xmlhttp = new XMLHttpRequest();
+    var xmlhttp = new XMLHttpRequest();
     var url="ajax"
     xmlhttp.open("POST",url,true);
     xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -86,13 +84,13 @@ function command(cmd, t_id) {
             resp = true;
         }
         if (resp) {
-            xmlhttp = new XMLHttpRequest();
+            var xmlhttpc = new XMLHttpRequest();
             var url="ajax";
-            xmlhttp.open("POST",url,true);
-            xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xmlhttp.onreadystatechange = function() {
-                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                    var resp = xmlhttp.responseText.trim()
+            xmlhttpc.open("POST",url,true);
+            xmlhttpc.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xmlhttpc.onreadystatechange = function() {
+                if (xmlhttpc.readyState == 4 && xmlhttp.status == 200) {
+                    var resp = xmlhttpc.responseText.trim()
                     if (resp === "OK") {
                         location.reload(true);
                     } else {
@@ -101,7 +99,7 @@ function command(cmd, t_id) {
                 }
             }
             var params = "request=" + cmd + "&torrent_id=" + t_id;
-            xmlhttp.send(params);
+            xmlhttpc.send(params);
         } else {
             return false;
         }
