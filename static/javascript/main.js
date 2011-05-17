@@ -129,7 +129,7 @@ function show_add_dialogue(elem) {
         addSpan.innerHTML = "Add torrent";
         addSpan.addEventListener("click", function () {
             add_torrent();
-        }
+        });
         elem.appendChild(addSpan);
         
         var cancelSpan = document.createElement("span");
