@@ -119,13 +119,14 @@ class mainHandler:
     ajax.exposed = True
     
     def upload_torrent(self, torrent=None):
-        torrentFile = torrent.file.read()
+        torrent_repr = torrent.__dict__
+        torrent_repr["file"] = torrent.file.__dict__
         return """
             <html>
                 <body>
-                    attributes : %s<br>
+                    %s
                 </body>
-            </html>""" % (torrent.__dict__)
+            </html>""" % (torrent_repr)
     upload_torrent.exposed = True
 
 if __name__ == "__main__":
