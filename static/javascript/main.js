@@ -111,9 +111,7 @@ function command(cmd, t_id) {
 function show_add_dialogue(elem) {
     if (document.getElementById("add_torrent_dialogue")) {
         // actually add torrent
-        alert("remove elems!");
     } else {
-        alert("Something!?");
         
         var cancelSpan = document.createElement("span");
         cancelSpan.id = "add_text";
@@ -129,5 +127,4 @@ function show_add_dialogue(elem) {
         dialog.innerHTML = "<input id='add_torrent_input' type='file' accept='application/x-bittorrent'>"
         elem.appendChild(dialog);
     }
-    alert("All done!");
 }
