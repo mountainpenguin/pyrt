@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from modules import config, login, bencode, torrentHandler # 'real' modules
-from modules import indexPage, detailPage, ajaxPage        # pages
+from modules import config, login, bencode, torrentHandler, rtorrent # 'real' modules
+from modules import indexPage, detailPage, ajaxPage                  # pages
 
 import cherrypy
 import os
@@ -120,6 +120,8 @@ class mainHandler:
     
     def upload_torrent(self, torrent=None):
         Handler = torrentHandler.Handler()
+        RT = rtorrent.rtorrent(c.get("rtorrent_socket"))
+        fileName = torrent.filename
         inFile = torrent.file.read()
         try:
             decoded = bencode.bdecode(inFile)
@@ -128,8 +130,11 @@ class mainHandler:
             return "ERROR/Invalid torrent file"
         else:
             #save file in /torrents
-            
-            return "OK/filename=%s" % torrent.filename
+            with open("torrents/%s" % (fileName), "wb") as newFile:
+                newFile.write(inFile)
+            #add file to rtorrent
+            c.add_from_file("torrents/%s" % fileName)
+            return "OK"
         
     upload_torrent.exposed = True
 

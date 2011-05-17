@@ -7,6 +7,7 @@ import time
 import sys
 import os
 import itertools
+import base64
 
 """Available commands
 
@@ -843,4 +844,7 @@ class rtorrent:
         
     def stop(self, id):
         self.conn.d.stop(id)
-        self.conn.d.close(id)
+        self.conn.d.close(id
+        
+    def add_from_file(self, filepath):
+        self.conn.load_start_verbose(filepath)
