@@ -149,7 +149,7 @@ class mainHandler:
                 <head>
                     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
                     <link rel="stylesheet" type="text/css" href="/css/main.css">
-                    <script src="/javascript/document.js" type="text/javascript"></script>
+                    <script src="/javascript/file.js" type="text/javascript"></script>
                     <title>Testing</title>
                 </head>
                 <body>
