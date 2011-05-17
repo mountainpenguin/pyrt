@@ -141,14 +141,26 @@ function show_add_dialogue(elem) {
         });
         elem.appendChild(cancelSpan);
         
-        var dialog = document.createElement("span");
-        dialog.id = "add_torrent_dialogue";
-        dialog.innerHTML = "<input id='add_torrent_input' type='file' accept='application/x-bittorrent'>"
-        elem.appendChild(dialog);
+        var form = document.createElement("form");
+        form.id = "add_torrent_form";
+        form.method = "get";
+        form.action = "";
+        
+        var dialog = document.createElement("input");
+        dialog.id = "add_torrent_input";
+        dialog.accept = "application/x-bittorrent";
+        dialog.type = "file";
+        form.appendChild(dialog);
+        elem.appendChild(form);
     }
 }
 
 function add_torrent() {
     var add_torrent = document.getElementById("add_torrent_input")
-    alert(add_torrent.value);
+    if (!(add_torrent.value)) {
+        alert("No file selected");
+    } else {
+        var form = document.getElementById("add_torrent_form");
+        form.submit();
+    }
 }

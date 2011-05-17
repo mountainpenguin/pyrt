@@ -227,14 +227,13 @@ img.control_image {
     height : 40px;
 }
 
-#add_text {
-}
 
 .add_torrent_button {
     text-decoration : underline;
     float : left;
     clear : left;
     cursor : pointer;
+    padding-left : 2px;
 }
 
 #add_torrent_input {
