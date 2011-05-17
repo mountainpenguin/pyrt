@@ -65,7 +65,7 @@ class Ajax:
                 return "OK"
                 
     def delete_torrent(self, torrent_id):
-        response = self.remove_torrent(torrent_id)
+        response = self.stop_torrent(torrent_id)
         if response == "OK":
             files = self.RT.getFiles(torrent_id)
             if len(files) == 1:
@@ -83,7 +83,8 @@ class Ajax:
                         os.remove(delete)
                     else:
                         shutil.rmtree(delete)
+                    self.remove_torrent(torrent_id)
                 except:
                     return "ERROR/unknown"
         else:
-            return "ERROR/could not remove torrent"
+            return "ERROR/could not stop torrent"
