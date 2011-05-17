@@ -127,7 +127,7 @@ function show_add_dialogue(elem) {
         addSpan.id = "add_text";
         addSpan.className = "add_torrent_button";
         addSpan.innerHTML = "Add torrent";
-        addSpan.addEventListener("click" function () {
+        addSpan.addEventListener("click", function () {
             add_torrent();
         }
         elem.appendChild(addSpan);
