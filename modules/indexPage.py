@@ -66,8 +66,7 @@ class Index:
                 
                 <div id="main_body">
                     <div id="add_torrent">
-                        <img alt="Add Torrent" src="/images/add.png" id="add_img" onclick="show_add_dialogue(this.parentNode);"> 
-                        <span id="add_text">Add a torrent</span>
+                        <img alt="Add Torrent" src="/images/add.png" id="add_img" onclick="show_add_dialogue(this.parentNode);">
                     </div>
                     <div id="global_stats">
                         <h2>Global Stats</h2>

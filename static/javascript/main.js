@@ -112,7 +112,9 @@ function _remove_add_dialogue() {
     var parent = document.getElementById("add_torrent")
     var children = parent.children;
     for (i=0; i<children.length; i++) {
-        alert("Child " + i + children[i].id);
+        if (children[i].id != "add_img") {
+            parent.removeChild(children[i]);
+        }
     }
 }
 function show_add_dialogue(elem) {
