@@ -131,6 +131,12 @@ function show_add_dialogue(elem) {
         addSpan.addEventListener("click", function () {
             add_torrent();
         });
+        addSpan.addEventListener("mouseover", function () {
+            addSpan.style.color = "blue";
+        });
+        addSpan.addEventListener("mouseout", function () {
+            addSpan.style.color = null;
+        });
         elem.appendChild(addSpan);
         
         var cancelSpan = document.createElement("span");
@@ -139,6 +145,12 @@ function show_add_dialogue(elem) {
         cancelSpan.innerHTML = "Cancel";
         cancelSpan.addEventListener("click", function () {
             _remove_add_dialogue();
+        });
+        cancelSpan.addEventListener("hover", function () {
+            cancelSpan.style.color = "blue";
+        });
+        cancelSpan.addEventListener("mouseout", function () {
+            cancelSpan.style.color = null;
         });
         elem.appendChild(cancelSpan);
         
