@@ -234,5 +234,6 @@ img.control_image {
 }
 
 #add_torrent_input {
+    float : left;
     padding-left : 1em;
 }
