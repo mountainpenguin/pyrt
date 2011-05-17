@@ -89,7 +89,7 @@ function command(cmd, t_id) {
             xmlhttpc.open("POST",url,true);
             xmlhttpc.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xmlhttpc.onreadystatechange = function() {
-                if (xmlhttpc.readyState == 4 && xmlhttp.status == 200) {
+                if (xmlhttpc.readyState == 4 && xmlhttpc.status == 200) {
                     var resp = xmlhttpc.responseText.trim()
                     if (resp === "OK") {
                         location.reload(true);
