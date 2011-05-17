@@ -130,8 +130,9 @@ class mainHandler:
             return "ERROR/Invalid torrent file"
         else:
             #save file in /torrents
-            with open("torrents/%s" % (fileName), "wb") as newFile:
-                newFile.write(inFile)
+            newFile = open("torrents/%s" % (fileName), "wb")
+            newFile.write(inFile)
+            newFile.close()
             #add file to rtorrent
             c.add_from_file("torrents/%s" % fileName)
             return "OK"
