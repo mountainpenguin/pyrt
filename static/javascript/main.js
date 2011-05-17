@@ -127,6 +127,9 @@ function show_add_dialogue(elem) {
         addSpan.id = "add_text";
         addSpan.className = "add_torrent_button";
         addSpan.innerHTML = "Add torrent";
+        addSpan.addEventListener("click" function () {
+            add_torrent();
+        }
         elem.appendChild(addSpan);
         
         var cancelSpan = document.createElement("span");
@@ -143,4 +146,9 @@ function show_add_dialogue(elem) {
         dialog.innerHTML = "<input id='add_torrent_input' type='file' accept='application/x-bittorrent'>"
         elem.appendChild(dialog);
     }
+}
+
+function add_torrent() {
+    var add_torrent = document.getElementById("add_torrent_input")
+    alert(add_torrent.value);
 }
