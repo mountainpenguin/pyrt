@@ -246,3 +246,10 @@ img.control_image {
     float : left;
     clear : left;
 }
+
+div.directory {
+    color : green;
+}
+div.document {
+    color : blue;
+}
