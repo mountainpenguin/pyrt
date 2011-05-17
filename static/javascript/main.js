@@ -77,22 +77,34 @@ function view_torrent(elem) {
 
 function command(cmd, t_id) {
     if (cmd === "pause_torrent" || cmd === "start_torrent" || cmd === "stop_torrent" || cmd == "remove_torrent" || cmd == "delete_torrent") {
-        xmlhttp = new XMLHttpRequest();
-        var url="ajax";
-        xmlhttp.open("POST",url,true);
-        xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                var resp = xmlhttp.responseText.trim()
-                if (resp === "OK") {
-                    location.reload(true);
-                } else {
-                    alert("Command Failed with reason: " + resp);
+        var resp;
+        if (cmd === "remove_torrent") {
+            resp = confirm("Are you sure you want to remove this torrent?")
+        } else if (cmd == "delete_torrent") {
+            resp = confirm("Are you sure you want to remove this torrent and <strong>permanently</strong> delete its files?")
+        } else {
+            resp = true;
+        }
+        if (resp) {
+            xmlhttp = new XMLHttpRequest();
+            var url="ajax";
+            xmlhttp.open("POST",url,true);
+            xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xmlhttp.onreadystatechange = function() {
+                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                    var resp = xmlhttp.responseText.trim()
+                    if (resp === "OK") {
+                        location.reload(true);
+                    } else {
+                        alert("Command Failed with reason: " + resp);
+                    }
                 }
             }
+            var params = "request=" + cmd + "&torrent_id=" + t_id;
+            xmlhttp.send(params);
+        } else {
+            return false;
         }
-        var params = "request=" + cmd + "&torrent_id=" + t_id;
-        xmlhttp.send(params);
     } else {
         alert("invalid command or command not implemented");
     }
