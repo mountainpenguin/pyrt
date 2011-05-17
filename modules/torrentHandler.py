@@ -130,6 +130,17 @@ class Handler:
                             folder[os.path.basename(file.base_path)][file.path_components[0]]["_completion"] = (folder[os.path.basename(file.base_path)][file.path_components[0]]["_completion"] + file.percentage_complete) / 2
         return (folder, files_dict)
         
+    def fileTreeHTML(self, fileList, RTROOT):
+        """
+            Takes a list of files as outputted by rtorrent.getFiles and parses it into an html file tree
+            Requires the rtorrent root directory
+            File attributes:
+                abs_path, base_path, path_components, completed_chunks, priority, size, chunks, chunk_size
+        """
+        basePath = fileList[0].base_path
+        
+        
+        
     def torrentHTML(self, torrentList, sort, view, reverse=False):
         """
             Sorts a list of torrent_ids with default information

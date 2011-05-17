@@ -140,8 +140,30 @@ class mainHandler:
                 RT.load_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
             # return "OK/start=%s" % start
             raise cherrypy.HTTPRedirect("/")
-        
     upload_torrent.exposed = True
+    
+    def test(self, **kwargs):
+        return """
+            <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+            <html>
+                <head>
+                    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+                    <link rel="stylesheet" type="text/css" href="/css/main.css">
+                    <title>Testing</title>
+                </head>
+                <body>
+                    <table>
+                        <tr><td>Folder 1</td></tr>
+                        <tr>
+                            <table>
+                                <tr><td>File 1</td></tr>
+                            </table>
+                        </tr>
+                    </table>
+                </body>
+            </html>
+        """
+    test.exposed = True
 
 if __name__ == "__main__":
     cherrypy.config.update(global_config)
