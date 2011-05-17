@@ -135,7 +135,7 @@ class mainHandler:
             newFile.close()
             #add file to rtorrent
             RT.add_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
-            return "OK"
+            raise cherrypy.HTTPRedirect("/")
         
     upload_torrent.exposed = True
 
