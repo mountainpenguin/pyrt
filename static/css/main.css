@@ -225,6 +225,7 @@ img.control_image {
     float : left;
     width : 40px;
     height : 40px;
+    cursor : pointer;
 }
 
 
