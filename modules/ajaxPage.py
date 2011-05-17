@@ -84,6 +84,7 @@ class Ajax:
                     else:
                         shutil.rmtree(delete)
                     self.remove_torrent(torrent_id)
+                    return "OK"
                 except:
                     return "ERROR/unknown"
         else:

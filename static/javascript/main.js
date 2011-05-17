@@ -76,7 +76,7 @@ function view_torrent(elem) {
 }
 
 function command(cmd, t_id) {
-    if (cmd === "pause_torrent" || cmd === "start_torrent" || cmd === "stop_torrent") {
+    if (cmd === "pause_torrent" || cmd === "start_torrent" || cmd === "stop_torrent" || cmd == "remove_torrent" || cmd == "delete_torrent") {
         xmlhttp = new XMLHttpRequest();
         var url="ajax";
         xmlhttp.open("POST",url,true);
