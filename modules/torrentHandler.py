@@ -79,6 +79,7 @@ class Handler:
             <head>
                 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
                 <meta http-equiv="REFRESH" content="%i;url=%s">
+                <link rel="stylesheet" type="text/css" href="/css/main.css"
                 <title>Redirect</title>
             </head>
             <body>
@@ -310,8 +311,8 @@ class Handler:
         <!-- HEAD PLACEHOLDER -->
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
         <title>rTorrent - webUI</title>
-        <link rel="stylesheet" type="text/css" href="../css/main.css">
-        <script src="../javascript/main.js" type="text/javascript"></script>
+        <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <script src="/javascript/main.js" type="text/javascript"></script>
     </head>
     <body>
         <!-- BODY PLACEHOLDER -->
