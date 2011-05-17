@@ -228,12 +228,15 @@ img.control_image {
 }
 
 #add_text {
+}
+
+.add_torrent_text {
     text-decoration : underline;
     float : left;
     clear : left;
 }
 
-#add_torrent_input {
+/* #add_torrent_input {
     float : left;
     padding-left : 1em;
-}
+} */

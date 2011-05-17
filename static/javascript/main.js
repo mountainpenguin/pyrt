@@ -108,22 +108,32 @@ function command(cmd, t_id) {
     }
 }
 
+function _remove_add_dialogue() {
+    var parent = document.getElementById("add_torrent")
+    var children = parent.children;
+    for (i=0; i<children.length; i++) {
+        alert("Child " + i + children[i].id);
+    }
+}
 function show_add_dialogue(elem) {
-    if (document.getElementById("add_torrent_dialogue")) {
-        // actually add torrent
-    } else {
+    if (!(document.getElementById("add_torrent_dialogue"))) {
+        var addSpan = document.createElement("span");
+        addSpan.id = "add_text";
+        addSpan.className = "add_torrent_text";
+        addSpan.innerHTML = "Add a torrent";
+        elem.appendChild(addSpan);
         
         var cancelSpan = document.createElement("span");
-        cancelSpan.id = "add_text";
+        cancelSpan.id = "cancel_add";
+        cancelSpan.className = "add_torrent_text";
         cancelSpan.innerHTML = "Cancel";
         cancelSpan.addEventListener("click", function () {
-            alert("remove elems!");
+            _remove_add_dialogue();
         });
         elem.appendChild(cancelSpan);
         
         var dialog = document.createElement("span");
         dialog.id = "add_torrent_dialogue";
-        dialog.style.cssFloat = "left";
         dialog.innerHTML = "<input id='add_torrent_input' type='file' accept='application/x-bittorrent'>"
         elem.appendChild(dialog);
     }
