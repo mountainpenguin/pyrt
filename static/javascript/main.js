@@ -118,7 +118,7 @@ function _remove_add_dialogue() {
         }
     }
     for (i=0; i<remove.length; i++) {
-        parent.removeChild(i);
+        parent.removeChild(remove[i]);
     }
 }
 function show_add_dialogue(elem) {
