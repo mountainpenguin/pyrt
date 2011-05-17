@@ -114,11 +114,13 @@ function show_add_dialogue(elem) {
         alert("remove elems!");
     } else {
         alert("Something!?");
-        //var cancel = document.createElement("span");
-        //cancel.id = "add_text";
-        //cancel.innerHTML = "Cancel";
-        //cancel.addEventListener("onclick", show_add_dialogue(this.parentNode));
-        //elem.appendChild(cancel);
+        
+        var cancelSpan = document.createElement("span");
+        cancelSpan.id = "add_text";
+        cancelSpan.innerHTML = "Cancel";
+        cancelSpan.addEventListener("onclick", show_add_dialogue(this.parentNode));
+        elem.appendChild(cancelSpan);
+        
         var dialog = document.createElement("span");
         dialog.id = "add_torrent_dialogue";
         dialog.style.cssFloat = "left";
