@@ -143,7 +143,8 @@ function show_add_dialogue(elem) {
         
         var form = document.createElement("form");
         form.id = "add_torrent_form";
-        form.method = "get";
+        form.method = "post";
+        form.enctype = "multipart/form-data";
         form.action = "";
         
         var dialog = document.createElement("input");

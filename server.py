@@ -37,7 +37,13 @@ app_config = {
 }
 
 class mainHandler:
-    def index(self, password=None, view=None, sortby=None, reverse=None):
+    def index(self, password=None, view=None, sortby=None, reverse=None, **kwargs):
+        if kwargs:
+            returnable = "ERROR/unknown inputs\n"
+            for k,v in kwargs:
+                returnable += "%s : %s\n" % (k,v)
+            return returnable
+            
         #check cookies
         L = login.Login()
         client_cookie = cherrypy.request.cookie
