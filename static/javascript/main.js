@@ -150,6 +150,7 @@ function show_add_dialogue(elem) {
         dialog.id = "add_torrent_input";
         dialog.accept = "application/x-bittorrent";
         dialog.type = "file";
+        dialog.name = "torrent";
         form.appendChild(dialog);
         elem.appendChild(form);
     }
@@ -158,7 +159,7 @@ function show_add_dialogue(elem) {
 function add_torrent() {
     var add_torrent = document.getElementById("add_torrent_input")
     if (!(add_torrent.value)) {
-        alert("No file selected");
+        add_torrent.style.border = "1px solid red";
     } else {
         var form = document.getElementById("add_torrent_form");
         form.submit();
