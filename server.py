@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from modules import config, login, bencode          # 'real' modules
-from modules import indexPage, detailPage, ajaxPage # pages
+from modules import config, login, bencode, torrentHandler # 'real' modules
+from modules import indexPage, detailPage, ajaxPage        # pages
 
 import cherrypy
 import os
@@ -119,6 +119,7 @@ class mainHandler:
     ajax.exposed = True
     
     def upload_torrent(self, torrent=None):
+        Handler = torrentHandler.Handler()
         inFile = torrent.file.read()
         try:
             decoded = bencode.bdecode(inFile)
@@ -131,7 +132,7 @@ class mainHandler:
             body_html = """
                 OK
             """
-        return self.Handler.HTMLredirect("/index", refresh=15, body=body_html)
+        return Handler.HTMLredirect("/index", refresh=15, body=body_html)
         
     upload_torrent.exposed = True
 
