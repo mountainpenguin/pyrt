@@ -118,7 +118,7 @@ class mainHandler:
             return "ERROR/Invalid method"
     ajax.exposed = True
     
-    def upload_torrent(self, torrent=None):
+    def upload_torrent(self, torrent=None, start=None):
         Handler = torrentHandler.Handler()
         RT = rtorrent.rtorrent(c.get("rtorrent_socket"))
         fileName = torrent.filename
@@ -134,7 +134,11 @@ class mainHandler:
             newFile.write(inFile)
             newFile.close()
             #add file to rtorrent
-            RT.add_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
+            if start:
+                RT.start_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
+            else:
+                RT.load_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
+            # return "OK/start=%s" % start
             raise cherrypy.HTTPRedirect("/")
         
     upload_torrent.exposed = True

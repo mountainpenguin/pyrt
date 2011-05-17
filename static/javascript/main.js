@@ -1,5 +1,6 @@
 function select_torrent(elem) {
-    elem.style.backgroundColor = "#00CCFF";
+    // elem.style.backgroundColor = "#00CCFF";
+    elem.style.backgroundColor = "#0099FF";
     elem.style.cursor = "help";
 }
 function deselect_torrent(elem) {
@@ -147,12 +148,26 @@ function show_add_dialogue(elem) {
         form.method = "post";
         form.enctype = "multipart/form-data";
         
-        var dialog = document.createElement("input");
-        dialog.id = "add_torrent_input";
-        dialog.accept = "application/x-bittorrent";
-        dialog.type = "file";
-        dialog.name = "torrent";
-        form.appendChild(dialog);
+        var startCheckText = document.createElement("div");
+        startCheckText.className = "add_torrent_start_text";
+        startCheckText.innerHTML = "Start Immediately? ";
+        
+        var startCheck = document.createElement("input");
+        startCheck.id = "add_torrent_start";
+        startCheck.type = "checkbox";
+        startCheck.checked = "checked";
+        startCheck.name = "start";
+        
+        startCheckText.appendChild(startCheck);
+        form.appendChild(startCheckText);
+        
+        var fileInput = document.createElement("input");
+        fileInput.id = "add_torrent_input";
+        fileInput.accept = "application/x-bittorrent";
+        fileInput.type = "file";
+        fileInput.name = "torrent";
+        form.appendChild(fileInput);
+        
         elem.appendChild(form);
     }
 }

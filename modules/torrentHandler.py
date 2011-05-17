@@ -227,9 +227,9 @@ class Handler:
         }
         for type in sorts.keys():
             if type in self.SORT_METHODS:
-                sorts[type] = "?view=%s&sortby=%s" % (view, type)
+                sorts[type] = "?view=%s&amp;sortby=%s" % (view, type)
                 if type == sort and not reverse:
-                    sorts[type] += "&reverse=1"
+                    sorts[type] += "&amp;reverse=1"
         if sort in sorts.keys():
             if reverse:
                 sorts[sort + "sort"] = "down"
@@ -257,9 +257,9 @@ class Handler:
             div_colour_array += [colour]
             status = self.getState(t)
             if status == "Stopped" or status == "Paused":
-                stopstart = "<span id='control_start' class='control_button' title='Start Torrent'><img onclick='event.cancelBubble = true; command(\"start_torrent\",\"%s\")' class='control_image' alt='Start' src='../images/start.png'></span>" % t.torrent_id
+                stopstart = "<span class='control_start control_button' title='Start Torrent'><img onclick='event.cancelBubble = true; command(\"start_torrent\",\"%s\")' class='control_image' alt='Start' src='../images/start.png'></span>" % t.torrent_id
             else:
-                stopstart = "<span id='control_pause' class='control_button' title='Pause Torrent'><img onclick='event.cancelBubble = true; command(\"pause_torrent\",\"%s\")'class='control_image' alt='Pause' src='../images/pause.png'></span>" % t.torrent_id
+                stopstart = "<span class='control_pause control_button' title='Pause Torrent'><img onclick='event.cancelBubble = true; command(\"pause_torrent\",\"%s\")'class='control_image' alt='Pause' src='../images/pause.png'></span>" % t.torrent_id
             torrent_html += """
                 <tr onmouseover='select_torrent(this);' 
                     onmouseout='deselect_torrent(this);' 
@@ -275,15 +275,15 @@ class Handler:
                     <td>%(t_status)s</td>
                     <td>
                         %(control_startpause)s
-                        <span id='control_stop' class='control_button' title='Stop Torrent'>
+                        <span class='control_stop control_button' title='Stop Torrent'>
                             <img onclick='event.cancelBubble = true; command(\"stop_torrent\",\"%(t_id)s\")'
                                  class='control_image' alt='Stop' src='../images/stop.png'>
                         </span>
-                        <span id='control_remove' class='control_button' title='Remove Torrent'>
+                        <span class='control_remove control_button' title='Remove Torrent'>
                             <img onclick='event.cancelBubble = true; command(\"remove_torrent\",\"%(t_id)s\")'
                                  class='control_image' alt='Remove' src='../images/remove.png'>
                         </span>
-                        <span id='control_delete' class='control_button' title='Remove Torrent and Files'>
+                        <span class='control_delete control_button' title='Remove Torrent and Files'>
                             <img onclick='event.cancelBubble = true; command(\"delete_torrent\",\"%(t_id)s\")'
                                  class='control_image' alt='Delete' src='../images/delete.png'>
                         </span>

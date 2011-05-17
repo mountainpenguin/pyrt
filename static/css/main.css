@@ -233,9 +233,14 @@ img.control_image {
     float : left;
     clear : left;
     cursor : pointer;
-    padding-left : 2px;
+    padding-left : 3px;
 }
 
+.add_torrent_start_text {
+    float : left;
+    clear : left;
+    padding-left : 3px;
+}
 #add_torrent_input {
     float : left;
     clear : left;

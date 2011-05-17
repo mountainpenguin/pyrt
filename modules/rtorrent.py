@@ -846,5 +846,8 @@ class rtorrent:
         self.conn.d.stop(id)
         self.conn.d.close(id)
         
-    def add_from_file(self, filepath):
+    def start_from_file(self, filepath):
         self.conn.load_start_verbose(filepath)
+        
+    def load_from_file(self, filepath):
+        self.conn.load_verbose(filepath)
