@@ -81,7 +81,7 @@ function command(cmd, t_id) {
         if (cmd === "remove_torrent") {
             resp = confirm("Are you sure you want to remove this torrent?")
         } else if (cmd == "delete_torrent") {
-            resp = confirm("Are you sure you want to remove this torrent and <strong>permanently</strong> delete its files?")
+            resp = confirm("Are you sure you want to remove this torrent and *permanently* delete its files?")
         } else {
             resp = true;
         }
