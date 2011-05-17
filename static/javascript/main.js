@@ -107,3 +107,15 @@ function command(cmd, t_id) {
         alert("invalid command or command not implemented");
     }
 }
+
+function show_add_dialogue(elem) {
+    if (dialog = document.getElementById("add_torrent_dialogue")) {
+        // actually add torrent
+    } else {
+        var dialog = document.createElement("div");
+        dialog.id = "add_torrent_dialogue";
+        dialog.style.cssFloat = "left";
+        dialog.innerHTML = "<input id='add_torrent_input' type='file' accept='application/x-bittorrent'>"
+        elem.appendChild(dialog);
+    }
+}

@@ -218,6 +218,7 @@ img.control_image {
 
 #add_torrent {
     float : left;
+    padding : 1em;
 }
 
 #add_img {
