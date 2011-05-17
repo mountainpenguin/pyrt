@@ -113,11 +113,12 @@ function show_add_dialogue(elem) {
         // actually add torrent
         alert("remove elems!");
     } else {
-        var cancel = document.createElement("span");
-        cancel.id = "add_text";
-        cancel.innerHTML = "Cancel";
-        cancel.addEventListener("onclick", show_add_dialogue(this.parentNode));
-        elem.appendChild(cancel);
+        alert("Something!?");
+        //var cancel = document.createElement("span");
+        //cancel.id = "add_text";
+        //cancel.innerHTML = "Cancel";
+        //cancel.addEventListener("onclick", show_add_dialogue(this.parentNode));
+        //elem.appendChild(cancel);
         var dialog = document.createElement("span");
         dialog.id = "add_torrent_dialogue";
         dialog.style.cssFloat = "left";
