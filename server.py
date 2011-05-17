@@ -128,7 +128,6 @@ class mainHandler:
                     file mime-type: %s<br>
                 </body>
             </html>""" % (len(torrentFile), torrentFile.filename, torrentFile.content_type)
-        """
 
 if __name__ == "__main__":
     cherrypy.config.update(global_config)
