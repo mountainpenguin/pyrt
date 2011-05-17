@@ -238,8 +238,8 @@ img.control_image {
 
 .add_torrent_start_text {
     float : left;
-    float : left;
     clear : left;
+    padding-left : 3px;
 }
 #add_torrent_input {
     float : left;

@@ -118,7 +118,7 @@ class mainHandler:
             return "ERROR/Invalid method"
     ajax.exposed = True
     
-    def upload_torrent(self, torrent=None):
+    def upload_torrent(self, torrent=None, start=None):
         Handler = torrentHandler.Handler()
         RT = rtorrent.rtorrent(c.get("rtorrent_socket"))
         fileName = torrent.filename
@@ -127,7 +127,7 @@ class mainHandler:
             decoded = bencode.bdecode(inFile)
         except:
             #Invalid torrent 
-            return "ERROR/Invalid torrent file"
+            return "ERROR/Invalid torrent file/start=%s" % start
         else:
             #save file in /torrents
             newFile = open("torrents/%s" % (fileName), "wb")
@@ -135,6 +135,7 @@ class mainHandler:
             newFile.close()
             #add file to rtorrent
             RT.add_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
+            return "OK/start=%s" % start
             raise cherrypy.HTTPRedirect("/")
         
     upload_torrent.exposed = True
