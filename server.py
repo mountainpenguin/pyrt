@@ -127,15 +127,18 @@ class mainHandler:
             decoded = bencode.bdecode(inFile)
         except:
             #Invalid torrent 
-            return "ERROR/Invalid torrent file/start=%s" % start
+            return "ERROR/Invalid torrent file"
         else:
             #save file in /torrents
             newFile = open("torrents/%s" % (fileName), "wb")
             newFile.write(inFile)
             newFile.close()
             #add file to rtorrent
-            RT.add_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
-            return "OK/start=%s" % start
+            if start:
+                RT.start_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
+            else:
+                RT.load_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
+            # return "OK/start=%s" % start
             raise cherrypy.HTTPRedirect("/")
         
     upload_torrent.exposed = True
