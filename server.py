@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from modules import config, login                       # 'real' modules
-from modules import indexPage, detailPage, ajaxPage     #pages
+from modules import indexPage, detailPage, ajaxPage     # pages
 
 import cherrypy
 import os
@@ -119,14 +119,11 @@ class mainHandler:
     ajax.exposed = True
     
     def upload_torrent(self, torrent=None):
-        torrent_repr = torrent.__dict__
-        torrent_repr["file"] = torrent.file.__dict__
-        return """
-            <html>
-                <body>
-                    %s
-                </body>
-            </html>""" % (torrent_repr)
+        body_html = """
+            <h1>Testing</h1>
+        """
+        return self.Handler.HTMLredirect("/index", refresh=15, body=body_html)
+        
     upload_torrent.exposed = True
 
 if __name__ == "__main__":

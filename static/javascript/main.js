@@ -122,7 +122,7 @@ function _remove_add_dialogue() {
     }
 }
 function show_add_dialogue(elem) {
-    if (!(document.getElementById("add_torrent_dialogue"))) {
+    if (!(document.getElementById("add_torrent_input"))) {
         var addSpan = document.createElement("span");
         addSpan.id = "add_text";
         addSpan.className = "add_torrent_button";

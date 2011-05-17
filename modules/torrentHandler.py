@@ -72,18 +72,20 @@ class Handler:
             status = t.status
         return status
     
-    def HTMLredirect(self, url):
-        html = """
+    def HTMLredirect(self, url, refresh=0, body=""):
+        return """
         <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
         <html>
             <head>
                 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-                <meta http-equiv="REFRESH" content="0;url=%s">
+                <meta http-equiv="REFRESH" content="%i;url=%s">
                 <title>Redirect</title>
             </head>
+            <body>
+                %s
+            </body>
         </html>
-        """ % url
-        return html
+        """ % (url, refresh, body)
         
     def getFileStructure(self, files, rtorrent_root):
         """
