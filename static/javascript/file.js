@@ -11,13 +11,15 @@ function process_children(elem) {
         children = elem.children
         for (index=0; index<children.length; index++) {
             child = children[child]
+            child.style.color = "red";
             // child.style.display = "none";
-            if (child.className == "directory") {
+            if (child.className == "directory" && child.tagName == "div") {
                 child.addEventListener("click", function () {
                     show_contents(child);
                 });
                 process_children(child);
             }
+            child.style.color = null;
         }
     }
 }
