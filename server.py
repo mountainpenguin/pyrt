@@ -127,7 +127,7 @@ class mainHandler:
                     file name: %s<br>
                     file mime-type: %s<br>
                 </body>
-            </html>""" % (len(torrentFile), torrentFile.filename, torrentFile.content_type)
+            </html>""" % (len(torrentFile), torrent.filename, torrent.content_type)
     upload_torrent.exposed = True
 
 if __name__ == "__main__":
