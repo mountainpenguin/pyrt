@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from modules import config, login                       # 'real' modules
-from modules import indexPage, detailPage, ajaxPage     #pages
+from modules import config, login, bencode, torrentHandler, rtorrent # 'real' modules
+from modules import indexPage, detailPage, ajaxPage                  # pages
 
 import cherrypy
 import os
@@ -37,7 +37,8 @@ app_config = {
 }
 
 class mainHandler:
-    def index(self, password=None, view=None, sortby=None, reverse=None):
+    def index(self, password=None, view=None, sortby=None, reverse=None, **kwargs):
+            
         #check cookies
         L = login.Login()
         client_cookie = cherrypy.request.cookie
@@ -58,7 +59,7 @@ class mainHandler:
         
     index.exposed = True
     
-    def detail(self, view=None, torrent_id=None):
+    def detail(self, view=None, torrent_id=None, **kwargs):
         #check cookies
         L = login.Login()
         client_cookie = cherrypy.request.cookie
@@ -116,6 +117,27 @@ class mainHandler:
         else:
             return "ERROR/Invalid method"
     ajax.exposed = True
+    
+    def upload_torrent(self, torrent=None):
+        Handler = torrentHandler.Handler()
+        RT = rtorrent.rtorrent(c.get("rtorrent_socket"))
+        fileName = torrent.filename
+        inFile = torrent.file.read()
+        try:
+            decoded = bencode.bdecode(inFile)
+        except:
+            #Invalid torrent 
+            return "ERROR/Invalid torrent file"
+        else:
+            #save file in /torrents
+            newFile = open("torrents/%s" % (fileName), "wb")
+            newFile.write(inFile)
+            newFile.close()
+            #add file to rtorrent
+            RT.add_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
+            raise cherrypy.HTTPRedirect("/")
+        
+    upload_torrent.exposed = True
 
 if __name__ == "__main__":
     cherrypy.config.update(global_config)

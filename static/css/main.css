@@ -215,3 +215,28 @@ img.control_image {
 .control_button {
     cursor : pointer;
 }
+
+#add_torrent {
+    float : left;
+    padding : 1em;
+}
+
+#add_img {
+    float : left;
+    width : 40px;
+    height : 40px;
+}
+
+
+.add_torrent_button {
+    text-decoration : underline;
+    float : left;
+    clear : left;
+    cursor : pointer;
+    padding-left : 2px;
+}
+
+#add_torrent_input {
+    float : left;
+    clear : left;
+}

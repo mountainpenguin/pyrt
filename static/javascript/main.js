@@ -1,5 +1,3 @@
-var xmlhttp;
-
 function select_torrent(elem) {
     elem.style.backgroundColor = "#00CCFF";
     elem.style.cursor = "help";
@@ -60,7 +58,7 @@ function view_torrent(elem) {
     newrow.id = "newrow_torrent_id_" + torrent_id;
     newcell.innerHTML = "<img src='/images/loading.gif'> <span style='color:red;'>Loading</span>";
     newcell.colSpan = "7";
-    xmlhttp = new XMLHttpRequest();
+    var xmlhttp = new XMLHttpRequest();
     var url="ajax"
     xmlhttp.open("POST",url,true);
     xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -86,13 +84,13 @@ function command(cmd, t_id) {
             resp = true;
         }
         if (resp) {
-            xmlhttp = new XMLHttpRequest();
+            var xmlhttpc = new XMLHttpRequest();
             var url="ajax";
-            xmlhttp.open("POST",url,true);
-            xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xmlhttp.onreadystatechange = function() {
-                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                    var resp = xmlhttp.responseText.trim()
+            xmlhttpc.open("POST",url,true);
+            xmlhttpc.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xmlhttpc.onreadystatechange = function() {
+                if (xmlhttpc.readyState == 4 && xmlhttpc.status == 200) {
+                    var resp = xmlhttpc.responseText.trim()
                     if (resp === "OK") {
                         location.reload(true);
                     } else {
@@ -101,11 +99,70 @@ function command(cmd, t_id) {
                 }
             }
             var params = "request=" + cmd + "&torrent_id=" + t_id;
-            xmlhttp.send(params);
+            xmlhttpc.send(params);
         } else {
             return false;
         }
     } else {
         alert("invalid command or command not implemented");
+    }
+}
+
+function _remove_add_dialogue() {
+    var parent = document.getElementById("add_torrent")
+    var children = parent.children;
+    var remove = new Array();
+    for (i=0; i<children.length; i++) {
+        if (children[i].id != "add_img") {
+            remove.push(children[i]);
+        }
+    }
+    for (i=0; i<remove.length; i++) {
+        parent.removeChild(remove[i]);
+    }
+}
+function show_add_dialogue(elem) {
+    if (!(document.getElementById("add_torrent_input"))) {
+        var addSpan = document.createElement("span");
+        addSpan.id = "add_text";
+        addSpan.className = "add_torrent_button";
+        addSpan.innerHTML = "Add torrent";
+        addSpan.addEventListener("click", function () {
+            add_torrent();
+        });
+        elem.appendChild(addSpan);
+        
+        var cancelSpan = document.createElement("span");
+        cancelSpan.id = "cancel_add";
+        cancelSpan.className = "add_torrent_button";
+        cancelSpan.innerHTML = "Cancel";
+        cancelSpan.addEventListener("click", function () {
+            _remove_add_dialogue();
+        });
+        elem.appendChild(cancelSpan);
+        
+        var form = document.createElement("form");
+        form.id = "add_torrent_form";
+        form.action = "upload_torrent";
+        form.method = "post";
+        form.enctype = "multipart/form-data";
+        
+        var dialog = document.createElement("input");
+        dialog.id = "add_torrent_input";
+        dialog.accept = "application/x-bittorrent";
+        dialog.type = "file";
+        dialog.name = "torrent";
+        form.appendChild(dialog);
+        elem.appendChild(form);
+    }
+}
+
+function add_torrent() {
+    var add_torrent = document.getElementById("add_torrent_input")
+    if (!(add_torrent.value)) {
+        add_torrent.style.border = "1px solid red";
+    } else {
+        var form = document.getElementById("add_torrent_form");
+        form.submit();
     }
 }
