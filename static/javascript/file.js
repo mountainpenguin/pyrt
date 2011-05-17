@@ -15,7 +15,7 @@ function process_children(elem) {
             if (child.className == "directory") {
                 child.addEventListener("click", function () {
                     show_contents(child);
-                }
+                });
                 process_children(child);
             }
         }
