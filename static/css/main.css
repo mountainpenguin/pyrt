@@ -215,3 +215,12 @@ img.control_image {
 .control_button {
     cursor : pointer;
 }
+
+#add_torrent {
+    float : left;
+}
+
+div.#add_torrent > img:first-child {
+    width : 40px;
+    height : 40px;
+}
