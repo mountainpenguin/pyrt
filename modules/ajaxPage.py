@@ -1,4 +1,4 @@
-#!/usr/bin/python2.5
+#!/usr/bin/env python
 
 import cgi
 import rtorrent
@@ -9,6 +9,7 @@ import login
 import os
 import sys
 import config
+import shutil
 
 class Ajax:
     def __init__(self):
@@ -61,5 +62,30 @@ class Ajax:
         except:
             return "ERROR"
         else:
-            return "OK"
-        
+                return "OK"
+                
+    def delete_torrent(self, torrent_id):
+        response = self.stop_torrent(torrent_id)
+        if response == "OK":
+            files = self.RT.getFiles(torrent_id)
+            if len(files) == 1:
+                #single file
+                if files[0].base_path == self.RT.getRootDir():
+                    delete = files[0].abs_path
+            else:
+                delete = files[0].base_path
+            
+            if not os.path.exists(delete):
+                return "ERROR/no such file"
+            else:
+                try:
+                    if os.path.isfile(delete):
+                        os.remove(delete)
+                    else:
+                        shutil.rmtree(delete)
+                    self.remove_torrent(torrent_id)
+                    return "OK"
+                except:
+                    return "ERROR/unknown"
+        else:
+            return "ERROR/could not stop torrent"
