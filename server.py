@@ -134,7 +134,7 @@ class mainHandler:
             newFile.write(inFile)
             newFile.close()
             #add file to rtorrent
-            RT.add_from_file("torrents/%s" % fileName)
+            RT.add_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
             return "OK"
         
     upload_torrent.exposed = True
