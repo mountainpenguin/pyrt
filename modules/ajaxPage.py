@@ -65,7 +65,13 @@ class Ajax:
                 
     def delete_torrent(self, torrent_id):
         files = self.RT.getFiles(torrent_id)
-        return repr([x.__dict__ for x in files])
+        if len(files) == 1:
+            #single file
+            if files[0].base_path == self.RT.getRootDir():
+                delete = files[0].abs_path
+        else:
+            delete = files[0].base_path
+        return delete
         
     def get_files(self, torrent_id):
         files = self.RT.getFiles(torrent_id)
