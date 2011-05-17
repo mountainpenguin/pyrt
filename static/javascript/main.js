@@ -146,7 +146,7 @@ function show_add_dialogue(elem) {
         cancelSpan.addEventListener("click", function () {
             _remove_add_dialogue();
         });
-        cancelSpan.addEventListener("hover", function () {
+        cancelSpan.addEventListener("mouseover", function () {
             cancelSpan.style.color = "blue";
         });
         cancelSpan.addEventListener("mouseout", function () {
