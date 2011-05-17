@@ -125,14 +125,11 @@ class mainHandler:
             decoded = bencode.bdecode(inFile)
         except:
             #Invalid torrent 
-            body_html = """
-                ERROR/Invalid torrent file
-            """
+            return "ERROR/Invalid torrent file"
         else:
-            body_html = """
-                OK
-            """
-        return Handler.HTMLredirect("/index", refresh=15, body=body_html)
+            #save file in /torrents
+            
+            return "OK/filename=%s" % torrent.filename
         
     upload_torrent.exposed = True
 
