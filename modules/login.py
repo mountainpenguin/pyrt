@@ -78,6 +78,7 @@ class Login:
                         <div class="column-2"><input type="password" name="password"></div>
                         <div class="column-2" id="login-message">%s</div>
                     </form>
+                    <div>Note: this is a testing version</div>
                 </div>
             </body>
         </html>

@@ -222,6 +222,12 @@ img.control_image {
 }
 
 #add_img {
+    float : left;
     width : 40px;
     height : 40px;
+}
+
+#add_text {
+    text-decoration : underline;
+    float : left;
 }
