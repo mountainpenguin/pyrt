@@ -1,6 +1,6 @@
 function select_torrent(elem) {
     // elem.style.backgroundColor = "#00CCFF";
-    elem.style.backgroundColor = "##0099FF";
+    elem.style.backgroundColor = "#0099FF";
     elem.style.cursor = "help";
 }
 function deselect_torrent(elem) {
