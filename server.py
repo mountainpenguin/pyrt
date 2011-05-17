@@ -149,23 +149,23 @@ class mainHandler:
                 <head>
                     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
                     <link rel="stylesheet" type="text/css" href="/css/main.css">
-                    <script src="/javascript/file.js" type="text/javascript"></script>
+                    <script src="/javascript/document.js" type="text/javascript"></script>
                     <title>Testing</title>
                 </head>
                 <body>
                     <div id="files_list">
                         
-                        <div class="folder"><span class="folder_name">Folder 1</span><span class="folder_size">200 KB</span>
-                            <div class="folder"><span class="folder_name">Folder 1.1</span><span class="folder_size">100 KB</span>
-                                <div class="file">
-                                    <span class="file_name">File 1.1-1</span><span class="file_size">10 KB</span>
-                                    <span class="file_name">File 1.1-2</span><span class="file_size">10 KB</span>
-                                    <span class="file_name">File 1.1-3</span><span class="file_size">10 KB</span>
-                                    <span class="file_name">File 1.1-4</span><span class="file_size">10 KB</span>
+                        <div class="directory"><span class="directory_name">directory 1</span><span class="directory_size">200 KB</span>
+                            <div class="directory"><span class="directory_name">directory 1.1</span><span class="directory_size">100 KB</span>
+                                <div class="document">
+                                    <span class="document_name">document 1.1-1</span><span class="document_size">10 KB</span>
+                                    <span class="document_name">document 1.1-2</span><span class="document_size">10 KB</span>
+                                    <span class="document_name">document 1.1-3</span><span class="document_size">10 KB</span>
+                                    <span class="document_name">document 1.1-4</span><span class="document_size">10 KB</span>
                                 </div>
                             </div>
-                            <div class="file">
-                                <span class="file_name">File 1-1</span><span class="file_size">10 KB</span>
+                            <div class="document">
+                                <span class="document_name">document 1-1</span><span class="document_size">10 KB</span>
                             </div>
                         </div>
                         
