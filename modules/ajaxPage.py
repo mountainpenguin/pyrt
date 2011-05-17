@@ -62,7 +62,11 @@ class Ajax:
             return "ERROR"
         else:
                 return "OK"
-            
+                
+    def delete_torrent(self, torrent_id):
+        files = self.RT.getFiles(torrent_id)
+        return repr([x.__dict__ for x in files])
+        
     def get_files(self, torrent_id):
         files = self.RT.getFiles(torrent_id)
         structure, files_dict = self.Handler.getFileStructure(files, self.RT.getRootDir())
