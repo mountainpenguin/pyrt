@@ -155,22 +155,22 @@ class mainHandler:
                 <body>
                     <div id="files_list">
                         
-                        <div class="directory"><span class="directory_name">directory 1</span><span class="directory_size">200 KB</span>
-                            <div class="directory"><span class="directory_name">directory 1.1</span><span class="directory_size">100 KB</span>
+                        <div class="directory" onclick="show_contents(this);"><span class="directory_name">directory 1</span><span class="directory_size">200 KB</span>
+                            <div class="directory" onclick="show_contents(this);" style="display:none;"><span class="directory_name">directory 1.1</span><span class="directory_size">100 KB</span>
                                 <div class="document">
-                                    <span class="document_name">document 1.1-1</span><span class="document_size">10 KB</span>
+                                    <span class="document_name" style="display:none;">document 1.1-1</span><span class="document_size">10 KB</span>
                                 </div>
                                 <div class="document">
-                                    <span class="document_name">document 1.1-2</span><span class="document_size">10 KB</span>
+                                    <span class="document_name" style="display:none;">document 1.1-2</span><span class="document_size">10 KB</span>
                                 </div>
                                 <div class="document">
-                                    <span class="document_name">document 1.1-3</span><span class="document_size">10 KB</span>
+                                    <span class="document_name" style="display:none;">document 1.1-3</span><span class="document_size">10 KB</span>
                                 </div>
                                 <div class="document">
-                                    <span class="document_name">document 1.1-4</span><span class="document_size">10 KB</span>
+                                    <span class="document_name" style="display:none;">document 1.1-4</span><span class="document_size">10 KB</span>
                                 </div>
                             </div>
-                            <div class="document">
+                            <div class="document" style="display:none;">
                                 <span class="document_name">document 1-1</span><span class="document_size">10 KB</span>
                             </div>
                         </div>
