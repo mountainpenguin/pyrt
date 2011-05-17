@@ -237,7 +237,8 @@ img.control_image {
     cursor : pointer;
 }
 
-/* #add_torrent_input {
+#add_torrent_input {
     float : left;
+    clear : left;
     padding-left : 1em;
-} */
+}
