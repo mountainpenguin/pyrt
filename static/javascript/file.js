@@ -11,6 +11,7 @@ function process_children(elem) {
         children = elem.children
         for (index=0; index<children.length; index++) {
             child = children[child]
+            alert("Process child");
             child.style.color = "red";
             // child.style.display = "none";
             if (child.className == "directory" && child.tagName == "div") {
@@ -19,7 +20,6 @@ function process_children(elem) {
                 });
                 process_children(child);
             }
-            child.style.color = null;
         }
     }
 }
