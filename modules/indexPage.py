@@ -66,7 +66,7 @@ class Index:
                 
                 <div id="main_body">
                     <div id="add_torrent">
-                        <img alt="Add Torrent" src="/images/add.png">
+                        <img alt="Add Torrent" src="/images/add.png" id="add_img"> <span id="add_text">Add a torrent</span>
                     </div>
                     <div id="global_stats">
                         <h2>Global Stats</h2>

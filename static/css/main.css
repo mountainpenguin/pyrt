@@ -220,7 +220,7 @@ img.control_image {
     float : left;
 }
 
-div.#add_torrent > img:first-child {
+#add_img {
     width : 40px;
     height : 40px;
 }
