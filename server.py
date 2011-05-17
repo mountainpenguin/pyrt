@@ -40,7 +40,7 @@ class mainHandler:
     def index(self, password=None, view=None, sortby=None, reverse=None, **kwargs):
         if kwargs:
             returnable = "ERROR/unknown inputs\n"
-            for k,v in kwargs:
+            for k,v in kwargs.iteritems():
                 returnable += "%s : %s\n" % (k,v)
             return returnable
             
