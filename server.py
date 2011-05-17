@@ -123,11 +123,9 @@ class mainHandler:
         return """
             <html>
                 <body>
-                    file length: %s<br>
-                    file name: %s<br>
-                    file mime-type: %s<br>
+                    attributes : %s<br>
                 </body>
-            </html>""" % (len(torrentFile), torrent.filename, torrent.content_type)
+            </html>""" % (torrent.__dict__)
     upload_torrent.exposed = True
 
 if __name__ == "__main__":
