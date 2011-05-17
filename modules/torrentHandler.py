@@ -86,7 +86,7 @@ class Handler:
                 %s
             </body>
         </html>
-        """ % (url, refresh, body)
+        """ % (refresh, url, body)
         
     def getFileStructure(self, files, rtorrent_root):
         """
