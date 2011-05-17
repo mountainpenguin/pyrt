@@ -65,6 +65,9 @@ class Index:
                 </div>
                 
                 <div id="main_body">
+                    <div id="add_torrent">
+                        <img alt="Add Torrent" src="/images/add.png">
+                    </div>
                     <div id="global_stats">
                         <h2>Global Stats</h2>
                         <div class="column-1">Upload Rate:</div><div class="column-2">%(uprate)s/s</div>
