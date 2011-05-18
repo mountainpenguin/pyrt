@@ -210,6 +210,7 @@ class Handler:
             root = fileStruct[root_keys[0]]
             html = DIRECTORY_DIV % ("", root_keys[0], root["___size"])
             html += _getDirs(root)
+            html += _getFiles(root)
             html += "</div>"
             return html
         
