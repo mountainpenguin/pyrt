@@ -170,7 +170,7 @@ class mainHandler:
                                     <span class="document_name">document 1.1-4</span><span class="document_size">10 KB</span>
                                 </div>
                             </div>
-                            <div class="document" style="display:none;">
+                            <div class="document">
                                 <span class="document_name">document 1-1</span><span class="document_size">10 KB</span>
                             </div>
                         </div>
