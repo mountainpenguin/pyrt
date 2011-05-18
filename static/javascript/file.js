@@ -11,7 +11,7 @@
 // }
 
 $(document).ready(function () {
-    $("#filetree").treeview({
+    $("#files_list").treeview({
         collapsed : true,
     });
 });

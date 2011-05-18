@@ -150,7 +150,7 @@ class mainHandler:
             <html>
                 <head>
                     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-                    <!-- <link rel="stylesheet" type="text/css" href="/css/main.css"> -->
+                    <link rel="stylesheet" type="text/css" href="/css/main.css">
                     <link rel="stylesheet" type="text/css" href="/css/jquery.treeview.css">
                     <script src="/javascript/jquery-1.6.1.min.js" type="text/javascript"></script>
                     <script src="/javascript/jquery.cookie.js" type="text/javascript"></script>
@@ -159,7 +159,7 @@ class mainHandler:
                     <title>Testing</title>
                 </head>
                 <body>
-                    <ul id="filetree" class="filetree">
+                    <ul id="files_list" class="filetree">
                         <li><span class="folder">FILMS</span>
                             <ul>
                                 <li><span class="folder">DandK</span>

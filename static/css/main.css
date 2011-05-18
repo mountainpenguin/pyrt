@@ -138,14 +138,16 @@ div.topbar-tab_home {
      margin-top : 1em;
 }
 
-.folder {
+/* .folder {
     float : left;
     clear : left;
     color : blue;
-}
+} 
+
 .file {
     color : green;
 }
+*/
 
 .level-1 {
     padding-left : 0em;
