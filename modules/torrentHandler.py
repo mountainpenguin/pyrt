@@ -174,7 +174,7 @@ class Handler:
         def _getFiles(level):
             html = ""
             for file in level["___files"]:
-                html += DOCUMENT_DIV % (HIDDEN, os.path.basename(fileDict[file].abs_path), fileDict[file].size)
+                html += DOCUMENT_DIV % (HIDDEN, os.path.basename(fileDict[file].abs_path), self.humanSize(fileDict[file].size))
             return html
             
         def _getDirs(level):
@@ -186,7 +186,7 @@ class Handler:
             html = ""
             for subDirName in level_keys:
                 subLevel = level[subDirName]
-                html += DIRECTORY_DIV % (HIDDEN, subDirName, subLevel["___size"])
+                html += DIRECTORY_DIV % (HIDDEN, subDirName, self.humanSize(subLevel["___size"]))
                 html += _getDirs(subLevel)
                 html += _getFiles(subLevel)
                 html += "</div>"
@@ -208,7 +208,7 @@ class Handler:
             #should only ever be one root_key, "." or the base directory
             html = "<div id=\"files_list\">"
             root = fileStruct[root_keys[0]]
-            html = DIRECTORY_DIV % ("", root_keys[0], root["___size"])
+            html = DIRECTORY_DIV % ("", root_keys[0], self.humanSize(root["___size"]))
             html += _getDirs(root)
             html += _getFiles(root)
             html += "</div>"
