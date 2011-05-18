@@ -11,7 +11,7 @@ import string
 import config
 
 class User:
-    def __init__(self, username, pass_hash, sess_id=None):
+    def __init__(self, pass_hash, sess_id=None):
         self.password = pass_hash
         self.sess_id = sess_id
         
