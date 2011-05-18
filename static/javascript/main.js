@@ -1,10 +1,10 @@
 $(document).ready(function () {
     $(".torrent-div.rcstart").contextMenu("right_click_start", {
         bindings : {}
-    }
+    });
     $(".torrent-div.rcpause").contextMenu("right_click_pause", {
         bindings : {}
-    }
+    });
 });
 
 function select_torrent(elem) {
