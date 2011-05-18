@@ -174,54 +174,7 @@ class Detail:
     def files(self, torrent_id=None):
         file_html = "\n"
         files = self.RT.getFiles(torrent_id)
-        folder, files_dict = self.Handler.getFileStructure(files, self.RT.getRootDir())
-        folder_keys = folder.keys()
-        folder_keys.sort()
-        for folder_name in folder_keys:
-            #folder_name : {"_files" : [file_id,...],
-            #               folder_name : {"_files : [file_id,...],
-            #                           }
-            #               }
-            if folder_name == ".":
-                the_file = files_dict[folder[folder_name]["_files"][0]]
-                file_html += "\t\t\t\t<div class='file level-1'>\n\t\t\t\t\t<span class='file_priority'>%s</span>\n\t\t\t\t\t<span class='file_completion'>%s%%</span>\n\t\t\t\t\t<span class='file_size'>%s</span>\n\t\t\t\t\t<span class='file_name'>%s</span>\n\t\t\t\t</div>\n" % (the_file.priority, int((float(the_file.completed_chunks) / the_file.chunks) * 100), self.Handler.humanSize(the_file.size), os.path.basename(the_file.abs_path))
-
-            else: #multiple folders
-                folder_contents = folder[folder_name]
-                if "_size" in folder_contents.keys():
-                    file_html += "\t\t\t\t<div class='folder level-1'>\n\t\t\t\t\t<div class='folder_name'>\n\t\t\t\t\t\t<span class='file_completion'>%s%%</span>\n\t\t\t\t\t\t<span class='file_size'>%s</span>\n\t\t\t\t\t\t<span class='file_name'>%s</span>\n\t\t\t\t\t</div>\n" % (int(folder_contents["_completion"]), self.Handler.humanSize(folder_contents["_size"]), folder_name)
-
-    #~                file_html += "\t\t\t\t<div class='folder level-1'>\n\t\t\t\t\t<div class='folder_name'>\n\t\t\t\t\t\t<span class='file_priority'>%s</span>\n\t\t\t\t\t\t<span class='file_completion'>%s%%</span>\n\t\t\t\t\t\t<span class='file_size'>%s</span>\n\t\t\t\t\t\t<span class='file_name'>%s</span>\n\t\t\t\t\t</div>\n" % ("/".join(sorted(folder_contents["_priority"], key=lambda x : x)), int(folder_contents["_completion"]), self.Handler.humanSize(folder_contents["_size"]), folder_name)
-                else:
-                    file_html += "\t\t\t\t<div class='folder level-1'><div class='folder_name'>%s</div>\n" % folder_name
-                folder_contents_keys_ = folder_contents.keys()
-                folder_contents_keys = []
-                for i in folder_contents_keys_:
-                    if i[0] == "_":
-                        pass
-                    else:
-                        folder_contents_keys += [i]
-                folder_contents_keys.sort()
-                for folder_name_sub in folder_contents_keys:
-                    if "_size" in folder[folder_name][folder_name_sub].keys():
-                        file_html += "\t\t\t\t\t<div class='folder level-2'>\n\t\t\t\t\t\t<div class='folder_name'>\n\t\t\t\t\t\t\t<span class='file_completion'>%s%%</span>\n\t\t\t\t\t\t\t<span class='file_size'>%s</span>\n\t\t\t\t\t\t\t<span class='file_name'>%s</span>\n\t\t\t\t\t\t</div>\n" % (int(folder[folder_name][folder_name_sub]["_completion"]), self.Handler.humanSize(folder[folder_name][folder_name_sub]["_size"]), folder_name_sub)
-
-    #~                    file_html += "\t\t\t\t\t<div class='folder level-2'>\n\t\t\t\t\t\t<div class='folder_name'>\n\t\t\t\t\t\t\t<span class='file_priority'>%s</span>\n\t\t\t\t\t\t\t<span class='file_completion'>%s%%</span>\n\t\t\t\t\t\t\t<span class='file_size'>%s</span>\n\t\t\t\t\t\t\t<span class='file_name'>%s</span>\n\t\t\t\t\t\t</div>\n" % ("/".join(sorted(folder[folder_name][folder_name_sub]["_priority"], key=lambda x:x)), int(folder[folder_name][folder_name_sub]["_completion"]), self.Handler.humanSize(folder[folder_name][folder_name_sub]["_size"]), folder_name_sub)
-       
-                    else:
-                        file_html += "\t\t\t\t\t<div class='folder level-2'><div class='folder_name'>%s</div>\n" % folder_name_sub
-                    files_ = folder[folder_name][folder_name_sub]["_files"]
-                    files_ = sorted(files_, key=lambda x : "/".join(files_dict[x].path_components[1:]))
-                    for file in files_:
-                        the_file = files_dict[file]
-                        file_html += "\t\t\t\t\t\t<div class='file level-3'>\n\t\t\t\t\t\t\t<span class='file_priority'>%s</span>\n\t\t\t\t\t\t\t<span class='file_completion'>%s%%</span>\n\t\t\t\t\t\t\t<span class='file_size'>%s</span>\n\t\t\t\t\t\t\t<span class='file_name'>%s</span>\n\t\t\t\t\t\t</div>\n" % (the_file.priority, int((float(the_file.completed_chunks) / the_file.chunks) * 100), self.Handler.humanSize(the_file.size), os.path.basename(the_file.abs_path))
-                    file_html += "\t\t\t\t\t</div>\n"
-                if "_files" in folder_contents.keys():
-                    files_ = sorted(folder_contents["_files"], key=lambda x : files_dict[x].path_components[0])
-                    for file in files_:
-                        the_file = files_dict[file]
-                        file_html += "\t\t\t\t\t<div class='file level-2'>\n\t\t\t\t\t\t<span class='file_priority'>%s</span>\n\t\t\t\t\t\t<span class='file_completion'>%s%%</span>\n\t\t\t\t\t\t<span class='file_size'>%s</span>\n\t\t\t\t\t\t<span class='file_name'>%s</span>\n\t\t\t\t\t</div>\n" % (the_file.priority, int((float(the_file.completed_chunks) / the_file.chunks) * 100), self.Handler.humanSize(the_file.size), os.path.basename(the_file.abs_path))
-                file_html += "\t\t\t\t</div>" 
+        filehtml = self.Handler.fileTreeHTML(files, self.RT.getRootDir())
         
         info_dict = {
             "tname" : self.RT.getNameByID(torrent_id),
@@ -232,7 +185,7 @@ class Detail:
             "tstate" : self.RT.getStateStr(torrent_id),
     #~        "filehtml" : repr(folder)
     #~        "filehtml" : "\n\t\t\t\t".join([repr(x.__dict__) for x in files]).replace("\t","    ")
-            "filehtml" : file_html.replace("\t","    ")
+            "filehtml" : filehtml,
         }
         return """
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -240,8 +193,9 @@ class Detail:
         <head>
             <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
             <title>rTorrent - %(tname)s</title>
-            <link rel="stylesheet" type="text/css" href="../css/main.css">
-            <script src="../javascript/detail.js" type="text/javascript"></script>
+            <link rel="stylesheet" type="text/css" href="/css/main.css">
+            <script src="/javascript/detail.js" type="text/javascript"></script>
+            <script src="/javascript/file.js" type="text/javascript"></script>
         </head>
         <body>
             <div id="topbar">
@@ -258,9 +212,7 @@ class Detail:
                 <div class="column-1">Path:</div><div class="column-2">%(tpath)s</div>
                 <div class="column-1">Priority:</div><div class="column-2">%(tpriority)s</div>
                 <div class="column-1 %(tstate)s">State:</div><div class="column-2">%(tstate)s</div>
-                <div id="files_div">
-                    %(filehtml)s
-                </div>
+                %(filehtml)s
             </div>
         </body>
     </html>""" % info_dict

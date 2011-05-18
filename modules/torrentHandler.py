@@ -72,18 +72,21 @@ class Handler:
             status = t.status
         return status
     
-    def HTMLredirect(self, url):
-        html = """
+    def HTMLredirect(self, url, refresh=0, body=""):
+        return """
         <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
         <html>
             <head>
                 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-                <meta http-equiv="REFRESH" content="0;url=%s">
+                <meta http-equiv="REFRESH" content="%i;url=%s">
+                <link rel="stylesheet" type="text/css" href="/css/main.css"
                 <title>Redirect</title>
             </head>
+            <body>
+                %s
+            </body>
         </html>
-        """ % url
-        return html
+        """ % (refresh, url, body)
         
     def getFileStructure(self, files, rtorrent_root):
         """
@@ -115,7 +118,7 @@ class Handler:
                         folder[os.path.basename(file.base_path)]["_completion"] = new
                 else:
                     if os.path.basename(file.base_path) not in folder.keys():
-                        folder[os.path.basename(file.base_path)] = {file.path_components[0] : {"_files" : [random_id], "_size" : file.size, "_priority" : [file.priority], "_completion" : file.percentage_complete}}
+                        folder[os.path.basename(file.base_path)] = {file.path_components[0] : {"_files" : [random_id], "_size" : file.size, "_priority" : [file.priority], "_completion" : file.percentage_complete}, "_files" : [], "_size" : file.size, "_priority" : [file.priority], "_completion" : file.percentage_complete}
                     else:
                         if file.path_components[0] not in folder[os.path.basename(file.base_path)].keys():
                             folder[os.path.basename(file.base_path)][file.path_components[0]] = {"_files" : [random_id], "_size" : file.size, "_priority" : [file.priority], "_completion" : file.percentage_complete}
@@ -126,6 +129,67 @@ class Handler:
                                 folder[os.path.basename(file.base_path)][file.path_components[0]]["_priority"] += [file.priority]
                             folder[os.path.basename(file.base_path)][file.path_components[0]]["_completion"] = (folder[os.path.basename(file.base_path)][file.path_components[0]]["_completion"] + file.percentage_complete) / 2
         return (folder, files_dict)
+        
+    def fileTreeHTML(self, fileList, RTROOT):
+        """
+            Takes a list of files as outputted by rtorrent.getFiles and parses it into an html file tree
+            Requires the rtorrent root directory
+            File attributes:
+                abs_path, base_path, path_components, completed_chunks, priority, size, chunks, chunk_size
+        """
+        DOCUMENT_DIV = """
+            <div class="document"%s>
+                <img alt="Document" src="/images/document.png" class="file_img">
+                <span class="document_name">%s</span> 
+                <span class="document_size">%s</span>
+            </div>
+        """
+        DIRECTORY_DIV = """
+            <div class="directory"%s>
+                <img alt="Show Contents" title="Show Contents" onclick="event.cancelBubble = true; show_contents(this.parentNode);" src="/images/folder.png" class="file_img" style="cursor:pointer;">
+                <span class="directory_name">%s</span>
+                <span class="directory_size">%s</span>
+        """
+        
+        HIDDEN = " style=\"display:none;\""
+        
+        fileStruct, fileDict = self.getFileStructure(fileList, RTROOT)
+        #{'.': {'_files': ['96z9DJ2vWR']}}
+        #{'conky': {'_size': 3611, '_priority': ['normal'], '_completion': 0.0, '_files': ['psO5e58GdQ', 'Bxpi3YRclr', 'FV7SfL8V2e', 'Y92Ma4iC2M']}}
+        #{'08 - The Path of Daggers': {'_size': 1343817670, '_priority': ['off'], '_completion': 0.0, '_files': ['odPoI2rbhS', 'NBmOGXd1m2', '8HXWKF9MnA', 'L92axMfMoV', 'rtO44f2aYt', 'PoKyX2bLDL', '7OuK4GWZVq', 'wq4AWZxSUL', 'RdZawIqx6g', '6KIzUPSGiX', 'KxHmeBp1Aj', 'CtxVm4Yxch', 'tuXzAwNfE8', '10eXBJxyGS', '1wQoDUPkaA', 'Z6JZOXtMUj', 'eV7zUZTP3X', 'TvKCOUDbQy', 'WgoIW9WUT1', 'Ahc2pXgagX', 'xl4AIld6Vt', '5wpbRgnwku', 'BHl2dwWNr1', 's0ikEp7ScB', 'oIiJeD7ocn', 'Gv2dVcxpOa', 'ihC6M4c6T9', 'yE1tFJKhb4', 'kYeVUbIHVD', '7EFR7hxqrD', 'NItqUmoD4v', '5mmAQPow0A', 'lGtQlXYMtO']}, '07 - A Crown of Swords': {'_size': 1765362671, '_priority': ['off'], '_completion': 0.0, '_files': ['Wez3cq82vf', 'NObzRDUtdn', 'pJmFAgKRBM', 'TYgBfC7ZtJ', 'BRK1C0zNyo', 'u9gLa9VK1b', '7D87LV1u65', 'BeMUnkoyzk', 'HEftyzn79d', 'BmD712zuUO', '7HQleqYP7s', 'ZSeIt1Mbz1', 'TSi5rF7cuP', 'JOeYO0fS9N', 'yG4W5RJLn2', 'EFOMY2qRaQ', 'oXbigBNqDz', 'Lie9NDYQW2', 'O8zR1Y2Gpn', 'm4CHCRJyEl', 'OLsGadSDfM', 'Kxv9IjbCXz', '5pbr33sziJ', 'gIUVN4QW3C', 'rWGyLQbytg', 'MIMclfNsoi', 'JDvTUsZXKc', 'Qu8Sx7HNmZ', '1JBV36YOPh', 'sMOigZIlOQ', 'AiG0M442QT', 'xAQGaE0uqz', 'hk0xt79hps', 'mWNvteJfBN', 'fq5QADvHmM', 'NDumdsyGRG', 'KrGPV6AoLu', 'LQFVMbMzS0', 'mINS9DG2RY', 'jsNAkSEN0Y', 'dxjNRxhFMF', 'U1mT4LgJ9J', 'Uem2iveASy', '3igPDbfDpF', 'yuWulCZxlX']}, '02 - The Great Hunt': {'_size': 1535105250, '_priority': ['normal'], '_completion': 100.0, '_files': ['m04mBlUfl2', 'qd3Gw3F2jj', 'B28rEVZqpo', 'ZoFYWrBWGI', 'zH5GVT3GOq', 'SlUlCDkg8P', 'Mscdi612ai', 'yBuYuNVdE1', 'c2tELemMYk', 'eG4bH1Cr33', 'jfjgEJz2Rq', 'vwDFAxBnS3', 'QrpEDyoZzc', 'VgGMFwQ0bo', 'oQV48LfsS6', 'Mfpt7IhQdE', 'RYvVGp2ujF', 'TQXIv9X0V1', 'IeVDW1CcbZ', 'oPfIaYStTP', 'GAgD6Kibw1', 'M7a0duJJEg', 'DJdtlJuqXe', 'By3tWiRBcd', '2Fo6BnEFis', 'Jpb54M9NK1', 'PnfOXbZEcu', 'LTkAbfWatf', 'KJsDh9DSJw', 'Ggbi4chIml', 'Or3SVIUzlF', 'NNbsBBCrh7', 'yDpGnXZwRP', 'KhpnFLrOKY', 'lR73aWXCba', 'f9VtRUMus4', 'yjPKtgFAXE', '4GqZfhKrA1', 'jnWFRXgWf2', 'GohODd951O', 'q8CXSrmOyD', 'FSnZDVTsxF', 'eWMNL9MNNq', '9LX1aes4Qw', 'i6jTYbecjD', 'QIkFcfH8gr', '1kMvjnbakG', 'OZYnXqhQpH', 'fTxVbgEFMv', 'QDMoCuaVsb', 'QKHSiVdoxl']}
+        root_keys = fileStruct.keys()
+        root_keys.sort()
+        if root_keys[0] == ".":
+            fileObj = fileDict[fileStruct["."]["_files"][0]]
+            
+            return """
+                <div id="files_list">
+                    %s
+                </div>
+                """ % (DOCUMENT_DIV % ("", os.path.basename(fileObj.abs_path), self.humanSize(fileObj.size)))
+        else:
+            html = "<div id=\"files_list\">"
+            for dir in root_keys:
+                html += DIRECTORY_DIV % ("", dir, self.humanSize(fileStruct[dir]["_size"]))
+                files = fileStruct[dir]["_files"]
+                dirs = []
+                for i in fileStruct[dir].keys():
+                    if i[0] != "_":
+                        dirs += [i]
+                dirs.sort()
+                for sub_dir in dirs:
+                    html += DIRECTORY_DIV % (HIDDEN, sub_dir, self.humanSize(fileStruct[dir][sub_dir]["_size"]))
+                    sub_files = fileStruct[dir][sub_dir]["_files"]
+                    for sub_file in sub_files:
+                        sub_fileObj = fileDict[sub_file]
+                        html += DOCUMENT_DIV % (HIDDEN,"/".join(sub_fileObj.path_components[1:]), self.humanSize(sub_fileObj.size))
+                    html += "</div>"
+                for file in files:
+                    fileObj = fileDict[file]
+                    html += DOCUMENT_DIV % (HIDDEN, os.path.basename(fileObj.abs_path), self.humanSize(fileObj.size))
+                html += "</div>"
+            html += "</div>"
+            return html       
         
     def torrentHTML(self, torrentList, sort, view, reverse=False):
         """
@@ -224,9 +288,9 @@ class Handler:
         }
         for type in sorts.keys():
             if type in self.SORT_METHODS:
-                sorts[type] = "?view=%s&sortby=%s" % (view, type)
+                sorts[type] = "?view=%s&amp;sortby=%s" % (view, type)
                 if type == sort and not reverse:
-                    sorts[type] += "&reverse=1"
+                    sorts[type] += "&amp;reverse=1"
         if sort in sorts.keys():
             if reverse:
                 sorts[sort + "sort"] = "down"
@@ -254,9 +318,9 @@ class Handler:
             div_colour_array += [colour]
             status = self.getState(t)
             if status == "Stopped" or status == "Paused":
-                stopstart = "<span id='control_start' class='control_button' title='Start Torrent'><img onclick='event.cancelBubble = true; command(\"start_torrent\",\"%s\")' class='control_image' alt='Start' src='../images/start.png'></span>" % t.torrent_id
+                stopstart = "<span class='control_start control_button' title='Start Torrent'><img onclick='event.cancelBubble = true; command(\"start_torrent\",\"%s\")' class='control_image' alt='Start' src='../images/start.png'></span>" % t.torrent_id
             else:
-                stopstart = "<span id='control_pause' class='control_button' title='Pause Torrent'><img onclick='event.cancelBubble = true; command(\"pause_torrent\",\"%s\")'class='control_image' alt='Pause' src='../images/pause.png'></span>" % t.torrent_id
+                stopstart = "<span class='control_pause control_button' title='Pause Torrent'><img onclick='event.cancelBubble = true; command(\"pause_torrent\",\"%s\")'class='control_image' alt='Pause' src='../images/pause.png'></span>" % t.torrent_id
             torrent_html += """
                 <tr onmouseover='select_torrent(this);' 
                     onmouseout='deselect_torrent(this);' 
@@ -272,15 +336,15 @@ class Handler:
                     <td>%(t_status)s</td>
                     <td>
                         %(control_startpause)s
-                        <span id='control_stop' class='control_button' title='Stop Torrent'>
+                        <span class='control_stop control_button' title='Stop Torrent'>
                             <img onclick='event.cancelBubble = true; command(\"stop_torrent\",\"%(t_id)s\")'
                                  class='control_image' alt='Stop' src='../images/stop.png'>
                         </span>
-                        <span id='control_remove' class='control_button' title='Remove Torrent'>
+                        <span class='control_remove control_button' title='Remove Torrent'>
                             <img onclick='event.cancelBubble = true; command(\"remove_torrent\",\"%(t_id)s\")'
                                  class='control_image' alt='Remove' src='../images/remove.png'>
                         </span>
-                        <span id='control_delete' class='control_button' title='Remove Torrent and Files'>
+                        <span class='control_delete control_button' title='Remove Torrent and Files'>
                             <img onclick='event.cancelBubble = true; command(\"delete_torrent\",\"%(t_id)s\")'
                                  class='control_image' alt='Delete' src='../images/delete.png'>
                         </span>
@@ -308,8 +372,8 @@ class Handler:
         <!-- HEAD PLACEHOLDER -->
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
         <title>rTorrent - webUI</title>
-        <link rel="stylesheet" type="text/css" href="../css/main.css">
-        <script src="../javascript/main.js" type="text/javascript"></script>
+        <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <script src="/javascript/main.js" type="text/javascript"></script>
     </head>
     <body>
         <!-- BODY PLACEHOLDER -->
