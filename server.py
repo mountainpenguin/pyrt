@@ -151,6 +151,10 @@ class mainHandler:
                 <head>
                     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
                     <link rel="stylesheet" type="text/css" href="/css/main.css">
+                    <link rel="stylesheet" type="text/css" href="/css/jquery.treeview.css">
+                    <script src="/javascript/jquery-1.6.1.min.js" type="text/javascript"></script>
+                    <script src="/javascript/jquery.cookie.js" type="text/javascript"></script>
+                    <script src="/javascript/jquery.treeview.js" type="text/javascript"></script>
                     <script src="/javascript/file.js" type="text/javascript"></script>
                     <title>Testing</title>
                 </head>
@@ -158,7 +162,7 @@ class mainHandler:
                     %s
                 </body>
             </html>
-        """ % Handler.fileTreeHTML(RT.getFiles(torrent_id), RT.getRootDir())
+        """ % Handler.fileTreeHTML2(RT.getFiles(torrent_id), RT.getRootDir())
     test.exposed = True
 
 if __name__ == "__main__":

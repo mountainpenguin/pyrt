@@ -1,0 +1,6 @@
+*.pyc
+config/.pyrtconfig
+config/.pyrtrc
+.user.pickle
+.pyrtconfig
+torrents/*
