@@ -1,7 +1,7 @@
 function show_contents(elem) {
     children = elem.children;
     for (i=0; i<children.length; i++) {
-        if (children[i].tagName == "SPAN") {
+        if (children[i].tagName == "SPAN" || children[i].tagName == "IMG") {
             children[i].style.display="inline";
         } else {
             children[i].style.display="block";
