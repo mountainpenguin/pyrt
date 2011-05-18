@@ -152,14 +152,14 @@ class mainHandler:
                     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
                     <!-- <link rel="stylesheet" type="text/css" href="/css/main.css"> -->
                     <link rel="stylesheet" type="text/css" href="/css/jquery.treeview.css">
-                    <script src="/javascript/file.js" type="text/javascript"></script>
                     <script src="/javascript/jquery-1.6.1.min.js" type="text/javascript"></script>
                     <script src="/javascript/jquery.cookie.js" type="text/javascript"></script>
                     <script src="/javascript/jquery.treeview.js" type="text/javascript"></script>
+                    <script src="/javascript/file.js" type="text/javascript"></script>
                     <title>Testing</title>
                 </head>
                 <body>
-                    <ul class="filetree">
+                    <ul id="filetree" class="filetree">
                         <li><span class="folder">FILMS</span>
                             <ul>
                                 <li><span class="folder">DandK</span>
