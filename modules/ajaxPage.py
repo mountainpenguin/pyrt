@@ -2,7 +2,10 @@
 
 import cgi
 import rtorrent
-import simplejson as json
+try:
+    import simplejson as json
+except ImportError:
+    import json
 import time
 import torrentHandler
 import login
