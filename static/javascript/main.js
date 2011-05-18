@@ -1,9 +1,15 @@
 $(document).ready(function () {
     $(".torrent-div.rcstart").contextMenu("right_click_start", {
-        bindings : {}
+        bindings : {},
+        menuStyle : {
+            min-width : "10em";
+        },
     });
     $(".torrent-div.rcpause").contextMenu("right_click_pause", {
-        bindings : {}
+        bindings : {},
+        menuStyle : {
+            min-width : "10em";
+        },
     });
 });
 

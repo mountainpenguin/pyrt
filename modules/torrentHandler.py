@@ -498,7 +498,7 @@ class Handler:
         </div>
         <div class="contextMenu" id="right_click_start">
             <ul>
-                <li id="start"><img alt="start" src="/image/start.png"> Start</li> -->
+                <li id="start"><img alt="start" src="/images/start.png"> Start</li>
                 <li id="stop"><img alt="stop" src="/images/stop.png"> Stop</li>
                 <li id="remove"><img alt="remove" src="/images/remove.png"> Remove and <strong>keep</strong> files</li>
                 <li id="delete"><img alt="delete" src="/images/delete.png"> Remove and <strong>delete</strong> files</li>
@@ -507,7 +507,7 @@ class Handler:
         </div>
         <div class="contextMenu" id="right_click_pause">
             <ul>
-                <li id="pause"><img alt="pause" src="/image/pause.png"> Pause</li> -->
+                <li id="pause"><img alt="pause" src="/images/pause.png"> Pause</li>
                 <li id="stop"><img alt="stop" src="/images/stop.png"> Stop</li>
                 <li id="remove"><img alt="remove" src="/images/remove.png"> Remove and <strong>keep</strong> files</li>
                 <li id="delete"><img alt="delete" src="/images/delete.png"> Remove and <strong>delete</strong> files</li>
