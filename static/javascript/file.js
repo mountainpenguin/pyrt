@@ -18,12 +18,8 @@ $(document).ready(function () {
         $(this).bind (
             "click",
             function () {
-                read_elem($(this));
+                alert($(this).html());
             }
         );
     });
 });
-
-function read_elem(elem) {
-    alert(elem.innerHTML);
-}
