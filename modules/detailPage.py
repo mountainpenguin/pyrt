@@ -212,7 +212,7 @@ class Detail:
                 <div class="column-1">Path:</div><div class="column-2">%(tpath)s</div>
                 <div class="column-1">Priority:</div><div class="column-2">%(tpriority)s</div>
                 <div class="column-1 %(tstate)s">State:</div><div class="column-2">%(tstate)s</div>
-                %(filehtml)
+                %(filehtml)s
             </div>
         </body>
     </html>""" % info_dict
