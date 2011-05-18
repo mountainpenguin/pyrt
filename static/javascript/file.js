@@ -14,4 +14,4 @@ $(document).ready(function () {
     $("#filetree").treeview({
         collapsed : true,
     });
-}
+});
