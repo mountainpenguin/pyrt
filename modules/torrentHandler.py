@@ -87,6 +87,65 @@ class Handler:
             </body>
         </html>
         """ % (refresh, url, body)
+    
+    def getFileStructure2(self, files, rtorrent_root):
+        folder = {}
+        files_dict = {}
+        priorites = {"high" : 2, "normal" : 1, "off" : 0}
+        for file in files:
+            random_id = "".join([random.choice(string.letters + string.digits) for i in range(10)])
+            files_dict[random_id] = file
+            if file.base_path == rtorrent_root:
+                folder["."] = {"_files" : [random_id]}
+                break
+            else:
+                if os.path.basename(file.base_path) not in folder.keys():
+                    #create folder entry
+                    folder[os.path.basename(file.base_path)] = {
+                        "_files" : [],
+                        "_size" : 0,
+                        "_priority" : [file.priority],
+                        "_completion" : 0,
+                    }
+                    
+                for index in range(len(file.path_components)):
+                    base = os.path.basename(file.base_path)
+                    component = file.path_components[index]
+                    if (index + 1) == len(file.path_components):
+                        #it's a file
+                        #last elem
+                        #create entry
+                        branch = folder[base]
+                        while rec_index < index:
+                            branch["_size"] += file.size
+                            if file.priority not in branch["_priority"]:
+                                branch["_priority"] += [file.priority]
+                            branch["_completion"] = int((float(branch["_completion"]) + file.percentage_completion) / 2)
+                            branch = branch[file.path_components[rec_index]]
+                        branch["_files"] += [random_id]
+                        branch["_size"] += file.size
+                        if file.priority not in branch["_priority"]:
+                            branch["_priority"] += [file.priority]
+                        branch["_completion"] = int((float(branch["_completion"]) + file.percentage_completion) / 2)
+                    else:
+                        #it's a dir
+                        #count index up
+                        rec_index = 0
+                        branch = folder[base]
+                        while rec_index <= index:
+                            if file.path_components[rec_index] not in branch.keys():
+                                #create folder entry
+                                branch[file.path_components[rec_index]] = {
+                                    "_files" : [],
+                                    "_size" : 0,
+                                    "_priority" : [],
+                                    "_completion" : 0,
+                                }
+                            branch = branch[file.path_components[rec_index]]
+                            rec_index += 1
+                        
+                        
+                        
         
     def getFileStructure(self, files, rtorrent_root):
         """
