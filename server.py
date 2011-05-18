@@ -155,10 +155,72 @@ class mainHandler:
                     <title>Testing</title>
                 </head>
                 <body>
-                    %s
+                    <div id="files_list"> 
+                        <div class="directory"> 
+                            <img alt="Show Contents" title="Show Contents" onclick="event.cancelBubble = true; show_contents(this.parentNode);" src="/images/folder.png" class="file_img" style="cursor:pointer;"> 
+                            <span class="directory_name">FILMS</span> 
+                            <span class="directory_size">3.43 GB</span> 
+            
+                            <div class="directory" style="display:none;"> 
+                                <img alt="Show Contents" title="Show Contents" onclick="event.cancelBubble = true; show_contents(this.parentNode);" src="/images/folder.png" class="file_img" style="cursor:pointer;"> 
+                                <span class="directory_name">DandK</span> 
+                                <span class="directory_size">1.38 GB</span> 
+            
+                                <div class="directory" style="display:none;"> 
+                                    <img alt="Show Contents" title="Show Contents" onclick="event.cancelBubble = true; show_contents(this.parentNode);" src="/images/folder.png" class="file_img" style="cursor:pointer;"> 
+                                    <span class="directory_name">D</span> 
+                                    <span class="directory_size">702.82 MB</span> 
+                            
+                                    <div class="document" style="display:none;"> 
+                                        <img alt="Document" src="/images/document.png" class="file_img"> 
+                                        <span class="document_name">Deliverance 1972 DVDRip.avi</span> 
+                                        <span class="directory_size">702.82 MB</span> 
+                                    </div> 
+                                </div> 
+                                <div class="directory" style="display:none;"> 
+                                    <img alt="Show Contents" title="Show Contents" onclick="event.cancelBubble = true; show_contents(this.parentNode);" src="/images/folder.png" class="file_img" style="cursor:pointer;"> 
+                                    <span class="directory_name">K</span> 
+                                    <span class="directory_size">714.02 MB</span> 
+            
+                                    <div class="document" style="display:none;"> 
+                                        <img alt="Document" src="/images/document.png" class="file_img"> 
+                                        <span class="document_name">Kindergarten.Cop.DVDRip.1990.Xvid.avi</span> 
+                                        <span class="directory_size">714.02 MB</span> 
+                                    </div> 
+                                </div> 
+                                <div class="document" style="display:none;"> 
+                                    <img alt="Document" src="/images/document.png" class="file_img"> 
+                                    <span class="document_name">testing.txt</span> 
+                                    <span class="directory_size">15 B</span> 
+                                </div> 
+                            </div> 
+                            <div class="directory" style="display:none;"> 
+                                <img alt="Show Contents" title="Show Contents" onclick="event.cancelBubble = true; show_contents(this.parentNode);" src="/images/folder.png" class="file_img" style="cursor:pointer;"> 
+                                <span class="directory_name">GandR</span> 
+                                <span class="directory_size">1.37 GB</span> 
+                        
+                                <div class="document" style="display:none;"> 
+                                    <img alt="Document" src="/images/document.png" class="file_img"> 
+                                    <span class="document_name">Glengarry Glen Ross (1992).avi</span> 
+                                    <span class="directory_size">700.23 MB</span> 
+                                </div> 
+                
+                                <div class="document" style="display:none;"> 
+                                    <img alt="Document" src="/images/document.png" class="file_img"> 
+                                    <span class="document_name">Robin Hood Men In Tights.avi</span> 
+                                    <span class="directory_size">699.68 MB</span> 
+                                </div> 
+                            </div> 
+                            <div class="document" style="display:none;"> 
+                                <img alt="Document" src="/images/document.png" class="file_img"> 
+                                <span class="document_name">The.Fighter.2010.DVDRip.XviD-ViP3R.avi</span> 
+                                <span class="directory_size">696.93 MB</span> 
+                            </div> 
+                        </div>
+                    </div> 
                 </body>
             </html>
-        """ % Handler.fileTreeHTML2(RT.getFiles(torrent_id), RT.getRootDir())
+        """
     test.exposed = True
 
 if __name__ == "__main__":

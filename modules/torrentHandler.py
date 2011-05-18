@@ -171,6 +171,8 @@ class Handler:
         
         HIDDEN = " style=\"display:none;\""
         
+        LEVEL = 0
+        
         def _getFiles(level):
             html = ""
             for file in level["___files"]:
