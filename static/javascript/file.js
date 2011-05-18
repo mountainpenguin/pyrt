@@ -18,7 +18,7 @@ $(document).ready(function () {
         $(this).bind (
             "click",
             function () {
-                read_elem(elem);
+                read_elem($(this));
             }
         );
     });
