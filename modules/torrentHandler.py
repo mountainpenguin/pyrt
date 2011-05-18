@@ -166,7 +166,7 @@ class Handler:
                 <div id="files_list">
                     %s
                 </div>
-                """ % (DOCUMENT_DIV % ("", fileObj.base_path, self.humanSize(fileObj.size)))
+                """ % (DOCUMENT_DIV % ("", os.path.basename(fileObj.abs_path), self.humanSize(fileObj.size)))
         else:
             html = "<div id=\"files_list\">"
             for dir in root_keys:
@@ -182,11 +182,11 @@ class Handler:
                     sub_files = fileStruct[dir][sub_dir]["_files"]
                     for sub_file in sub_files:
                         sub_fileObj = fileDict[sub_file]
-                        html += DOCUMENT_DIV % (HIDDEN,"/".join(sub_fileObj.base_path[1:]), self.humanSize(sub_fileObj.size))
+                        html += DOCUMENT_DIV % (HIDDEN,"/".join(sub_fileObj.path_components[1:]), self.humanSize(sub_fileObj.size))
                     html += "</div>"
                 for file in files:
                     fileObj = fileDict[file]
-                    html += DOCUMENT_DIV % (HIDDEN, fileObj.base_path, self.humanSize(fileObj.size))
+                    html += DOCUMENT_DIV % (HIDDEN, os.path.basename(fileObj.abs_path), self.humanSize(fileObj.size))
                 html += "</div>"
             html += "</div>"
             return html
