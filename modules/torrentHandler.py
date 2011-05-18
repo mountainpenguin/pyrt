@@ -183,13 +183,14 @@ class Handler:
                 if _key[0:3] != "___":
                     level_keys += [_key]
             level_keys.sort()
-            html = ""
+            html = "<div id=\"files_list\">"
             for subDirName in level_keys:
                 subLevel = level[subDirName]
                 html += DIRECTORY_DIV % (HIDDEN, subDirName, self.humanSize(subLevel["___size"]))
                 html += _getDirs(subLevel)
                 html += _getFiles(subLevel)
                 html += "</div>"
+            html += "</div>"
             return html
                 
         fileStruct, fileDict = self.getFileStructure(fileList, RTROOT)
