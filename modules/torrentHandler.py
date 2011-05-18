@@ -183,14 +183,13 @@ class Handler:
                 if _key[0:3] != "___":
                     level_keys += [_key]
             level_keys.sort()
-            html = "<div id=\"files_list\">"
+            html = ""
             for subDirName in level_keys:
                 subLevel = level[subDirName]
                 html += DIRECTORY_DIV % (HIDDEN, subDirName, self.humanSize(subLevel["___size"]))
                 html += _getDirs(subLevel)
                 html += _getFiles(subLevel)
                 html += "</div>"
-            html += "</div>"
             return html
                 
         fileStruct, fileDict = self.getFileStructure(fileList, RTROOT)
@@ -209,10 +208,11 @@ class Handler:
             #should only ever be one root_key, "." or the base directory
             html = "<div id=\"files_list\">"
             root = fileStruct[root_keys[0]]
-            html = DIRECTORY_DIV % ("", root_keys[0], self.humanSize(root["___size"]))
+            html = "<div id=\"files_list\">"
+            html += DIRECTORY_DIV % ("", root_keys[0], self.humanSize(root["___size"]))
             html += _getDirs(root)
             html += _getFiles(root)
-            html += "</div>"
+            html += "</div></div>"
             return html
         
     def torrentHTML(self, torrentList, sort, view, reverse=False):
