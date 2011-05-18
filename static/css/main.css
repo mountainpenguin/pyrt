@@ -253,3 +253,8 @@ div.directory {
 div.document {
     color : blue;
 }
+
+img.file_img {
+    width : 20px;
+    height : 20px;
+}
