@@ -155,18 +155,24 @@ class Handler:
             File attributes:
                 abs_path, base_path, path_components, completed_chunks, priority, size, chunks, chunk___size
         """
+        # DOCUMENT_DIV = """
+            # <div class="document"%s>
+                # <img alt="Document" src="/images/document.png" class="file_img">
+                # <span class="document_name">%s</span> 
+                # <span class="directory_size">%s</span>
+            # </div>
+        # """
         DOCUMENT_DIV = """
-            <div class="document"%s>
-                <img alt="Document" src="/images/document.png" class="file_img">
-                <span class="document_name">%s</span> 
-                <span class="directory_size">%s</span>
-            </div>
+            <li><span class="file">%s</span></li>
         """
+        # DIRECTORY_DIV = """
+            # <div class="directory"%s>
+                # <img alt="Show Contents" title="Show Contents" onclick="event.cancelBubble = true; show_contents(this.parentNode);" src="/images/folder.png" class="file_img" style="cursor:pointer;">
+                # <span class="directory_name">%s</span>
+                # <span class="directory_size">%s</span>
+        # """
         DIRECTORY_DIV = """
-            <div class="directory"%s>
-                <img alt="Show Contents" title="Show Contents" onclick="event.cancelBubble = true; show_contents(this.parentNode);" src="/images/folder.png" class="file_img" style="cursor:pointer;">
-                <span class="directory_name">%s</span>
-                <span class="directory_size">%s</span>
+            <li><span class="folder">%s</span><ul>
         """
         
         HIDDEN = " style=\"display:none;\""
@@ -176,7 +182,8 @@ class Handler:
         def _getFiles(level):
             html = ""
             for file in level["___files"]:
-                html += DOCUMENT_DIV % (HIDDEN, os.path.basename(fileDict[file].abs_path), self.humanSize(fileDict[file].size))
+                # html += DOCUMENT_DIV % (HIDDEN, os.path.basename(fileDict[file].abs_path), self.humanSize(fileDict[file].size))
+                html += DOCUMENT_DIV % (os.path.basename(fileDict[file].abs_path))
             return html
             
         def _getDirs(level):
@@ -188,10 +195,11 @@ class Handler:
             html = ""
             for subDirName in level_keys:
                 subLevel = level[subDirName]
-                html += DIRECTORY_DIV % (HIDDEN, subDirName, self.humanSize(subLevel["___size"]))
+                # html += DIRECTORY_DIV % (HIDDEN, subDirName, self.humanSize(subLevel["___size"]))
+                html += DIRECTORY_DIV % (subDirName)
                 html += _getDirs(subLevel)
                 html += _getFiles(subLevel)
-                html += "</div>"
+                html += "</ul></li>"
             return html
                 
         fileStruct, fileDict = self.getFileStructure(fileList, RTROOT)
@@ -204,17 +212,18 @@ class Handler:
                 <div id="files_list">
                     %s
                 </div>
-                """ % (DOCUMENT_DIV % ("", os.path.basename(fileObj.abs_path), self.humanSize(fileObj.size)))
+                """ % (DOCUMENT_DIV % (os.path.basename(fileObj.abs_path)))
+                # % (DOCUMENT_DIV % ("", os.path.basename(fileObj.abs_path), self.humanSize(fileObj.size)))
         else:
             #walk through dictionary
             #should only ever be one root_key, "." or the base directory
-            html = "<div id=\"files_list\">"
+            html = "<ul id=\"files_list\" class=\"filetree\">"
             root = fileStruct[root_keys[0]]
-            html = "<div id=\"files_list\">"
-            html += DIRECTORY_DIV % ("", root_keys[0], self.humanSize(root["___size"]))
+            #html += DIRECTORY_DIV % ("", root_keys[0], self.humanSize(root["___size"]))
+            html += DIRECTORY_DIV % (root_keys[0])
             html += _getDirs(root)
             html += _getFiles(root)
-            html += "</div></div>"
+            html += "</ul></ul>"
             return html
             
     def fileTreeHTML(self, fileList, RTROOT):

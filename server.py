@@ -159,7 +159,8 @@ class mainHandler:
                     <title>Testing</title>
                 </head>
                 <body>
-                    <ul id="files_list" class="filetree">
+                    %s
+                    <!-- <ul id="files_list" class="filetree">
                         <li><span class="folder">FILMS</span>
                             <ul>
                                 <li><span class="folder">DandK</span>
@@ -186,10 +187,10 @@ class mainHandler:
                                 <li><span class="file">The.Fighter.2010.DVDRip.XviD-ViP3R.avi</span></li>
                             </ul>
                         </li>
-                    </ul>
+                    </ul> -->
                 </body>
             </html>
-        """
+        """ % Handler.fileTreeHTML2(RT.getFiles(torrent_id), RT.getRootDir())
     test.exposed = True
 
 if __name__ == "__main__":
