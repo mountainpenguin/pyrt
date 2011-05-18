@@ -3,6 +3,7 @@
 import random
 import string
 import os
+import re
 
 class Handler:
     """
@@ -198,6 +199,8 @@ class Handler:
                 fileType = "file_video"
             elif fileName.lower().endswith(".rar"):
                 fileType = "file_archive"
+			elif "." in fileName and re.match("r\d+", fileName.lower().split(".")[-1]):
+				fileType = "file_archive"
             elif fileName.lower().endswith(".nfo") or fileName.lower().endswith(".txt"):
                 fileType = "file_document"
             elif fileName.lower().endswith(".iso"):
