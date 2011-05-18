@@ -195,6 +195,11 @@ class Detail:
             <title>rTorrent - %(tname)s</title>
             <link rel="stylesheet" type="text/css" href="/css/main.css">
             <script src="/javascript/detail.js" type="text/javascript"></script>
+            
+            <link rel="stylesheet" type="text/css" href="/css/jquery.treeview.css">
+            <script src="/javascript/jquery-1.6.1.min.js" type="text/javascript"></script>
+            <script src="/javascript/jquery.cookie.js" type="text/javascript"></script>
+            <script src="/javascript/jquery.treeview.js" type="text/javascript"></script>
             <script src="/javascript/file.js" type="text/javascript"></script>
         </head>
         <body>
