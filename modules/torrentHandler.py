@@ -185,7 +185,7 @@ class Handler:
             level_keys.sort()
             for subDirName in level_keys:
                 subLevel = level[subDirName]
-                html = DIRECTORY_DIV % (HIDDEN, subDirName, subLevel["_size"])
+                html = DIRECTORY_DIV % (HIDDEN, subDirName, subLevel["___size"])
                 html += _getDirs(subLevel)
                 html += "</div>"
             return html
