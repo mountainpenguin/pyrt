@@ -1,4 +1,7 @@
 function show_contents(elem) {
+    elem.addEventListener("click", function() {
+       hide_contents(elem); 
+    });
     children = elem.children;
     for (i=0; i<children.length; i++) {
         if (children[i].tagName == "SPAN" || children[i].tagName == "IMG") {
@@ -7,5 +10,12 @@ function show_contents(elem) {
             children[i].style.display="block";
             children[i].style.paddingLeft = "1em";
         }
+    }
+}
+
+function hide_contents(elem) {
+    children = elem.children;
+    for (i=0; i<children.length; i++) {
+        children[i].style.display = "none";
     }
 }
