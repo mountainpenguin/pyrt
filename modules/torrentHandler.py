@@ -188,6 +188,7 @@ class Handler:
                 subLevel = level[subDirName]
                 html += DIRECTORY_DIV % (HIDDEN, subDirName, subLevel["___size"])
                 html += _getDirs(subLevel)
+                html += _getFiles(level)
                 html += "</div>"
             return html
                 
@@ -207,7 +208,9 @@ class Handler:
             #should only ever be one root_key, "." or the base directory
             html = "<div id=\"files_list\">"
             root = fileStruct[root_keys[0]]
-            return _getDirs(root)
+            html = DIRECTORY_DIV % ("", root_keys[0], fileStruct["___size"])
+            html += _getDirs(root)
+            html += "</div>"
         
     def fileTreeHTML(self, fileList, RTROOT):
         """
