@@ -205,6 +205,7 @@ class Handler:
         if root_keys[0] == ".":
             fileObj = fileDict[fileStruct["."]["___files"][0]]
             fileName = os.path.basename(fileObj.abs_path)
+            fileType = "file_unknown"
             if fileName.lower().endswith(".avi") or fileName.lower().endswith(".mkv"):
                 fileType = "file_video"
             elif fileName.lower().endswith(".rar"):
