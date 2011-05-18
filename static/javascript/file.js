@@ -15,6 +15,12 @@ $(document).ready(function () {
         collapsed : true,
     });
     $(".file_document").each( function (elem) {
-        alert(elem.id);
+        elem.click( function () {
+            read_elem(elem);
+        });
     });
 });
+
+function read_elem(elem) {
+    alert(elem.innerHTML);
+}
