@@ -1,8 +1,8 @@
 $(document).ready(function () {
     $(".torrent-div.rcstart").contextMenu("right_click_start", {
         bindings : {
-            "start" : function () {
-                alert($(this));
+            "start" : function (t) {
+                t.find("span.control_start").click();
             }
         },
         menuStyle : {
