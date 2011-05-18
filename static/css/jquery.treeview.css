@@ -67,5 +67,6 @@
 .filetree li.expandable span.folder { background: url(/images/folder-closed.gif) 0 0 no-repeat; }
 .filetree span.file_unknown { background: url(/images/file_unknown.png) 0 0 no-repeat; }
 .filetree span.file_video { background: url(/images/file_video.jpg) 0 0 no-repeat; }
+.filetree span.file_disk { background : url(/images/file_disk.png) 0 0 no-repeat; }
 .filetree span.file_archive { background: url(/images/file_archive.png) 0 0 no-repeat; }
 .filetree span.file_document { background: url(/images/file.gif) 0 0 no-repeat; }

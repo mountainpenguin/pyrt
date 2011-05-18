@@ -172,15 +172,8 @@ class Handler:
             html = ""
             for file in level["___files"]:
                 # html += DOCUMENT_DIV % (HIDDEN, os.path.basename(fileDict[file].abs_path), self.humanSize(fileDict[file].size))
-                fileType = "unknown"
                 fileName = os.path.basename(fileDict[file].abs_path)
-                if fileName.lower().endswith(".avi") or fileName.lower().endswith(".mkv"):
-                    fileType = "file_video"
-                elif fileName.lower().endswith(".rar"):
-                    fileType = "file_archive"
-                elif fileName.lower().endswith(".nfo") or fileName.lower().endswith(".txt"):
-                    fileType = "file_document"
-                html += DOCUMENT_DIV % (fileType, fileName)
+                html += DOCUMENT_DIV % (_getFileType(fileName), fileName), fileName)
             return html
             
         def _getDirs(level):
@@ -198,13 +191,8 @@ class Handler:
                 html += _getFiles(subLevel)
                 html += "</ul></li>"
             return html
-                
-        fileStruct, fileDict = self.getFileStructure(fileList, RTROOT)
-        root_keys = fileStruct.keys()
-        root_keys.sort()
-        if root_keys[0] == ".":
-            fileObj = fileDict[fileStruct["."]["___files"][0]]
-            fileName = os.path.basename(fileObj.abs_path)
+            
+        def _getFileType(fileName):
             fileType = "file_unknown"
             if fileName.lower().endswith(".avi") or fileName.lower().endswith(".mkv"):
                 fileType = "file_video"
@@ -212,11 +200,21 @@ class Handler:
                 fileType = "file_archive"
             elif fileName.lower().endswith(".nfo") or fileName.lower().endswith(".txt"):
                 fileType = "file_document"
+            elif fileName.lower().endswith(".iso"):
+                fileType = "file_disk"
+            return fileType
+                
+        fileStruct, fileDict = self.getFileStructure(fileList, RTROOT)
+        root_keys = fileStruct.keys()
+        root_keys.sort()
+        if root_keys[0] == ".":
+            fileObj = fileDict[fileStruct["."]["___files"][0]]
+            fileName = os.path.basename(fileObj.abs_path)
             return """
                 <ul id="files_list" class="filetree">
                     %s
                 </ul>
-                """ % (DOCUMENT_DIV % (fileType, fileName))
+                """ % (DOCUMENT_DIV % (_getFileType(fileName), fileName))
                 # % (DOCUMENT_DIV % ("", os.path.basename(fileObj.abs_path), self.humanSize(fileObj.size)))
         else:
             #walk through dictionary
