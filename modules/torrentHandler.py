@@ -208,7 +208,7 @@ class Handler:
             #should only ever be one root_key, "." or the base directory
             html = "<div id=\"files_list\">"
             root = fileStruct[root_keys[0]]
-            html = DIRECTORY_DIV % ("", root_keys[0], fileStruct["___size"])
+            html = DIRECTORY_DIV % ("", root_keys[0], root["___size"])
             html += _getDirs(root)
             html += "</div>"
         
