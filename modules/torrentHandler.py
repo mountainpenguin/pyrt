@@ -422,33 +422,24 @@ class Handler:
         torrent_html += "<!-- %r -->" % sorts
             
         div_colour_array = ["blue", "green"]
+        
         for t in torrentList:
             colour = div_colour_array.pop(0)
             div_colour_array += [colour]
             status = self.getState(t)
-            rclick_menu = """
-        <div class="contextMenu" id="right_click_menu">
-            <ul>
-                <li id="%(inp)s"><img alt="%(inp)s" src="/image/%(inp)s.png"> %(Inp)s</li>
-                <li id="stop"><img alt="stop" src="/images/stop.png"> Stop</li>
-                <li id="remove"><img alt="remove" src="/images/remove.png"> Remove and <strong>keep</strong> files</li>
-                <li id="delete"><img alt="delete" src="/images/delete.png"> Remove and <strong>delete</strong> files</li>
-                <li id="rehash"><!-- <img alt="rehash" src="/images/rehash.png"> --> Rehash</li>
-            </ul>
-        </div>"""
             if status == "Stopped" or status == "Paused":
                 stopstart = "<span class='control_start control_button' title='Start Torrent'><img onclick='event.cancelBubble = true; command(\"start_torrent\",\"%s\")' class='control_image' alt='Start' src='../images/start.png'></span>" % t.torrent_id
-                rclick_menu = rclick_menu % {"inp" : "start", "Inp" : "Start"}
+                stoporstart = "rcstart"
             else:
                 stopstart = "<span class='control_pause control_button' title='Pause Torrent'><img onclick='event.cancelBubble = true; command(\"pause_torrent\",\"%s\")'class='control_image' alt='Pause' src='../images/pause.png'></span>" % t.torrent_id
-                rclick_menu = rclick_menu % {"imp" : "pause", "Inp" : "Pause"}
+                stoporstart = "rcpause"
                 
             torrent_html += """
                 <tr onmouseover='select_torrent(this);' 
                     onmouseout='deselect_torrent(this);' 
                     onclick='view_torrent(this);'
                     ondblclick='navigate_torrent(this);'
-                    class='torrent-div %(colour)s' 
+                    class='torrent-div %(colour)s %(stoporstart)s' 
                     id='torrent_id_%(t_id)s'>
                     <td>%(t_name)s</td>
                     <td>%(t___size)s</td>
@@ -484,6 +475,7 @@ class Handler:
                             "t_downrate" : self.humanSize(t.down_rate),
                             "t_status" : status,
                             "control_startpause" : stopstart,
+                            "stoporstart" : stoporstart,
                         }
         torrent_html += "\n             </table>"
 
@@ -504,8 +496,25 @@ class Handler:
         <div id="torrent_table">
             %s
         </div>
-        %s
+        <div class="contextMenu" id="right_click_start">
+            <ul>
+                <li id="start"><img alt="start" src="/image/start.png"> Start</li> -->
+                <li id="stop"><img alt="stop" src="/images/stop.png"> Stop</li>
+                <li id="remove"><img alt="remove" src="/images/remove.png"> Remove and <strong>keep</strong> files</li>
+                <li id="delete"><img alt="delete" src="/images/delete.png"> Remove and <strong>delete</strong> files</li>
+                <li id="rehash"><!-- <img alt="rehash" src="/images/rehash.png"> --> Rehash</li>
+            </ul>
+        </div>
+        <div class="contextMenu" id="right_click_pause">
+            <ul>
+                <li id="pause"><img alt="pause" src="/image/pause.png"> Pause</li> -->
+                <li id="stop"><img alt="stop" src="/images/stop.png"> Stop</li>
+                <li id="remove"><img alt="remove" src="/images/remove.png"> Remove and <strong>keep</strong> files</li>
+                <li id="delete"><img alt="delete" src="/images/delete.png"> Remove and <strong>delete</strong> files</li>
+                <li id="rehash"><!-- <img alt="rehash" src="/images/rehash.png"> --> Rehash</li>
+            </ul>
+        </div>
     </body>
 </html>
-        """ % (torrent_html, rclick_menu)
+        """ % (torrent_html)
         return html
