@@ -150,74 +150,43 @@ class mainHandler:
             <html>
                 <head>
                     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-                    <link rel="stylesheet" type="text/css" href="/css/main.css">
+                    <!-- <link rel="stylesheet" type="text/css" href="/css/main.css"> -->
+                    <link rel="stylesheet" type="text/css" href="/css/jquery.treeview.css">
                     <script src="/javascript/file.js" type="text/javascript"></script>
+                    <script src="/javascript/jquery-1.6.1.min.js" type="text/javascript"></script>
+                    <script src="/javascript/jquery.cookie.js" type="text/javascript"></script>
+                    <script src="/javascript/jquery.treeview.js" type="text/javascript"></script>
                     <title>Testing</title>
                 </head>
                 <body>
-                    <div id="files_list"> 
-                        <div class="directory"> 
-                            <img alt="Show Contents" title="Show Contents" onclick="event.cancelBubble = true; show_contents(this.parentNode);" src="/images/folder.png" class="file_img" style="cursor:pointer;"> 
-                            <span class="directory_name">FILMS</span> 
-                            <span class="directory_size">3.43 GB</span> 
-            
-                            <div class="directory" style="display:none;"> 
-                                <img alt="Show Contents" title="Show Contents" onclick="event.cancelBubble = true; show_contents(this.parentNode);" src="/images/folder.png" class="file_img" style="cursor:pointer;"> 
-                                <span class="directory_name">DandK</span> 
-                                <span class="directory_size">1.38 GB</span> 
-            
-                                <div class="directory" style="display:none;"> 
-                                    <img alt="Show Contents" title="Show Contents" onclick="event.cancelBubble = true; show_contents(this.parentNode);" src="/images/folder.png" class="file_img" style="cursor:pointer;"> 
-                                    <span class="directory_name">D</span> 
-                                    <span class="directory_size">702.82 MB</span> 
-                            
-                                    <div class="document" style="display:none;"> 
-                                        <img alt="Document" src="/images/document.png" class="file_img"> 
-                                        <span class="document_name">Deliverance 1972 DVDRip.avi</span> 
-                                        <span class="directory_size">702.82 MB</span> 
-                                    </div> 
-                                </div> 
-                                <div class="directory" style="display:none;"> 
-                                    <img alt="Show Contents" title="Show Contents" onclick="event.cancelBubble = true; show_contents(this.parentNode);" src="/images/folder.png" class="file_img" style="cursor:pointer;"> 
-                                    <span class="directory_name">K</span> 
-                                    <span class="directory_size">714.02 MB</span> 
-            
-                                    <div class="document" style="display:none;"> 
-                                        <img alt="Document" src="/images/document.png" class="file_img"> 
-                                        <span class="document_name">Kindergarten.Cop.DVDRip.1990.Xvid.avi</span> 
-                                        <span class="directory_size">714.02 MB</span> 
-                                    </div> 
-                                </div> 
-                                <div class="document" style="display:none;"> 
-                                    <img alt="Document" src="/images/document.png" class="file_img"> 
-                                    <span class="document_name">testing.txt</span> 
-                                    <span class="directory_size">15 B</span> 
-                                </div> 
-                            </div> 
-                            <div class="directory" style="display:none;"> 
-                                <img alt="Show Contents" title="Show Contents" onclick="event.cancelBubble = true; show_contents(this.parentNode);" src="/images/folder.png" class="file_img" style="cursor:pointer;"> 
-                                <span class="directory_name">GandR</span> 
-                                <span class="directory_size">1.37 GB</span> 
-                        
-                                <div class="document" style="display:none;"> 
-                                    <img alt="Document" src="/images/document.png" class="file_img"> 
-                                    <span class="document_name">Glengarry Glen Ross (1992).avi</span> 
-                                    <span class="directory_size">700.23 MB</span> 
-                                </div> 
-                
-                                <div class="document" style="display:none;"> 
-                                    <img alt="Document" src="/images/document.png" class="file_img"> 
-                                    <span class="document_name">Robin Hood Men In Tights.avi</span> 
-                                    <span class="directory_size">699.68 MB</span> 
-                                </div> 
-                            </div> 
-                            <div class="document" style="display:none;"> 
-                                <img alt="Document" src="/images/document.png" class="file_img"> 
-                                <span class="document_name">The.Fighter.2010.DVDRip.XviD-ViP3R.avi</span> 
-                                <span class="directory_size">696.93 MB</span> 
-                            </div> 
-                        </div>
-                    </div> 
+                    <ul class="filetree">
+                        <li><span class="folder">FILMS</span>
+                            <ul>
+                                <li><span class="folder">DandK</span>
+                                    <ul>
+                                        <li><span class="folder">D</span>
+                                            <ul>
+                                                <li><span class="file">Deliverance 1972 DVDRip.avi</span></li>
+                                            </ul>
+                                        </li>
+                                        <li><span class="folder">K</span>
+                                            <ul>
+                                                <li><span class="file">Kindergarten.Cop.DVDRip.1990.Xvid.avi</span></li>
+                                            </ul>
+                                        </li>
+                                        <li><span class="file">testing.txt</span></li>
+                                    </ul>
+                                </li>
+                                <li><span class="folder">GandR</span>
+                                    <ul>
+                                        <li><span class="file">Glengarry Glen Ross (1992).avi</span></li>
+                                        <li><span class="file">Robin Hood Men In Tights.avi</span></li>
+                                    </ul>
+                                </li>
+                                <li><span class="file">The.Fighter.2010.DVDRip.XviD-ViP3R.avi</span></li>
+                            </ul>
+                        </li>
+                    </ul>
                 </body>
             </html>
         """
