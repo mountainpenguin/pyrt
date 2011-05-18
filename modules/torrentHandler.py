@@ -146,7 +146,7 @@ class Handler:
         """
         DIRECTORY_DIV = """
             <div class="directory"%s>
-                <img alt="Show Contents" title="Show Contents" onclick="show_contents(this.parentNode);" src="/images/folder.png" class="file_img" style="cursor:pointer;">
+                <img alt="Show Contents" title="Show Contents" onclick="event.cancelBubble = true; show_contents(this.parentNode);" src="/images/folder.png" class="file_img" style="cursor:pointer;">
                 <span class="directory_name">%s</span>
                 <span class="directory_size">%s</span>
         """
@@ -189,46 +189,7 @@ class Handler:
                     html += DOCUMENT_DIV % (HIDDEN, os.path.basename(fileObj.abs_path), self.humanSize(fileObj.size))
                 html += "</div>"
             html += "</div>"
-            return html
-                
-                
-                
-        
-        
-                    #<div id="files_list">
-                    #    
-                    #    <div class="directory">
-                    #        <img alt="Show Contents" title="Show Contents" onclick="show_contents(this.parentNode);" src="/images/folder.png" class="file_img">
-                    #        <span class="directory_name">directory 1</span> <span class="directory_size">200 KB</span>
-                    #        <div class="directory" style="display:none;">
-                    #            <img alt="Show Contents" title="Show Contents" onclick="show_contents(this.parentNode);" src="/images/folder.png" class="file_img">
-                    #            <span class="directory_name">directory 1.1</span> <span class="directory_size">100 KB</span>
-                    #            <div class="document" style="display:none;">
-                    #                <img alt="Document" src="/images/document.png" class="file_img">
-                    #                <span class="document_name">document 1.1-1</span> <span class="document_size">10 KB</span>
-                    #            </div>
-                    #            <div class="document" style="display:none;">
-                    #                <img alt="Document" src="/images/document.png" class="file_img">
-                    #                <span class="document_name">document 1.1-2</span> <span class="document_size">10 KB</span>
-                    #            </div>
-                    #            <div class="document" style="display:none;">
-                    #                <img alt="Document" src="/images/document.png" class="file_img">
-                    #                <span class="document_name">document 1.1-3</span> <span class="document_size">10 KB</span>
-                    #            </div>
-                    #            <div class="document" style="display:none;">
-                    #                <img alt="Document" src="/images/document.png" class="file_img">
-                    #                <span class="document_name">document 1.1-4</span> <span class="document_size">10 KB</span>
-                    #            </div>
-                    #        </div>
-                    #        <div class="document" style="display:none;">
-                    #            <img alt="Document" src="/images/document.png" class="file_img">
-                    #            <span class="document_name">document 1-1</span> <span class="document_size">10 KB</span>
-                    #        </div>
-                    #    </div>
-                    #    
-                    #</div>
-        
-        
+            return html       
         
     def torrentHTML(self, torrentList, sort, view, reverse=False):
         """
