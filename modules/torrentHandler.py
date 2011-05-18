@@ -3,6 +3,7 @@
 import random
 import string
 import os
+import re
 
 class Handler:
     """
@@ -197,6 +198,8 @@ class Handler:
             if fileName.lower().endswith(".avi") or fileName.lower().endswith(".mkv"):
                 fileType = "file_video"
             elif fileName.lower().endswith(".rar"):
+                fileType = "file_archive"
+            elif "." in fileName and re.match("r\d+", fileName.lower().split(".")[-1]):
                 fileType = "file_archive"
             elif fileName.lower().endswith(".nfo") or fileName.lower().endswith(".txt"):
                 fileType = "file_document"
@@ -419,20 +422,24 @@ class Handler:
         torrent_html += "<!-- %r -->" % sorts
             
         div_colour_array = ["blue", "green"]
+        
         for t in torrentList:
             colour = div_colour_array.pop(0)
             div_colour_array += [colour]
             status = self.getState(t)
             if status == "Stopped" or status == "Paused":
                 stopstart = "<span class='control_start control_button' title='Start Torrent'><img onclick='event.cancelBubble = true; command(\"start_torrent\",\"%s\")' class='control_image' alt='Start' src='../images/start.png'></span>" % t.torrent_id
+                stoporstart = "rcstart"
             else:
                 stopstart = "<span class='control_pause control_button' title='Pause Torrent'><img onclick='event.cancelBubble = true; command(\"pause_torrent\",\"%s\")'class='control_image' alt='Pause' src='../images/pause.png'></span>" % t.torrent_id
+                stoporstart = "rcpause"
+                
             torrent_html += """
                 <tr onmouseover='select_torrent(this);' 
                     onmouseout='deselect_torrent(this);' 
                     onclick='view_torrent(this);'
                     ondblclick='navigate_torrent(this);'
-                    class='torrent-div %(colour)s' 
+                    class='torrent-div %(colour)s %(stoporstart)s' 
                     id='torrent_id_%(t_id)s'>
                     <td>%(t_name)s</td>
                     <td>%(t___size)s</td>
@@ -468,6 +475,7 @@ class Handler:
                             "t_downrate" : self.humanSize(t.down_rate),
                             "t_status" : status,
                             "control_startpause" : stopstart,
+                            "stoporstart" : stoporstart,
                         }
         torrent_html += "\n             </table>"
 
@@ -479,6 +487,8 @@ class Handler:
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
         <title>rTorrent - webUI</title>
         <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <script src="/javascript/jquery-1.6.1.min.js" type="text/javascript"></script>
+        <script src="/javascript/jquery.contextmenu.r2.js" type="text/javascript"></script>
         <script src="/javascript/main.js" type="text/javascript"></script>
     </head>
     <body>
@@ -486,7 +496,25 @@ class Handler:
         <div id="torrent_table">
             %s
         </div>
+        <div class="contextMenu" id="right_click_start">
+            <ul>
+                <li id="start"><img alt="start" src="/images/start.png"> Start</li>
+                <li id="stop"><img alt="stop" src="/images/stop.png"> Stop</li>
+                <li id="remove"><img alt="remove" src="/images/remove.png"> Remove and <strong>keep</strong> files</li>
+                <li id="delete"><img alt="delete" src="/images/delete.png"> Remove and <strong>delete</strong> files</li>
+                <li id="rehash"><!-- <img alt="rehash" src="/images/rehash.png"> --> Rehash</li>
+            </ul>
+        </div>
+        <div class="contextMenu" id="right_click_pause">
+            <ul>
+                <li id="pause"><img alt="pause" src="/images/pause.png"> Pause</li>
+                <li id="stop"><img alt="stop" src="/images/stop.png"> Stop</li>
+                <li id="remove"><img alt="remove" src="/images/remove.png"> Remove and <strong>keep</strong> files</li>
+                <li id="delete"><img alt="delete" src="/images/delete.png"> Remove and <strong>delete</strong> files</li>
+                <li id="rehash"><!-- <img alt="rehash" src="/images/rehash.png"> --> Rehash</li>
+            </ul>
+        </div>
     </body>
 </html>
-        """ % torrent_html 
+        """ % (torrent_html)
         return html

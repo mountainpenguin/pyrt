@@ -59,7 +59,7 @@ class mainHandler:
         
     index.exposed = True
     
-    def detail(self, view=None, torrent_id=None, **kwargs):
+    def detail(self, view=None, torrent_id=None, password=None, **kwargs):
         #check cookies
         L = login.Login()
         client_cookie = cherrypy.request.cookie
