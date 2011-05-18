@@ -14,4 +14,7 @@ $(document).ready(function () {
     $("#files_list").treeview({
         collapsed : true,
     });
+    $(".file_document").each( function (elem) {
+        alert(elem.id);
+    });
 });

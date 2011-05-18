@@ -171,11 +171,7 @@ class Detail:
     </html>""" % info_dict
 
 
-    def files(self, torrent_id=None):
-        file_html = "\n"
-        files = self.RT.getFiles(torrent_id)
-        filehtml = self.Handler.fileTreeHTML(files, self.RT.getRootDir())
-        
+    def files(self, torrent_id=None):        
         info_dict = {
             "tname" : self.RT.getNameByID(torrent_id),
             "tid" : torrent_id,
@@ -183,9 +179,7 @@ class Detail:
             "tpath" : self.RT.getPath(torrent_id),
             "tpriority" : self.RT.getPriorityStr(torrent_id),
             "tstate" : self.RT.getStateStr(torrent_id),
-    #~        "filehtml" : repr(folder)
-    #~        "filehtml" : "\n\t\t\t\t".join([repr(x.__dict__) for x in files]).replace("\t","    ")
-            "filehtml" : filehtml,
+            "filehtml" : self.Handler.fileTreeHTML(self.RT.getFiles(torrent_id), self.RT.getRootDir()),
         }
         return """
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
