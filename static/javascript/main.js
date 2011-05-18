@@ -2,7 +2,8 @@ $(document).ready(function () {
     $(".torrent-div.rcstart").contextMenu("right_click_start", {
         bindings : {
             "start" : function (t) {
-                t.find("span.control_start").click();
+            var torrent_id = $(t).id.split("torrent_id_")[1];
+            command("start_torrent", torrent_id);
             }
         },
         menuStyle : {
