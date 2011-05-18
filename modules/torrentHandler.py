@@ -120,13 +120,13 @@ class Handler:
                             branch["_size"] += file.size
                             if file.priority not in branch["_priority"]:
                                 branch["_priority"] += [file.priority]
-                            branch["_completion"] = int((float(branch["_completion"]) + file.percentage_completion) / 2)
+                            branch["_completion"] = int((float(branch["_completion"]) + file.percentage_complete) / 2)
                             branch = branch[file.path_components[rec_index]]
                         branch["_files"] += [random_id]
                         branch["_size"] += file.size
                         if file.priority not in branch["_priority"]:
                             branch["_priority"] += [file.priority]
-                        branch["_completion"] = int((float(branch["_completion"]) + file.percentage_completion) / 2)
+                        branch["_completion"] = int((float(branch["_completion"]) + file.percentage_complete) / 2)
                     else:
                         #it's a dir
                         #count index up
@@ -143,7 +143,8 @@ class Handler:
                                 }
                             branch = branch[file.path_components[rec_index]]
                             rec_index += 1
-                        
+                            
+        return (folder, files_dict)
                         
                         
         
