@@ -106,14 +106,9 @@ class Handler:
                 folder["."] = {"_files" : [random_id]}
             else:
                 if len(file.path_components) == 1:
-                    print "----"
-                    print os.path.basename(file.base_path)
-                    print folder
                     if os.path.basename(file.base_path) not in folder.keys():
-                        print "... created"
                         folder[os.path.basename(file.base_path)] = {"_files" : [random_id], "_size" : file.size, "_priority" : [file.priority], "_completion" : file.percentage_complete}
                     else:
-                        print "... didn't create"
                         folder[os.path.basename(file.base_path)]["_files"] += [random_id]
                         folder[os.path.basename(file.base_path)]["_size"] += file.size
                         if file.priority not in folder[os.path.basename(file.base_path)]["_priority"]:
@@ -121,10 +116,9 @@ class Handler:
                         prev = folder[os.path.basename(file.base_path)]["_completion"]
                         new = (prev + file.percentage_complete) / 2
                         folder[os.path.basename(file.base_path)]["_completion"] = new
-                    print "----"
                 else:
                     if os.path.basename(file.base_path) not in folder.keys():
-                        folder[os.path.basename(file.base_path)] = {file.path_components[0] : {"_files" : [random_id], "_size" : file.size, "_priority" : [file.priority], "_completion" : file.percentage_complete}}
+                        folder[os.path.basename(file.base_path)] = {file.path_components[0] : {"_files" : [random_id], "_size" : file.size, "_priority" : [file.priority], "_completion" : file.percentage_complete}, "_files" : []}
                     else:
                         if file.path_components[0] not in folder[os.path.basename(file.base_path)].keys():
                             folder[os.path.basename(file.base_path)][file.path_components[0]] = {"_files" : [random_id], "_size" : file.size, "_priority" : [file.priority], "_completion" : file.percentage_complete}
