@@ -37,7 +37,7 @@ class Handler:
             (currently supports TB, GB, MB, KB and B)
         """
         if bytes > 1024*1024*1024*1024:
-            return "%.02f TB" % (float(bytes) / 1024 / 1024 / 1024)
+            return "%.02f TB" % (float(bytes) / 1024 / 1024 / 1024 / 1024)
         elif bytes > 1024*1024*1024:
             return "%.02f GB" % (float(bytes) / 1024 / 1024 / 1024)
         elif bytes > 1024*1024:

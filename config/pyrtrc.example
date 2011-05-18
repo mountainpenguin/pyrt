@@ -1,6 +1,6 @@
 # This is an example config file for pyrt
-# this file should be edited and moved into your $HOME directory with filename .pyrtrc
-#    mv pyrtrc.example ~/.pyrtrc
+# this file should be edited and renamed to .pyrtrc
+#    mv pyrtrc.example .pyrtrc
 # config syntax is JSON with comments allowed
 # comments are prefixed with a # sign
 {
@@ -16,5 +16,6 @@
     
     # hashed password that pyrt will use
     # currently this uses unrealirc style md5 hashing
+    # you can use the provided mkpasswd utility to generate a hashed password
     "password" : "$5DFFfrLC$fkPjAF0rOpiL83gHzgIwcQ==" # this corresponds to a plaintext password of 'testing'
 }
