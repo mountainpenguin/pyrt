@@ -111,17 +111,20 @@ class Handler:
                 for index in range(len(file.path_components)):
                     base = os.path.basename(file.base_path)
                     component = file.path_components[index]
+                    print "len(file.path_components) : %i, (index + 1) : %i" % (len(file.path_components), (index + 1))
                     if (index + 1) == len(file.path_components):
                         #it's a file
                         #last elem
                         #create entry
                         branch = folder[base]
+                        rec_index = 0
                         while rec_index < index:
                             branch["_size"] += file.size
                             if file.priority not in branch["_priority"]:
                                 branch["_priority"] += [file.priority]
                             branch["_completion"] = int((float(branch["_completion"]) + file.percentage_complete) / 2)
                             branch = branch[file.path_components[rec_index]]
+                            rec_index += 1
                         branch["_files"] += [random_id]
                         branch["_size"] += file.size
                         if file.priority not in branch["_priority"]:
