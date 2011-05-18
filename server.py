@@ -158,7 +158,7 @@ class mainHandler:
                     %s
                 </body>
             </html>
-        """ % Handler.fileTreeHTML(RT.getFiles(torrent_id), RT.getRootDir())
+        """ % Handler.fileTreeHTML2(RT.getFiles(torrent_id), RT.getRootDir())
     test.exposed = True
 
 if __name__ == "__main__":
