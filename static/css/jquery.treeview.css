@@ -70,3 +70,4 @@
 .filetree span.file_disk { background : url(/images/file_disk.png) 0 0 no-repeat; }
 .filetree span.file_archive { background: url(/images/file_archive.png) 0 0 no-repeat; }
 .filetree span.file_document { background: url(/images/file.gif) 0 0 no-repeat; }
+.filetree span.file_music { background : url(/images/file_music.png) 0 0 no-repeat; }
