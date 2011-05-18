@@ -1,6 +1,10 @@
 $(document).ready(function () {
     $(".torrent-div.rcstart").contextMenu("right_click_start", {
-        bindings : {},
+        bindings : {
+            "start" : function () {
+                alert($(this));
+            }
+        },
         menuStyle : {
             minWidth : "10em"
         }
