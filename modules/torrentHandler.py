@@ -202,6 +202,8 @@ class Handler:
                 fileType = "file_document"
             elif fileName.lower().endswith(".iso"):
                 fileType = "file_disk"
+            elif "." in fileName and fileName.lower().split(".")[-1] in ["mp3", "aac", "flac", "m4a", "ogg"]:
+                fileType = "file_music"
             return fileType
                 
         fileStruct, fileDict = self.getFileStructure(fileList, RTROOT)
