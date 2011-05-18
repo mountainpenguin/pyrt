@@ -5,6 +5,7 @@ function show_contents(elem) {
             children[i].style.display="inline";
         } else {
             children[i].style.display="block";
+            children[i].style.paddingLeft = "1em";
         }
     }
 }
