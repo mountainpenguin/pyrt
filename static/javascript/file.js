@@ -1,7 +1,7 @@
 function show_contents(elem) {
-    elem.addEventListener("click", function() {
-       hide_contents(elem); 
-    });
+    elem.onclick = function () {
+        hide_contents(elem);
+    }
     children = elem.children;
     for (i=0; i<children.length; i++) {
         if (children[i].tagName == "SPAN" || children[i].tagName == "IMG") {
@@ -13,9 +13,6 @@ function show_contents(elem) {
     }
 }
 
-function hide_contents(elem) {
-    children = elem.children;
-    for (i=0; i<children.length; i++) {
-        children[i].style.display = "none";
-    }
+function hide_contents(elemt) {
+    alert("hide called!")
 }
