@@ -188,7 +188,7 @@ class Handler:
                 subLevel = level[subDirName]
                 html += DIRECTORY_DIV % (HIDDEN, subDirName, subLevel["___size"])
                 html += _getDirs(subLevel)
-                html += _getFiles(level)
+                html += _getFiles(subLevel)
                 html += "</div>"
             return html
                 
