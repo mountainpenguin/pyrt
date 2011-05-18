@@ -164,6 +164,13 @@ div.topbar-tab_home {
     clear : left;
     margin-top : 1em;
 }
+
+#files_list {
+    float : left;
+    clear : left;
+    margin-top : 1em;
+}
+
 div.topbar-tab.selected{
     background-color : #79CDCD;
 }
