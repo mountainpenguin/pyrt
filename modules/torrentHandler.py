@@ -138,7 +138,7 @@ class Handler:
                 abs_path, base_path, path_components, completed_chunks, priority, size, chunks, chunk_size
         """
         DOCUMENT_DIV = """
-            <div class="document">
+            <div class="document"%s>
                 <img alt="Document" src="/images/document.png" class="file_img">
                 <span class="document_name">%s</span> 
                 <span class="document_size">%s</span>
