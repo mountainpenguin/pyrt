@@ -211,6 +211,7 @@ class Handler:
             html = DIRECTORY_DIV % ("", root_keys[0], root["___size"])
             html += _getDirs(root)
             html += "</div>"
+            return html
         
     def fileTreeHTML(self, fileList, RTROOT):
         """
