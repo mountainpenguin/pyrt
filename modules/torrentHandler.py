@@ -147,7 +147,74 @@ class Handler:
                             rec_index += 1
                             
         return (folder, files_dict)
+
+    def fileTreeHTML2(self, fileList, RTROOT):
+        """
+            Takes a list of files as outputted by rtorrent.getFiles and parses it into an html file tree
+            Requires the rtorrent root directory
+            File attributes:
+                abs_path, base_path, path_components, completed_chunks, priority, size, chunks, chunk___size
+        """
+        DOCUMENT_DIV = """
+            <div class="document"%s>
+                <img alt="Document" src="/images/document.png" class="file_img">
+                <span class="document_name">%s</span> 
+                <span class="directory_size">%s</span>
+            </div>
+        """
+        DIRECTORY_DIV = """
+            <div class="directory"%s>
+                <img alt="Show Contents" title="Show Contents" onclick="event.cancelBubble = true; show_contents(this.parentNode);" src="/images/folder.png" class="file_img" style="cursor:pointer;">
+                <span class="directory_name">%s</span>
+                <span class="directory_size">%s</span>
+        """
         
+        HIDDEN = " style=\"display:none;\""
+        
+        def _getFiles(level):
+            html = ""
+            for file in level["___files"]:
+                html += DOCUMENT_DIV % (HIDDEN, os.path.basename(fileDict[file].abs_path), self.humanSize(fileDict[file].size))
+            return html
+            
+        def _getDirs(level):
+            level_keys = []
+            for _key in level.keys():
+                if _key[0:3] != "___":
+                    level_keys += [_key]
+            level_keys.sort()
+            html = ""
+            for subDirName in level_keys:
+                subLevel = level[subDirName]
+                html += DIRECTORY_DIV % (HIDDEN, subDirName, self.humanSize(subLevel["___size"]))
+                html += _getDirs(subLevel)
+                html += _getFiles(subLevel)
+                html += "</div>"
+            return html
+                
+        fileStruct, fileDict = self.getFileStructure(fileList, RTROOT)
+        root_keys = fileStruct.keys()
+        root_keys.sort()
+        if root_keys[0] == ".":
+            fileObj = fileDict[fileStruct["."]["___files"][0]]
+            
+            return """
+                <div id="files_list">
+                    %s
+                </div>
+                """ % (DOCUMENT_DIV % ("", os.path.basename(fileObj.abs_path), self.humanSize(fileObj.size)))
+        else:
+            #walk through dictionary
+            #should only ever be one root_key, "." or the base directory
+            html = "<div id=\"files_list\">"
+            root = fileStruct[root_keys[0]]
+            html = "<div id=\"files_list\">"
+            html += DIRECTORY_DIV % ("", root_keys[0], self.humanSize(root["___size"]))
+            html += _getDirs(root)
+            html += _getFiles(root)
+            html += "</div></div>"
+            return html
+            
     def fileTreeHTML(self, fileList, RTROOT):
         """
             Takes a list of files as outputted by rtorrent.getFiles and parses it into an html file tree
