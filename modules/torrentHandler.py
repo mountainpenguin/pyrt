@@ -88,7 +88,7 @@ class Handler:
         </html>
         """ % (refresh, url, body)
     
-    def getFileStructure2(self, files, rtorrent_root):
+    def getFileStructure(self, files, rtorrent_root):
         folder = {}
         files_dict = {}
         priorites = {"high" : 2, "normal" : 1, "off" : 0}
@@ -111,7 +111,6 @@ class Handler:
                 for index in range(len(file.path_components)):
                     base = os.path.basename(file.base_path)
                     component = file.path_components[index]
-                    print "len(file.path_components) : %i, (index + 1) : %i" % (len(file.path_components), (index + 1))
                     if (index + 1) == len(file.path_components):
                         #it's a file
                         #last elem
@@ -151,47 +150,47 @@ class Handler:
                         
                         
         
-    def getFileStructure(self, files, rtorrent_root):
-        """
-            Takes a list of <files> (as outputted by rtorrent.getFiles) and converts it into a file structure
-            Returns a tuple of two dictionaries
-                ( files , files_dict )
-            Files contains the file hierachy (two levels maximum) with file_id strings
-            Files_dict contains the original rtorrent.File instances indexed by their file_id strings
-        """
-        folder = {}
-        files_dict = {}
-        priority_lookup = {"high" : 2, "normal" : 1, "off" : 0}
-        for file in files:
-            random_id = "".join([random.choice(string.letters + string.digits) for i in range(10)])
-            files_dict[random_id] = file
-            if file.base_path == rtorrent_root:
-                folder["."] = {"_files" : [random_id]}
-            else:
-                if len(file.path_components) == 1:
-                    if os.path.basename(file.base_path) not in folder.keys():
-                        folder[os.path.basename(file.base_path)] = {"_files" : [random_id], "_size" : file.size, "_priority" : [file.priority], "_completion" : file.percentage_complete}
-                    else:
-                        folder[os.path.basename(file.base_path)]["_files"] += [random_id]
-                        folder[os.path.basename(file.base_path)]["_size"] += file.size
-                        if file.priority not in folder[os.path.basename(file.base_path)]["_priority"]:
-                            folder[os.path.basename(file.base_path)]["_priority"] += [file.priority]
-                        prev = folder[os.path.basename(file.base_path)]["_completion"]
-                        new = (prev + file.percentage_complete) / 2
-                        folder[os.path.basename(file.base_path)]["_completion"] = new
-                else:
-                    if os.path.basename(file.base_path) not in folder.keys():
-                        folder[os.path.basename(file.base_path)] = {file.path_components[0] : {"_files" : [random_id], "_size" : file.size, "_priority" : [file.priority], "_completion" : file.percentage_complete}, "_files" : [], "_size" : file.size, "_priority" : [file.priority], "_completion" : file.percentage_complete}
-                    else:
-                        if file.path_components[0] not in folder[os.path.basename(file.base_path)].keys():
-                            folder[os.path.basename(file.base_path)][file.path_components[0]] = {"_files" : [random_id], "_size" : file.size, "_priority" : [file.priority], "_completion" : file.percentage_complete}
-                        else:
-                            folder[os.path.basename(file.base_path)][file.path_components[0]]["_files"] += [random_id]
-                            folder[os.path.basename(file.base_path)][file.path_components[0]]["_size"] += file.size
-                            if file.priority not in folder[os.path.basename(file.base_path)][file.path_components[0]]["_priority"]:
-                                folder[os.path.basename(file.base_path)][file.path_components[0]]["_priority"] += [file.priority]
-                            folder[os.path.basename(file.base_path)][file.path_components[0]]["_completion"] = (folder[os.path.basename(file.base_path)][file.path_components[0]]["_completion"] + file.percentage_complete) / 2
-        return (folder, files_dict)
+    #def getFileStructure(self, files, rtorrent_root):
+    #    """
+    #        Takes a list of <files> (as outputted by rtorrent.getFiles) and converts it into a file structure
+    #        Returns a tuple of two dictionaries
+    #            ( files , files_dict )
+    #        Files contains the file hierachy (two levels maximum) with file_id strings
+    #        Files_dict contains the original rtorrent.File instances indexed by their file_id strings
+    #    """
+    #    folder = {}
+    #    files_dict = {}
+    #    priority_lookup = {"high" : 2, "normal" : 1, "off" : 0}
+    #    for file in files:
+    #        random_id = "".join([random.choice(string.letters + string.digits) for i in range(10)])
+    #        files_dict[random_id] = file
+    #        if file.base_path == rtorrent_root:
+    #            folder["."] = {"_files" : [random_id]}
+    #        else:
+    #            if len(file.path_components) == 1:
+    #                if os.path.basename(file.base_path) not in folder.keys():
+    #                    folder[os.path.basename(file.base_path)] = {"_files" : [random_id], "_size" : file.size, "_priority" : [file.priority], "_completion" : file.percentage_complete}
+    #                else:
+    #                    folder[os.path.basename(file.base_path)]["_files"] += [random_id]
+    #                    folder[os.path.basename(file.base_path)]["_size"] += file.size
+    #                    if file.priority not in folder[os.path.basename(file.base_path)]["_priority"]:
+    #                        folder[os.path.basename(file.base_path)]["_priority"] += [file.priority]
+    #                    prev = folder[os.path.basename(file.base_path)]["_completion"]
+    #                    new = (prev + file.percentage_complete) / 2
+    #                    folder[os.path.basename(file.base_path)]["_completion"] = new
+    #            else:
+    #                if os.path.basename(file.base_path) not in folder.keys():
+    #                    folder[os.path.basename(file.base_path)] = {file.path_components[0] : {"_files" : [random_id], "_size" : file.size, "_priority" : [file.priority], "_completion" : file.percentage_complete}, "_files" : [], "_size" : file.size, "_priority" : [file.priority], "_completion" : file.percentage_complete}
+    #                else:
+    #                    if file.path_components[0] not in folder[os.path.basename(file.base_path)].keys():
+    #                        folder[os.path.basename(file.base_path)][file.path_components[0]] = {"_files" : [random_id], "_size" : file.size, "_priority" : [file.priority], "_completion" : file.percentage_complete}
+    #                    else:
+    #                        folder[os.path.basename(file.base_path)][file.path_components[0]]["_files"] += [random_id]
+    #                        folder[os.path.basename(file.base_path)][file.path_components[0]]["_size"] += file.size
+    #                        if file.priority not in folder[os.path.basename(file.base_path)][file.path_components[0]]["_priority"]:
+    #                            folder[os.path.basename(file.base_path)][file.path_components[0]]["_priority"] += [file.priority]
+    #                        folder[os.path.basename(file.base_path)][file.path_components[0]]["_completion"] = (folder[os.path.basename(file.base_path)][file.path_components[0]]["_completion"] + file.percentage_complete) / 2
+    #    return (folder, files_dict)
         
     def fileTreeHTML(self, fileList, RTROOT):
         """
