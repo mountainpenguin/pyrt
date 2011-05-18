@@ -142,7 +142,9 @@ class mainHandler:
             raise cherrypy.HTTPRedirect("/")
     upload_torrent.exposed = True
     
-    def test(self, **kwargs):
+    def test(self, torrent_id=None, **kwargs):
+        Handler = torrentHandler.Handler()
+        RT = rtorrent.rtorrent(c.get("rtorrent_socket"))
         return """
             <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
             <html>
@@ -153,41 +155,10 @@ class mainHandler:
                     <title>Testing</title>
                 </head>
                 <body>
-                    <div id="files_list">
-                        
-                        <div class="directory">
-                            <img alt="Show Contents" title="Show Contents" onclick="show_contents(this.parentNode);" src="/images/folder.png" class="file_img">
-                            <span class="directory_name">directory 1</span> <span class="directory_size">200 KB</span>
-                            <div class="directory" style="display:none;">
-                                <img alt="Show Contents" title="Show Contents" onclick="show_contents(this.parentNode);" src="/images/folder.png" class="file_img">
-                                <span class="directory_name">directory 1.1</span> <span class="directory_size">100 KB</span>
-                                <div class="document" style="display:none;">
-                                    <img alt="Document" src="/images/document.png" class="file_img">
-                                    <span class="document_name">document 1.1-1</span> <span class="document_size">10 KB</span>
-                                </div>
-                                <div class="document" style="display:none;">
-                                    <img alt="Document" src="/images/document.png" class="file_img">
-                                    <span class="document_name">document 1.1-2</span> <span class="document_size">10 KB</span>
-                                </div>
-                                <div class="document" style="display:none;">
-                                    <img alt="Document" src="/images/document.png" class="file_img">
-                                    <span class="document_name">document 1.1-3</span> <span class="document_size">10 KB</span>
-                                </div>
-                                <div class="document" style="display:none;">
-                                    <img alt="Document" src="/images/document.png" class="file_img">
-                                    <span class="document_name">document 1.1-4</span> <span class="document_size">10 KB</span>
-                                </div>
-                            </div>
-                            <div class="document" style="display:none;">
-                                <img alt="Document" src="/images/document.png" class="file_img">
-                                <span class="document_name">document 1-1</span> <span class="document_size">10 KB</span>
-                            </div>
-                        </div>
-                        
-                    </div>
+                    %s
                 </body>
             </html>
-        """
+        """ % Handler.fileTreeHTML(RT.getFiles(torrent_id), RT.getRootDir())
     test.exposed = True
 
 if __name__ == "__main__":
