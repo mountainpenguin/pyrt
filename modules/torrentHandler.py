@@ -148,7 +148,7 @@ class Handler:
                             
         return (folder, files_dict)
 
-    def fileTreeHTML2(self, fileList, RTROOT):
+    def fileTreeHTML(self, fileList, RTROOT):
         """
             Takes a list of files as outputted by rtorrent.getFiles and parses it into an html file tree
             Requires the rtorrent root directory
@@ -209,9 +209,9 @@ class Handler:
             fileObj = fileDict[fileStruct["."]["___files"][0]]
             
             return """
-                <div id="files_list">
+                <ul id="files_list" class="filetree">
                     %s
-                </div>
+                </ul>
                 """ % (DOCUMENT_DIV % (os.path.basename(fileObj.abs_path)))
                 # % (DOCUMENT_DIV % ("", os.path.basename(fileObj.abs_path), self.humanSize(fileObj.size)))
         else:
@@ -223,10 +223,10 @@ class Handler:
             html += DIRECTORY_DIV % (root_keys[0])
             html += _getDirs(root)
             html += _getFiles(root)
-            html += "</ul></ul>"
+            html += "</ul></li></ul>"
             return html
             
-    def fileTreeHTML(self, fileList, RTROOT):
+    def fileTreeHTML2(self, fileList, RTROOT):
         """
             Takes a list of files as outputted by rtorrent.getFiles and parses it into an html file tree
             Requires the rtorrent root directory

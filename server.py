@@ -160,34 +160,6 @@ class mainHandler:
                 </head>
                 <body>
                     %s
-                    <!-- <ul id="files_list" class="filetree">
-                        <li><span class="folder">FILMS</span>
-                            <ul>
-                                <li><span class="folder">DandK</span>
-                                    <ul>
-                                        <li><span class="folder">D</span>
-                                            <ul>
-                                                <li><span class="file">Deliverance 1972 DVDRip.avi</span></li>
-                                            </ul>
-                                        </li>
-                                        <li><span class="folder">K</span>
-                                            <ul>
-                                                <li><span class="file">Kindergarten.Cop.DVDRip.1990.Xvid.avi</span></li>
-                                            </ul>
-                                        </li>
-                                        <li><span class="file">testing.txt</span></li>
-                                    </ul>
-                                </li>
-                                <li><span class="folder">GandR</span>
-                                    <ul>
-                                        <li><span class="file">Glengarry Glen Ross (1992).avi</span></li>
-                                        <li><span class="file">Robin Hood Men In Tights.avi</span></li>
-                                    </ul>
-                                </li>
-                                <li><span class="file">The.Fighter.2010.DVDRip.XviD-ViP3R.avi</span></li>
-                            </ul>
-                        </li>
-                    </ul> -->
                 </body>
             </html>
         """ % Handler.fileTreeHTML2(RT.getFiles(torrent_id), RT.getRootDir())
