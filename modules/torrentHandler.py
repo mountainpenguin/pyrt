@@ -426,10 +426,23 @@ class Handler:
             colour = div_colour_array.pop(0)
             div_colour_array += [colour]
             status = self.getState(t)
+            rclick_menu = """
+        <div class="contextMenu" id="right_click_menu">
+            <ul>
+                <li id="%(inp)s"><img alt="%(inp)s" src="/image/%(inp)s.png"> %(Inp)s</li>
+                <li id="stop"><img alt="stop" src="/images/stop.png"> Stop</li>
+                <li id="remove"><img alt="remove" src="/images/remove.png"> Remove and <strong>keep</strong> files</li>
+                <li id="delete"><img alt="delete" src="/images/delete.png"> Remove and <strong>delete</strong> files</li>
+                <li id="rehash"><!-- <img alt="rehash" src="/images/rehash.png"> --> Rehash</li>
+            </ul>
+        </div>"""
             if status == "Stopped" or status == "Paused":
                 stopstart = "<span class='control_start control_button' title='Start Torrent'><img onclick='event.cancelBubble = true; command(\"start_torrent\",\"%s\")' class='control_image' alt='Start' src='../images/start.png'></span>" % t.torrent_id
+                rclick_menu = rclick_menu % {"inp" : "start", "Inp" : "Start"}
             else:
                 stopstart = "<span class='control_pause control_button' title='Pause Torrent'><img onclick='event.cancelBubble = true; command(\"pause_torrent\",\"%s\")'class='control_image' alt='Pause' src='../images/pause.png'></span>" % t.torrent_id
+                rclick_menu = rclick_menu % {"imp" : "pause", "Inp" : "Pause"}
+                
             torrent_html += """
                 <tr onmouseover='select_torrent(this);' 
                     onmouseout='deselect_torrent(this);' 
@@ -482,6 +495,8 @@ class Handler:
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
         <title>rTorrent - webUI</title>
         <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <script src="/javascript/jquery-1.6.1.min.js" type="text/javascript"></script>
+        <script src="/javascript/jquery.contextmenu.r2.js" type="text/javascript"></script>
         <script src="/javascript/main.js" type="text/javascript"></script>
     </head>
     <body>
@@ -489,7 +504,8 @@ class Handler:
         <div id="torrent_table">
             %s
         </div>
+        %s
     </body>
 </html>
-        """ % torrent_html 
+        """ % (torrent_html, rclick_menu)
         return html

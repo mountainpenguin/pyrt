@@ -1,3 +1,9 @@
+$(document).ready(function () {
+    $(".torrent_div").contextMenu("right_click_menu", {
+        bindings : {}
+    }
+});
+
 function select_torrent(elem) {
     // elem.style.backgroundColor = "#00CCFF";
     elem.style.backgroundColor = "#0099FF";
