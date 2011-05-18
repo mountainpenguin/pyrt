@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    $(".torrent_div").contextMenu("right_click_menu", {
+    $(".torrent-div").contextMenu("right_click_menu", {
         bindings : {}
     }
 });
