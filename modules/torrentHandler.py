@@ -173,7 +173,7 @@ class Handler:
             for file in level["___files"]:
                 # html += DOCUMENT_DIV % (HIDDEN, os.path.basename(fileDict[file].abs_path), self.humanSize(fileDict[file].size))
                 fileName = os.path.basename(fileDict[file].abs_path)
-                html += DOCUMENT_DIV % (_getFileType(fileName), fileName), fileName)
+                html += DOCUMENT_DIV % (_getFileType(fileName), fileName)
             return html
             
         def _getDirs(level):
