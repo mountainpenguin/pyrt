@@ -14,10 +14,13 @@ $(document).ready(function () {
     $("#files_list").treeview({
         collapsed : true,
     });
-    $(".file_document").each( function (elem) {
-        elem.click( function () {
-            read_elem(elem);
-        });
+    $(".file_document").each( function (index) {
+        $(this).bind (
+            "click",
+            function () {
+                read_elem(elem);
+            }
+        );
     });
 });
 
