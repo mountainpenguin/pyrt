@@ -155,22 +155,11 @@ class Handler:
             File attributes:
                 abs_path, base_path, path_components, completed_chunks, priority, size, chunks, chunk___size
         """
-        # DOCUMENT_DIV = """
-            # <div class="document"%s>
-                # <img alt="Document" src="/images/document.png" class="file_img">
-                # <span class="document_name">%s</span> 
-                # <span class="directory_size">%s</span>
-            # </div>
-        # """
+
         DOCUMENT_DIV = """
-            <li><span class="file">%s</span></li>
+            <li><span class="file %s">%s</span></li>
         """
-        # DIRECTORY_DIV = """
-            # <div class="directory"%s>
-                # <img alt="Show Contents" title="Show Contents" onclick="event.cancelBubble = true; show_contents(this.parentNode);" src="/images/folder.png" class="file_img" style="cursor:pointer;">
-                # <span class="directory_name">%s</span>
-                # <span class="directory_size">%s</span>
-        # """
+
         DIRECTORY_DIV = """
             <li><span class="folder">%s</span><ul>
         """
@@ -183,7 +172,15 @@ class Handler:
             html = ""
             for file in level["___files"]:
                 # html += DOCUMENT_DIV % (HIDDEN, os.path.basename(fileDict[file].abs_path), self.humanSize(fileDict[file].size))
-                html += DOCUMENT_DIV % (os.path.basename(fileDict[file].abs_path))
+                fileType = "unknown"
+                fileName = os.path.basename(fileDict[file].abs_path)
+                if fileName.lower().endswith(".avi") or fileName.lower().endswith(".mkv"):
+                    fileType = "file_video"
+                elif fileName.lower().endswith(".rar"):
+                    fileType = "file_archive"
+                elif fileName.lower().endswith(".nfo") or fileName.lower().endswith(".txt"):
+                    fileType = "file_document"
+                html += DOCUMENT_DIV % (fileType, fileName)
             return html
             
         def _getDirs(level):
@@ -207,12 +204,18 @@ class Handler:
         root_keys.sort()
         if root_keys[0] == ".":
             fileObj = fileDict[fileStruct["."]["___files"][0]]
-            
+            fileName = os.path.basename(fileObj.abs_path)
+            if fileName.lower().endswith(".avi") or fileName.lower().endswith(".mkv"):
+                fileType = "file_video"
+            elif fileName.lower().endswith(".rar"):
+                fileType = "file_archive"
+            elif fileName.lower().endswith(".nfo") or fileName.lower().endswith(".txt"):
+                fileType = "file_document"
             return """
                 <ul id="files_list" class="filetree">
                     %s
                 </ul>
-                """ % (DOCUMENT_DIV % (os.path.basename(fileObj.abs_path)))
+                """ % (DOCUMENT_DIV % (fileType, fileName))
                 # % (DOCUMENT_DIV % ("", os.path.basename(fileObj.abs_path), self.humanSize(fileObj.size)))
         else:
             #walk through dictionary
