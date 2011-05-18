@@ -156,10 +156,10 @@ class mainHandler:
                     <div id="files_list">
                         
                         <div class="directory">
-                            <img alt="Show Contents" title="Show Contents" onclick="show_contents(this);" src="/images/folder.png">
+                            <img alt="Show Contents" title="Show Contents" onclick="show_contents(this.parentNode);" src="/images/folder.png">
                             <span class="directory_name">directory 1</span><span class="directory_size">200 KB</span>
                             <div class="directory" style="display:none;">
-                                <img alt="Show Contents" title="Show Contents" onclick="show_contents(this);" src="/images/folder.png">
+                                <img alt="Show Contents" title="Show Contents" onclick="show_contents(this.parentNode);" src="/images/folder.png">
                                 <span class="directory_name">directory 1.1</span><span class="directory_size">100 KB</span>
                                 <div class="document" style="display:none;">
                                     <img alt="Document" src="/images/document.png">
