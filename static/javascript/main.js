@@ -18,7 +18,8 @@ $(document).ready(function () {
                 command("delete_torrent", torrent_id);
             },
             "rehash" : function (t) {
-                alert("Not implemented yet");
+                var torrent_id = t.id.split("torrent_id_")[1];
+                command("hash_torrent", torrent_id);
             },
         },
         menuStyle : {
@@ -44,7 +45,8 @@ $(document).ready(function () {
                 command("delete_torrent", torrent_id);
             },
             "rehash" : function (t) {
-                alert("Not implemented yet");
+                var torrent_id = t.id.split("torrent_id_")[1];
+                command("hash_torrent", torrent_id);
             },
         },
         menuStyle : {
@@ -130,12 +132,14 @@ function view_torrent(elem) {
 }
 
 function command(cmd, t_id) {
-    if (cmd === "pause_torrent" || cmd === "start_torrent" || cmd === "stop_torrent" || cmd == "remove_torrent" || cmd == "delete_torrent") {
+    if (cmd === "pause_torrent" || cmd === "start_torrent" || cmd === "stop_torrent" || cmd == "remove_torrent" || cmd == "delete_torrent" || cmd == "hash_torrent") {
         var resp;
         if (cmd === "remove_torrent") {
-            resp = confirm("Are you sure you want to remove this torrent?")
+            resp = confirm("Are you sure you want to remove this torrent?");
         } else if (cmd == "delete_torrent") {
-            resp = confirm("Are you sure you want to remove this torrent and *permanently* delete its files?")
+            resp = confirm("Are you sure you want to remove this torrent and *permanently* delete its files?");
+        } else if (cmd == "hash_torrent") {
+            resp = confirm("Are you sure you want to rehash this torrent?\n This process can take a long time for large torrents");
         } else {
             resp = true;
         }

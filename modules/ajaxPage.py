@@ -65,8 +65,16 @@ class Ajax:
         except:
             return "ERROR"
         else:
-                return "OK"
-                
+            return "OK"
+
+    def hash_torrent(self, torrent_id):
+        try:
+            self.RT.rehash(torrent_id)
+        except:
+            return "ERROR"
+        else:
+            return "OK"
+            
     def delete_torrent(self, torrent_id):
         response = self.stop_torrent(torrent_id)
         if response == "OK":

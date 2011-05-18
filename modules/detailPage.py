@@ -38,7 +38,7 @@ class Detail:
         info_dict = {
             "tname" : self.RT.getNameByID(torrent_id),
             "tid" : torrent_id,
-            "tcreated" : self.RT.getCreationDate(torrent_id),
+            "tcreated" : time.strftime("%02d/%02m/%Y %02H:%02M:%02S", time.localtime(self.RT.getCreationDate(torrent_id))),
             "tpath" : self.RT.getPath(torrent_id),
             "tpriority" : self.RT.getPriorityStr(torrent_id),
             "tstate" : self.RT.getStateStr(torrent_id),
@@ -119,7 +119,7 @@ class Detail:
         info_dict = {
             "tname" : self.RT.getNameByID(torrent_id),
             "tid" : torrent_id,
-            "tcreated" : self.RT.getCreationDate(torrent_id),
+            "tcreated" : time.strftime("%02d/%02m/%Y %02H:%02M:%02S", time.localtime(self.RT.getCreationDate(torrent_id))),
             "tpath" : self.RT.getPath(torrent_id),
             "tpriority" : self.RT.getPriorityStr(torrent_id),
             "tstate" : self.RT.getStateStr(torrent_id),
@@ -179,7 +179,7 @@ class Detail:
         info_dict = {
             "tname" : self.RT.getNameByID(torrent_id),
             "tid" : torrent_id,
-            "tcreated" : self.RT.getCreationDate(torrent_id),
+            "tcreated" : time.strftime("%02d/%02m/%Y %02H:%02M:%02S", time.localtime(self.RT.getCreationDate(torrent_id))),
             "tpath" : self.RT.getPath(torrent_id),
             "tpriority" : self.RT.getPriorityStr(torrent_id),
             "tstate" : self.RT.getStateStr(torrent_id),
@@ -246,7 +246,7 @@ class Detail:
         info_dict = {
             "tname" : self.RT.getNameByID(torrent_id),
             "tid" : torrent_id,
-            "tcreated" : self.RT.getCreationDate(torrent_id),
+            "tcreated" : time.strftime("%02d/%02m/%Y %02H:%02M:%02S", time.localtime(self.RT.getCreationDate(torrent_id))),
             "tpath" : self.RT.getPath(torrent_id),
             "tpriority" : self.RT.getPriorityStr(torrent_id),
             "tstate" : self.RT.getStateStr(torrent_id),

@@ -502,7 +502,7 @@ class Handler:
                 <li id="stop"><img alt="stop" src="/images/stop.png"> Stop</li>
                 <li id="remove"><img alt="remove" src="/images/remove.png"> Remove and <strong>keep</strong> files</li>
                 <li id="delete"><img alt="delete" src="/images/delete.png"> Remove and <strong>delete</strong> files</li>
-                <li id="rehash"><!-- <img alt="rehash" src="/images/rehash.png"> --> Rehash</li>
+                <li id="rehash"><img alt="rehash" src="/images/hash.png"> Rehash</li>
             </ul>
         </div>
         <div class="contextMenu" id="right_click_pause">
@@ -511,7 +511,7 @@ class Handler:
                 <li id="stop"><img alt="stop" src="/images/stop.png"> Stop</li>
                 <li id="remove"><img alt="remove" src="/images/remove.png"> Remove and <strong>keep</strong> files</li>
                 <li id="delete"><img alt="delete" src="/images/delete.png"> Remove and <strong>delete</strong> files</li>
-                <li id="rehash"><!-- <img alt="rehash" src="/images/rehash.png"> --> Rehash</li>
+                <li id="rehash"><img alt="rehash" src="/images/hash.png"> Rehash</li>
             </ul>
         </div>
     </body>
