@@ -118,7 +118,7 @@ class Handler:
                         folder[os.path.basename(file.base_path)]["_completion"] = new
                 else:
                     if os.path.basename(file.base_path) not in folder.keys():
-                        folder[os.path.basename(file.base_path)] = {file.path_components[0] : {"_files" : [random_id], "_size" : file.size, "_priority" : [file.priority], "_completion" : file.percentage_complete}, "_files" : [], "_size" : file.size, "_priority" : [file_priority], "_completion" : file.percentage_complete}
+                        folder[os.path.basename(file.base_path)] = {file.path_components[0] : {"_files" : [random_id], "_size" : file.size, "_priority" : [file.priority], "_completion" : file.percentage_complete}, "_files" : [], "_size" : file.size, "_priority" : [file.priority], "_completion" : file.percentage_complete}
                     else:
                         if file.path_components[0] not in folder[os.path.basename(file.base_path)].keys():
                             folder[os.path.basename(file.base_path)][file.path_components[0]] = {"_files" : [random_id], "_size" : file.size, "_priority" : [file.priority], "_completion" : file.percentage_complete}
