@@ -117,6 +117,7 @@ class mainHandler:
         elif request == "hash_torrent":
             return Ajax.hash_torrent(torrent_id)
         elif request == "get_file":
+            return "%s <br> %s" % (torrent_id, filepath)
             return Ajax.get_file(torrent_id, filepath)
         else:
             return "ERROR/Invalid method"
