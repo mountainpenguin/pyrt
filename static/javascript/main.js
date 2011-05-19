@@ -119,7 +119,7 @@ function htmlify(json, cell) {
     new_html += "<div class='column-1'>Ratio:</div><div class='column-2'>" + obj.ratio + "</div>"
     new_html += "<div class='column-1'>Peers:</div><div class='column-2'>" + obj.peers.length + "</div>"
     new_html += "<div class='column-1'>Created:</div><div class='column-2'>" + obj.created + "</div>"
-    new_html += "<div class='column-2' style='clear : left;'><span class='fakelink' onClick='removerow(\"" + obj.torrent_id + "\")'>Close</span> <a class='normal_link' href='detail?torrent_id=" + obj.torrent_id + "'>Detailed View</a></div>"
+    new_html += "<div class='column-2' style='clear : left;'><span class='fakelink' onClick='removerow(\"" + obj.torrent_id + "\")'>Close</span> <a style='color : blue;' href='detail?torrent_id=" + obj.torrent_id + "'>Detailed View</a></div>"
     new_html += "</div>"
     cell.innerHTML = new_html;
     cell.style.borderLeft="1px dotted";
