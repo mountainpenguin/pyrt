@@ -36,7 +36,7 @@ function loadPopup() {
 function disablePopup() {
     if (popupStatus == 1) {
         $("#backgroundPopup").fadeOut("slow");
-        %("#popupContact").fadeOut("slow");
+        $("#popupContact").fadeOut("slow");
         popupStatus = 0;
     };
 };
