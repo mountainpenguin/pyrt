@@ -102,8 +102,20 @@ class Ajax:
             return "ERROR/could not stop torrent"
 
     def get_file(self, torrent_id, filepath):
-        return filepath
-        # files = self.RT.getFiles(torrent_id)
-        # for file in files:
-            # if os.path.basename(
+        files = self.RT.getFiles(torrent_id)
+        fileOK = False
+        completeOK = False
+        for file in files:
+            if file.abs_path == filepath:
+                fileOK = True
+                if int(file.percentage_complete) == 100:
+                    completeOK = True
+                break
+        if not fileOK:
+            return "ERROR/File doesn't exist"
+        if not completeOK:
+            return "ERROR/File not complete"
+        fileContents = open(filepath).read()
+        return fileContents
+                
         

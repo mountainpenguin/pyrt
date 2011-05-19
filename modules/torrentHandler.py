@@ -154,7 +154,7 @@ class Handler:
             Takes a list of files as outputted by rtorrent.getFiles and parses it into an html file tree
             Requires the rtorrent root directory
             File attributes:
-                abs_path, base_path, path_components, completed_chunks, priority, size, chunks, chunk___size
+                abs_path, base_path, path_components, completed_chunks, priority, size, chunks, chunk_size, percentage_complete
         """
 
         DOCUMENT_DIV = """
