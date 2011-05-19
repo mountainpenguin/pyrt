@@ -27,7 +27,6 @@ $(document).ready(function () {
             "click",
             function () {
                 loadContents($(this));
-                loadPopup();
             }
         );
     });
@@ -40,7 +39,20 @@ $(document).ready(function () {
 });
 
 function loadContents(item) {
-    alert(item.html());
+    item.ajax({
+        url : "/ajax?request=get_file&filename=" + item.html(),
+        success : function() {
+            $("#filename").html(item.html());
+            $("#contactArea").html(data);
+            loadPopup();
+        },
+        statusCode : {
+            500 : function () {
+                alert("Server error");
+            }
+        }
+        
+    });
 };
 /* shamelessly copied from http://yensdesign.com/2008/09/how-to-create-a-stunning-and-smooth-popup-using-jquery/ */
 
