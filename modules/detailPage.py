@@ -212,6 +212,14 @@ class Detail:
                 <div class="column-1">Priority:</div><div class="column-2">%(tpriority)s</div>
                 <div class="column-1 %(tstate)s">State:</div><div class="column-2">%(tstate)s</div>
                 %(filehtml)s
+                <div id="popupContact">
+                    <a id="popupContactClose">x</a>
+                    <h1 id="fileName">Testing Filename</h1>
+                    <p id="contactArea">
+                        Testing popup
+                    </p>
+                </div>
+                <div id="backgroundPopup"></div>
             </div>
         </body>
     </html>""" % info_dict
