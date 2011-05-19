@@ -43,7 +43,7 @@ function loadContents(item) {
         url : "/ajax?request=get_file&filepath=" + encodeURIComponent(item.find(".fullpath").html()) + "&torrent_id=" + $("#torrent_id").html(),
         success : function(data) {
             $("#fileName").html(item.html());
-            $("#contactArea").html(data)
+            $("#contactArea").html("<pre><code>data</code></pre>")
             centerPopup();
             loadPopup();
         },
