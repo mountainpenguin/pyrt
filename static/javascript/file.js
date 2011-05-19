@@ -83,8 +83,8 @@ function centerPopup() {
     var popupWidth = $("#popupContact").width();  
     $("#popupContact").css({
         "position" : "absolute",
-        "top" : windowHeight/2-popupHeight/2,
-        "left" : windowWidth/2-popupWidth/2,
+        "top" : windowHeight-popupHeight,
+        "left" : windowWidth-popupWidth,
     });
 };
 
