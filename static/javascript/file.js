@@ -39,7 +39,7 @@ $(document).ready(function () {
 });
 
 function loadContents(item) {
-    item.ajax({
+    $.ajax({
         url : "/ajax?request=get_file&filename=" + item.html(),
         success : function() {
             $("#filename").html(item.html());
