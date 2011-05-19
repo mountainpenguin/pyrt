@@ -810,6 +810,9 @@ class rtorrent:
     def getCreationDate(self, id):
         return self.conn.d.get_creation_date(id)
         
+    def getCompletedBytes(self, id):
+        return self.conn.d.get_completed_bytes(id)
+        
     def wait_completed(self, Id):
         time.sleep(2)
         

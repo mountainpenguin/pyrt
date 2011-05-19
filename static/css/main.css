@@ -73,6 +73,8 @@ a:visited { color : white; }
 a:active { color : white; }
 a:hover { color : white; }
 
+.normal_link { color : blue; }
+
 .notice {
     font-size: 14px;
     width : 95%;

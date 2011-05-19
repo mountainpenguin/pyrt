@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-from modules import config, login                    # 'real' modules
+from modules import config, login                    #'real' modules
 from modules import indexPage, detailPage, ajaxPage  # pages
+from modules import optionsPage                      # pages
 
 import cherrypy
 import os
@@ -128,13 +129,29 @@ class mainHandler:
             return "ERROR/Invalid method"
     ajax.exposed = True
     
-    def options(self):
-        return """
-            <html>
-                <body>
-                    <div>Nothing here yet</div>
-                    Go back to <a href="%(link)s">%(link)s</a>
-        """ % {"link" : cherrypy.request.headers["Referer"]}
+    def options(self, test=False):
+        if not test:
+            try:
+                link = cherrypy.request.headers["Referer"]
+            except KeyError:
+                link = "/index"
+            return """
+                <html>
+                    <head>
+                        <title>Options</title>
+                        <link rel="stylesheet" type="text/css" href="/css/main.css">
+                    </head>
+                    <body>
+                        <div style="background-color : white;">
+                            <div>Nothing here yet</div>
+                            Go back to <a style="color:black;" href="%(link)s">%(link)s</a>
+                        </div>
+                    </body>
+                </html>
+            """ % {"link" : link}
+        else:
+            Options = optionsPage.Options()
+            return Options.index()
     options.exposed = True
 
 if __name__ == "__main__":
