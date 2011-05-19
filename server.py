@@ -127,6 +127,15 @@ class mainHandler:
         else:
             return "ERROR/Invalid method"
     ajax.exposed = True
+    
+    def options(self):
+        return """
+            <html>
+                <body>
+                    <div>Nothing here yet</div>
+                    Go back to <a href="%(link)s">%(link)s</a>
+        """ % {"link" : cherrypy.request.headers["Referer"]}
+    options.exposed = True
 
 if __name__ == "__main__":
     cherrypy.config.update(global_config)

@@ -74,6 +74,12 @@ $(document).ready(function () {
             minWidth : "10em"
         }
     });
+    $("#tab_options").bind(
+                           "click",
+                           function () {
+                            window.location = "/options";
+                           }
+                           );
 });
 
 function select_torrent(elem) {
