@@ -86,6 +86,9 @@ function centerPopup() {
         "top" : (windowHeight-popupHeight)/2,
         "left" : (windowWidth-popupWidth)/2,
     });
+    $("#backgroundPopup").css({
+        "height" : windowHeight
+    });
 };
 
 /* end shameless copy */
