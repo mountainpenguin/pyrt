@@ -71,8 +71,8 @@ class Index:
                 <div id="main_body">
                   <div id="wrapper">
                         <div id="add_torrent" style="display: none" title="Add a torrent">
-                          <h3>Add torrent</h3>
                           <form id="add_torrent_form" action="upload_torrent" method="post" enctype="multipart/form-data">
+                            <label>Select file:</label>
                             <input id="add_torrent_input" accept="application/x-bittorrent" type="file" name="torrent">
                             <div class="add_torrent_start_text"> 
                             <input id="add_torrent_start" type="checkbox" name="start"> Start Immediately?
