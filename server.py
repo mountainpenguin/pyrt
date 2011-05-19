@@ -53,9 +53,13 @@ class mainHandler:
                 cherrypy.response.cookie = L.sendCookie()
             else:
                 return L.loginHTML("Incorrect Password")
-                
-        Index = indexPage.Index()
-        return Index.index(password, view, sortby, reverse)
+        
+        if view == "option":
+            Options = optionPage.Options()
+            return Options.index()
+        else:
+            Index = indexPage.Index()
+            return Index.index(password, view, sortby, reverse)
         
     index.exposed = True
     
