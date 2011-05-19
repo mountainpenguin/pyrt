@@ -67,13 +67,13 @@ class Login:
                 <link rel="stylesheet" href="/css/main.css">
                 <!-- <script type="text/javascript" src="/javascript/login.js"></script> -->
             </head>
-            <body style="background-color : #545454;">
+            <body>
                 <div id="login_div">
+                    <div class="notice">%s</div>
                     <h1>Login to your rTorrent webUI</h1>
                     <form method="POST" action="">
-                        <div class="column-1">Enter Password: </div>
-                        <div class="column-2"><input type="password" name="password"></div>
-                        <div class="column-2" id="login-message">%s</div>
+                        <label>Enter Password: </label>
+                        <input type="password" name="password">
                     </form>
                 </div>
             </body>
