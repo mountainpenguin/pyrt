@@ -113,12 +113,13 @@ function htmlify(json, cell) {
     new_html += "<div class='drop_down'>"
     new_html += "<div class='column-1'>ID:</div><div class='column-2'>" + obj.torrent_id + "</div>"
     new_html += "<div class='column-1'>Size:</div><div class='column-2'>" + obj.size + "</div>"
+    new_html += "<div class='column-1'>Percentage:</div><div class='column-2'>" + obj.percentage + "%</div>"
     new_html += "<div class='column-1'>Downloaded:</div><div class='column-2'>" + obj.downloaded  + "</div>"
     new_html += "<div class='column-1'>Uploaded:</div><div class='column-2'>" + obj.uploaded + "</div>"
     new_html += "<div class='column-1'>Ratio:</div><div class='column-2'>" + obj.ratio + "</div>"
     new_html += "<div class='column-1'>Peers:</div><div class='column-2'>" + obj.peers.length + "</div>"
     new_html += "<div class='column-1'>Created:</div><div class='column-2'>" + obj.created + "</div>"
-    new_html += "<div class='column-2' style='clear : left;'><span class='fakelink' onClick='removerow(\"" + obj.torrent_id + "\")'>Close</span> <a href='detail?torrent_id=" + obj.torrent_id + "'>Detailed View</a></div>"
+    new_html += "<div class='column-2' style='clear : left;'><span class='fakelink' onClick='removerow(\"" + obj.torrent_id + "\")'>Close</span> <a style='color : blue;' href='detail?torrent_id=" + obj.torrent_id + "'>Detailed View</a></div>"
     new_html += "</div>"
     cell.innerHTML = new_html;
     cell.style.borderLeft="1px dotted";

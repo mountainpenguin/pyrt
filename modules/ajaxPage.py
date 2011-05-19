@@ -24,6 +24,7 @@ class Ajax:
     def get_torrent_info(self, torrent_id):
         c = time.localtime(self.RT.getCreationDate(torrent_id))
         created = time.strftime("%d/%m/%Y %H:%M:%S", c)
+        size = self.RT.getSizeBytes(torrent_id)
         jsonObject = {
             "name" : self.RT.getNameByID(torrent_id),
             "uploaded" : self.Handler.humanSize(self.RT.getUploadBytes(torrent_id)),
@@ -31,8 +32,9 @@ class Ajax:
             "peers" : [x.__dict__ for x in self.RT.getPeers(torrent_id)],
             "torrent_id" : torrent_id,
             "created" : created,
-            "size" : self.Handler.humanSize(self.RT.getSizeBytes(torrent_id)),
+            "size" : self.Handler.humanSize(size),
             "ratio" : "%.02f" % (float(self.RT.getRatio(torrent_id))/1000),
+            "percentage" : "%i" % ((float(self.RT.getCompletedBytes(torrent_id)) / size) * 100),
         }
         return json.dumps(jsonObject)
         
