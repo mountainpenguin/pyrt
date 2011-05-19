@@ -85,7 +85,6 @@ function centerPopup() {
         "position" : "absolute",
         "top" : windowHeight/2-popupHeight/2,
         "left" : windowWidth/2-popupWidth/2,
-        "height" : windowHeight
     });
 };
 

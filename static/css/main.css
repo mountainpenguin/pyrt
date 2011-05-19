@@ -312,6 +312,7 @@ img.file_img {
     color : #6FA5FD;
     font-weight : 700;
     display : block;
+    cursor : pointer;
 }
 /* end shameless copy */
 
