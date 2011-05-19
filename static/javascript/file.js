@@ -77,14 +77,15 @@ function disablePopup() {
 };
 
 function centerPopup() {
-    var windowWidth = document.documentElement.clientWidth;  
-    var windowHeight = document.documentElement.clientHeight;  
+    var windowWidth = $(document).width();  
+    var windowHeight = $(document).height();  
     var popupHeight = $("#popupContact").height();  
     var popupWidth = $("#popupContact").width();  
     $("#popupContact").css({
         "position" : "absolute",
-        "top" : (windowHeight-popupHeight)/2,
+        "top" : ((windowHeight-popupHeight)/2)+$(window).scrollTop(),
         "left" : (windowWidth-popupWidth)/2,
+        "height" : $("#contactArea").height() + 200
     });
     $("#backgroundPopup").css({
         "height" : windowHeight,
