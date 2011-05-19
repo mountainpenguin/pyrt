@@ -6,6 +6,11 @@ body {
     margin: 0;
     background: #393939;
 }
+h3 {
+  font-size: 16px;
+  margin-top: 0px;
+  margin-bottom: 7px;
+}
 label {
   display: block;
   font-weight: bold;
@@ -63,10 +68,10 @@ form input[type="text"], form input[type="number"], form input[type="password"],
   padding: 5px; 
 }
 
-a:link { color : blue; }
-a:visited { color : blue; }
-a:active { color : blue; }
-a:hover { color : blue; }
+a:link { color : white; }
+a:visited { color : white; }
+a:active { color : white; }
+a:hover { color : white; }
 
 .notice {
     font-size: 14px;
@@ -123,6 +128,17 @@ a:hover { color : blue; }
     margin-top : 1em;
     clear : left;
 }
+div#actions-bar{
+  float: right;
+  height: 25px;
+  padding: 0px 10px;
+  margin-right: 5px;
+  font-size: 9pt;
+  line-height: 25px;
+  color: white;
+  font-weight: bold;
+}
+div#actions-bar a:link, div#actions-bar a:visited,div#actions-bar a:active { color : #FF7C25; }
 
 div.topbar-tab {
     float : left;
@@ -313,15 +329,8 @@ img.control_image {
     cursor : pointer;
     padding-left : 3px;
 }
-
-.add_torrent_start_text {
-    float : left;
-    clear : left;
-    padding-left : 3px;
-}
-#add_torrent_input {
-    float : left;
-    clear : left;
+#actions {
+  margin-top: 10px;
 }
 
 div.directory {

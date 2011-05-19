@@ -64,12 +64,21 @@ class Index:
                     %(seeding)s
                     %(active)s
                   </div>
+                  <div id="actions-bar">
+                    <a href="#" id="add-torrent-button">Add torrent</a>
+                  </div>
                 </div>
                 <div id="main_body">
                   <div id="wrapper">
-                    <div id="add_torrent">
-                        <img title="Add a Torrent" alt="Add Torrent" src="/images/add.png" id="add_img" onclick="show_add_dialogue(this.parentNode);">
-                    </div>
+                        <div id="add_torrent" style="display: none" title="Add a torrent">
+                          <h3>Add torrent</h3>
+                          <form id="add_torrent_form" action="upload_torrent" method="post" enctype="multipart/form-data">
+                            <input id="add_torrent_input" accept="application/x-bittorrent" type="file" name="torrent">
+                            <div class="add_torrent_start_text"> 
+                            <input id="add_torrent_start" type="checkbox" name="start"> Start Immediately?
+                            </div>
+                          </form>
+                        </div>
                     <div id="global_stats">
                         <h2>Global Stats</h2>
                         <div class="column-1">Upload Rate:</div><div class="column-2">%(uprate)s/s</div>

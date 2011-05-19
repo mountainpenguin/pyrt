@@ -1,4 +1,21 @@
 $(document).ready(function () {
+    $("#add-torrent-button").click(function(){
+      $("#add_torrent").dialog("open");
+    })
+    $("#add_torrent").dialog({
+          height: 220,
+          width: 420,
+          modal: true,
+          autoOpen: false,
+          buttons: {
+                  "Add torrent": function() {
+                    $("#add_torrent_form").submit();
+                  },
+                  Cancel: function() {
+                    $( this ).dialog( "close" );
+                  }
+                }
+        });
     $(".torrent-div.rcstart").contextMenu("right_click_start", {
         bindings : {
             "start" : function (t) {

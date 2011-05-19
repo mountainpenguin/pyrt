@@ -416,9 +416,12 @@ class Handler:
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
         <title>rTorrent - webUI</title>
         <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <link rel="stylesheet" type="text/css" href="/css/smoothness/jquery-ui-1.8.13.custom.css">                
         <script src="/javascript/jquery-1.6.1.min.js" type="text/javascript"></script>
+        <script src="/javascript/jquery-ui-1.8.13.custom.min.js" type="text/javascript"></script>        
         <script src="/javascript/jquery.contextmenu.r2.js" type="text/javascript"></script>
         <script src="/javascript/main.js" type="text/javascript"></script>
+        
     </head>
     <body>
         <!-- BODY PLACEHOLDER -->
