@@ -9,7 +9,11 @@ $(document).ready(function () {
           autoOpen: false,
           buttons: {
                   "Add torrent": function() {
-                    $("#add_torrent_form").submit();
+                     if (!($("#add_torrent_input").val())) {
+                          $("#add_torrent_form").css("border","1px solid red");
+                      } else {
+                        $("#add_torrent_form").submit();
+                      }
                   },
                   Cancel: function() {
                     $( this ).dialog( "close" );
