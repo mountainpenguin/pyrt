@@ -273,8 +273,8 @@ img.file_img {
 #backgroundPopup, #popupContact {
     display : none;
     position : fixed;
-    height : 80%;
-    width : 80%;
+    height : 70%;
+    width : 70%;
     background : #FFFFFF;
     border : 2px solid #CECECE;
     z-index : 2;

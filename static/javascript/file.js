@@ -9,7 +9,8 @@ $(document).ready(function () {
             "mouseenter",
             function () {
                 $(this).css({
-                    "color" : "blue"
+                    "color" : "blue",
+                    "cursor" : "pointer"
                 })
             }
         );
@@ -17,13 +18,15 @@ $(document).ready(function () {
             "mouseleave",
             function () {
                 $(this).css({
-                    "color" : "inherit"
+                    "color" : "inherit",
+                    "cursor" : "inherit"
                 })
             }
         );
         $(this).bind (
             "click",
             function () {
+                loadContents($(this));
                 loadPopup();
             }
         );
@@ -36,6 +39,9 @@ $(document).ready(function () {
     });
 });
 
+function loadContents(item) {
+    alert(item.html());
+};
 /* shamelessly copied from http://yensdesign.com/2008/09/how-to-create-a-stunning-and-smooth-popup-using-jquery/ */
 
 function loadPopup() {
