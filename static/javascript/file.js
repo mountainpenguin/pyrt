@@ -87,7 +87,8 @@ function centerPopup() {
         "left" : (windowWidth-popupWidth)/2,
     });
     $("#backgroundPopup").css({
-        "height" : windowHeight
+        "height" : windowHeight,
+        "background-color" : "black"
     });
 };
 
