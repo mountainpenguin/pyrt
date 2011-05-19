@@ -6,6 +6,22 @@ $(document).ready(function () {
     });
     $(".file_document").each( function (index) {
         $(this).bind (
+            "mouseenter",
+            function () {
+                $(this).css({
+                    "color" : "blue"
+                })
+            }
+        );
+        $(this).bind (
+            "mouseleave",
+            function () {
+                $(this).css({
+                    "color" : "inherit"
+                })
+            }
+        );
+        $(this).bind (
             "click",
             function () {
                 loadPopup();
