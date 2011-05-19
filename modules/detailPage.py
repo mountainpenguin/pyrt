@@ -16,17 +16,60 @@ class Detail:
         self.Config = config.Config()
         self.RT = rtorrent.rtorrent(self.Config.get("rtorrent_socket"))
         self.Handler = torrentHandler.Handler()
-        
-    def _humanSize(self, bytes):
-        if bytes > 1024*1024*1024:
-            return "%.02f GB" % (float(bytes) / 1024 / 1024 / 1024)
-        elif bytes > 1024*1024:
-            return "%.02f MB" % (float(bytes) / 1024 / 1024)
-        elif bytes > 1024:
-            return "%.02f KB" % (float(bytes) / 1024)
-        else:
-            return "%i B" % bytes
 
+        self.HTML = """
+            <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+            <html>
+                <head>
+                    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+                    <title>rTorrent - %(tname)s</title>
+                    <link rel="stylesheet" type="text/css" href="/css/%(css)s.css">
+                    %(head_add)s
+                    <script src="/javascript/%(js)s.js" type="text/javascript"></script>
+                </head>
+                <body>
+                  <div id="wrapper">
+                    <div id="topbar">
+                        <!-- set class 'selected' with jquery -->
+                        <div class="topbar-tab_home" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate_home();" title="Home" id="home">Home</div>
+                        <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" id="info" title="Info">Info</div>
+                        <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="Peers" id="peers">Peers</div>
+                        <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="File List" id="files">File List</div>
+                        <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="Trackers" id="trackers">Tracker List</div>
+                    </div>
+                    <div id="main">
+                        <div class="column-1">Name:</div><div id="torrent_name" class="column-2">%(tname)s</div>
+                        <div class="column-1">ID:</div><div id="torrent_id" class="column-2">%(tid)s</div>
+                        <div class="column-1">Created:</div><div id="torrent_created" class="column-2">%(tcreated)s</div>
+                        <div class="column-1">Path:</div><div id="torrent_path" class="column-2">%(tpath)s</div>
+                        <div class="column-1">Priority:</div><div id="torrent_priority" class="column-2">%(tpriority)s</div>
+                        <div class="column-1 %(tstate)s">State:</div><div id="torrent_state" class="column-2">%(tstate)s</div>
+                        %(space1)s
+                    </div>
+                    %(space2)s
+                  </div>
+                  %(space3)s
+                </body>
+            </html>
+        """
+    # tname     : torrent name
+    # css       : css file name
+    # js        : js file name
+    # head_add  : any addition to <head> tag
+    # space1    : anything in <div id="main"> (after general info)
+    # space2    : anything after <div id="main">
+    # space3    : anything after <div id="wrapper">
+    # tname, tid, tcreated, tpath, tpriority, tstate : as expected
+    
+    def _getDefaults(self, torrent_id):
+        return {
+            "tid" : torrent_id,
+            "tname" : self.RT.getNameByID(torrent_id),
+            "tcreated" : time.strftime("%02d/%02m/%Y %02H:%02M:%02S", time.localtime(self.RT.getCreationDate(torrent_id))),
+            "tpath" : self.RT.getPath(torrent_id),
+            "tpriority" : self.RT.getPriorityStr(torrent_id),
+            "tstate" : self.RT.getStateStr(torrent_id),
+        }
     def main(self, torrent_id=None):
         start = time.time()
         trackers = self.RT.getTrackers(torrent_id)
@@ -36,12 +79,6 @@ class Detail:
             seeds += tracker.seeds
             leechs += tracker.leechs
         info_dict = {
-            "tname" : self.RT.getNameByID(torrent_id),
-            "tid" : torrent_id,
-            "tcreated" : time.strftime("%02d/%02m/%Y %02H:%02M:%02S", time.localtime(self.RT.getCreationDate(torrent_id))),
-            "tpath" : self.RT.getPath(torrent_id),
-            "tpriority" : self.RT.getPriorityStr(torrent_id),
-            "tstate" : self.RT.getStateStr(torrent_id),
             "tsize" : self.Handler.humanSize(self.RT.getSizeBytes(torrent_id)),
             "tratio" : "%.02f" % (float(self.RT.getRatio(torrent_id))/1000),
             "tuploaded" : self.Handler.humanSize(self.RT.getUploadBytes(torrent_id)),
@@ -53,33 +90,16 @@ class Detail:
             "tseeds_total" : seeds,
             "tleechs_connected" : self.RT.conn.d.get_peers_accounted(torrent_id),
             "tleechs_total" : leechs,
+            "css" : "detail",
+            "js" : "detail",
+            "head_add" : "",
+            "space1" : "",
+            "space2" : "",
+            "space3" : "",
         }
-        return """
-    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-    <html>
-        <head>
-            <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-            <title>rTorrent - %(tname)s</title>
-            <link rel="stylesheet" type="text/css" href="../css/main.css">
-            <script src="../javascript/detail.js" type="text/javascript"></script>
-        </head>
-        <body>
-          <div id="wrapper">
-            <div id="topbar">
-                <div class="topbar-tab_home" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate_home();" title="Home" id="home">Home</div>
-                <div class="topbar-tab selected" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" id="info" title="Info">Info</div>
-                <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="Peers" id="peers">Peers</div>
-                <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="File List" id="files">File List</div>
-                <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="Trackers" id="trackers">Tracker List</div>
-            </div>
-            <div id="main">
-                <div class="column-1">Name:</div><div class="column-2">%(tname)s</div>
-                <div class="column-1">ID:</div><div class="column-2">%(tid)s</div>
-                <div class="column-1">Created:</div><div class="column-2">%(tcreated)s</div>
-                <div class="column-1">Path:</div><div class="column-2">%(tpath)s</div>
-                <div class="column-1">Priority:</div><div class="column-2">%(tpriority)s</div>
-                <div class="column-1 %(tstate)s">State:</div><div class="column-2">%(tstate)s</div>
-                <br>
+        info_dict.update(self._getDefaults(torrent_id))
+        
+        SPACE1_HTML = """
                 <div class="down-1"><div class="column-1">Total Size:</div><div class="column-2">%(tsize)s</div></div>
                 <div class="column-1">Percentage:</div><div class="column-2">%(tdone)s%%</div>
                 <div class="column-1">Ratio:</div><div class="column-2">%(tratio)s</div>
@@ -91,10 +111,10 @@ class Detail:
                
                 <div class="down-1"><div class="column-1">Leechers:</div><div class="column-2">%(tleechs_connected)s (%(tleechs_total)s)</div></div>
                 <div class="column-1">Seeders:</div><div class="column-2">%(tseeds_connected)s (%(tseeds_total)s)</div>
-            </div>
-          </div>
-        </body>
-    </html>""" % info_dict
+        """ % info_dict
+        
+        info_dict["space1"] = SPACE1_HTML
+        return self.HTML % info_dict
 
     def peers(self, torrent_id=None):
 
@@ -118,39 +138,7 @@ class Detail:
             peer_html += "\t\t\t\t\t\t<td>%(peer_rate)s</td><td>%(peer_total)s</td>\n" % peer.__dict__
             peer_html += "\t\t\t\t\t</tr>\n\n"
 
-        info_dict = {
-            "tname" : self.RT.getNameByID(torrent_id),
-            "tid" : torrent_id,
-            "tcreated" : time.strftime("%02d/%02m/%Y %02H:%02M:%02S", time.localtime(self.RT.getCreationDate(torrent_id))),
-            "tpath" : self.RT.getPath(torrent_id),
-            "tpriority" : self.RT.getPriorityStr(torrent_id),
-            "tstate" : self.RT.getStateStr(torrent_id),
-            "peerhtml" : peer_html.replace("\t","    "),
-        }
-        return """
-    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-    <html>
-        <head>
-            <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-            <title>rTorrent - %(tname)s</title>
-            <link rel="stylesheet" type="text/css" href="../css/main.css">
-            <script src="../javascript/detail.js" type="text/javascript"></script>
-        </head>
-        <body>
-            <div id="topbar">
-                <div class="topbar-tab_home" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate_home();" title="Home" id="home">Home</div>
-                <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" id="info" title="Info">Info</div>
-                <div class="topbar-tab selected" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="Peers" id="peers">Peers</div>
-                <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="File List" id="files">File List</div>
-                <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="Trackers" id="trackers">Tracker List</div>
-            </div>
-            <div id="main">
-                <div class="column-1">Name:</div><div class="column-2">%(tname)s</div>
-                <div class="column-1">ID:</div><div class="column-2">%(tid)s</div>
-                <div class="column-1">Created:</div><div class="column-2">%(tcreated)s</div>
-                <div class="column-1">Path:</div><div class="column-2">%(tpath)s</div>
-                <div class="column-1">Priority:</div><div class="column-2">%(tpriority)s</div>
-                <div class="column-1 %(tstate)s">State:</div><div class="column-2">%(tstate)s</div>
+        SPACE1_HTML = """
                 <div id="peers_table">
                     <table>
                         <tr>
@@ -165,55 +153,29 @@ class Detail:
                             <td class="heading">Peer Rate</td>
                             <td class="heading">Peer Total</td>
                         </tr>
-                        %(peerhtml)s
+                        %s
                     </table>
                 </div>
-            </div>
-        </body>
-    </html>""" % info_dict
-
-
-    def files(self, torrent_id=None):        
+        """ % peer_html.replace("\t","    ")
+        
         info_dict = {
-            "tname" : self.RT.getNameByID(torrent_id),
-            "tid" : torrent_id,
-            "tcreated" : time.strftime("%02d/%02m/%Y %02H:%02M:%02S", time.localtime(self.RT.getCreationDate(torrent_id))),
-            "tpath" : self.RT.getPath(torrent_id),
-            "tpriority" : self.RT.getPriorityStr(torrent_id),
-            "tstate" : self.RT.getStateStr(torrent_id),
-            "filehtml" : self.Handler.fileTreeHTML(self.RT.getFiles(torrent_id), self.RT.getRootDir()),
+            "css" : "detail",
+            "js" : "detail",
+            "head_add" : "",
+            "space1" : SPACE1_HTML,
+            "space2" : "",
+            "space3" : "",
         }
-        return """
-    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-    <html>
-        <head>
-            <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-            <title>rTorrent - %(tname)s</title>
-            <link rel="stylesheet" type="text/css" href="/css/main.css">
-            <script src="/javascript/detail.js" type="text/javascript"></script>
-            
-            <link rel="stylesheet" type="text/css" href="/css/jquery.treeview.css">
-            <script src="/javascript/jquery-1.6.1.min.js" type="text/javascript"></script>
-            <script src="/javascript/jquery.cookie.js" type="text/javascript"></script>
-            <script src="/javascript/jquery.treeview.js" type="text/javascript"></script>
-            <script src="/javascript/file.js" type="text/javascript"></script>
-        </head>
-        <body>
-            <div id="topbar">
-                <div class="topbar-tab_home" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate_home();" title="Home" id="home">Home</div>
-                <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" id="info" title="Info">Info</div>
-                <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="Peers" id="peers">Peers</div>
-                <div class="topbar-tab selected" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="File List" id="files">File List</div>
-                <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="Trackers" id="trackers">Tracker List</div>
-            </div>
-            <div id="main">
-                <div class="column-1">Name:</div><div class="column-2">%(tname)s</div>
-                <div class="column-1">ID:</div><div class="column-2" id="torrent_id">%(tid)s</div>
-                <div class="column-1">Created:</div><div class="column-2">%(tcreated)s</div>
-                <div class="column-1">Path:</div><div class="column-2">%(tpath)s</div>
-                <div class="column-1">Priority:</div><div class="column-2">%(tpriority)s</div>
-                <div class="column-1 %(tstate)s">State:</div><div class="column-2">%(tstate)s</div>
-                %(filehtml)s
+        info_dict.update(self._getDefaults(torrent_id))
+        
+        return self.HTML % info_dict
+
+    def files(self, torrent_id=None):
+        
+        SPACE1_HTML = """
+                <div id="files_container">
+                    %s
+                </div>
                 <div id="popupContact">
                     <a id="popupContactClose">x</a>
                     <h1 id="fileName">Testing Filename</h1>
@@ -222,9 +184,23 @@ class Detail:
                     </p>
                 </div>
                 <div id="backgroundPopup"></div>
-            </div>
-        </body>
-    </html>""" % info_dict
+        """ % self.Handler.fileTreeHTML(self.RT.getFiles(torrent_id), self.RT.getRootDir())
+        info_dict = {
+            "css" : "detail",
+            "js" : "detail",
+            "head_add" : """
+            <link rel="stylesheet" type="text/css" href="/css/jquery.treeview.css">
+            <script src="/javascript/jquery-1.6.1.min.js" type="text/javascript"></script>
+            <script src="/javascript/jquery.cookie.js" type="text/javascript"></script>
+            <script src="/javascript/jquery.treeview.js" type="text/javascript"></script>
+            <script src="/javascript/file.js" type="text/javascript"></script>
+            """,
+            "space1" : SPACE1_HTML,
+            "space2" : "",
+            "space3" : "",
+        }
+        info_dict.update(self._getDefaults(torrent_id))
+        return self.HTML % info_dict
 
     def trackers(self, torrent_id=None):
         tracker_html = "\n"
@@ -237,8 +213,7 @@ class Detail:
             tracker_html += "\t\t\t\t\t\t<td>%(url)s</td>\n\t\t\t\t\t\t<td>%(type)s</td>\n\t\t\t\t\t\t<td>%(interval)s</td>\n\t\t\t\t\t\t<td>%(seeds)s</td>\n\t\t\t\t\t\t<td>%(leechs)s</td>\n\t\t\t\t\t\t<td>%(enabled)s</td>" % (
                 {
                     "type" : {1:"HTTP",2:"UDP",3:"DHT"}[tracker.type],
-                    "url" : tracker.url, #tracker.url.split("//")[0] + "//" + "***",
-                    #~"url" : tracker.url.split("//")[0] + "//" + tracker.url.split("//")[1].split("/")[0] + "/***"*len(tracker.url.split("//")[1].split("/")[1:]),
+                    "url" : tracker.url, 
                     "interval" : tracker.interval,
                     "seeds" : tracker.seeds,
                     "leechs" : tracker.leechs,
@@ -247,41 +222,8 @@ class Detail:
             )
             tracker_html += "\t\t\t\t\t</tr>\n"
 
-        info_dict = {
-            "tname" : self.RT.getNameByID(torrent_id),
-            "tid" : torrent_id,
-            "tcreated" : time.strftime("%02d/%02m/%Y %02H:%02M:%02S", time.localtime(self.RT.getCreationDate(torrent_id))),
-            "tpath" : self.RT.getPath(torrent_id),
-            "tpriority" : self.RT.getPriorityStr(torrent_id),
-            "tstate" : self.RT.getStateStr(torrent_id),
-            "trackerhtml" : tracker_html.replace("\t","    "),
-        }
-        return """
-    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-    <html>
-        <head>
-            <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-            <title>rTorrent - %(tname)s</title>
-            <link rel="stylesheet" type="text/css" href="../css/main.css">
-            <script src="../javascript/detail.js" type="text/javascript"></script>
-        </head>
-        <body>
-            <div id="topbar">
-                <div class="topbar-tab_home" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate_home();" title="Home" id="home">Home</div>
-                <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" id="info" title="Info">Info</div>
-                <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="Peers" id="peers">Peers</div>
-                <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="File List" id="files">File List</div>
-                <div class="topbar-tab selected" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="Trackers" id="trackers">Tracker List</div>
-
-            </div>
-            <div id="main">
-                <div class="column-1">Name:</div><div class="column-2">%(tname)s</div>
-                <div class="column-1">ID:</div><div class="column-2">%(tid)s</div>
-                <div class="column-1">Created:</div><div class="column-2">%(tcreated)s</div>
-                <div class="column-1">Path:</div><div class="column-2">%(tpath)s</div>
-                <div class="column-1">Priority:</div><div class="column-2">%(tpriority)s</div>
-                <div class="column-1 %(tstate)s">State:</div><div class="column-2">%(tstate)s</div>
-                <div id="peers_table">
+        SPACE1_HTML = """
+                <div id="trackers_table">
                     <table>
                         <tr>
                             <td class="heading">URL</td>
@@ -291,54 +233,19 @@ class Detail:
                             <td class="heading">Leechers</td>
                             <td class="heading">Enabled</td>
                         </tr>
-                        %(trackerhtml)s
+                        %s
                     </table>
                 </div>
-            </div>
-        </body>
-    </html>""" % info_dict
-
-if __name__ == "__main__":
-
-    form = cgi.FieldStorage()
-
-    torrent_id = form.getfirst("torrent_id", None)
-    view = form.getfirst("view", None)
-
-    L = login.Login()
-    test = L.checkLogin(os.environ)
-
-    if not test and not form.getfirst("password"):
-        L.loginHTML()
-        sys.exit()
-    elif not test and form.getfirst("password"):
-        #check password
-        pwcheck = L.checkPassword(form.getfirst("password"))
-        if not pwcheck:
-            L.loginHTML("Incorrect password")
-            sys.exit()
-        else:
-            L.sendCookie()
-            print self.Handler.HTMLredirect("/web/index.py")
-
-    if view not in ["info", "peers", "files", "trackers"]:
-        view = "info"
-
-    if not torrent_id:
-        if os.environ.get("REQUEST_METHOD") == "POST":
-            try:
-                torrent_id = os.environ.get("QUERY_STRING").split("torrent_id=")[1].split("&")[0]
-                view = os.environ.get("QUERY_STRING").split("view=")[1].split("&")[0]
-            except:
-                pass
-
-    if not torrent_id:
-        print "ERROR/Not Implemented"
-    elif not view or view == "info":
-        main(torrent_id)
-    elif view == "peers":
-        peers(torrent_id)
-    elif view == "files":
-        files(torrent_id)
-    elif view == "trackers":
-        trackers(torrent_id)
+        """ % tracker_html.replace("\t","    ")
+        
+        info_dict = {
+            "css" : "detail",
+            "js" : "detail",
+            "head_add" : "",
+            "space1" : SPACE1_HTML,
+            "space2" : "",
+            "space3" : "",
+        }
+        info_dict.update(self._getDefaults(torrent_id))
+        
+        return self.HTML % info_dict

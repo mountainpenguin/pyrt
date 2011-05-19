@@ -1,0 +1,180 @@
+body {
+    font-family : "Trebuchet MS", "sans-serif";
+    font-size : 14px;
+    background-color : #eeeeee;
+}
+
+td.heading {
+    font-weight : bold;
+    background-color : #0099ff;
+    color : white;
+}
+
+.column-1 {
+    float : left;
+    clear : left;
+    min-width : 9em;
+    font-weight : bold;
+}
+
+.column-2 {
+    float : left;
+    min-width : 9em;
+}
+
+.column-3 {
+    float : left;
+    min-width : 9em;
+    font-weight : bold;
+}
+
+.column-4 {
+    float : left;
+    min-width : 9em;
+}
+
+.column-5 {
+    float : left;
+    min-width : 9em;
+    font-weight : bold;
+}
+
+.column-6 {
+    float : left;
+    min-width : 9em;
+}
+
+.down-1 {
+    float : left;
+    margin-top : 1em;
+    clear : left;
+}
+
+div.topbar-tab {
+    float : left;
+    padding : 0em 1em;
+    border : 1px solid;
+    border-bottom : 0px none;
+    border-top-right-radius : 25px 50px;
+    border-top-left-radius: 25px 50px;
+    cursor : pointer;
+    background-color : white;
+}
+
+div.topbar-tab_home {
+    float : left;
+    padding : 0em 1em;
+    border : 1px dotted;
+    border-bottom : 0px none;
+    border-top-right-radius : 25px 50px;
+    border-top-left-radius : 25px 50px;
+    cursor : pointer;
+    background-color : #cccccc;
+}
+
+#topbar {
+    float : left;
+}
+
+#main {
+    float : left;
+    clear : left;
+    border : 1px solid;
+    padding : 1em;
+    min-width : 80%;
+    background-color : white;
+}
+
+
+
+#peers_table {
+     float : left;
+     clear : left;
+     margin-top : 1em;
+}
+
+#files_container {
+    float : left;
+    clear : left;
+    margin-top : 1em;
+}
+
+#trackers_table {
+    float : left;
+    clear : left;
+    margin-top : 1em;
+}
+
+div.topbar-tab.selected{
+    background-color : #79CDCD;
+}
+
+span.file_priority {
+    float : left;
+    clear : left;
+    min-width : 4em;
+}
+span.file_completion {
+    float : left;
+    min-width : 4em;
+}
+span.file_size {
+    float : left;
+    min-width : 6em;
+}
+span.file_name {
+    float : left;
+    min-width : 4em;
+}
+
+/* shamelessly copied from http://yensdesign.com/2008/09/how-to-create-a-stunning-and-smooth-popup-using-jquery/ */
+
+#backgroundPopup {
+    display : none;
+    position : fixed;
+    height : 100%;
+    width : 100%;
+    top : 0;
+    left : 0;
+    background #000000;
+    border : 1px solid #CECECE;
+    z-index : 1;
+}
+
+#popupContact {
+    display : none;
+    position : fixed;
+    height : 75%;
+    width : 75%;
+    background : #FFFFFF;
+    border : 2px solid #CECECE;
+    z-index : 2;
+    padding : 12px;
+}
+
+#popupContact h1 {
+    text-align : left;
+    color : #6FA5FD;
+    font-size : 22px;
+    font-weight : 700;
+    border-bottom : 1px dotted #D3D3D3;
+    padding-bottom : 2px;
+    margin-bottom : 20px;
+}
+
+#popupContactClose {
+    font-size : 14px;
+    line-height : 14px;
+    right : 6px;
+    top : 4px;
+    position : absolute;
+    color : #6FA5FD;
+    font-weight : 700;
+    display : block;
+    cursor : pointer;
+}
+/* end shameless copy */
+
+.fullpath {
+    display : none;
+}
