@@ -270,11 +270,23 @@ img.file_img {
 
 /* shamelessly copied from http://yensdesign.com/2008/09/how-to-create-a-stunning-and-smooth-popup-using-jquery/ */
 
-#backgroundPopup, #popupContact {
+#backgroundPopup {
     display : none;
     position : fixed;
-    height : 70%;
-    width : 70%;
+    height : 100%;
+    width : 100%;
+    top : 0;
+    left : 0;
+    background #000000;
+    border : 1px solid #CECECE;
+    z-index : 1;
+}
+
+#popupContact {
+    display : none;
+    position : fixed;
+    height : 384px;
+    width : 408px;
     background : #FFFFFF;
     border : 2px solid #CECECE;
     z-index : 2;
