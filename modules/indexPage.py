@@ -53,6 +53,9 @@ class Index:
                     %(hashing)s
                     %(seeding)s
                     %(active)s
+                    <div id="tools-bar">
+                        <div class="topbar-tab_options" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_options(this);" title="Options" id="tab_options">Options</div>
+                    </div>
                   </div>
                   <div id="actions-bar">
                     <a href="#" id="add-torrent-button">Add torrent</a>

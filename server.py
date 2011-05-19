@@ -53,9 +53,13 @@ class mainHandler:
                 cherrypy.response.cookie = L.sendCookie()
             else:
                 return L.loginHTML("Incorrect Password")
-                
-        Index = indexPage.Index()
-        return Index.index(password, view, sortby, reverse)
+        
+        if view == "option":
+            Options = optionPage.Options()
+            return Options.index()
+        else:
+            Index = indexPage.Index()
+            return Index.index(password, view, sortby, reverse)
         
     index.exposed = True
     
@@ -123,6 +127,15 @@ class mainHandler:
         else:
             return "ERROR/Invalid method"
     ajax.exposed = True
+    
+    def options(self):
+        return """
+            <html>
+                <body>
+                    <div>Nothing here yet</div>
+                    Go back to <a href="%(link)s">%(link)s</a>
+        """ % {"link" : cherrypy.request.headers["Referer"]}
+    options.exposed = True
 
 if __name__ == "__main__":
     cherrypy.config.update(global_config)
