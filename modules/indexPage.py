@@ -53,6 +53,7 @@ class Index:
         uptime = handler.humanTimeDiff(system.uptime())
 
         html_insert = """
+              <div id="header">
                 <div id="topbar">
                     %(main)s
                     %(started)s
@@ -62,9 +63,10 @@ class Index:
                     %(hashing)s
                     %(seeding)s
                     %(active)s
+                  </div>
                 </div>
-                
                 <div id="main_body">
+                  <div id="wrapper">
                     <div id="add_torrent">
                         <img title="Add a Torrent" alt="Add Torrent" src="/images/add.png" id="add_img" onclick="show_add_dialogue(this.parentNode);">
                     </div>
@@ -110,5 +112,5 @@ class Index:
             "cpuusage" : "None",
             "uptime" : uptime,
         }
-        return html.replace("<!-- BODY PLACEHOLDER -->",html_insert).replace("</body>","</div>\n\t</body>")
+        return html.replace("<!-- BODY PLACEHOLDER -->",html_insert).replace("</body>","</div></div>\n\t</body>")
 

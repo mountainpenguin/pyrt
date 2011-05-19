@@ -64,6 +64,7 @@ class Detail:
             <script src="../javascript/detail.js" type="text/javascript"></script>
         </head>
         <body>
+          <div id="wrapper">
             <div id="topbar">
                 <div class="topbar-tab_home" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate_home();" title="Home" id="home">Home</div>
                 <div class="topbar-tab selected" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" id="info" title="Info">Info</div>
@@ -91,6 +92,7 @@ class Detail:
                 <div class="down-1"><div class="column-1">Leechers:</div><div class="column-2">%(tleechs_connected)s (%(tleechs_total)s)</div></div>
                 <div class="column-1">Seeders:</div><div class="column-2">%(tseeds_connected)s (%(tseeds_total)s)</div>
             </div>
+          </div>
         </body>
     </html>""" % info_dict
 

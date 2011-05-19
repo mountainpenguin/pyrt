@@ -2,6 +2,9 @@ body {
     font-family: "Helvetica", "Trebuchet MS", "sans-serif";
     font-size: 14px;
     background-color: #EEE;
+    padding: 0;
+    margin: 0;
+    background: #393939;
 }
 label {
   display: block;
@@ -9,6 +12,42 @@ label {
   font-family: "Verdana";
   color: #2F2F2F;
   font-size: 13px;
+}
+table {
+  width: 98%;
+  border-collapse: collapse;
+}
+td {
+  padding: 3px;
+}
+td:nth-child(1) {
+  width: 37%;
+}
+td.torrentid {
+    font-size : 12px;
+}
+
+td.heading {
+    font-weight : bold;
+    background-color : #3A3737;
+    color : white;
+}
+
+tr.torrent-div {
+    border : 1px solid;
+    -webkit-border-radius : 10px;
+    padding : 0.5em; 
+    margin : 0.5em;
+}
+
+tr.blue {
+    background-color : #ECE9D8;
+}
+tr.green {
+    background-color : #CCCCCC;
+}
+tr.red {
+    background-color : red;
 }
 form input[type="text"], form input[type="number"], form input[type="password"], form input[type="email"], form select {
   height: 40px;
@@ -45,33 +84,6 @@ a:hover { color : blue; }
     cursor : pointer;
     text-decoration : underline;
 }
-td.torrentid {
-    font-size : 12px;
-}
-
-td.heading {
-    font-weight : bold;
-    background-color : #0099ff;
-    color : white;
-}
-
-tr.torrent-div {
-    border : 1px solid;
-    -webkit-border-radius : 10px;
-    padding : 0.5em; 
-    margin : 0.5em;
-}
-
-tr.blue {
-    background-color : #ECE9D8;
-}
-tr.green {
-    background-color : #CCCCCC;
-}
-tr.red {
-    background-color : red;
-}
-
 .column-1 {
     float : left;
     clear : left;
@@ -114,15 +126,26 @@ tr.red {
 
 div.topbar-tab {
     float : left;
-    padding : 0em 1em;
-    border : 1px solid;
-    border-bottom : 0px none;
-    border-top-right-radius : 25px 50px;
-    border-top-left-radius: 25px 50px;
-    cursor : pointer;
-    background-color : white;
+    height: 25px;
+    padding: 0px 10px;
+    margin-right: 5px;
+    font-size: 9pt;
+    line-height: 25px;
+    color: white;
+    font-weight: bold;
 }
 
+div.topbar-tab.selected{
+  -moz-border-radius-topleft: 8px;
+  -webkit-border-top-left-radius: 8px;
+  border-top-left-radius: 8px;
+  -moz-border-radius-topright: 8px;
+  -webkit-border-top-right-radius: 8px;
+  border-top-right-radius: 8px;
+  border-bottom: none;
+  background: white;
+  color: black;
+}
 div.topbar-tab_home {
     float : left;
     padding : 0em 1em;
@@ -142,32 +165,53 @@ div.topbar-tab_home {
     clear : left;
     border : 1px solid;
     padding : 1em;
-    min-width : 80%;
+    min-width : 100%;
     background-color : white;
 }
 
-#main_body {
-    border : 1px solid;
-    float : left;
-    clear : left;
+#header {
+  padding-top: 20px;
+  width: 80%;
+  min-width: 800px;
+  margin: 0 auto;
+  overflow: hidden;
 }
 
+
+#main_body {
+  background: #DDD;
+  margin-top: 0;
+  padding-top: 0;
+  min-height: 100%;
+  height: 100%;
+}
+#wrapper{
+   overflow: hidden;
+   margin: 0 auto;
+   padding: 10px 30px;
+   width: 83%;
+   background: white;
+   box-shadow: 0 0 9px black;
+   -webkit-box-shadow: 0 0 9px black;
+   -moz-box-shadow: 0 0 9px black;
+   min-height: 450px;
+   height: auto !important;
+   height: 100%;
+}
 #torrent_table {
-    float : left;
-    clear : left;
-    padding : 1em;
+    width: 100%;
+    padding: 1em;
+    margin-bottom: 15px;
 }
 
 #global_stats {
-    float : left;
-    clear : left;
-    padding : 0em 1em 1em 1em;
+    width: 100%;
+    margin-bottom: 45px;
+    padding: 0em 1em 1em 1em;
 }
 
 #peers_table {
-     float : left;
-     clear : left;
-     margin-top : 1em;
+     margin-top: 1em;
 }
 
 /* .folder {
@@ -203,10 +247,6 @@ div.topbar-tab_home {
     float : left;
     clear : left;
     margin-top : 1em;
-}
-
-div.topbar-tab.selected{
-    background-color : #79CDCD;
 }
 
 span.file_priority {
@@ -256,12 +296,10 @@ img.control_image {
 }
 
 #add_torrent {
-    float : left;
     padding : 1em;
 }
 
 #add_img {
-    float : left;
     width : 40px;
     height : 40px;
     cursor : pointer;

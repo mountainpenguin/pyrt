@@ -65,7 +65,7 @@ function deselect_torrent(elem) {
     elem.style.cursor = "default";
 }
 function select_tab(elem) {
-   elem.style.backgroundColor = "#37FDFC"; 
+   elem.style.backgroundColor = "#bbbbbb"; 
 }
 
 function deselect_tab(elem) {
