@@ -88,7 +88,7 @@ class mainHandler:
             return Detail.trackers(torrent_id)
     detail.exposed = True
     
-    def ajax(self, request=None, torrent_id=None):
+    def ajax(self, request=None, torrent_id=None, filepath=None):
         #check cookies
         L = login.Login()
         client_cookie = cherrypy.request.cookie
@@ -116,6 +116,8 @@ class mainHandler:
             return Ajax.delete_torrent(torrent_id)
         elif request == "hash_torrent":
             return Ajax.hash_torrent(torrent_id)
+        elif request == "get_file":
+            return Ajax.get_file(torrent_id, filepath)
         else:
             return "ERROR/Invalid method"
     ajax.exposed = True

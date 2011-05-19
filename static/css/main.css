@@ -267,3 +267,55 @@ img.file_img {
     width : 20px;
     height : 20px;
 }
+
+/* shamelessly copied from http://yensdesign.com/2008/09/how-to-create-a-stunning-and-smooth-popup-using-jquery/ */
+
+#backgroundPopup {
+    display : none;
+    position : fixed;
+    height : 100%;
+    width : 100%;
+    top : 0;
+    left : 0;
+    background #000000;
+    border : 1px solid #CECECE;
+    z-index : 1;
+}
+
+#popupContact {
+    display : none;
+    position : fixed;
+    height : 75%;
+    width : 75%;
+    background : #FFFFFF;
+    border : 2px solid #CECECE;
+    z-index : 2;
+    padding : 12px;
+}
+
+#popupContact h1 {
+    text-align : left;
+    color : #6FA5FD;
+    font-size : 22px;
+    font-weight : 700;
+    border-bottom : 1px dotted #D3D3D3;
+    padding-bottom : 2px;
+    margin-bottom : 20px;
+}
+
+#popupContactClose {
+    font-size : 14px;
+    line-height : 14px;
+    right : 6px;
+    top : 4px;
+    position : absolute;
+    color : #6FA5FD;
+    font-weight : 700;
+    display : block;
+    cursor : pointer;
+}
+/* end shameless copy */
+
+.fullpath {
+    display : none;
+}

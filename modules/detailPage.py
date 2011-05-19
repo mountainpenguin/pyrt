@@ -171,11 +171,7 @@ class Detail:
     </html>""" % info_dict
 
 
-    def files(self, torrent_id=None):
-        file_html = "\n"
-        files = self.RT.getFiles(torrent_id)
-        filehtml = self.Handler.fileTreeHTML(files, self.RT.getRootDir())
-        
+    def files(self, torrent_id=None):        
         info_dict = {
             "tname" : self.RT.getNameByID(torrent_id),
             "tid" : torrent_id,
@@ -183,9 +179,7 @@ class Detail:
             "tpath" : self.RT.getPath(torrent_id),
             "tpriority" : self.RT.getPriorityStr(torrent_id),
             "tstate" : self.RT.getStateStr(torrent_id),
-    #~        "filehtml" : repr(folder)
-    #~        "filehtml" : "\n\t\t\t\t".join([repr(x.__dict__) for x in files]).replace("\t","    ")
-            "filehtml" : filehtml,
+            "filehtml" : self.Handler.fileTreeHTML(self.RT.getFiles(torrent_id), self.RT.getRootDir()),
         }
         return """
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -212,12 +206,20 @@ class Detail:
             </div>
             <div id="main">
                 <div class="column-1">Name:</div><div class="column-2">%(tname)s</div>
-                <div class="column-1">ID:</div><div class="column-2">%(tid)s</div>
+                <div class="column-1">ID:</div><div class="column-2" id="torrent_id">%(tid)s</div>
                 <div class="column-1">Created:</div><div class="column-2">%(tcreated)s</div>
                 <div class="column-1">Path:</div><div class="column-2">%(tpath)s</div>
                 <div class="column-1">Priority:</div><div class="column-2">%(tpriority)s</div>
                 <div class="column-1 %(tstate)s">State:</div><div class="column-2">%(tstate)s</div>
                 %(filehtml)s
+                <div id="popupContact">
+                    <a id="popupContactClose">x</a>
+                    <h1 id="fileName">Testing Filename</h1>
+                    <p id="contactArea">
+                        Testing popup
+                    </p>
+                </div>
+                <div id="backgroundPopup"></div>
             </div>
         </body>
     </html>""" % info_dict
