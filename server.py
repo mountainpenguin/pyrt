@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from modules import config, login, bencode, torrentHandler, rtorrent # 'real' modules
-from modules import indexPage, detailPage, ajaxPage                  # pages
+from modules import config, login                    # 'real' modules
+from modules import indexPage, detailPage, ajaxPage  # pages
 
 import cherrypy
 import os
@@ -88,7 +88,7 @@ class mainHandler:
             return Detail.trackers(torrent_id)
     detail.exposed = True
     
-    def ajax(self, request=None, torrent_id=None, filepath=None):
+    def ajax(self, request=None, torrent_id=None, filepath=None, torrent=None, start=None):
         #check cookies
         L = login.Login()
         client_cookie = cherrypy.request.cookie
@@ -118,33 +118,11 @@ class mainHandler:
             return Ajax.hash_torrent(torrent_id)
         elif request == "get_file":
             return Ajax.get_file(torrent_id, filepath)
+        elif request == "upload_torrent":
+            return Ajax.upload_torrent(torrent, start)
         else:
             return "ERROR/Invalid method"
     ajax.exposed = True
-    
-    def upload_torrent(self, torrent=None, start=None):
-        Handler = torrentHandler.Handler()
-        RT = rtorrent.rtorrent(c.get("rtorrent_socket"))
-        fileName = torrent.filename
-        inFile = torrent.file.read()
-        try:
-            decoded = bencode.bdecode(inFile)
-        except:
-            #Invalid torrent 
-            return "ERROR/Invalid torrent file"
-        else:
-            #save file in /torrents
-            newFile = open("torrents/%s" % (fileName), "wb")
-            newFile.write(inFile)
-            newFile.close()
-            #add file to rtorrent
-            if start:
-                RT.start_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
-            else:
-                RT.load_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
-            # return "OK/start=%s" % start
-            raise cherrypy.HTTPRedirect("/")
-    upload_torrent.exposed = True
 
 if __name__ == "__main__":
     cherrypy.config.update(global_config)

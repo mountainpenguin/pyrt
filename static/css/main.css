@@ -396,3 +396,7 @@ img.file_img {
 .fullpath {
     display : none;
 }
+
+.hidden {
+    display : none;
+}

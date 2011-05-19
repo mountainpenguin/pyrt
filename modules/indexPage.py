@@ -42,16 +42,6 @@ class Index:
         ttseeding = genHTML("seeding",view)
         ttactive = genHTML("active",view)
 
-        global_up_rate = handler.humanSize(RT.getGlobalUpRate())
-        global_down_rate = handler.humanSize(RT.getGlobalDownRate())
-        global_up_total = handler.humanSize(RT.getGlobalUpBytes())
-        global_down_total = handler.humanSize(RT.getGlobalDownBytes())
-
-        diskused, disktotal = system.hdd()
-        memused, memtotal = system.mem()
-        load1, load5, load15 = os.getloadavg()
-        uptime = handler.humanTimeDiff(system.uptime())
-
         html_insert = """
               <div id="header">
                 <div id="topbar">
@@ -70,34 +60,18 @@ class Index:
                 </div>
                 <div id="main_body">
                   <div id="wrapper">
-                        <div id="add_torrent" style="display: none" title="Add a torrent">
-                          <h3>Add torrent</h3>
-                          <form id="add_torrent_form" action="upload_torrent" method="post" enctype="multipart/form-data">
-                            <input id="add_torrent_input" accept="application/x-bittorrent" type="file" name="torrent">
-                            <div class="add_torrent_start_text"> 
-                            <input id="add_torrent_start" type="checkbox" name="start"> Start Immediately?
-                            </div>
-                          </form>
+                    <div id="add_torrent" style="display: none" title="Add a torrent">
+                      <h3>Add torrent</h3>
+                      <form id="add_torrent_form" action="ajax" method="post" enctype="multipart/form-data">
+                        <input type="hidden" class="hidden" name="request" value="upload_torrent">
+                        <input type="hidden" class="hidden" name="torrent_id" value="none">
+                        <input id="add_torrent_input" accept="application/x-bittorrent" type="file" name="torrent">
+                        <div class="add_torrent_start_text"> 
+                        <input id="add_torrent_start" type="checkbox" name="start"> Start Immediately?
                         </div>
-                    <div id="global_stats">
-                        <h2>Global Stats</h2>
-                        <div class="column-1">Upload Rate:</div><div class="column-2">%(uprate)s/s</div>
-                        <div class="column-3">Total Up:</div><div class="column-4">%(uptot)s</div>
-                        <div class="column-5">Disk Usage:</div><div class="column-6">%(diskused)s / %(disktotal)s</div>
-                        
-                        <div class="column-1">Download Rate:</div><div class="column-2">%(downrate)s/s</div>
-                        <div class="column-3">Total Down:</div><div class="column-4">%(downtot)s</div>
-                        <div class="column-5">Mem Usage:</div><div class="column-6">%(memused)s / %(memtotal)s</div>
-                        
-                        <div class="column-1">Load Average:</div>
-                        <div class="column-2">
-                            <span title="Last minute">%(load1)s</span>,
-                            <span title="Last 5 minutes">%(load5)s</span>,
-                            <span title="Last 15 minutes">%(load15)s</span>
-                        </div>
-                        <div class="column-3">Uptime:</div><div class="column-4">%(uptime)s</div>
-                        <div class="column-5">CPU Usage:</div><div class="column-6">%(cpuusage)s%%</div>
+                      </form>
                     </div>
+                    %(global_stats)s
         """ % {
             "main" : ttmain,
             "started" : ttstarted,
@@ -107,19 +81,7 @@ class Index:
             "hashing" : tthashing,
             "seeding" : ttseeding,
             "active" : ttactive,
-            "uprate" : global_up_rate,
-            "downrate" : global_down_rate,
-            "uptot" : global_up_total,
-            "downtot" : global_down_total,
-            "diskused" : handler.humanSize(diskused),
-            "disktotal" : handler.humanSize(disktotal),
-            "memused" : handler.humanSize(memused),
-            "memtotal" : handler.humanSize(memtotal),
-            "load1" : "%.02f" % load1,
-            "load5" : "%.02f" % load5,
-            "load15" : "%.02f" % load15,
-            "cpuusage" : "None",
-            "uptime" : uptime,
+            "global_stats" : system.generalHTML(),
         }
         return html.replace("<!-- BODY PLACEHOLDER -->",html_insert).replace("</body>","</div></div>\n\t</body>")
 

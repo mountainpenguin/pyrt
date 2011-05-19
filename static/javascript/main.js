@@ -117,7 +117,7 @@ function htmlify(json, cell) {
     cell.innerHTML = new_html;
     cell.style.borderLeft="1px dotted";
     cell.style.borderRight="1px dotted";
-    cell.style.backgroundColor = "white";
+    cell.style.backgroundColor = "#eeeeee";
 }
 function removerow(torrent_id) {
     if (row = document.getElementById("newrow_torrent_id_" + torrent_id)) {

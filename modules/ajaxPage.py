@@ -13,6 +13,7 @@ import os
 import sys
 import config
 import shutil
+import bencode
 
 class Ajax:
     def __init__(self):
@@ -117,5 +118,25 @@ class Ajax:
             return "ERROR/File not complete"
         fileContents = open(filepath).read()
         return fileContents
+    
+    def upload_torrent(self, torrent=None, start=None):
+        fileName = torrent.filename
+        inFile = torrent.file.read()
+        try:
+            decoded = bencode.bdecode(inFile)
+        except:
+            #Invalid torrent 
+            return "ERROR/Invalid torrent file"
+        else:
+            #save file in /torrents
+            newFile = open("torrents/%s" % (fileName), "wb")
+            newFile.write(inFile)
+            newFile.close()
+            #add file to rtorrent
+            if start:
+                self.RT.start_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
+            else:
+                self.RT.load_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
+            return self.Handler.HTMLredirect("/")
                 
         
