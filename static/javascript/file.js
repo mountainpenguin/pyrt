@@ -40,7 +40,7 @@ $(document).ready(function () {
 
 function loadContents(item) {
     $.ajax({
-        url : "/ajax?request=get_file&filename=" + item.html(),
+        url : "/ajax?request=get_file&filepath=" + encodeURIComponent(item.find(".fullpath").html()) + "&torrent_id=" + $("#torrent_id").html(),
         success : function() {
             $("#filename").html(item.html());
             $("#contactArea").html(data);

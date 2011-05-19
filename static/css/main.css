@@ -302,3 +302,7 @@ img.file_img {
     display : block;
 }
 /* end shameless copy */
+
+.fullpath {
+    display : none;
+}

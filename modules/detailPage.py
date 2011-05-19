@@ -206,7 +206,7 @@ class Detail:
             </div>
             <div id="main">
                 <div class="column-1">Name:</div><div class="column-2">%(tname)s</div>
-                <div class="column-1">ID:</div><div class="column-2">%(tid)s</div>
+                <div class="column-1" id="torrent_id">ID:</div><div class="column-2">%(tid)s</div>
                 <div class="column-1">Created:</div><div class="column-2">%(tcreated)s</div>
                 <div class="column-1">Path:</div><div class="column-2">%(tpath)s</div>
                 <div class="column-1">Priority:</div><div class="column-2">%(tpriority)s</div>

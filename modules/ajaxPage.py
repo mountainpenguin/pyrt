@@ -100,3 +100,10 @@ class Ajax:
                     return "ERROR/unknown"
         else:
             return "ERROR/could not stop torrent"
+
+    def get_file(self, torrent_id, filepath):
+        return filepath
+        # files = self.RT.getFiles(torrent_id)
+        # for file in files:
+            # if os.path.basename(
+        

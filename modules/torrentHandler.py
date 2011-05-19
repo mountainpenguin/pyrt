@@ -158,7 +158,7 @@ class Handler:
         """
 
         DOCUMENT_DIV = """
-            <li><span class="file %s">%s</span></li>
+            <li><span class="file %s">%s<span class="fullpath">%s</span></span></li>
         """
 
         DIRECTORY_DIV = """
@@ -170,7 +170,7 @@ class Handler:
             for file in level["___files"]:
                 # html += DOCUMENT_DIV % (HIDDEN, os.path.basename(fileDict[file].abs_path), self.humanSize(fileDict[file].size))
                 fileName = os.path.basename(fileDict[file].abs_path)
-                html += DOCUMENT_DIV % (_getFileType(fileName), fileName)
+                html += DOCUMENT_DIV % (_getFileType(fileName), fileName, fileDict[file].abs_path)
             return html
             
         def _getDirs(level):
@@ -215,7 +215,7 @@ class Handler:
                 <ul id="files_list" class="filetree">
                     %s
                 </ul>
-                """ % (DOCUMENT_DIV % (_getFileType(fileName), fileName))
+                """ % (DOCUMENT_DIV % (_getFileType(fileName), fileName, fileObj.abs_path))
                 # % (DOCUMENT_DIV % ("", os.path.basename(fileObj.abs_path), self.humanSize(fileObj.size)))
         else:
             #walk through dictionary
