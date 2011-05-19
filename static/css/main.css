@@ -285,8 +285,8 @@ img.file_img {
 #popupContact {
     display : none;
     position : fixed;
-    height : 384px;
-    width : 408px;
+    min-height : 384px;
+    min-width : 408px;
     background : #FFFFFF;
     border : 2px solid #CECECE;
     z-index : 2;
