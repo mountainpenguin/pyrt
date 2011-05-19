@@ -149,6 +149,7 @@ div.topbar-tab {
     line-height: 25px;
     color: white;
     font-weight: bold;
+    cursor : pointer;
 }
 
 div.topbar-tab.selected{
