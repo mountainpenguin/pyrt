@@ -338,7 +338,7 @@ function command(cmd, t_id) {
                     var resp = xmlhttpc.responseText.trim()
                     if (resp == "OK") {
                         refresh_content("no");
-                    else {
+                    } else {
                         alert("Command Failed with reason: " + resp); 
                     }
                 }
