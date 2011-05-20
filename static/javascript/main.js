@@ -143,7 +143,7 @@ function remove_torrentrow(torrent_id) {
         row.style.border = "1px solid red";
         $(row).fadeOut(2000, function () {
             document.getElementById("torrent_list").deleteRow(row.rowIndex);
-        }
+        });
     }
 }
 
