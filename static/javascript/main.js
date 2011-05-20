@@ -138,21 +138,18 @@ function refresh_content() {
 function add_torrentrow(torrent_id, torrent_data) {
     req = "/ajax?request=get_torrent_info&torrent_id=" + torrent_id;
     $.getJSON(req, function (response) {
-        // var torrent_rows = $("#torrent_table").children(".torrent-div");
-        // // get colour of first element
-        // if ($(torrent_rows.get(0)).hasClass("blue")) {
-            // var newcolour = "green";
-        // } else {
-            // var newcolour = "blue";
-        // }
-        
-        var torrent_table = document.getElementById("#torrent_table");
-        firstTRow = torrent_table.childNodes[1];
-        alert(firstTRow.id);
+        var torrent_table = document.getElementById("torrent_table");
+        firstTRow = torrent_table.getElementsByTagName("tbody")[0].getElementsByTagName("tr")[1];
+        if (firstTRow.className.indexOf("blue") === -1) {
+            var newcolour = "blue";
+        } else {
+            var newcolour = "green";
+        }
         
         // construct element using native js methods
-        var newtorrentrow = document.createElement("tr");
+        var newtorrentrow = torrent_table.insertRow(1);
         newtorrentrow.id = "torrent_id_" + torrent_id;
+        
         var attribs = new Array(
             Array("name", response.name),
             Array("size", response.size),
@@ -162,12 +159,20 @@ function add_torrentrow(torrent_id, torrent_data) {
             Array("status", torrent_data.status)
             // Array("controls", )
         );
+        
         for (i=0; i<attribs.length; i++) {
             keyval = attribs[i];
             newcell = newtorrentrow.insertCell(0);
             newcell.id = "t_" + keyval[0] + "_" + torrent_id;
             newcell.innerHTML = keyval[1];
         }
+        
+        if (torrent_data.status === "Stopped" || torrent_data.status === "Paused") {
+            newtorrentrow.className = "torrent-div " + newcolour + " rcstart";
+        } else {
+            newtorrentrow.className = "torrent-div " + newcolour + " rcstop";
+        }
+        
         
     // var torrent_id = elem.id.split("torrent_id_")[1];
     // var table = document.getElementById("torrent_list");
