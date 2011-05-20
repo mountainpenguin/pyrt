@@ -100,15 +100,14 @@ function refresh_content() {
             //    "system" : system_html,
             //    "torrent_index" : [id, id, id] // this is in the order that they are arranged in the page (or should be if this has changed)
             //}
-        $("#torrent_list").find($("tr")).each(
+        torrent_list = $("#torrent_list").find($("tr")).filter(
             function (index) {
-                if ($(this).attr("id").indexOf("torrent_id_") === -1) {
-                   alert("ID: " + $(this).attr("id") + " is not a match")
-                } else {
-                   alert("ID: " + $(this).attr("id") + " *is* a match")
-                }
+                return (!($(this).attr("id").indexOf("torrent_id_") === -1))
             }
         )
+		for (i=0; i<torrent_list.length; i++) {
+			alert("ID MATCH: " + torrent_list[i].attr("id");
+		}
     });
 }
 
