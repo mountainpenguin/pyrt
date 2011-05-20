@@ -165,12 +165,12 @@ function add_torrentrow(torrent_id, torrent_data) {
         
         for (i=0; i<attribs.length; i++) {
             keyval = attribs[i];
-            newcell = newtorrentrow.insertCell();
+            newcell = newtorrentrow.insertCell(-1);
             newcell.id = "t_" + keyval[0] + "_" + torrent_id;
             newcell.innerHTML = keyval[1];
         }
         
-        controlcell = newtorrentrow.insertCell();
+        controlcell = newtorrentrow.insertCell(-1);
         controlcell.id = "t_controls_" + torrent_id;
         
         if (torrent_data.status === "Stopped" || torrent_data.status === "Paused") {
@@ -212,35 +212,13 @@ function add_torrentrow(torrent_id, torrent_data) {
             }
         );
         loadRClickMenus()
-                // <tr onmouseover='select_torrent(this);' 
-                    // onmouseout='deselect_torrent(this);' 
-                    // onclick='view_torrent(this);'
-                    // ondblclick='navigate_torrent(this);'
-                    // class='torrent-div blue rcstart' 
-                    // id='torrent_id_9C3E55AAA05E5B9F5369FADF084EC77EF108903C'> 
-                    // <td id="t_controls_9C3E55AAA05E5B9F5369FADF084EC77EF108903C"> 
-                        // <span class='control_start control_button' title='Start Torrent'><img onclick='event.cancelBubble = true; command("start_torrent","9C3E55AAA05E5B9F5369FADF084EC77EF108903C")' class='control_image' alt='Start' src='../images/start.png'></span> 
-                        // <span class='control_stop control_button' title='Stop Torrent'> 
-                            // <img onclick='event.cancelBubble = true; command("stop_torrent","9C3E55AAA05E5B9F5369FADF084EC77EF108903C")'
-                                 // class='control_image' alt='Stop' src='../images/stop.png'> 
-                        // </span> 
-                        // <span class='control_remove control_button' title='Remove Torrent'> 
-                            // <img onclick='event.cancelBubble = true; command("remove_torrent","9C3E55AAA05E5B9F5369FADF084EC77EF108903C")'
-                                 // class='control_image' alt='Remove' src='../images/remove.png'> 
-                        // </span> 
-                        // <span class='control_delete control_button' title='Remove Torrent and Files'> 
-                            // <img onclick='event.cancelBubble = true; command("delete_torrent","9C3E55AAA05E5B9F5369FADF084EC77EF108903C")'
-                                 // class='control_image' alt='Delete' src='../images/delete.png'> 
-                        // </span> 
-                    // </td> 
-
     });
 }
 
 function create_controlSpan(alt, name, torrent_id) {
     span = document.createElement("span");
     span.className = "control_" + name + " control_button";
-    elem.title = alt + " Torrent";
+    span.title = alt + " Torrent";
     image = document.createElement("img");
     image.className = "control_image";
     image.alt = alt;
