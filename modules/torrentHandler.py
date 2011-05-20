@@ -340,7 +340,7 @@ class Handler:
             <table id='torrent_list'>
                 <tr id='torrent_list_headings'>
                     <td class='heading' id="sortby_name" onclick="window.location='%(name)s';">Name <img alt="Sort By Name" src="../images/sort_%(namesort)s.gif" class="control_button"></td>
-                    <td class='heading' id="sortby___size" onclick="window.location='%(size)s';">Size <img alt="Sort By Size" src="../images/sort_%(sizesort)s.gif" class="control_button"></td>
+                    <td class='heading' id="sortby_size" onclick="window.location='%(size)s';">Size <img alt="Sort By Size" src="../images/sort_%(sizesort)s.gif" class="control_button"></td>
                     <td class='heading' id="sortby_ratio" onclick="window.location='%(ratio)s';">Ratio <img alt="Sort By Ratio" src="../images/sort_%(ratiosort)s.gif" class="control_button"></td>
                     <td class='heading' id="sortby_uprate" onclick="window.location='%(uprate)s';">Upload speed <img alt="Sort By Upload Speed" src="../images/sort_%(upratesort)s.gif" class="control_button"></td>
                     <td class='heading' id="sortby_downrate" onclick="window.location='%(downrate)s';">Download speed <img alt="Sort By Download Speed" src="../images/sort_%(downratesort)s.gif" class="control_button"></td>
@@ -372,13 +372,13 @@ class Handler:
                     ondblclick='navigate_torrent(this);'
                     class='torrent-div %(colour)s %(stoporstart)s' 
                     id='torrent_id_%(t_id)s'>
-                    <td>%(t_name)s</td>
-                    <td>%(t___size)s</td>
-                    <td title='%(t_uploaded)s up / %(t_downloaded)s down'>%(t_ratio).02f</td>
-                    <td>%(t_uprate)s/s</td>
-                    <td>%(t_downrate)s/s</td>
-                    <td>%(t_status)s</td>
-                    <td>
+                    <td id="t_name_%(t_id)s">%(t_name)s</td>
+                    <td id="t_size_%(t_id)s">%(t_size)s</td>
+                    <td id="t_ratio_%(t_id)s" title='%(t_uploaded)s up / %(t_downloaded)s down'>%(t_ratio).02f</td>
+                    <td id="t_uprate_%(t_id)s">%(t_uprate)s/s</td>
+                    <td id="t_downrate_%(t_id)s">%(t_downrate)s/s</td>
+                    <td id="t_status_%(t_id)s">%(t_status)s</td>
+                    <td id="t_controls_%(t_id)s">
                         %(control_startpause)s
                         <span class='control_stop control_button' title='Stop Torrent'>
                             <img onclick='event.cancelBubble = true; command(\"stop_torrent\",\"%(t_id)s\")'
@@ -398,7 +398,7 @@ class Handler:
                             "colour" : colour,
                             "t_id" : t.torrent_id,
                             "t_name" : t.name,
-                            "t___size" : self.humanSize(t.size),
+                            "t_size" : self.humanSize(t.size),
                             "t_uploaded" : self.humanSize(t.up_total),
                             "t_downloaded" : self.humanSize(t.down_total),
                             "t_ratio" : float(t.ratio)/1000,
