@@ -1,4 +1,5 @@
 $(document).ready(function () {
+	setTimeout(refresh_content, 5000);
     $("#add-torrent-button").click(function(){
       $("#add_torrent").dialog("open");
     })
@@ -114,11 +115,12 @@ function refresh_content() {
 				torrent_data = data.torrents[torrent_id];
 				// returned data: ratio, uprate, downrate, status
 				$("#t_ratio_" + torrent_id).html(torrent_data.ratio);
-				$("#t_uprate_" + torrent_id).html(torrent_data.uprate);
-				$("#t_downrate_" + torrent_id).html(torrent_data.downrate);
+				$("#t_uprate_" + torrent_id).html(torrent_data.uprate + "/s");
+				$("#t_downrate_" + torrent_id).html(torrent_data.downrate + "/s");
 				$("#t_status_" + torrent_id).html(torrent_data.status);
 			}
 		}
+		setTimeout(refresh_content, 5000);
     });
 }
 
