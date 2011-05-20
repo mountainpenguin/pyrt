@@ -120,6 +120,7 @@ function refresh_content() {
 				$("#t_status_" + torrent_id).html(torrent_data.status);
 			}
 		}
+	}
 }
 
 function select_torrent(elem) {
