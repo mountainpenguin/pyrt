@@ -138,7 +138,7 @@ function refresh_content() {
 function add_torrentrow(torrent_id, torrent_data) {
     req = "/ajax?request=get_torrent_info&torrent_id=" + torrent_id;
     $.getJSON(req, function (response) {
-        var torrent_table = document.getElementById("torrent_table");
+        var torrent_table = document.getElementById("torrent_list");
         firstTRow = torrent_table.getElementsByTagName("tbody")[0].getElementsByTagName("tr")[1];
         if (firstTRow.className.indexOf("blue") === -1) {
             var newcolour = "blue";
@@ -151,12 +151,12 @@ function add_torrentrow(torrent_id, torrent_data) {
         newtorrentrow.id = "torrent_id_" + torrent_id;
         
         var attribs = new Array(
-            Array("name", response.name),
-            Array("size", response.size),
-            Array("ratio", response.ratio),
-            Array("uprate", torrent_data.uprate + "/s"),
+            Array("status", torrent_data.status),
             Array("downrate", torrent_data.downrate + "/s"),
-            Array("status", torrent_data.status)
+            Array("uprate", torrent_data.uprate + "/s"),
+            Array("ratio", response.ratio),
+            Array("size", response.size),
+            Array("name", response.name)
             // Array("controls", )
         );
         
