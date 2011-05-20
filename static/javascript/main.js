@@ -140,6 +140,11 @@ function refresh_content() {
 
 function remove_torrentrow(torrent_id) {
     if (row = document.getElementById("torrent_id_" + torrent_id)) {
+        var rowtodelete = $("#torrent_id_" + torrent_id)
+        $(rowtodelete).css(
+            "border" : "1px solid red"
+        );
+        $(rowtodelete).fadeOut(2000);
         document.getElementById("torrent_list").deleteRow(row.rowIndex);
     }
 }
@@ -158,6 +163,8 @@ function add_torrentrow(torrent_id, torrent_data) {
         // construct element using native js methods
         var newtorrentrow = torrent_table.insertRow(1);
         newtorrentrow.id = "torrent_id_" + torrent_id;
+        newtorrentrow.style.display = "none";
+        newtorrentrow.style.border = "1px solid green";
         
         var attribs = new Array(
             Array("name", response.name),
@@ -217,7 +224,11 @@ function add_torrentrow(torrent_id, torrent_data) {
                 navigate_torrent(this)
             }
         );
-        loadRClickMenus()
+        
+        $(newtorrentrow).fadeIn(2000, function() {
+            newtorrentrow.style.border = "none";
+            loadRClickMenus() 
+        });
     });
 }
 
