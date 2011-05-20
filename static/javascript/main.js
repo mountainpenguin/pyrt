@@ -1,5 +1,5 @@
 $(document).ready(function () {
-	setTimeout(refresh_content, 5000);
+	setTimeout(refresh_content, 1000);
     $("#add-torrent-button").click(function(){
       $("#add_torrent").dialog("open");
     })
@@ -120,7 +120,7 @@ function refresh_content() {
 				$("#t_status_" + torrent_id).html(torrent_data.status);
 			}
 		}
-		setTimeout(refresh_content, 5000);
+		setTimeout(refresh_content, 1000);
     });
 }
 
