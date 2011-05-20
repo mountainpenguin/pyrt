@@ -1,4 +1,5 @@
 $(document).ready(function () {
+	setTimeout(refresh_content, 10000);
     $("#add-torrent-button").click(function(){
       $("#add_torrent").dialog("open");
     })
@@ -81,6 +82,47 @@ $(document).ready(function () {
                            }
                            );
 });
+
+function refresh_content() {
+    // get all torrent ids on page
+    req = "/ajax?request=get_info_multi&view=" + $("#this_view").html()
+    if (!($("#this_sort").html() === "none")) {
+        req += "&sortby=" + $("#this_sort").html();
+    }
+    if (!($("#this_reverse").html() === "none")) {
+        req += "&reverse=" + $("#this_reverse").html();
+    }
+    $.getJSON(req, function (data) {
+        $("#global_stats").html(data.system);
+        
+        // data has structure:
+            //{
+            //    "torrents" : {},
+            //    "system" : system_html,
+            //    "torrent_index" : [id, id, id] // this is in the order that they are arranged in the page (or should be if this has changed)
+            //}
+        torrent_list = $("#torrent_list").find($("tr")).filter(
+            function (index) {
+                return (!($(this).attr("id").indexOf("torrent_id_") === -1))
+            }
+        )
+		for (i=0; i<torrent_list.length; i++) {
+			torrent_id = $(torrent_list[i]).attr("id").split("torrent_id_")[1];
+			if (data.torrent_index.indexOf(torrent_id) == -1) {
+				// call removetorrent_tr()
+			} else {
+				// refresh torrent data
+				torrent_data = data.torrents[torrent_id];
+				// returned data: ratio, uprate, downrate, status
+				$("#t_ratio_" + torrent_id).html(torrent_data.ratio);
+				$("#t_uprate_" + torrent_id).html(torrent_data.uprate + "/s");
+				$("#t_downrate_" + torrent_id).html(torrent_data.downrate + "/s");
+				$("#t_status_" + torrent_id).html(torrent_data.status);
+			}
+		}
+		setTimeout(refresh_content, 10000);
+    });
+}
 
 function select_torrent(elem) {
     // elem.style.backgroundColor = "#00CCFF";

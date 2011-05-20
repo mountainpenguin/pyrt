@@ -14,6 +14,8 @@ import sys
 import config
 import shutil
 import bencode
+import system
+import base64
 
 class Ajax:
     def __init__(self):
@@ -140,5 +142,26 @@ class Ajax:
             else:
                 self.RT.load_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
             return self.Handler.HTMLredirect("/")
+            
+    def get_info_multi(self, view, sortby, reverse):
+        #wanted:
+        #   system info
+        #   ratio, dl speed, ul speed, status
+        torrentList = self.Handler.sortTorrents(self.RT.getTorrentList2(view), sortby, reverse)
+        returnDict = {
+            "torrents" : {},
+            "system" : system.generalHTML(),
+            #"system" : base64.b64encode(system.generalHTML()),
+            "torrent_index" : [x.torrent_id for x in torrentList],
+        }
+        for t in torrentList:
+            returnDict["torrents"][t.torrent_id] = {
+                "ratio" : "%.02f" % (float(t.ratio)/1000),
+                "uprate" : self.Handler.humanSize(t.up_rate),
+                "downrate" : self.Handler.humanSize(t.down_rate),
+                "status" : self.Handler.getState(t)
+            }
+        return json.dumps(returnDict)
+        
                 
         
