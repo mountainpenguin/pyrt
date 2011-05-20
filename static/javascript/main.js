@@ -21,6 +21,10 @@ $(document).ready(function () {
                   }
                 }
         });
+    loadRClickMenus();
+});
+
+function loadRClickMenus() {
     $(".torrent-div.rcstart").contextMenu("right_click_start", {
         bindings : {
             "start" : function (t) {
@@ -76,13 +80,12 @@ $(document).ready(function () {
         }
     });
     $("#tab_options").bind(
-                           "click",
-                           function () {
-                            window.location = "/options";
-                           }
-                           );
-});
-
+        "click",
+        function () {
+        window.location = "/options";
+        }
+    );
+}
 function refresh_content() {
     // get all torrent ids on page
     req = "/ajax?request=get_info_multi&view=" + $("#this_view").html()
@@ -172,31 +175,29 @@ function add_torrentrow(torrent_id, torrent_data) {
         } else {
             newtorrentrow.className = "torrent-div " + newcolour + " rcstop";
         }
-        
-        
-    // var torrent_id = elem.id.split("torrent_id_")[1];
-    // var table = document.getElementById("torrent_list");
-    // if (oldrow = document.getElementById('newrow_torrent_id_' + torrent_id)) {
-        // table.deleteRow(oldrow.rowIndex);
-    // }
-    // var newrow = table.insertRow(elem.rowIndex + 1);
-    // var newcell = newrow.insertCell(0);
-    // newrow.id = "newrow_torrent_id_" + torrent_id;
-    // newrow.className += " drop_down";
-    // newcell.innerHTML = "<img src='/images/loading.gif'> <span style='color:red;'>Loading</span>";
-    // newcell.colSpan = "7";
+        $("#torrent_id_" + torrent_id).bind(
+            "click",
+            view_torrent(this)
+        );
+        $("#torrent_id_" + torrent_id).bind(
+            "mouseover",
+            select_torrent(this)
+        );
+        $("#torrent_id_" + torrent_id).bind(
+            "mouseout",
+            deselect_torrent(this)
+        );
+        $("#torrent_id_" + torrent_id).bind(
+            "dblclick",
+            navigate_torrent(this)
+        );
+        loadRClickMenus()
                 // <tr onmouseover='select_torrent(this);' 
                     // onmouseout='deselect_torrent(this);' 
                     // onclick='view_torrent(this);'
                     // ondblclick='navigate_torrent(this);'
                     // class='torrent-div blue rcstart' 
                     // id='torrent_id_9C3E55AAA05E5B9F5369FADF084EC77EF108903C'> 
-                    // <td id="t_name_9C3E55AAA05E5B9F5369FADF084EC77EF108903C">FILMS</td> 
-                    // <td id="t_size_9C3E55AAA05E5B9F5369FADF084EC77EF108903C">3.43 GB</td> 
-                    // <td id="t_ratio_9C3E55AAA05E5B9F5369FADF084EC77EF108903C" title='0 B up / 0 B down'>0.00</td> 
-                    // <td id="t_uprate_9C3E55AAA05E5B9F5369FADF084EC77EF108903C">0 B/s</td> 
-                    // <td id="t_downrate_9C3E55AAA05E5B9F5369FADF084EC77EF108903C">0 B/s</td> 
-                    // <td id="t_status_9C3E55AAA05E5B9F5369FADF084EC77EF108903C">Stopped</td> 
                     // <td id="t_controls_9C3E55AAA05E5B9F5369FADF084EC77EF108903C"> 
                         // <span class='control_start control_button' title='Start Torrent'><img onclick='event.cancelBubble = true; command("start_torrent","9C3E55AAA05E5B9F5369FADF084EC77EF108903C")' class='control_image' alt='Start' src='../images/start.png'></span> 
                         // <span class='control_stop control_button' title='Stop Torrent'> 
@@ -212,7 +213,6 @@ function add_torrentrow(torrent_id, torrent_data) {
                                  // class='control_image' alt='Delete' src='../images/delete.png'> 
                         // </span> 
                     // </td> 
-                // </tr> 
 
     });
 }
