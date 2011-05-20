@@ -1,5 +1,5 @@
 $(document).ready(function () {
-	setTimeout(refresh_content, 10000);
+     setTimeout(refresh_content, 10000);
     $("#add-torrent-button").click(function(){
       $("#add_torrent").dialog("open");
     })
@@ -106,29 +106,30 @@ function refresh_content() {
                 return (!($(this).attr("id").indexOf("torrent_id_") === -1))
             }
         )
-		for (i=0; i<torrent_list.length; i++) {
-			torrent_id = $(torrent_list[i]).attr("id").split("torrent_id_")[1];
-			if (data.torrent_index.indexOf(torrent_id) == -1) {
-				// removetorrent_tr(id)
-			} else {
-				// refresh torrent data
-				torrent_data = data.torrents[torrent_id];
-				// returned data: ratio, uprate, downrate, status
-				$("#t_ratio_" + torrent_id).html(torrent_data.ratio);
-				$("#t_uprate_" + torrent_id).html(torrent_data.uprate + "/s");
-				$("#t_downrate_" + torrent_id).html(torrent_data.downrate + "/s");
-				$("#t_status_" + torrent_id).html(torrent_data.status);
-			}
-		}
-		
-		// check for new torrents and add them
-		for (i=0; i<data.torrent_index.length; i++) {
-			torrent_id = data.torrent_index[i];
-			if (torrent_list.indexOf(torrent_id) == -1) {
-				// addtorrent_tr(id)
-			}
-		}
-		setTimeout(refresh_content, 10000);
+        for (i=0; i<torrent_list.length; i++) {
+            torrent_id = $(torrent_list[i]).attr("id").split("torrent_id_")[1];
+            if (data.torrent_index.indexOf(torrent_id) == -1) {
+                // removetorrent_tr(id)
+            } else {
+                // refresh torrent data
+                torrent_data = data.torrents[torrent_id];
+                // returned data: ratio, uprate, downrate, status
+                $("#t_ratio_" + torrent_id).html(torrent_data.ratio);
+                $("#t_uprate_" + torrent_id).html(torrent_data.uprate + "/s");
+                $("#t_downrate_" + torrent_id).html(torrent_data.downrate + "/s");
+                $("#t_status_" + torrent_id).html(torrent_data.status);
+            }
+        }
+          
+        // check for new torrents and add them
+        for (i=0; i<data.torrent_index.length; i++) {
+            torrent_id = data.torrent_index[i];
+            if ($(torrent_list).indexOf(torrent_id) == -1) {
+                // addtorrent_tr(id)
+            }
+        }
+        
+        setTimeout(refresh_content, 10000);
     });
 }
 
