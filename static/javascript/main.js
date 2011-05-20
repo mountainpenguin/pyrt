@@ -106,7 +106,7 @@ function refresh_content() {
             }
         )
 		for (i=0; i<torrent_list.length; i++) {
-			alert("ID MATCH: " + torrent_list[i].attr("id");
+			alert("ID MATCH: " + torrent_list[i].attr("id"));
 		}
     });
 }
