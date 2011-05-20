@@ -1,5 +1,5 @@
 $(document).ready(function () {
-     setTimeout(refresh_content, 10000);
+     setTimeout(refresh_content, 5000);
     $("#add-torrent-button").click(function(){
       $("#add_torrent").dialog("open");
     })
@@ -134,7 +134,7 @@ function refresh_content() {
             }
         }
         
-        setTimeout(refresh_content, 10000);
+        setTimeout(refresh_content, 5000);
     });
 }
 
