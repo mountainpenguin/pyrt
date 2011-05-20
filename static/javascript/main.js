@@ -124,7 +124,7 @@ function refresh_content() {
         // check for new torrents and add them
         for (i=0; i<data.torrent_index.length; i++) {
             torrent_id = data.torrent_index[i];
-            if ($(torrent_list).indexOf(torrent_id) == -1) {
+            if (jQuery.inArray(torrent_id, torrent_list) == -1) {
                 // addtorrent_tr(id)
             }
         }
