@@ -145,12 +145,10 @@ function add_torrentrow(torrent_id, torrent_data) {
         } else {
             var newcolour = "blue";
         }
-        alert("newcolour: " + newcolour);
         
         // construct element using native js methods
         var newtorrentrow = document.createElement("tr");
         newtorrentrow.id = "torrent_id_" + torrent_id;
-        alert("newtorrentrow: " + $(newtorrentrow).html())
         var attribs = new Array(
             Array("name", response.name),
             Array("size", response.size),
@@ -162,8 +160,11 @@ function add_torrentrow(torrent_id, torrent_data) {
         );
         for (i=0; i<attribs.length; i++) {
             keyval = attribs[i];
-            alert("keyval: " + keyval);
+            newcell = newtorrentrow.insertCell(0);
+            newcell.id = "t_" + keyval[0] + "_" + torrent_id;
+            newcell.innerHTML = keyval[1];
         }
+        alert($(newtorrentrow).html());
         
     // var torrent_id = elem.id.split("torrent_id_")[1];
     // var table = document.getElementById("torrent_list");
