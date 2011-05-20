@@ -138,13 +138,17 @@ function refresh_content() {
 function add_torrentrow(torrent_id, torrent_data) {
     req = "/ajax?request=get_torrent_info&torrent_id=" + torrent_id;
     $.getJSON(req, function (response) {
-        var torrent_rows = $("#torrent_table").children(".torrent-div");
-        // get colour of first element
-        if ($(torrent_rows.get(0)).hasClass("blue")) {
-            var newcolour = "green";
-        } else {
-            var newcolour = "blue";
-        }
+        // var torrent_rows = $("#torrent_table").children(".torrent-div");
+        // // get colour of first element
+        // if ($(torrent_rows.get(0)).hasClass("blue")) {
+            // var newcolour = "green";
+        // } else {
+            // var newcolour = "blue";
+        // }
+        
+        var torrent_table = document.getElementById("#torrent_table");
+        firstTRow = torrent_table.childNodes[1];
+        alert(firstTRow.id);
         
         // construct element using native js methods
         var newtorrentrow = document.createElement("tr");
@@ -164,7 +168,6 @@ function add_torrentrow(torrent_id, torrent_data) {
             newcell.id = "t_" + keyval[0] + "_" + torrent_id;
             newcell.innerHTML = keyval[1];
         }
-        alert($(newtorrentrow).html());
         
     // var torrent_id = elem.id.split("torrent_id_")[1];
     // var table = document.getElementById("torrent_list");
