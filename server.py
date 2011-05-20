@@ -120,7 +120,7 @@ class mainHandler:
             return Ajax.hash_torrent(torrent_id)
         elif request == "get_file" and torrent_id and filepath:
             return Ajax.get_file(torrent_id, filepath)
-        elif request == "upload_torrent" and torrent is not none:
+        elif request == "upload_torrent" and torrent is not None:
             return Ajax.upload_torrent(torrent, start)
         else:
             raise cherrypy.HTTPError(message="Ajax Error Invalid Method")
