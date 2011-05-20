@@ -106,8 +106,10 @@ function refresh_content() {
                 return (!($(this).attr("id").indexOf("torrent_id_") === -1))
             }
         )
+        cur_t_ids = new Array();
         for (i=0; i<torrent_list.length; i++) {
             torrent_id = $(torrent_list[i]).attr("id").split("torrent_id_")[1];
+            cur_t_ids.push(torrent_id);
             if (data.torrent_index.indexOf(torrent_id) == -1) {
                 // remove_torrentrow(id)
             } else {
@@ -124,7 +126,7 @@ function refresh_content() {
         // check for new torrents and add them
         for (i=0; i<data.torrent_index.length; i++) {
             torrent_id = data.torrent_index[i];
-            if (jQuery.inArray(torrent_id, torrent_list) == -1) {
+            if ($.inArray(torrent_id, cur_t_ids) === -1) {
                 add_torrentrow(torrent_id, data.torrents[torrent_id])
             }
         }
@@ -138,7 +140,7 @@ function add_torrentrow(torrent_id, torrent_data) {
     $.getJSON(req, function (response) {
         var torrent_rows = $("#torrent_table").children(".torrent-div");
         // get colour of first element
-        if (torrent_rows[0].hasClass("blue")) {
+        if ($(torrent_rows.get(0)).hasClass("blue")) {
             var newcolour = "green";
         } else {
             var newcolour = "blue";
@@ -155,8 +157,8 @@ function add_torrentrow(torrent_id, torrent_data) {
             Array("ratio", response.ratio),
             Array("uprate", torrent_data.uprate + "/s"),
             Array("downrate", torrent_data.downrate + "/s"),
-            Array("status", torrent_data.status),
-            // Array("controls", ),
+            Array("status", torrent_data.status)
+            // Array("controls", )
         );
         for (i=0; i<attribs.length; i++) {
             keyval = attribs[i];
