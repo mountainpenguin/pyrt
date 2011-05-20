@@ -114,7 +114,7 @@ function refresh_content() {
             torrent_id = $(torrent_list[i]).attr("id").split("torrent_id_")[1];
             cur_t_ids.push(torrent_id);
             if (data.torrent_index.indexOf(torrent_id) == -1) {
-                // remove_torrentrow(id)
+                remove_torrentrow(torrent_id)
             } else {
                 // refresh torrent data
                 torrent_data = data.torrents[torrent_id];
@@ -136,6 +136,12 @@ function refresh_content() {
         
         setTimeout(refresh_content, 10000);
     });
+}
+
+function remove_torrentrow(torrent_id) {
+    if (row = document.getElementById("torrent_id_" + torrent_id)) {
+        document.getElementById("torrent_list").deleteRow(row.rowIndex);
+    }
 }
 
 function add_torrentrow(torrent_id, torrent_data) {
@@ -224,7 +230,7 @@ function create_controlSpan(alt, name, torrent_id) {
     image.alt = alt;
     image.src = "/images/" + name + ".png";
     image.style.cursor = "pointer";
-    image.style.padding = "3px";
+    image.style.paddingRight = "3px";
     $(image).bind(
         "click",
         function (event) {
