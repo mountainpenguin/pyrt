@@ -111,6 +111,10 @@ function refresh_content() {
            if (data.torrent_index.indexOf(torrent_id) == -1) {
                 // remove_torrentrow(id)
            } else {
+            torrent_id = $(torrent_list[i]).attr("id").split("torrent_id_")[1];
+            if (data.torrent_index.indexOf(torrent_id) == -1) {
+                // remove_torrentrow(id)
+            } else {
                 // refresh torrent data
                 torrent_data = data.torrents[torrent_id];
                 // returned data: ratio, uprate, downrate, status
@@ -122,6 +126,13 @@ function refresh_content() {
         }
         setTimeout(refresh_content, 10000);
     })
+}
+
+function add_torrentrow(torrent_id) {
+    req = "/ajax?request=get_torrent_info&torrent_id=" + torrent_id;
+    $.getJSON(req, function (response) {
+        var torrent_rows = $("#torrent_table").children(".torrent-div");
+    });
 }
 
 function select_torrent(elem) {
@@ -149,25 +160,26 @@ function navigate_torrent(elem) {
     window.location = "detail?torrent_id=" + elem.id.split("torrent_id_")[1]
 }
 
-function htmlify(json, cell) {
-    var obj = JSON.parse(json);
-    var new_html = new String();
-    new_html += "<div class='drop_down'>"
-    new_html += "<div class='column-1'>ID:</div><div class='column-2'>" + obj.torrent_id + "</div>"
-    new_html += "<div class='column-1'>Size:</div><div class='column-2'>" + obj.size + "</div>"
-    new_html += "<div class='column-1'>Percentage:</div><div class='column-2'>" + obj.percentage + "%</div>"
-    new_html += "<div class='column-1'>Downloaded:</div><div class='column-2'>" + obj.downloaded  + "</div>"
-    new_html += "<div class='column-1'>Uploaded:</div><div class='column-2'>" + obj.uploaded + "</div>"
-    new_html += "<div class='column-1'>Ratio:</div><div class='column-2'>" + obj.ratio + "</div>"
-    new_html += "<div class='column-1'>Peers:</div><div class='column-2'>" + obj.peers.length + "</div>"
-    new_html += "<div class='column-1'>Created:</div><div class='column-2'>" + obj.created + "</div>"
-    new_html += "<div class='column-2' style='clear : left;'><span class='fakelink' onClick='removerow(\"" + obj.torrent_id + "\")'>Close</span> <a style='color : blue;' href='detail?torrent_id=" + obj.torrent_id + "'>Detailed View</a></div>"
-    new_html += "</div>"
-    cell.innerHTML = new_html;
-    cell.style.borderLeft="1px dotted";
-    cell.style.borderRight="1px dotted";
-    cell.style.backgroundColor = "#eeeeee";
-}
+// function htmlify(json, cell) {
+    // var obj = JSON.parse(json);
+    // var new_html = new String();
+    // new_html += "<div class='drop_down'>"
+    // new_html += "<div class='column-1'>ID:</div><div class='column-2'>" + obj.torrent_id + "</div>"
+    // new_html += "<div class='column-1'>Size:</div><div class='column-2'>" + obj.size + "</div>"
+    // new_html += "<div class='column-1'>Percentage:</div><div class='column-2'>" + obj.percentage + "%</div>"
+    // new_html += "<div class='column-1'>Downloaded:</div><div class='column-2'>" + obj.downloaded  + "</div>"
+    // new_html += "<div class='column-1'>Uploaded:</div><div class='column-2'>" + obj.uploaded + "</div>"
+    // new_html += "<div class='column-1'>Ratio:</div><div class='column-2'>" + obj.ratio + "</div>"
+    // new_html += "<div class='column-1'>Peers:</div><div class='column-2'>" + obj.peers.length + "</div>"
+    // new_html += "<div class='column-1'>Created:</div><div class='column-2'>" + obj.created + "</div>"
+    // new_html += "<div class='column-2' style='clear : left;'><span class='fakelink' onClick='removerow(\"" + obj.torrent_id + "\")'>Close</span> <a style='color : blue;' href='detail?torrent_id=" + obj.torrent_id + "'>Detailed View</a></div>"
+    // new_html += "</div>"
+    // cell.innerHTML = new_html;
+    // cell.style.borderLeft="1px dotted";
+    // cell.style.borderRight="1px dotted";
+    // cell.style.backgroundColor = "#eeeeee";
+// }
+
 function removerow(torrent_id) {
     if (row = document.getElementById("newrow_torrent_id_" + torrent_id)) {
         var table = document.getElementById("torrent_list");
@@ -184,6 +196,7 @@ function view_torrent(elem) {
     var newrow = table.insertRow(elem.rowIndex + 1);
     var newcell = newrow.insertCell(0);
     newrow.id = "newrow_torrent_id_" + torrent_id;
+    newrow.className += " drop_down";
     newcell.innerHTML = "<img src='/images/loading.gif'> <span style='color:red;'>Loading</span>";
     newcell.colSpan = "7";
     var xmlhttp = new XMLHttpRequest();
@@ -193,11 +206,10 @@ function view_torrent(elem) {
     xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             var response = xmlhttp.responseText;
-            // newcell.innerHTML = response;
-            htmlify(response, newcell);
+            newcell.innerHTML = response;
         }
     }
-    var params = "request=get_torrent_info&torrent_id=" + torrent_id;
+    var params = "request=get_torrent_info&html=yesplease&torrent_id=" + torrent_id;
     xmlhttp.send(params);
 }
 

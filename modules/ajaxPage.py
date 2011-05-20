@@ -23,7 +23,7 @@ class Ajax:
         self.RT = rtorrent.rtorrent(self.Config.get("rtorrent_socket"))
         self.Handler = torrentHandler.Handler()
         
-    def get_torrent_info(self, torrent_id):
+    def get_torrent_info(self, torrent_id, html=None ):
         c = time.localtime(self.RT.getCreationDate(torrent_id))
         created = time.strftime("%d/%m/%Y %H:%M:%S", c)
         size = self.RT.getSizeBytes(torrent_id)
@@ -31,14 +31,29 @@ class Ajax:
             "name" : self.RT.getNameByID(torrent_id),
             "uploaded" : self.Handler.humanSize(self.RT.getUploadBytes(torrent_id)),
             "downloaded" : self.Handler.humanSize(self.RT.getDownloadBytes(torrent_id)),
-            "peers" : [x.__dict__ for x in self.RT.getPeers(torrent_id)],
+            "peers" : len(self.RT.getPeers(torrent_id)),
             "torrent_id" : torrent_id,
             "created" : created,
             "size" : self.Handler.humanSize(size),
             "ratio" : "%.02f" % (float(self.RT.getRatio(torrent_id))/1000),
             "percentage" : "%i" % ((float(self.RT.getCompletedBytes(torrent_id)) / size) * 100),
         }
-        return json.dumps(jsonObject)
+        if not html:
+            return json.dumps(jsonObject)
+        else:
+            return """
+                <div class='drop_down'>
+                    <div class='column-1'>ID:</div><div class='column-2'>%(torrent_id)s</div>
+                    <div class='column-1'>Size:</div><div class='column-2'>%(size)s</div>
+                    <div class='column-1'>Percentage:</div><div class='column-2'>%(percentage)s%%</div>
+                    <div class='column-1'>Downloaded:</div><div class='column-2'>%(downloaded)s</div>
+                    <div class='column-1'>Uploaded:</div><div class='column-2'>%(uploaded)s</div>
+                    <div class='column-1'>Ratio:</div><div class='column-2'>%(ratio)s</div>
+                    <div class='column-1'>Peers:</div><div class='column-2'>%(peers)s</div>
+                    <div class='column-1'>Created:</div><div class='column-2'>%(created)s</div>
+                    <div class='column-2' style='clear : left;'><span class='fakelink' onClick='removerow("%(torrent_id)s")'>Close</span> <a style='color : blue;' href='detail?torrent_id=%(torrent_id)s'>Detailed View</a></div>
+                </div>
+            """ % jsonObject
         
     def pause_torrent(self, torrent_id):
         try:

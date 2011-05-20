@@ -68,21 +68,21 @@ class Index:
                 </div>
                 <div id="main_body">
                   <div id="wrapper">
-                    <div id="add_torrent" style="display: none" title="Add a torrent">
-                      <h3>Add torrent</h3>
-                      <form id="add_torrent_form" action="ajax" method="post" enctype="multipart/form-data">
-                        <input type="hidden" class="hidden" name="request" value="upload_torrent">
-                        <input type="hidden" class="hidden" name="torrent_id" value="none">
-                        <input id="add_torrent_input" accept="application/x-bittorrent" type="file" name="torrent">
-                        <div class="add_torrent_start_text"> 
-                        <input id="add_torrent_start" type="checkbox" name="start"> Start Immediately?
+                        <div id="add_torrent" style="display: none" title="Add a torrent">
+                          <form id="add_torrent_form" action="upload_torrent" method="post" enctype="multipart/form-data">
+                            <label>Select file:</label>
+                            <input id="add_torrent_input" accept="application/x-bittorrent" type="file" name="torrent">
+                            <div class="add_torrent_start_text"> 
+                            <input id="add_torrent_start" type="checkbox" name="start"> Start Immediately?
+                            </div>
+                          </form>
                         </div>
                       </form>
                     </div>
                     <div id="global_stats">
                         %(global_stats)s
                     </div>
-                    <button class="hidden" onclick="refresh_content();">Click!</button>
+                    <button onclick="refresh_content();">Click!</button>
                     <div id="this_view" class="hidden">%(view)s</div>
                     <div id="this_sort" class="hidden">%(sortby)s</div>
                     <div id="this_reverse" class="hidden">%(reverse)s</div>
