@@ -338,7 +338,7 @@ class Handler:
         
         torrent_html = """
             <table id='torrent_list'>
-                <tr>
+                <tr id='torrent_list_headings'>
                     <td class='heading' id="sortby_name" onclick="window.location='%(name)s';">Name <img alt="Sort By Name" src="../images/sort_%(namesort)s.gif" class="control_button"></td>
                     <td class='heading' id="sortby___size" onclick="window.location='%(size)s';">Size <img alt="Sort By Size" src="../images/sort_%(sizesort)s.gif" class="control_button"></td>
                     <td class='heading' id="sortby_ratio" onclick="window.location='%(ratio)s';">Ratio <img alt="Sort By Ratio" src="../images/sort_%(ratiosort)s.gif" class="control_button"></td>
