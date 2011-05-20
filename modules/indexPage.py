@@ -77,8 +77,6 @@ class Index:
                             </div>
                           </form>
                         </div>
-                      </form>
-                    </div>
                     <div id="global_stats">
                         %(global_stats)s
                     </div>
