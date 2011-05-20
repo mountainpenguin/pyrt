@@ -154,21 +154,33 @@ function add_torrentrow(torrent_id, torrent_data) {
         newtorrentrow.id = "torrent_id_" + torrent_id;
         
         var attribs = new Array(
-            Array("status", torrent_data.status),
-            Array("downrate", torrent_data.downrate + "/s"),
-            Array("uprate", torrent_data.uprate + "/s"),
-            Array("ratio", response.ratio),
+            Array("name", response.name),
             Array("size", response.size),
-            Array("name", response.name)
+            Array("ratio", response.ratio),
+            Array("uprate", torrent_data.uprate + "/s"),
+            Array("downrate", torrent_data.downrate + "/s"),
+            Array("status", torrent_data.status)
             // Array("controls", )
         );
         
         for (i=0; i<attribs.length; i++) {
             keyval = attribs[i];
-            newcell = newtorrentrow.insertCell(0);
+            newcell = newtorrentrow.insertCell();
             newcell.id = "t_" + keyval[0] + "_" + torrent_id;
             newcell.innerHTML = keyval[1];
         }
+        
+        controlcell = newtorrentrow.insertCell();
+        controlcell.id = "t_controls_" + torrent_id;
+        
+        if (torrent_data.status === "Stopped" || torrent_data.status === "Paused") {
+            controlcell.appendChild(create_controlSpan("Start", "start", torrent_id));
+        } else {
+            controlcell.appendChild(create_controlSpan("Pause", "pause", torrent_id));
+        }
+        controlcell.appendChild(create_controlSpan("Stop", "stop", torrent_id));
+        controlcell.appendChild(create_controlSpan("Remove", "remove", torrent_id));
+        controlcell.appendChild(create_controlSpan("Delete", "delete", torrent_id));
         
         if (torrent_data.status === "Stopped" || torrent_data.status === "Paused") {
             newtorrentrow.className = "torrent-div " + newcolour + " rcstart";
@@ -225,6 +237,25 @@ function add_torrentrow(torrent_id, torrent_data) {
     });
 }
 
+function create_controlSpan(alt, name, torrent_id) {
+    span = document.createElement("span");
+    span.className = "control_" + name + " control_button";
+    elem.title = alt + " Torrent";
+    image = document.createElement("img");
+    image.className = "control_image";
+    image.alt = alt;
+    image.src = "/images/" + name + ".png";
+    $(image).bind(
+        "click",
+        function (event) {
+            event.cancelBubble;
+            command(name + "_torrent","" + torrent_id);
+            return false;
+        }
+    );
+    span.appendChild(image);
+    return span;
+}
 function select_torrent(elem) {
     // elem.style.backgroundColor = "#00CCFF";
     elem.style.backgroundColor = "#0099FF";
