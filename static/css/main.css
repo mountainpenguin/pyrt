@@ -45,7 +45,7 @@ tr.torrent-div {
     margin : 0.5em;
 }
 
-div.drop_down {
+.drop_down {
     border-left : 1px dotted;
     border-right : 1px dotted;
     background-color : #EEEEEE;

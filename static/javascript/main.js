@@ -201,6 +201,7 @@ function view_torrent(elem) {
     var newrow = table.insertRow(elem.rowIndex + 1);
     var newcell = newrow.insertCell(0);
     newrow.id = "newrow_torrent_id_" + torrent_id;
+    newrow.className.append(" drop_down")
     newcell.innerHTML = "<img src='/images/loading.gif'> <span style='color:red;'>Loading</span>";
     newcell.colSpan = "7";
     var xmlhttp = new XMLHttpRequest();
