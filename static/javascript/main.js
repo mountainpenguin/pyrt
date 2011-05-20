@@ -330,10 +330,8 @@ function command(cmd, t_id) {
             xmlhttpc.onreadystatechange = function() {
                 if (xmlhttpc.readyState == 4 && xmlhttpc.status == 200) {
                     var resp = xmlhttpc.responseText.trim()
-                    if (resp === "OK") {
-                        location.reload(true);
-                    } else {
-                        alert("Command Failed with reason: " + resp);
+                    if (!(resp == "OK")) {
+                        alert("Command Failed with reason: " + resp); 
                     }
                 }
             }
