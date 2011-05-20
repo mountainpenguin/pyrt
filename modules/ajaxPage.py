@@ -31,7 +31,7 @@ class Ajax:
             "name" : self.RT.getNameByID(torrent_id),
             "uploaded" : self.Handler.humanSize(self.RT.getUploadBytes(torrent_id)),
             "downloaded" : self.Handler.humanSize(self.RT.getDownloadBytes(torrent_id)),
-            "peers" : [x.__dict__ for x in self.RT.getPeers(torrent_id)],
+            "peers" : len(self.RT.getPeers(torrent_id)),
             "torrent_id" : torrent_id,
             "created" : created,
             "size" : self.Handler.humanSize(size),
