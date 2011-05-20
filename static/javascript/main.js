@@ -106,7 +106,9 @@ function refresh_content() {
             }
         )
 		for (i=0; i<torrent_list.length; i++) {
-			alert("ID MATCH: " + torrent_list[i].attr("id"));
+			torrent_id = $(torrent_list[i]).attr("id").split("torrent_id_")[1];
+			if (data.torrent_index.indexOf(torrent_id) !== -1) {
+				alert("torrent id: " + torrent_id + " is not in returned data");
 		}
     });
 }
