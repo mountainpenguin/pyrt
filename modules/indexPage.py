@@ -82,7 +82,7 @@ class Index:
                     <div id="global_stats">
                         %(global_stats)s
                     </div>
-                    <button onclick="refresh_content();">Click!</button>
+                    <button class="hidden" onclick="refresh_content();">Click!</button>
                     <div id="this_view" class="hidden">%(view)s</div>
                     <div id="this_sort" class="hidden">%(sortby)s</div>
                     <div id="this_reverse" class="hidden">%(reverse)s</div>
