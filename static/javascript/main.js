@@ -92,7 +92,6 @@ function refresh_content() {
         req += "&reverse=" + $("#this_reverse").html();
     }
     $.getJSON(req, function (data) {
-        decoded_html = $().crypt({method:"b64dec", source:data.system});
         $("#global_stats").html(data.system);
         
         // data has structure:

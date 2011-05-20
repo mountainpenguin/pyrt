@@ -93,7 +93,7 @@ class mainHandler:
             return Detail.trackers(torrent_id)
     detail.exposed = True
     
-    def ajax(self, request=None, torrent_id=None, filepath=None, torrent=None, start=None, view=None, sortby=None):
+    def ajax(self, request=None, torrent_id=None, filepath=None, torrent=None, start=None, view=None, sortby=None, reverse=None):
         #check cookies
         L = login.Login()
         client_cookie = cherrypy.request.cookie
@@ -105,7 +105,7 @@ class mainHandler:
         if request == "get_torrent_info" and torrent_id:
             return Ajax.get_torrent_info(torrent_id)
         elif request == "get_info_multi" and view:
-            return Ajax.get_info_multi(view, sortby)
+            return Ajax.get_info_multi(view, sortby, reverse)
         elif request == "pause_torrent" and torrent_id:
             return Ajax.pause_torrent(torrent_id)
         elif request == "stop_torrent" and torrent_id:
