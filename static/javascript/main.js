@@ -84,27 +84,24 @@ $(document).ready(function () {
 
 function refresh_content() {
     // get all torrent ids on page
-    $.getJSON("/ajax?request=get_info_multi&view=" + $("#this_view").html(), function (data) {
+    req = "/ajax?request=get_info_multi&view=" + $("#this_view").html()
+    if (!($("#this_sort").html() === "none")) {
+        req += "&sortby=" + $("#this_sort").html();
+    }
+    if (!($("#this_reverse").html() === "none")) {
+        req += "&reverse=" + $("#this_reverse").html();
+    }
+    $.getJSON(req, function (data) {
         decoded_html = $().crypt({method:"b64dec", source:data.system});
         $("#global_stats").html(data.system);
+        
+        // data has structure:
+            //{
+            //    "torrents" : {},
+            //    "system" : system_html,
+            //    "torrent_index" : [id, id, id] // this is in the order that they are arranged in the page (or should be if this has changed)
+            //}
     });
-//function loadContents(item) {
-//    $.ajax({
-//        url : "/ajax?request=get_file&filepath=" + encodeURIComponent(item.find(".fullpath").html()) + "&torrent_id=" + $("#torrent_id").html(),
-//        success : function(data) {
-//            $("#fileName").html(item.html());
-//            $("#contactArea").html("<pre><code>" + data + "</code></pre>")
-//            centerPopup();
-//            loadPopup();
-//        },
-//        statusCode : {
-//            500 : function () {
-//                alert("Server error");
-//            }
-//        }
-//        
-//    });
-//};
 }
 
 function select_torrent(elem) {

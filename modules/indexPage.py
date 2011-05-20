@@ -12,7 +12,7 @@ import config
 class Index:
     def __init__(self):
         pass
-    def index(self, password=None, view=None, sortby=None, reverse=False):
+    def index(self, password=None, view=None, sortby=None, reverse=None):
         if not view or view not in ["main","started","stopped","complete","incomplete","hashing","seeding","active"]:
             view = "main"
         if not sortby:
@@ -42,6 +42,11 @@ class Index:
         ttseeding = genHTML("seeding",view)
         ttactive = genHTML("active",view)
 
+        if not reverse:
+            reverse = "none"
+        else:
+            reverse = "true"
+            
         html_insert = """
               <div id="header">
                 <div id="topbar">
@@ -79,6 +84,8 @@ class Index:
                     </div>
                     <button class="hidden" onclick="refresh_content();">Click!</button>
                     <div id="this_view" class="hidden">%(view)s</div>
+                    <div id="this_sort" class="hidden">%(sortby)s</div>
+                    <div id="this_reverse" class="hidden">%(reverse)s</div>
         """ % {
             "main" : ttmain,
             "started" : ttstarted,
@@ -90,6 +97,8 @@ class Index:
             "active" : ttactive,
             "global_stats" : system.generalHTML(),
             "view" : view,
+            "sortby" : sortby,
+            "reverse" : reverse,
         }
         return html.replace("<!-- BODY PLACEHOLDER -->",html_insert).replace("</body>","</div></div>\n\t</body>")
 

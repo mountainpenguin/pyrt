@@ -93,7 +93,7 @@ class mainHandler:
             return Detail.trackers(torrent_id)
     detail.exposed = True
     
-    def ajax(self, request=None, torrent_id=None, filepath=None, torrent=None, start=None, view=None):
+    def ajax(self, request=None, torrent_id=None, filepath=None, torrent=None, start=None, view=None, sortby=None):
         #check cookies
         L = login.Login()
         client_cookie = cherrypy.request.cookie
@@ -105,7 +105,7 @@ class mainHandler:
         if request == "get_torrent_info" and torrent_id:
             return Ajax.get_torrent_info(torrent_id)
         elif request == "get_info_multi" and view:
-            return Ajax.get_info_multi(view)
+            return Ajax.get_info_multi(view, sortby)
         elif request == "pause_torrent" and torrent_id:
             return Ajax.pause_torrent(torrent_id)
         elif request == "stop_torrent" and torrent_id:
@@ -139,7 +139,7 @@ class mainHandler:
                         <link rel="stylesheet" type="text/css" href="/css/main.css">
                     </head>
                     <body>
-                        <div style="background-color : white;">
+                        <div style="background-color : white; padding : 2em;">
                             <div>Nothing here yet</div>
                             Go back to <a style="color:black;" href="%(link)s">%(link)s</a>
                         </div>
@@ -150,35 +150,6 @@ class mainHandler:
             Options = optionsPage.Options()
             return Options.index()
     options.exposed = True
-    
-    def test(self):
-        return """
-            <html>
-                <head>
-                    <link rel="stylesheet" type="text/css" href="/css/smoothness/jquery-ui-1.8.13.custom.css">                
-                    <script src="/javascript/jquery-1.6.1.min.js" type="text/javascript"></script> 
-                    <script src="/javascript/jquery-ui-1.8.13.custom.min.js" type="text/javascript"></script>        
-                    <script src="/javascript/jquery.contextmenu.r2.js" type="text/javascript"></script> 
-                    <script src="/javascript/jquery.crypt.js" type="text/javascript"></script>
-                    <script type="text/javascript">
-                        function decrypt() {
-                            var input = $("#inputs").val();
-                            alert(input);
-                            var decr = $().crypt({method:"b64dec", source:input});
-                            alert(decr);
-                            $("#result").html(decr)
-                        }
-                    </script>
-                </head>
-                <body>
-                    <textarea id="inputs">
-                    </textarea>
-                    <button onclick="decrypt()">Decrypt</button>
-                    <div id="result"></div>
-                </body>
-            </html>
-        """
-    test.exposed = True
 
 if __name__ == "__main__":
     cherrypy.config.update(global_config)

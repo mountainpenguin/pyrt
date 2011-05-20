@@ -143,11 +143,11 @@ class Ajax:
                 self.RT.load_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
             return self.Handler.HTMLredirect("/")
             
-    def get_info_multi(self, view):
+    def get_info_multi(self, view, sortby, reverse):
         #wanted:
         #   system info
         #   ratio, dl speed, ul speed, status
-        torrentList = self.RT.getTorrentList2(view)
+        torrentList = self.Handler.sortTorrents(self.RT.getTorrentList2(view), sortby, reverse)
         returnDict = {
             "torrents" : {},
             "system" : system.generalHTML(),

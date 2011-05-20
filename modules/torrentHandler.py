@@ -10,7 +10,10 @@ class Handler:
         handler class for various reusable sundry operations
     """
     def __init__(self):
-        pass
+        self.SORT_METHODS = ["name","size","ratio","uprate","uptotal","downrate","downtotal",
+                        "leechs","leechs_connected","leechs_total","seeds",
+                        "seeds_connected","seeds_total", "peers","peers_connected",
+                        "peers_total","priority","status", "tracker","created"]
 
     def humanTimeDiff(self, secs):
         time_str = ""
@@ -229,43 +232,8 @@ class Handler:
             html += "</ul></li></ul>"
             return html
         
-    def torrentHTML(self, torrentList, sort, view, reverse=False):
-        """
-            Sorts a list of torrent_ids with default information
-            Arguments:
-                torrentList = list : rtorrent.Torrent objects
-                sort = str : value to sort on
-                reverse = boolean : reverse or not
-            Sort Options:
-                name
-                size
-                ratio
-                uprate
-                uptotal
-                downrate
-                downtotal
-                leechs              #shorthand for leechs_connected
-                leechs_connected
-                leechs_total
-                seeds               #shorthand for seeds_connected
-                seeds_connected
-                seeds_total
-                peers               #shorthand for peers_connected
-                peers_connected
-                peers_total
-                priority
-                status
-                tracker
-                created
-        """
-        self.SORT_METHODS = ["name","size","ratio","uprate","uptotal","downrate","downtotal",
-                        "leechs","leechs_connected","leechs_total","seeds",
-                        "seeds_connected","seeds_total", "peers","peers_connected",
-                        "peers_total","priority","status", "tracker","created"]
-        if sort not in ["name","size","ratio","uprate","uptotal","downrate","downtotal",
-                        "leechs","leechs_connected","leechs_total","seeds",
-                        "seeds_connected","seeds_total", "peers","peers_connected",
-                        "peers_total","priority","status","tracker","created"]:
+    def sortTorrents(self, torrentList, sort=None, reverse=False):
+        if sort not in self.SORT_METHODS:
             sort = None
 
         if not sort:
@@ -309,6 +277,38 @@ class Handler:
       
         if reverse:
             torrentList.reverse()
+            
+        return torrentList
+        
+    def torrentHTML(self, torrentList, sort, view, reverse=False):
+        """
+            Sorts a list of torrent_ids with default information
+            Arguments:
+                torrentList = list : rtorrent.Torrent objects
+                sort = str : value to sort on
+                reverse = boolean : reverse or not
+            Sort Options:
+                name
+                size
+                ratio
+                uprate
+                uptotal
+                downrate
+                downtotal
+                leechs              #shorthand for leechs_connected
+                leechs_connected
+                leechs_total
+                seeds               #shorthand for seeds_connected
+                seeds_connected
+                seeds_total
+                peers               #shorthand for peers_connected
+                peers_connected
+                peers_total
+                priority
+                status
+                tracker
+                created
+        """
 
         sorts = {
             "name":"",
@@ -351,6 +351,8 @@ class Handler:
         torrent_html += "<!-- %r -->" % sorts
             
         div_colour_array = ["blue", "green"]
+        
+        torrentList = self.sortTorrents(torrentList, sort, reverse)
         
         for t in torrentList:
             colour = div_colour_array.pop(0)
