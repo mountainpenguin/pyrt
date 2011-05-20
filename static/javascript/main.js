@@ -110,7 +110,13 @@ function refresh_content() {
 			if (data.torrent_index.indexOf(torrent_id) == -1) {
 				// call removetorrent_tr()
 			} else {
-				// refresh data
+				// refresh torrent data
+				torrent_data = data.torrents[torrent_id];
+				// returned data: ratio, uprate, downrate, status
+				$("#t_ratio_" + torrent_id).html(torrent_data.ratio);
+				$("#t_uprate_" + torrent_id).html(torrent_data.uprate);
+				$("#t_downrate_" + torrent_id).html(torrent_data.downrate);
+				$("#t_status_" + torrent_id).html(torrent_data.status);
 			}
 		}
     });
