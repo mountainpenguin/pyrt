@@ -122,7 +122,6 @@ function refresh_content() {
 		}
 }
 
-function 
 function select_torrent(elem) {
     // elem.style.backgroundColor = "#00CCFF";
     elem.style.backgroundColor = "#0099FF";
