@@ -177,19 +177,27 @@ function add_torrentrow(torrent_id, torrent_data) {
         }
         $("#torrent_id_" + torrent_id).bind(
             "click",
-            view_torrent(this)
+            function (event) {
+                view_torrent(this);
+            }
         );
         $("#torrent_id_" + torrent_id).bind(
             "mouseover",
-            select_torrent(this)
+            function (event) {
+                select_torrent(this);
+            }
         );
         $("#torrent_id_" + torrent_id).bind(
             "mouseout",
-            deselect_torrent(this)
+            function (event) {
+                deselect_torrent(this);
+            }
         );
         $("#torrent_id_" + torrent_id).bind(
             "dblclick",
-            navigate_torrent(this)
+            function (event) {
+                navigate_torrent(this)
+            }
         );
         loadRClickMenus()
                 // <tr onmouseover='select_torrent(this);' 
