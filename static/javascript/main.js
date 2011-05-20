@@ -140,7 +140,7 @@ function refresh_content() {
 
 function remove_torrentrow(torrent_id) {
     if (row = document.getElementById("torrent_id_" + torrent_id)) {
-        row.style.border = "1px solid red";
+        row.style.backgroundColor = "red";
         $(row).fadeOut(2000, function () {
             document.getElementById("torrent_list").deleteRow(row.rowIndex);
         });
@@ -162,7 +162,7 @@ function add_torrentrow(torrent_id, torrent_data) {
         var newtorrentrow = torrent_table.insertRow(1);
         newtorrentrow.id = "torrent_id_" + torrent_id;
         newtorrentrow.style.display = "none";
-        newtorrentrow.style.border = "1px solid green";
+        newtorrentrow.style.backgroundColor = "green";
         
         var attribs = new Array(
             Array("name", response.name),
@@ -224,7 +224,7 @@ function add_torrentrow(torrent_id, torrent_data) {
         );
         
         $(newtorrentrow).fadeIn(2000, function() {
-            newtorrentrow.style.border = "none";
+            newtorrentrow.style.backgroundColor = null;
             loadRClickMenus() 
         });
     });
