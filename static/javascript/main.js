@@ -111,10 +111,6 @@ function refresh_content() {
            if (data.torrent_index.indexOf(torrent_id) == -1) {
                 // remove_torrentrow(id)
            } else {
-            torrent_id = $(torrent_list[i]).attr("id").split("torrent_id_")[1];
-            if (data.torrent_index.indexOf(torrent_id) == -1) {
-                // remove_torrentrow(id)
-            } else {
                 // refresh torrent data
                 torrent_data = data.torrents[torrent_id];
                 // returned data: ratio, uprate, downrate, status
