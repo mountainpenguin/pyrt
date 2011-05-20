@@ -1,5 +1,7 @@
 $(document).ready(function () {
-     setTimeout(refresh_content, 5000);
+     setTimeout(function () {
+        refresh_content("yes");
+     }, 5000);
     $("#add-torrent-button").click(function(){
       $("#add_torrent").dialog("open");
     })
@@ -86,7 +88,7 @@ function loadRClickMenus() {
         }
     );
 }
-function refresh_content() {
+function refresh_content(repeat) {
     // get all torrent ids on page
     req = "/ajax?request=get_info_multi&view=" + $("#this_view").html()
     if (!($("#this_sort").html() === "none")) {
@@ -134,7 +136,11 @@ function refresh_content() {
             }
         }
         
-        setTimeout(refresh_content, 5000);
+        if (repeat === "yes") {
+            setTimeout(function () {
+                refresh_content("yes");
+            }, 5000);
+        }
     });
 }
 
@@ -330,10 +336,10 @@ function command(cmd, t_id) {
             xmlhttpc.onreadystatechange = function() {
                 if (xmlhttpc.readyState == 4 && xmlhttpc.status == 200) {
                     var resp = xmlhttpc.responseText.trim()
-                    if (resp === "OK") {
-                        location.reload(true);
+                    if (resp == "OK") {
+                        refresh_content("no");
                     } else {
-                        alert("Command Failed with reason: " + resp);
+                        alert("Command Failed with reason: " + resp); 
                     }
                 }
             }
