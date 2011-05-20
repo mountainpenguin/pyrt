@@ -223,6 +223,8 @@ function create_controlSpan(alt, name, torrent_id) {
     image.className = "control_image";
     image.alt = alt;
     image.src = "/images/" + name + ".png";
+    image.style.cursor = "pointer";
+    image.style.padding = "3px";
     $(image).bind(
         "click",
         function (event) {
