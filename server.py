@@ -93,40 +93,37 @@ class mainHandler:
             return Detail.trackers(torrent_id)
     detail.exposed = True
     
-    def ajax(self, request=None, torrent_id=None, filepath=None, torrent=None, start=None):
+    def ajax(self, request=None, torrent_id=None, filepath=None, torrent=None, start=None, view=None):
         #check cookies
         L = login.Login()
         client_cookie = cherrypy.request.cookie
         Lcheck = L.checkLogin(client_cookie)
         if not Lcheck:
             return
-                
-        if not request:
-            return "ERROR/No method specified"
-        if not torrent_id:
-            return "ERROR/No torrent_id specified"
         
         Ajax = ajaxPage.Ajax()
-        if request == "get_torrent_info":
+        if request == "get_torrent_info" and torrent_id:
             return Ajax.get_torrent_info(torrent_id)
-        elif request == "pause_torrent":
+        elif request == "get_info_multi" and view:
+            return Ajax.get_info_multi(view)
+        elif request == "pause_torrent" and torrent_id:
             return Ajax.pause_torrent(torrent_id)
-        elif request == "stop_torrent":
+        elif request == "stop_torrent" and torrent_id:
             return Ajax.stop_torrent(torrent_id)
-        elif request == "start_torrent":
+        elif request == "start_torrent" and torrent_id:
             return Ajax.start_torrent(torrent_id)
-        elif request == "remove_torrent":
+        elif request == "remove_torrent" and torrent_id:
             return Ajax.remove_torrent(torrent_id)
-        elif request == "delete_torrent":
+        elif request == "delete_torrent" and torrent_id:
             return Ajax.delete_torrent(torrent_id)
-        elif request == "hash_torrent":
+        elif request == "hash_torrent" and torrent_id:
             return Ajax.hash_torrent(torrent_id)
-        elif request == "get_file":
+        elif request == "get_file" and torrent_id and filepath:
             return Ajax.get_file(torrent_id, filepath)
-        elif request == "upload_torrent":
+        elif request == "upload_torrent" and torrent:
             return Ajax.upload_torrent(torrent, start)
         else:
-            return "ERROR/Invalid method"
+            raise cherrypy.HTTPError(message="Ajax Error Invalid Method")
     ajax.exposed = True
     
     def options(self, test=False):
@@ -153,6 +150,35 @@ class mainHandler:
             Options = optionsPage.Options()
             return Options.index()
     options.exposed = True
+    
+    def test(self):
+        return """
+            <html>
+                <head>
+                    <link rel="stylesheet" type="text/css" href="/css/smoothness/jquery-ui-1.8.13.custom.css">                
+                    <script src="/javascript/jquery-1.6.1.min.js" type="text/javascript"></script> 
+                    <script src="/javascript/jquery-ui-1.8.13.custom.min.js" type="text/javascript"></script>        
+                    <script src="/javascript/jquery.contextmenu.r2.js" type="text/javascript"></script> 
+                    <script src="/javascript/jquery.crypt.js" type="text/javascript"></script>
+                    <script type="text/javascript">
+                        function decrypt() {
+                            var input = $("#inputs").val();
+                            alert(input);
+                            var decr = $().crypt({method:"b64dec", source:input});
+                            alert(decr);
+                            $("#result").html(decr)
+                        }
+                    </script>
+                </head>
+                <body>
+                    <textarea id="inputs">
+                    </textarea>
+                    <button onclick="decrypt()">Decrypt</button>
+                    <div id="result"></div>
+                </body>
+            </html>
+        """
+    test.exposed = True
 
 if __name__ == "__main__":
     cherrypy.config.update(global_config)

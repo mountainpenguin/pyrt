@@ -74,7 +74,11 @@ class Index:
                         </div>
                       </form>
                     </div>
-                    %(global_stats)s
+                    <div id="global_stats">
+                        %(global_stats)s
+                    </div>
+                    <button class="hidden" onclick="refresh_content();">Click!</button>
+                    <div id="this_view" class="hidden">%(view)s</div>
         """ % {
             "main" : ttmain,
             "started" : ttstarted,
@@ -85,6 +89,7 @@ class Index:
             "seeding" : ttseeding,
             "active" : ttactive,
             "global_stats" : system.generalHTML(),
+            "view" : view,
         }
         return html.replace("<!-- BODY PLACEHOLDER -->",html_insert).replace("</body>","</div></div>\n\t</body>")
 

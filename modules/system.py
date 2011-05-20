@@ -50,7 +50,6 @@ def generalHTML():
     memused, memtotal = mem()
     load1, load5, load15 = os.getloadavg()
     return """
-                        <div id="global_stats">
                         <h2>Global Stats</h2>
                         <div class="column-1">Upload Rate:</div><div class="column-2">%(uprate)s/s</div>
                         <div class="column-3">Total Up:</div><div class="column-4">%(uptot)s</div>
@@ -68,7 +67,6 @@ def generalHTML():
                         </div>
                         <div class="column-3">Uptime:</div><div class="column-4">%(uptime)s</div>
                         <div class="column-5">CPU Usage:</div><div class="column-6">%(cpuusage)s%%</div>
-                    </div>
     """ % {
         "uprate" : handler.humanSize(RT.getGlobalUpRate()),
         "downrate" : handler.humanSize(RT.getGlobalDownRate()),

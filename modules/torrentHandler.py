@@ -446,7 +446,8 @@ class Handler:
                 <li id="rehash"><img alt="rehash" src="/images/hash.png"> Rehash</li>
             </ul>
         </div>
+        <div class="hidden" id="all-torrent-ids">%s</div>
     </body>
 </html>
-        """ % (torrent_html)
+        """ % (torrent_html, ",".join([x.torrent_id for x in torrentList]))
         return html

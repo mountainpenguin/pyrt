@@ -82,6 +82,31 @@ $(document).ready(function () {
                            );
 });
 
+function refresh_content() {
+    // get all torrent ids on page
+    $.getJSON("/ajax?request=get_info_multi&view=" + $("#this_view").html(), function (data) {
+        decoded_html = $().crypt({method:"b64dec", source:data.system});
+        $("#global_stats").html(data.system);
+    });
+//function loadContents(item) {
+//    $.ajax({
+//        url : "/ajax?request=get_file&filepath=" + encodeURIComponent(item.find(".fullpath").html()) + "&torrent_id=" + $("#torrent_id").html(),
+//        success : function(data) {
+//            $("#fileName").html(item.html());
+//            $("#contactArea").html("<pre><code>" + data + "</code></pre>")
+//            centerPopup();
+//            loadPopup();
+//        },
+//        statusCode : {
+//            500 : function () {
+//                alert("Server error");
+//            }
+//        }
+//        
+//    });
+//};
+}
+
 function select_torrent(elem) {
     // elem.style.backgroundColor = "#00CCFF";
     elem.style.backgroundColor = "#0099FF";
