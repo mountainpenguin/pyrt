@@ -140,12 +140,10 @@ function refresh_content() {
 
 function remove_torrentrow(torrent_id) {
     if (row = document.getElementById("torrent_id_" + torrent_id)) {
-        var rowtodelete = $("#torrent_id_" + torrent_id)
-        $(rowtodelete).css(
-            "border" : "1px solid red"
-        );
-        $(rowtodelete).fadeOut(2000);
-        document.getElementById("torrent_list").deleteRow(row.rowIndex);
+        row.style.border = "1px solid red";
+        $(row).fadeOut(2000, function () {
+            document.getElementById("torrent_list").deleteRow(row.rowIndex);
+        }
     }
 }
 
