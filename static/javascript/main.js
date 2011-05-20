@@ -125,7 +125,7 @@ function refresh_content() {
         for (i=0; i<data.torrent_index.length; i++) {
             torrent_id = data.torrent_index[i];
             if (jQuery.inArray(torrent_id, torrent_list) == -1) {
-                // add_torrentrow(torrent_id)
+                // add_torrentrow(torrent_id, data.torrents[torrent_id])
             }
         }
         
@@ -133,10 +133,76 @@ function refresh_content() {
     });
 }
 
-function add_torrentrow(torrent_id) {
+function add_torrentrow(torrent_id, torrent_data) {
     req = "/ajax?request=get_torrent_info&torrent_id=" + torrent_id;
     $.getJSON(req, function (response) {
         var torrent_rows = $("#torrent_table").children(".torrent-div");
+        // get colour of first element
+        if (torrent_rows[0].hasClass("blue")) {
+            var newcolour = "green";
+        } else {
+            var newcolour = "blue";
+        }
+        alert("newcolour: " + newcolour);
+        
+        // construct element using native js methods
+        var newtorrentrow = document.createElement("tr");
+        newtorrentrow.id = "torrent_id_" + torrent_id;
+        alert("newtorrentrow: " + $(newtorrentrow).html())
+        var attribs = new Array(
+            Array("name", response.name),
+            Array("size", response.size),
+            Array("ratio", response.ratio),
+            Array("uprate", torrent_data.uprate + "/s"),
+            Array("downrate", torrent_data.downrate + "/s"),
+            Array("status", torrent_data.status),
+            // Array("controls", ),
+        );
+        for (i=0; i<attribs.length; i++) {
+            keyval = attribs[i];
+            alert("keyval: " + keyval);
+        }
+        
+    // var torrent_id = elem.id.split("torrent_id_")[1];
+    // var table = document.getElementById("torrent_list");
+    // if (oldrow = document.getElementById('newrow_torrent_id_' + torrent_id)) {
+        // table.deleteRow(oldrow.rowIndex);
+    // }
+    // var newrow = table.insertRow(elem.rowIndex + 1);
+    // var newcell = newrow.insertCell(0);
+    // newrow.id = "newrow_torrent_id_" + torrent_id;
+    // newrow.className += " drop_down";
+    // newcell.innerHTML = "<img src='/images/loading.gif'> <span style='color:red;'>Loading</span>";
+    // newcell.colSpan = "7";
+                // <tr onmouseover='select_torrent(this);' 
+                    // onmouseout='deselect_torrent(this);' 
+                    // onclick='view_torrent(this);'
+                    // ondblclick='navigate_torrent(this);'
+                    // class='torrent-div blue rcstart' 
+                    // id='torrent_id_9C3E55AAA05E5B9F5369FADF084EC77EF108903C'> 
+                    // <td id="t_name_9C3E55AAA05E5B9F5369FADF084EC77EF108903C">FILMS</td> 
+                    // <td id="t_size_9C3E55AAA05E5B9F5369FADF084EC77EF108903C">3.43 GB</td> 
+                    // <td id="t_ratio_9C3E55AAA05E5B9F5369FADF084EC77EF108903C" title='0 B up / 0 B down'>0.00</td> 
+                    // <td id="t_uprate_9C3E55AAA05E5B9F5369FADF084EC77EF108903C">0 B/s</td> 
+                    // <td id="t_downrate_9C3E55AAA05E5B9F5369FADF084EC77EF108903C">0 B/s</td> 
+                    // <td id="t_status_9C3E55AAA05E5B9F5369FADF084EC77EF108903C">Stopped</td> 
+                    // <td id="t_controls_9C3E55AAA05E5B9F5369FADF084EC77EF108903C"> 
+                        // <span class='control_start control_button' title='Start Torrent'><img onclick='event.cancelBubble = true; command("start_torrent","9C3E55AAA05E5B9F5369FADF084EC77EF108903C")' class='control_image' alt='Start' src='../images/start.png'></span> 
+                        // <span class='control_stop control_button' title='Stop Torrent'> 
+                            // <img onclick='event.cancelBubble = true; command("stop_torrent","9C3E55AAA05E5B9F5369FADF084EC77EF108903C")'
+                                 // class='control_image' alt='Stop' src='../images/stop.png'> 
+                        // </span> 
+                        // <span class='control_remove control_button' title='Remove Torrent'> 
+                            // <img onclick='event.cancelBubble = true; command("remove_torrent","9C3E55AAA05E5B9F5369FADF084EC77EF108903C")'
+                                 // class='control_image' alt='Remove' src='../images/remove.png'> 
+                        // </span> 
+                        // <span class='control_delete control_button' title='Remove Torrent and Files'> 
+                            // <img onclick='event.cancelBubble = true; command("delete_torrent","9C3E55AAA05E5B9F5369FADF084EC77EF108903C")'
+                                 // class='control_image' alt='Delete' src='../images/delete.png'> 
+                        // </span> 
+                    // </td> 
+                // </tr> 
+
     });
 }
 
@@ -164,26 +230,6 @@ function navigate_tab(elem) {
 function navigate_torrent(elem) {
     window.location = "detail?torrent_id=" + elem.id.split("torrent_id_")[1]
 }
-
-// function htmlify(json, cell) {
-    // var obj = JSON.parse(json);
-    // var new_html = new String();
-    // new_html += "<div class='drop_down'>"
-    // new_html += "<div class='column-1'>ID:</div><div class='column-2'>" + obj.torrent_id + "</div>"
-    // new_html += "<div class='column-1'>Size:</div><div class='column-2'>" + obj.size + "</div>"
-    // new_html += "<div class='column-1'>Percentage:</div><div class='column-2'>" + obj.percentage + "%</div>"
-    // new_html += "<div class='column-1'>Downloaded:</div><div class='column-2'>" + obj.downloaded  + "</div>"
-    // new_html += "<div class='column-1'>Uploaded:</div><div class='column-2'>" + obj.uploaded + "</div>"
-    // new_html += "<div class='column-1'>Ratio:</div><div class='column-2'>" + obj.ratio + "</div>"
-    // new_html += "<div class='column-1'>Peers:</div><div class='column-2'>" + obj.peers.length + "</div>"
-    // new_html += "<div class='column-1'>Created:</div><div class='column-2'>" + obj.created + "</div>"
-    // new_html += "<div class='column-2' style='clear : left;'><span class='fakelink' onClick='removerow(\"" + obj.torrent_id + "\")'>Close</span> <a style='color : blue;' href='detail?torrent_id=" + obj.torrent_id + "'>Detailed View</a></div>"
-    // new_html += "</div>"
-    // cell.innerHTML = new_html;
-    // cell.style.borderLeft="1px dotted";
-    // cell.style.borderRight="1px dotted";
-    // cell.style.backgroundColor = "#eeeeee";
-// }
 
 function removerow(torrent_id) {
     if (row = document.getElementById("newrow_torrent_id_" + torrent_id)) {
