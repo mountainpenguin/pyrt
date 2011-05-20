@@ -125,7 +125,7 @@ function refresh_content() {
         for (i=0; i<data.torrent_index.length; i++) {
             torrent_id = data.torrent_index[i];
             if (jQuery.inArray(torrent_id, torrent_list) == -1) {
-                // add_torrentrow(torrent_id, data.torrents[torrent_id])
+                add_torrentrow(torrent_id, data.torrents[torrent_id])
             }
         }
         
