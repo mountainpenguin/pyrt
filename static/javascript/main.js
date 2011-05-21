@@ -265,7 +265,7 @@ function add_torrentrow(torrent_id, torrent_data) {
             $(newtorrentrow).fadeTo(2000, 1.0, function() {
                 $("#torrent_id_" + torrent_id).effect("pulsate", { times : 1 }, "slow", function () {
                     $("#torrent_id_" + torrent_id).addClass(newcolour);
-                    $("#torrent_id_" + torrent_id).animate({
+                    $("#torrent_id_" + torrent_id).css({
                         backgroundColor : null
                     });
                     loadRClickMenus()
