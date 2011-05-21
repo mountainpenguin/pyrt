@@ -204,7 +204,10 @@ function add_torrentrow(torrent_id, torrent_data) {
         $(newtorrentrow).css({
             opacity : "0.1",
             "background-color" : "#CDE472",
-            "background-repeat" : "no-repeat"
+            "background-repeat" : "no-repeat",
+            "background-image" : "none",
+            "background-attachment" : "scroll",
+            "background-position" : "0% 0%",
         })
         
         var attribs = new Array(
