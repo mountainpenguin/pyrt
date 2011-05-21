@@ -280,6 +280,60 @@ class Handler:
             
         return torrentList
         
+    def getTorrentRow(self, torrent):
+        status = self.getState(torrent)
+        if status == "Stopped" or status == "Paused":
+            stopstart_button = "<span class='control_start control_button' title='Start Torrent'><img onclick='event.cancelBubble = true; command(\"start_torrent\",\"%s\")' class='control_image' alt='Start' src='../images/start.png'></span>" % t.torrent_id
+            stopstart_class = "rcstart"
+        else:
+            stopstart_button = "<span class='control_pause control_button' title='Pause Torrent'><img onclick='event.cancelBubble = true; command(\"pause_torrent\",\"%s\")'class='control_image' alt='Pause' src='../images/pause.png'></span>" % t.torrent_id
+            stopstart_class = "rcpause"
+            
+        ROW_HTML = """
+            <tr onmouseover='select_torrent(this);' 
+                onmouseout='deselect_torrent(this);' 
+                onclick='view_torrent(this);'
+                ondblclick='navigate_torrent(this);'
+                class='torrent-div %(stoporstart)s' 
+                id='torrent_id_%(t_id)s'>
+                <td id="t_name_%(t_id)s">%(t_name)s</td>
+                <td id="t_size_%(t_id)s">%(t_size)s</td>
+                <td id="t_ratio_%(t_id)s" title='%(t_uploaded)s up / %(t_downloaded)s down'>%(t_ratio).02f</td>
+                <td id="t_uprate_%(t_id)s">%(t_uprate)s/s</td>
+                <td id="t_downrate_%(t_id)s">%(t_downrate)s/s</td>
+                <td id="t_status_%(t_id)s">%(t_status)s</td>
+                <td id="t_controls_%(t_id)s">
+                    %(control_startpause)s
+                    <span class='control_stop control_button' title='Stop Torrent'>
+                        <img onclick='event.cancelBubble = true; command(\"stop_torrent\",\"%(t_id)s\")'
+                             class='control_image' alt='Stop' src='../images/stop.png'>
+                    </span>
+                    <span class='control_remove control_button' title='Remove Torrent'>
+                        <img onclick='event.cancelBubble = true; command(\"remove_torrent\",\"%(t_id)s\")'
+                             class='control_image' alt='Remove' src='../images/remove.png'>
+                    </span>
+                    <span class='control_delete control_button' title='Remove Torrent and Files'>
+                        <img onclick='event.cancelBubble = true; command(\"delete_torrent\",\"%(t_id)s\")'
+                             class='control_image' alt='Delete' src='../images/delete.png'>
+                    </span>
+                </td>
+            </tr>
+                    """ % {
+                        "t_id" : torrent.torrent_id, 
+                        "t_name" : torrent.name,
+                        "t_size" : self.humanSize(torrent.size),
+                        "t_uploaded" : self.humanSize(torrent.up_total),
+                        "t_downloaded" : self.humanSize(torrent.down_total),
+                        "t_ratio" : float(torrent.ratio)/1000,
+                        "t_uprate" : self.humanSize(torrent.up_rate),
+                        "t_downrate" : self.humanSize(torrent.down_rate),
+                        "t_status" : status,
+                        "control_startpause" : stopstart_button,
+                        "stoporstart" : stopstart_class,
+                    }
+                    
+        return ROW_HTML
+        
     def torrentHTML(self, torrentList, sort, view, reverse=False):
         """
             Sorts a list of torrent_ids with default information
@@ -288,26 +342,14 @@ class Handler:
                 sort = str : value to sort on
                 reverse = boolean : reverse or not
             Sort Options:
-                name
-                size
-                ratio
-                uprate
-                uptotal
-                downrate
-                downtotal
-                leechs              #shorthand for leechs_connected
-                leechs_connected
-                leechs_total
-                seeds               #shorthand for seeds_connected
-                seeds_connected
-                seeds_total
-                peers               #shorthand for peers_connected
-                peers_connected
-                peers_total
-                priority
-                status
-                tracker
-                created
+                name, size, ratio, uprate, uptotal,
+                downrate, downtotal, leechs, leechs_connected,
+                leechs_total, seeds, seeds_connected,
+                seeds_total, peers, peers_connected,
+                peers_total, priority, status, tracker, created
+                
+                leechs, seeds, and peers are shorthand for leechs_connected, 
+                seeds_connected and peers_connected respectively
         """
 
         sorts = {
@@ -336,8 +378,7 @@ class Handler:
                 sorts[sort + "sort"] = "up"
                     
         
-        torrent_html = """
-            <table id='torrent_list'>
+        TORRENT_TABLE_HEADINGS = """
                 <tr id='torrent_list_headings'>
                     <td class='heading' id="sortby_name" onclick="window.location='%(name)s';">Name <img alt="Sort By Name" src="../images/sort_%(namesort)s.gif" class="control_button"></td>
                     <td class='heading' id="sortby_size" onclick="window.location='%(size)s';">Size <img alt="Sort By Size" src="../images/sort_%(sizesort)s.gif" class="control_button"></td>
@@ -347,70 +388,27 @@ class Handler:
                     <td class='heading' id="sortby_status" onclick="window.location='%(status)s';">Status <img alt="Sort By Status" src="../images/sort_%(statussort)s.gif" class="control_button"></td>
                     <td class='heading'></td>
                 </tr>
-            """ % sorts
-        torrent_html += "<!-- %r -->" % sorts
-            
+        """ % sorts
+        
         div_colour_array = ["blue", "green"]
         
         torrentList = self.sortTorrents(torrentList, sort, reverse)
         
+        TORRENT_ROWS = []
         for t in torrentList:
-            colour = div_colour_array.pop(0)
-            div_colour_array += [colour]
-            status = self.getState(t)
-            if status == "Stopped" or status == "Paused":
-                stopstart = "<span class='control_start control_button' title='Start Torrent'><img onclick='event.cancelBubble = true; command(\"start_torrent\",\"%s\")' class='control_image' alt='Start' src='../images/start.png'></span>" % t.torrent_id
-                stoporstart = "rcstart"
-            else:
-                stopstart = "<span class='control_pause control_button' title='Pause Torrent'><img onclick='event.cancelBubble = true; command(\"pause_torrent\",\"%s\")'class='control_image' alt='Pause' src='../images/pause.png'></span>" % t.torrent_id
-                stoporstart = "rcpause"
-                
-            torrent_html += """
-                <tr onmouseover='select_torrent(this);' 
-                    onmouseout='deselect_torrent(this);' 
-                    onclick='view_torrent(this);'
-                    ondblclick='navigate_torrent(this);'
-                    class='torrent-div %(colour)s %(stoporstart)s' 
-                    id='torrent_id_%(t_id)s'>
-                    <td id="t_name_%(t_id)s">%(t_name)s</td>
-                    <td id="t_size_%(t_id)s">%(t_size)s</td>
-                    <td id="t_ratio_%(t_id)s" title='%(t_uploaded)s up / %(t_downloaded)s down'>%(t_ratio).02f</td>
-                    <td id="t_uprate_%(t_id)s">%(t_uprate)s/s</td>
-                    <td id="t_downrate_%(t_id)s">%(t_downrate)s/s</td>
-                    <td id="t_status_%(t_id)s">%(t_status)s</td>
-                    <td id="t_controls_%(t_id)s">
-                        %(control_startpause)s
-                        <span class='control_stop control_button' title='Stop Torrent'>
-                            <img onclick='event.cancelBubble = true; command(\"stop_torrent\",\"%(t_id)s\")'
-                                 class='control_image' alt='Stop' src='../images/stop.png'>
-                        </span>
-                        <span class='control_remove control_button' title='Remove Torrent'>
-                            <img onclick='event.cancelBubble = true; command(\"remove_torrent\",\"%(t_id)s\")'
-                                 class='control_image' alt='Remove' src='../images/remove.png'>
-                        </span>
-                        <span class='control_delete control_button' title='Remove Torrent and Files'>
-                            <img onclick='event.cancelBubble = true; command(\"delete_torrent\",\"%(t_id)s\")'
-                                 class='control_image' alt='Delete' src='../images/delete.png'>
-                        </span>
-                    </td>
-                </tr>
-                        """ % {
-                            "colour" : colour,
-                            "t_id" : t.torrent_id,
-                            "t_name" : t.name,
-                            "t_size" : self.humanSize(t.size),
-                            "t_uploaded" : self.humanSize(t.up_total),
-                            "t_downloaded" : self.humanSize(t.down_total),
-                            "t_ratio" : float(t.ratio)/1000,
-                            "t_uprate" : self.humanSize(t.up_rate),
-                            "t_downrate" : self.humanSize(t.down_rate),
-                            "t_status" : status,
-                            "control_startpause" : stopstart,
-                            "stoporstart" : stoporstart,
-                        }
-        torrent_html += "\n             </table>"
+            TORRENT_ROWS.append(self.getTorrentRow(t))
 
-        html = """
+        TORRENT_HTML = """
+            <table id='torrent_list'>
+                %(torrent_headings)s
+                %(torrents_html)s
+            </table>
+        """ % {
+            "torrent_headings" : TORRENT_TABLE_HEADINGS,
+            "torrents_html" : "\n".join(TORRENT_ROWS),
+        }
+        
+        HTML = """
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
     <head>
@@ -449,8 +447,7 @@ class Handler:
                 <li id="rehash"><img alt="rehash" src="/images/hash.png"> Rehash</li>
             </ul>
         </div>
-        <div class="hidden" id="all-torrent-ids">%s</div>
     </body>
 </html>
-        """ % (torrent_html, ",".join([x.torrent_id for x in torrentList]))
-        return html
+        """ % (TORRENT_HTML)
+        return HTML
