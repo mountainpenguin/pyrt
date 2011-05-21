@@ -36,6 +36,7 @@ td.heading {
     font-weight : bold;
     background-color : #3A3737;
     color : white;
+    min-width : 1em;
 }
 
 tr.torrent-div {
