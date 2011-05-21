@@ -255,11 +255,13 @@ function add_torrentrow(torrent_id, torrent_data) {
             }
         );
         
-        $(newtorrentrow).fadeIn(2000, function() {
-            newtorrentrow.style.backgroundColor = null;
-            loadRClickMenus()
-            stripeTable();
-        });
+        $(newtorrentrow).slideRow("down", 1000, function() {
+            $(newtorrentrow).fadeIn(2000, function() {
+                newtorrentrow.style.backgroundColor = null;
+                loadRClickMenus()
+                stripeTable();
+            });
+        }
     });
 }
 
