@@ -197,14 +197,13 @@ function add_torrentrow(torrent_id, torrent_data) {
         dataType : "html",
         success : function (newrowhtml) {
             $(newrowhtml).addClass("new-torrent-row");
-            $("#torrent_list > tbody > tr:eq(0)").after($(newrowhtml).html());
+            $("#torrent_list > tbody > tr:eq(0)").after($(newrowhtml));
             $(newrowhtml).slideRow("down", 1000, function() {
                 $(newrowhtml).fadeTo(2000, 1.0, function() {
                     $("#torrent_id_" + torrent_id).effect("pulsate", { times : 1 }, "slow", function () {
                         $(newrowhtml).removeClass("new-torrent-row");
                         stripeTable();
                         loadRClickMenus()
-                        return false;
                     });
                 });
             });
