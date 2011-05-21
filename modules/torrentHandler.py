@@ -283,10 +283,10 @@ class Handler:
     def getTorrentRow(self, torrent):
         status = self.getState(torrent)
         if status == "Stopped" or status == "Paused":
-            stopstart_button = "<span class='control_start control_button' title='Start Torrent'><img onclick='event.cancelBubble = true; command(\"start_torrent\",\"%s\")' class='control_image' alt='Start' src='../images/start.png'></span>" % t.torrent_id
+            stopstart_button = "<span class='control_start control_button' title='Start Torrent'><img onclick='event.cancelBubble = true; command(\"start_torrent\",\"%s\")' class='control_image' alt='Start' src='../images/start.png'></span>" % torrent.torrent_id
             stopstart_class = "rcstart"
         else:
-            stopstart_button = "<span class='control_pause control_button' title='Pause Torrent'><img onclick='event.cancelBubble = true; command(\"pause_torrent\",\"%s\")'class='control_image' alt='Pause' src='../images/pause.png'></span>" % t.torrent_id
+            stopstart_button = "<span class='control_pause control_button' title='Pause Torrent'><img onclick='event.cancelBubble = true; command(\"pause_torrent\",\"%s\")'class='control_image' alt='Pause' src='../images/pause.png'></span>" % torrent.torrent_id
             stopstart_class = "rcpause"
             
         ROW_HTML = """
