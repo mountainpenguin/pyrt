@@ -50,6 +50,11 @@ tr.new-torrent-row {
     background-color : #CDE472;
 }
 
+tr.old-torrent-row {
+    border : none;
+    background-color : red;
+}
+
 .drop_down {
     border-left : 1px dotted;
     border-right : 1px dotted;

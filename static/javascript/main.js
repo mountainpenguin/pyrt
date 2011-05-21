@@ -168,13 +168,12 @@ function refresh_content(repeat) {
 function remove_torrentrow(torrent_id) {
     var row = $("#torrent_id_" + torrent_id);
     if (row.length != 0) {
-        $(row).css({
-            border : "none",
-            backgroundColor : "red"
-        });
-        $(row).fadeTo(2000, 0.1, function() {
-            $(this).slideRow("up", 1000, function() {
-                $("#torrent_id_" + torrent_id).remove();
+        $(row).removeClass("blue green").toggleClass("old-torrent-row");
+        $(row).effect("pulsate", { times : 1 }, "slow", function() {
+            $(row).fadeTo(2000, 0.1, function() {
+                $(this).slideRow("up", 1000, function() {
+                    $("#torrent_id_" + torrent_id).remove();
+                });
             });
         });
     }
