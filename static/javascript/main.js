@@ -201,7 +201,7 @@ function add_torrentrow(torrent_id, torrent_data) {
         // construct element using native js methods
         var newtorrentrow = torrent_table.insertRow(1);
         newtorrentrow.id = "torrent_id_" + torrent_id;
-        newtorrentrow.style.display = "none";
+        newtorrentrow.style.opacity = "0.1";
         newtorrentrow.style.backgroundColor = "#CDE472";
         
         var attribs = new Array(
@@ -225,9 +225,9 @@ function add_torrentrow(torrent_id, torrent_data) {
         classNames = populateControlCell(controlcell, torrent_data.status, torrent_id);
     
         if (status === "Stopped" || status === "Paused") {
-            newtorrentrow.className = "torrent-div " + newcolour + " rcstart";
+            newtorrentrow.className = "torrent-div rcstart";
         } else {
-            newtorrentrow.className = "torrent-div " + newcolour + " rcstop";
+            newtorrentrow.className = "torrent-div rcstop";
         }
     
         $("#torrent_id_" + torrent_id).bind(
@@ -256,12 +256,13 @@ function add_torrentrow(torrent_id, torrent_data) {
         );
         
         $(newtorrentrow).slideRow("down", 1000, function() {
-            $(newtorrentrow).fadeIn(2000, function() {
-                newtorrentrow.style.backgroundColor = null;
+            $(newtorrentrow).fadeTo(2000, 1.0, function() {
+                $("#torrent_id_" + torrent_id).effect("pulsate", { times : 1 }, "slow");
+                $("#torrent_id_" + torrent_id).addClass(newcolour);
                 loadRClickMenus()
                 stripeTable();
             });
-        }
+        });
     });
 }
 
