@@ -152,5 +152,7 @@ class mainHandler:
     options.exposed = True
 
 if __name__ == "__main__":
+    if os.path.exists(".user.pickle"):
+        os.remove(".user.pickle")
     cherrypy.config.update(global_config)
     cherrypy.quickstart(mainHandler(), config=app_config)
