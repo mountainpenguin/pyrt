@@ -139,6 +139,8 @@ function refresh_content(repeat) {
                 $("#t_uprate_" + torrent_id).html(torrent_data.uprate + "/s");
                 $("#t_downrate_" + torrent_id).html(torrent_data.downrate + "/s");
                 $("#t_status_" + torrent_id).html(torrent_data.status);
+                
+                // UPDATE CONTROLS USING populateControlCell() ?
             }
         }
           
@@ -204,22 +206,14 @@ function add_torrentrow(torrent_id, torrent_data) {
         }
         
         controlcell = newtorrentrow.insertCell(-1);
-        controlcell.id = "t_controls_" + torrent_id;
-        
-        if (torrent_data.status === "Stopped" || torrent_data.status === "Paused") {
-            controlcell.appendChild(create_controlSpan("Start", "start", torrent_id));
-        } else {
-            controlcell.appendChild(create_controlSpan("Pause", "pause", torrent_id));
-        }
-        controlcell.appendChild(create_controlSpan("Stop", "stop", torrent_id));
-        controlcell.appendChild(create_controlSpan("Remove", "remove", torrent_id));
-        controlcell.appendChild(create_controlSpan("Delete", "delete", torrent_id));
-        
-        if (torrent_data.status === "Stopped" || torrent_data.status === "Paused") {
+        classNames = populateControlCell(controlcell, torrent_data.status, torrent_id);
+    
+        if (status === "Stopped" || status === "Paused") {
             newtorrentrow.className = "torrent-div " + newcolour + " rcstart";
         } else {
             newtorrentrow.className = "torrent-div " + newcolour + " rcstop";
         }
+    
         $("#torrent_id_" + torrent_id).bind(
             "click",
             function (event) {
@@ -251,6 +245,19 @@ function add_torrentrow(torrent_id, torrent_data) {
             stripeTable();
         });
     });
+}
+
+function populateControlCell(controlcell, status, torrent_id) {
+    controlcell.id = "t_controls_" + torrent_id;
+    
+    if (status === "Stopped" || status === "Paused") {
+        controlcell.appendChild(create_controlSpan("Start", "start", torrent_id));
+    } else {
+        controlcell.appendChild(create_controlSpan("Pause", "pause", torrent_id));
+    }
+    controlcell.appendChild(create_controlSpan("Stop", "stop", torrent_id));
+    controlcell.appendChild(create_controlSpan("Remove", "remove", torrent_id));
+    controlcell.appendChild(create_controlSpan("Delete", "delete", torrent_id));
 }
 
 function create_controlSpan(alt, name, torrent_id) {
