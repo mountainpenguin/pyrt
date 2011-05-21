@@ -145,12 +145,11 @@ function refresh_content(repeat) {
                     var reqrefresh = "/ajax?request=get_torrent_row&torrent_id=" + torrent_id;
                     $.ajax({
                         url : reqrefresh,
-                        context = $("t_controls_" + torrent_id)
+                        context : $("#t_controls_" + torrent_id),
                         dataType : "html",
                         success : function (newrowhtml) {
-                            alert("Refreshing td: " + $(this).attr("id"));
                             $(this).html(
-                                $($(this).attr("id"), newrowhtml).html()
+                                $("#" + $(this).attr("id"), newrowhtml).html()
                             );
                         },
                         error : function (jqXHR, textStatus, errorThrown) {
