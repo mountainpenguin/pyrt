@@ -24,6 +24,7 @@ $(document).ready(function () {
                 }
         });
     loadRClickMenus();
+    stripeTable();
 });
 
 function stripeTable() {
