@@ -142,14 +142,15 @@ function refresh_content(repeat) {
                 var oldstatus = $("#t_status_" + torrent_id)
                 if (oldstatus.html() != torrent_data.status) {
                     oldstatus.html(torrent_data.status);
-                    var req = "/ajax?request=get_torrent_row&torrent_id=" + torrent_id;
+                    var reqrefresh = "/ajax?request=get_torrent_row&torrent_id=" + torrent_id;
                     $.ajax({
-                        url : req,
-                        context : torrent_list,
+                        url : reqrefresh,
+                        context = $("t_controls_" + torrent_id)
                         dataType : "html",
                         success : function (newrowhtml) {
-                            $("#t_controls_" + torrent_id).html(
-                                $("#t_controls_" + torrent_id, newrowhtml).html()
+                            alert("Refreshing td: " + $(this).attr("id"));
+                            $(this).html(
+                                $($(this).attr("id"), newrowhtml).html()
                             );
                         },
                         error : function (jqXHR, textStatus, errorThrown) {
