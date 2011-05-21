@@ -24,34 +24,49 @@ class Detail:
                     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
                     <title>rTorrent - %(tname)s</title>
                     <link rel="stylesheet" type="text/css" href="/css/%(css)s.css">
+                    <link rel="stylesheet" type="text/css" href="/css/smoothness/jquery-ui-1.8.13.custom.css">                    
                     %(head_add)s
-                    <script src="/javascript/%(js)s.js" type="text/javascript"></script>
+                    <link rel="stylesheet" type="text/css" href="/css/jquery.treeview.css">
+                    <script src="/javascript/jquery-1.6.1.min.js" type="text/javascript"></script>
+                    <script src="/javascript/jquery-ui-1.8.13.custom.min.js" type="text/javascript"></script>        
+                    <script src="/javascript/jquery.cookie.js" type="text/javascript"></script>
+                    <script src="/javascript/jquery.treeview.js" type="text/javascript"></script>
+                    <script src="/javascript/file.js" type="text/javascript"></script>
+                    <script src="/javascript/%(js)s.js" type="text/javascript"></script>  
                 </head>
                 <body>
-                  <div id="wrapper">
-                    <div id="topbar">
-                        <!-- set class 'selected' with jquery -->
-                        <div class="topbar-tab_home" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate_home();" title="Home" id="home">Home</div>
-                        <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" id="info" title="Info">Info</div>
-                        <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="Peers" id="peers">Peers</div>
-                        <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="File List" id="files">File List</div>
-                        <div class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="Trackers" id="trackers">Tracker List</div>
+                  <div id="accordion">
+                    <h3><a href="#">Torrent info</a></h3>
+                    <div>
+                        <p>Name: %(tname)s</p>
+                        <p>ID: %(tid)s</p>
+                        <p>Created: %(tcreated)s</p>
+                        <p>Path: %(tpath)s</p>
+                        <p>Priority: %(tpriority)s</p>
+                        <p class="%(tstate)s">State: %(tstate)s</p>
                     </div>
-                    <div id="main">
-                        <div class="column-1">Name:</div><div id="torrent_name" class="column-2">%(tname)s</div>
-                        <div class="column-1">ID:</div><div id="torrent_id" class="column-2">%(tid)s</div>
-                        <div class="column-1">Created:</div><div id="torrent_created" class="column-2">%(tcreated)s</div>
-                        <div class="column-1">Path:</div><div id="torrent_path" class="column-2">%(tpath)s</div>
-                        <div class="column-1">Priority:</div><div id="torrent_priority" class="column-2">%(tpriority)s</div>
-                        <div class="column-1 %(tstate)s">State:</div><div id="torrent_state" class="column-2">%(tstate)s</div>
-                        %(space1)s
+                    <h3><a href="#">Peers</a></h3>                    
+                    <div>
+                      %(peers)s
                     </div>
-                    %(space2)s
+                    <h3><a href="#">File list</a></h3>                    
+                    <div>
+                      %(filelist)s
+                    </div>
+                    <h3><a href="#">Tracker list</a></h3>                    
+                    <div>
+                      %(trackers)s
+                    </div>
                   </div>
-                  %(space3)s
-                </body>
+
+              </body>
             </html>
         """
+           # <span class="topbar-tab_home" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate_home();" title="Home" id="home">Home</span>
+           #  <span class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" id="info" title="Info">Info</span>
+           #  <span class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="Peers" id="peers">Peers</span>
+           #  <span class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="File List" id="files">File List</span>
+           #  <span class="topbar-tab" onmouseover="select(this);" onmouseout="deselect(this);" onclick="navigate(this);" title="Trackers" id="trackers">Tracker List</span>
     # tname     : torrent name
     # css       : css file name
     # js        : js file name
@@ -69,6 +84,9 @@ class Detail:
             "tpath" : self.RT.getPath(torrent_id),
             "tpriority" : self.RT.getPriorityStr(torrent_id),
             "tstate" : self.RT.getStateStr(torrent_id),
+            "peers" :self.peers(torrent_id),
+            "filelist": self.files(torrent_id),
+            "trackers": self.trackers(torrent_id)
         }
     def main(self, torrent_id=None):
         start = time.time()
@@ -158,17 +176,8 @@ class Detail:
                 </div>
         """ % peer_html.replace("\t","    ")
         
-        info_dict = {
-            "css" : "detail",
-            "js" : "detail",
-            "head_add" : "",
-            "space1" : SPACE1_HTML,
-            "space2" : "",
-            "space3" : "",
-        }
-        info_dict.update(self._getDefaults(torrent_id))
         
-        return self.HTML % info_dict
+        return SPACE1_HTML
 
     def files(self, torrent_id=None):
         
@@ -185,22 +194,9 @@ class Detail:
                 </div>
                 <div id="backgroundPopup"></div>
         """ % self.Handler.fileTreeHTML(self.RT.getFiles(torrent_id), self.RT.getRootDir())
-        info_dict = {
-            "css" : "detail",
-            "js" : "detail",
-            "head_add" : """
-            <link rel="stylesheet" type="text/css" href="/css/jquery.treeview.css">
-            <script src="/javascript/jquery-1.6.1.min.js" type="text/javascript"></script>
-            <script src="/javascript/jquery.cookie.js" type="text/javascript"></script>
-            <script src="/javascript/jquery.treeview.js" type="text/javascript"></script>
-            <script src="/javascript/file.js" type="text/javascript"></script>
-            """,
-            "space1" : SPACE1_HTML,
-            "space2" : "",
-            "space3" : "",
-        }
-        info_dict.update(self._getDefaults(torrent_id))
-        return self.HTML % info_dict
+
+        
+        return SPACE1_HTML
 
     def trackers(self, torrent_id=None):
         tracker_html = "\n"
@@ -238,14 +234,4 @@ class Detail:
                 </div>
         """ % tracker_html.replace("\t","    ")
         
-        info_dict = {
-            "css" : "detail",
-            "js" : "detail",
-            "head_add" : "",
-            "space1" : SPACE1_HTML,
-            "space2" : "",
-            "space3" : "",
-        }
-        info_dict.update(self._getDefaults(torrent_id))
-        
-        return self.HTML % info_dict
+        return SPACE1_HTML

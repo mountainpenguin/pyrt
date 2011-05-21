@@ -10,3 +10,7 @@ function navigate(elem) {
 function navigate_home() {
     window.location = "/index";
 }
+
+$(document).ready(function (){
+	$("#accordion").accordion();
+});
