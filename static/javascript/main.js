@@ -28,16 +28,13 @@ $(document).ready(function () {
 });
 
 function stripeTable() {
-    $(".torrent-div").filter(":odd").each(
+    var colour_classes = Array("green", "blue");
+    $(".torrent-div").each(
         function () {
-            $(this).removeClass("blue");
-            $(this).addClass("green");
-        }
-    );
-    $(".torrent-div").filter(":even").each(
-        function () {
-            $(this).removeClass("green");
-            $(this).addClass("blue");
+            col = colour_classes.shift();
+            $(this).removeClass("blue green");
+            $(this).addClass(col);
+            colour_classes.push(col);
         }
     );
 }
@@ -185,7 +182,7 @@ function remove_torrentrow(torrent_id) {
             $(row).fadeTo(2000, 0.1, function() {
                 $(this).slideRow("up", 1000, function() {
                     $("#torrent_id_" + torrent_id).remove();
-                    stripeTable();
+                    stripTable();
                 });
             });
         });
