@@ -190,14 +190,12 @@ function add_torrentrow(torrent_id, torrent_data) {
         success : function (newrowhtml) {
             $("#torrent_list > tbody > tr:eq(0)").after($(newrowhtml));
             var newrow = $("#torrent_id_" + torrent_id);
-            newrow.addClass("new-torrent-row");
-            newrow.slideRow("down", 1000, function() {
-                newrow.fadeTo(2000, 1.0, function() {
-                    newrow.effect("pulsate", { times : 1 }, "slow", function () {
-                        newrow.removeClass("new-torrent-row");
-                        stripeTable();
-                        loadRClickMenus()
-                    });
+            $(newrow).addClass("new-torrent-row");
+            $(newrow).fadeTo(2000, 1.0, function() {
+                $(newrow).effect("pulsate", { times : 1 }, "slow", function () {
+                    $(newrow).removeClass("new-torrent-row");
+                    stripeTable();
+                    loadRClickMenus()
                 });
             });
         },
