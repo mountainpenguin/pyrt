@@ -138,9 +138,13 @@ function refresh_content(repeat) {
                 $("#t_ratio_" + torrent_id).html(torrent_data.ratio);
                 $("#t_uprate_" + torrent_id).html(torrent_data.uprate + "/s");
                 $("#t_downrate_" + torrent_id).html(torrent_data.downrate + "/s");
-                $("#t_status_" + torrent_id).html(torrent_data.status);
+                var oldstatus = $("#t_status_" + torrent_id)
+                if (oldstatus.html() != torrent_data.status) {
+                    oldstatus.html(torrent_data.status);
                 
-                // UPDATE CONTROLS USING populateControlCell() ?
+                    // UPDATE CONTROLS USING populateControlCell() ?
+                }
+                
             }
         }
           
@@ -161,14 +165,26 @@ function refresh_content(repeat) {
 }
 
 function remove_torrentrow(torrent_id) {
-    if (row = document.getElementById("torrent_id_" + torrent_id)) {
-        row.style.border = "none";
-        row.style.backgroundColor = "red";
-        $(row).fadeOut(2000, function () {
-            document.getElementById("torrent_list").deleteRow(row.rowIndex);
-            stripeTable();
+    var row = $("#torrent_id_" + torrent_id);
+    if (row.length != 0) {
+        $(row).css(
+            "border", "none",
+            "background-color", "red"
+        );
+        $(row).fadeOut(2000, function() {
+            $(this).slideUp("slow", function () {
+                $("#torrent_list").remove($(this));
+            });
         });
     }
+    // if (row = document.getElementById("torrent_id_" + torrent_id)) {
+        // row.style.border = "none";
+        // row.style.backgroundColor = "red";
+        // $(row).fadeOut(2000, function () {
+            // document.getElementById("torrent_list").deleteRow(row.rowIndex);
+            // stripeTable();
+        // });
+    // }
 }
 
 function add_torrentrow(torrent_id, torrent_data) {
