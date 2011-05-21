@@ -142,8 +142,18 @@ function refresh_content(repeat) {
                 var oldstatus = $("#t_status_" + torrent_id)
                 if (oldstatus.html() != torrent_data.status) {
                     oldstatus.html(torrent_data.status);
-                
-                    // UPDATE CONTROLS USING populateControlCell() ?
+                    var req = "/ajax?request=get_torrent_row&torrent_id=" + torrent_id;
+                    $.ajax({
+                        url : req,
+                        context : torrent_list,
+                        dataType : "html",
+                        success : function (newrowhtml) {
+                            $("#torrent_id_" + torrent_id).html($(newrowhtml).html());
+                        },
+                        error : function (jqXHR, textStatus, errorThrown) {
+                            alert("Error " + jqXHR + " (" + errorThrown + ")");
+                        }
+                    });
                 }
                 
             }
