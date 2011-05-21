@@ -172,8 +172,8 @@ function remove_torrentrow(torrent_id) {
             "background-color", "red"
         );
         $(row).fadeOut(2000, function() {
-            $(this).slideUp("slow", function () {
-                $("#torrent_list").remove($(this));
+            $(row).slideUp("slow", function () {
+                $(row).remove();
             });
         });
     }
