@@ -257,8 +257,9 @@ function add_torrentrow(torrent_id, torrent_data) {
         
         $(newtorrentrow).slideRow("down", 1000, function() {
             $(newtorrentrow).fadeTo(2000, 1.0, function() {
-                $("#torrent_id_" + torrent_id).effect("pulsate", { times : 1 }, "slow");
-                $("#torrent_id_" + torrent_id).addClass(newcolour);
+                $("#torrent_id_" + torrent_id).effect("pulsate", { times : 1 }, "slow", function () {
+                    $("#torrent_id_" + torrent_id).addClass(newcolour);
+                });
                 loadRClickMenus()
                 stripeTable();
             });
