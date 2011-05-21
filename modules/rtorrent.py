@@ -658,22 +658,12 @@ class rtorrent:
             self.getUploadSpeed(id),
             None, None, None, None, -1,
             self.getRatio(id),
-            self.getSize(id),
+            self.getSizeBytes(id),
             self.getUploadBytes(id),
             self.getDownloadBytes(id),
             self.getStateStr(id),
             None, None
         )
-        # up_total, down_total, status, private, trackers
-                        # "t_id" : torrent.torrent_id, 
-                        # "t_name" : torrent.name,
-                        # "t_size" : self.humanSize(torrent.size),
-                        # "t_uploaded" : self.humanSize(torrent.up_total),
-                        # "t_downloaded" : self.humanSize(torrent.down_total),
-                        # "t_ratio" : float(torrent.ratio)/1000,
-                        # "t_uprate" : self.humanSize(torrent.up_rate),
-                        # "t_downrate" : self.humanSize(torrent.down_rate),
-                        # "t_status" : status,
 
     def getIDByName(self, filename):
         alldownloads = self.conn.download_list("main")

@@ -211,7 +211,8 @@ function add_torrentrow(torrent_id, torrent_data) {
         error : function (jqXHR, textStatus, errorThrown) {
             alert("Error " + jqXHR + " (" + errorThrown + ")");
         }
-    })
+    });
+}
     // $.getJSON(req, function (response) {
         // var torrent_table = document.getElementById("torrent_list");
         // firstTRow = torrent_table.getElementsByTagName("tbody")[0].getElementsByTagName("tr")[1];
