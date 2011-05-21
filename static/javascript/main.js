@@ -171,9 +171,10 @@ function remove_torrentrow(torrent_id) {
             border : "none",
             backgroundColor : "red"
         });
+        $(row).wrapInner("<div style='display : block'></div>")
         $(row).fadeTo(2000, 0.1, function() {
-            $(row).slideUp("slow", function () {
-                $(row).remove();
+            $(this).slideUp("slow", function () {
+                $(this).remove();
             });
         });
     }
