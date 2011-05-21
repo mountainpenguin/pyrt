@@ -201,8 +201,11 @@ function add_torrentrow(torrent_id, torrent_data) {
         // construct element using native js methods
         var newtorrentrow = torrent_table.insertRow(1);
         newtorrentrow.id = "torrent_id_" + torrent_id;
-        newtorrentrow.style.opacity = "0.1";
-        newtorrentrow.style.backgroundColor = "#CDE472";
+        $(newtorrentrow).css({
+            opacity : "0.1",
+            "background-color" : "#CDE472",
+            "background-repeat" : "no-repeat"
+        })
         
         var attribs = new Array(
             Array("name", response.name),
@@ -259,9 +262,12 @@ function add_torrentrow(torrent_id, torrent_data) {
             $(newtorrentrow).fadeTo(2000, 1.0, function() {
                 $("#torrent_id_" + torrent_id).effect("pulsate", { times : 1 }, "slow", function () {
                     $("#torrent_id_" + torrent_id).addClass(newcolour);
+                    $("#torrent_id_" + torrent_id).animate({
+                        backgroundColor : null
+                    });
+                    loadRClickMenus()
+                    stripeTable();
                 });
-                loadRClickMenus()
-                stripeTable();
             });
         });
     });
