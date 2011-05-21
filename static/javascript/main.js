@@ -26,6 +26,20 @@ $(document).ready(function () {
     loadRClickMenus();
 });
 
+function stripeTable() {
+    $(".torrent-div").filter(":odd").each(
+        function () {
+            $(this).removeClass("blue");
+            $(this).addClass("green");
+        }
+    );
+    $(".torrent-div").filter(":even").each(
+        function () {
+            $(this).removeClass("green");
+            $(this).addClass("blue");
+        }
+    );
+}
 function loadRClickMenus() {
     $(".torrent-div.rcstart").contextMenu("right_click_start", {
         bindings : {
@@ -150,6 +164,7 @@ function remove_torrentrow(torrent_id) {
         row.style.backgroundColor = "red";
         $(row).fadeOut(2000, function () {
             document.getElementById("torrent_list").deleteRow(row.rowIndex);
+            stripeTable();
         });
     }
 }
@@ -232,7 +247,8 @@ function add_torrentrow(torrent_id, torrent_data) {
         
         $(newtorrentrow).fadeIn(2000, function() {
             newtorrentrow.style.backgroundColor = null;
-            loadRClickMenus() 
+            loadRClickMenus()
+            stripeTable();
         });
     });
 }
