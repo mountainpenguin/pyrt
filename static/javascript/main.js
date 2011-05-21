@@ -167,11 +167,11 @@ function refresh_content(repeat) {
 function remove_torrentrow(torrent_id) {
     var row = $("#torrent_id_" + torrent_id);
     if (row.length != 0) {
-        $(row).css(
-            "border", "none",
-            "background-color", "red"
-        );
-        $(row).fadeOut(2000, function() {
+        $(row).css({
+            border : "none",
+            backgroundColor : "red"
+        });
+        $(row).fadeTo(2000, 0.1, function() {
             $(row).slideUp("slow", function () {
                 $(row).remove();
             });
