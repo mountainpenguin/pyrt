@@ -148,7 +148,9 @@ function refresh_content(repeat) {
                         context : torrent_list,
                         dataType : "html",
                         success : function (newrowhtml) {
-                            $("#torrent_id_" + torrent_id).html($(newrowhtml).html());
+                            $("#t_controls_" + torrent_id).html(
+                                $("#t_controls_" + torrent_id, newrowhtml).html()
+                            );
                         },
                         error : function (jqXHR, textStatus, errorThrown) {
                             alert("Error " + jqXHR + " (" + errorThrown + ")");
