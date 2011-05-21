@@ -40,8 +40,8 @@ td.heading {
 }
 
 td.footing {
-    min-width : 1em;
-    min-height : 1em;
+    background-color : #3A3737;
+    height : 1em;
 }
 
 tr.torrent-div {
