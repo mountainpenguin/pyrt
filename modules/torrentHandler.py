@@ -402,8 +402,8 @@ class Handler:
             <table id='torrent_list'>
                 %(torrent_headings)s
                 %(torrents_html)s
-                <tr>
-                    <td class='heading' colspan="0"></td>
+                <tr id='foot'>
+                    <td class='footing' colspan="7"></td>
                 </tr>
             </table>
         """ % {

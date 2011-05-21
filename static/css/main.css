@@ -39,6 +39,11 @@ td.heading {
     min-width : 1em;
 }
 
+td.footing {
+    min-width : 1em;
+    min-height : 1em;
+}
+
 tr.torrent-div {
     border : 1px solid;
     -webkit-border-radius : 10px;
