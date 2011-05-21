@@ -128,7 +128,7 @@ function refresh_content(repeat) {
         )
         cur_t_ids = new Array();
         for (i=0; i<torrent_list.length; i++) {
-            torrent_id = $(torrent_list[i]).attr("id").split("torrent_id_")[1];
+            var torrent_id = $(torrent_list[i]).attr("id").split("torrent_id_")[1];
             cur_t_ids.push(torrent_id);
             if (data.torrent_index.indexOf(torrent_id) == -1) {
                 remove_torrentrow(torrent_id)
