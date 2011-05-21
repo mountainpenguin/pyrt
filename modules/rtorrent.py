@@ -525,7 +525,7 @@ class Torrent:
         self.seeds_connected = seeders_connected
         self.seeds_total = seeders_total
         self.priority = priority
-        self.priority_str = {0:"off", 1:"low", 2:"normal", 3:"high"}[priority]
+        self.priority_str = {-1 : None, 0:"off", 1:"low", 2:"normal", 3:"high"}[priority]
         self.ratio = ratio
         self.size = size
         self.size_chunks = size_chunks
@@ -641,6 +641,39 @@ class rtorrent:
         for t in allTorrents:
             if t.torrent_id == id:
                 return t
+                
+    def getTorrentObj_less(self, id):
+        """
+            returns a 'summarised' torrent object
+            the torrent object returned by this function has attributes:
+                torrent_id, name, up_rate, up_total, 
+                down_rate, down_total, ratio, size, status
+            i.e. only information required by torrentHandler.getTorrentRow
+        """
+        return Torrent(
+            id,
+            self.getNameByID(id),
+            None, None, None, None, None,
+            self.getDownloadSpeed(id),
+            self.getUploadSpeed(id),
+            None, None, None, None, -1,
+            self.getRatio(id),
+            self.getSize(id),
+            self.getUploadBytes(id),
+            self.getDownloadBytes(id),
+            self.getStateStr(id),
+            None, None
+        )
+        # up_total, down_total, status, private, trackers
+                        # "t_id" : torrent.torrent_id, 
+                        # "t_name" : torrent.name,
+                        # "t_size" : self.humanSize(torrent.size),
+                        # "t_uploaded" : self.humanSize(torrent.up_total),
+                        # "t_downloaded" : self.humanSize(torrent.down_total),
+                        # "t_ratio" : float(torrent.ratio)/1000,
+                        # "t_uprate" : self.humanSize(torrent.up_rate),
+                        # "t_downrate" : self.humanSize(torrent.down_rate),
+                        # "t_status" : status,
 
     def getIDByName(self, filename):
         alldownloads = self.conn.download_list("main")

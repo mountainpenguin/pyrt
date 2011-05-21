@@ -45,6 +45,11 @@ tr.torrent-div {
     margin : 0.5em;
 }
 
+tr.new-torrent-row {
+    opacity : 0.1;
+    background-color : "#CDE472";
+}
+
 .drop_down {
     border-left : 1px dotted;
     border-right : 1px dotted;

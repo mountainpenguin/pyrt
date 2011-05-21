@@ -100,12 +100,14 @@ class mainHandler:
         Lcheck = L.checkLogin(client_cookie)
         if not Lcheck:
             return
-        
+        #request=get_torrent_row&torrent_id=
         Ajax = ajaxPage.Ajax()
         if request == "get_torrent_info" and torrent_id:
             return Ajax.get_torrent_info(torrent_id, html)
         elif request == "get_info_multi" and view:
             return Ajax.get_info_multi(view, sortby, reverse)
+        elif request == "get_torrent_row" and torrent_id:
+            return Ajax.get_torrent_row(torrent_id)
         elif request == "pause_torrent" and torrent_id:
             return Ajax.pause_torrent(torrent_id)
         elif request == "stop_torrent" and torrent_id:
