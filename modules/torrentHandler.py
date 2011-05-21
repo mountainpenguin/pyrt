@@ -422,7 +422,7 @@ class Handler:
         <script src="/javascript/jquery-1.6.1.min.js" type="text/javascript"></script>
         <script src="/javascript/jquery-ui-1.8.13.custom.min.js" type="text/javascript"></script>        
         <script src="/javascript/jquery.contextmenu.r2.js" type="text/javascript"></script>
-        <script src="/javascript/jquery-sliderow.js
+        <script src="/javascript/jquery-sliderow.js" type="text/javascript"></script>
         <script src="/javascript/main.js" type="text/javascript"></script>
         
     </head>
