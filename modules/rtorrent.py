@@ -525,7 +525,7 @@ class Torrent:
         self.seeds_connected = seeders_connected
         self.seeds_total = seeders_total
         self.priority = priority
-        self.priority_str = {0:"off", 1:"low", 2:"normal", 3:"high"}[priority]
+        self.priority_str = {-1 : None, 0:"off", 1:"low", 2:"normal", 3:"high"}[priority]
         self.ratio = ratio
         self.size = size
         self.size_chunks = size_chunks
@@ -641,6 +641,29 @@ class rtorrent:
         for t in allTorrents:
             if t.torrent_id == id:
                 return t
+                
+    def getTorrentObj_less(self, id):
+        """
+            returns a 'summarised' torrent object
+            the torrent object returned by this function has attributes:
+                torrent_id, name, up_rate, up_total, 
+                down_rate, down_total, ratio, size, status
+            i.e. only information required by torrentHandler.getTorrentRow
+        """
+        return Torrent(
+            id,
+            self.getNameByID(id),
+            None, None, None, None, None,
+            self.getDownloadSpeed(id),
+            self.getUploadSpeed(id),
+            None, None, None, None, -1,
+            self.getRatio(id),
+            self.getSizeBytes(id),
+            self.getUploadBytes(id),
+            self.getDownloadBytes(id),
+            self.getStateStr(id),
+            None, None
+        )
 
     def getIDByName(self, filename):
         alldownloads = self.conn.download_list("main")

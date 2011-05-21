@@ -178,5 +178,9 @@ class Ajax:
             }
         return json.dumps(returnDict)
         
+    def get_torrent_row(self, torrent_id):
+        torrentObj = self.RT.getTorrentObj_less(torrent_id)
+        return self.Handler.getTorrentRow(torrentObj)
+        
                 
         

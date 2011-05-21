@@ -24,19 +24,17 @@ $(document).ready(function () {
                 }
         });
     loadRClickMenus();
+    stripeTable();
 });
 
 function stripeTable() {
-    $(".torrent-div").filter(":odd").each(
+    var colour_classes = Array("blue", "green");
+    $(".torrent-div").each(
         function () {
-            $(this).removeClass("blue");
-            $(this).addClass("green");
-        }
-    );
-    $(".torrent-div").filter(":even").each(
-        function () {
-            $(this).removeClass("green");
-            $(this).addClass("blue");
+            col = colour_classes.shift();
+            $(this).removeClass("blue green");
+            $(this).addClass(col);
+            colour_classes.push(col);
         }
     );
 }
@@ -127,7 +125,7 @@ function refresh_content(repeat) {
         )
         cur_t_ids = new Array();
         for (i=0; i<torrent_list.length; i++) {
-            torrent_id = $(torrent_list[i]).attr("id").split("torrent_id_")[1];
+            var torrent_id = $(torrent_list[i]).attr("id").split("torrent_id_")[1];
             cur_t_ids.push(torrent_id);
             if (data.torrent_index.indexOf(torrent_id) == -1) {
                 remove_torrentrow(torrent_id)
@@ -138,7 +136,25 @@ function refresh_content(repeat) {
                 $("#t_ratio_" + torrent_id).html(torrent_data.ratio);
                 $("#t_uprate_" + torrent_id).html(torrent_data.uprate + "/s");
                 $("#t_downrate_" + torrent_id).html(torrent_data.downrate + "/s");
-                $("#t_status_" + torrent_id).html(torrent_data.status);
+                var oldstatus = $("#t_status_" + torrent_id)
+                if (oldstatus.html() != torrent_data.status) {
+                    oldstatus.html(torrent_data.status);
+                    var reqrefresh = "/ajax?request=get_torrent_row&torrent_id=" + torrent_id;
+                    $.ajax({
+                        url : reqrefresh,
+                        context : $("#t_controls_" + torrent_id),
+                        dataType : "html",
+                        success : function (newrowhtml) {
+                            $(this).html(
+                                $("#" + $(this).attr("id"), newrowhtml).html()
+                            );
+                        },
+                        error : function (jqXHR, textStatus, errorThrown) {
+                            alert("Error " + jqXHR + " (" + errorThrown + ")");
+                        }
+                    });
+                }
+                
             }
         }
           
@@ -159,121 +175,47 @@ function refresh_content(repeat) {
 }
 
 function remove_torrentrow(torrent_id) {
-    if (row = document.getElementById("torrent_id_" + torrent_id)) {
-        row.style.border = "none";
-        row.style.backgroundColor = "red";
-        $(row).fadeOut(2000, function () {
-            document.getElementById("torrent_list").deleteRow(row.rowIndex);
-            stripeTable();
+    var row = $("#torrent_id_" + torrent_id);
+    if (row.length != 0) {
+        $(row).removeClass("blue green").toggleClass("old-torrent-row");
+        $(row).effect("pulsate", { times : 1 }, "slow", function() {
+            $(row).fadeTo(2000, 0.1, function() {
+                $(this).slideRow("up", 1000, function() {
+                    $("#torrent_id_" + torrent_id).remove();
+                    stripeTable();
+                });
+            });
         });
     }
 }
 
 function add_torrentrow(torrent_id, torrent_data) {
-    req = "/ajax?request=get_torrent_info&torrent_id=" + torrent_id;
-    $.getJSON(req, function (response) {
-        var torrent_table = document.getElementById("torrent_list");
-        firstTRow = torrent_table.getElementsByTagName("tbody")[0].getElementsByTagName("tr")[1];
-        if (firstTRow.className.indexOf("blue") === -1) {
-            var newcolour = "blue";
-        } else {
-            var newcolour = "green";
+    var req = "/ajax?request=get_torrent_row&torrent_id=" + torrent_id;
+    var torrent_list = $("#torrent_list");
+    $.ajax({
+        url : req,
+        context : torrent_list,
+        dataType : "html",
+        success : function (newrowhtml) {
+            $("#torrent_list > tbody > tr:eq(0)").after($(newrowhtml));
+            var newrow = $("#torrent_id_" + torrent_id);
+            $(newrow).toggleClass("new-torrent-row");
+            $(newrow).slideRow("down", 1000, function () {
+                $(newrow).fadeTo(2000, 1.0, function() {
+                    $(newrow).effect("pulsate", { times : 1 }, "slow", function () {
+                        $(newrow).toggleClass("new-torrent-row");
+                        stripeTable();
+                        loadRClickMenus()
+                    });
+                });
+            });
+        },
+        error : function (jqXHR, textStatus, errorThrown) {
+            alert("Error " + jqXHR + " (" + errorThrown + ")");
         }
-        
-        // construct element using native js methods
-        var newtorrentrow = torrent_table.insertRow(1);
-        newtorrentrow.id = "torrent_id_" + torrent_id;
-        newtorrentrow.style.display = "none";
-        newtorrentrow.style.backgroundColor = "#CDE472";
-        
-        var attribs = new Array(
-            Array("name", response.name),
-            Array("size", response.size),
-            Array("ratio", response.ratio),
-            Array("uprate", torrent_data.uprate + "/s"),
-            Array("downrate", torrent_data.downrate + "/s"),
-            Array("status", torrent_data.status)
-            // Array("controls", )
-        );
-        
-        for (i=0; i<attribs.length; i++) {
-            keyval = attribs[i];
-            newcell = newtorrentrow.insertCell(-1);
-            newcell.id = "t_" + keyval[0] + "_" + torrent_id;
-            newcell.innerHTML = keyval[1];
-        }
-        
-        controlcell = newtorrentrow.insertCell(-1);
-        controlcell.id = "t_controls_" + torrent_id;
-        
-        if (torrent_data.status === "Stopped" || torrent_data.status === "Paused") {
-            controlcell.appendChild(create_controlSpan("Start", "start", torrent_id));
-        } else {
-            controlcell.appendChild(create_controlSpan("Pause", "pause", torrent_id));
-        }
-        controlcell.appendChild(create_controlSpan("Stop", "stop", torrent_id));
-        controlcell.appendChild(create_controlSpan("Remove", "remove", torrent_id));
-        controlcell.appendChild(create_controlSpan("Delete", "delete", torrent_id));
-        
-        if (torrent_data.status === "Stopped" || torrent_data.status === "Paused") {
-            newtorrentrow.className = "torrent-div " + newcolour + " rcstart";
-        } else {
-            newtorrentrow.className = "torrent-div " + newcolour + " rcstop";
-        }
-        $("#torrent_id_" + torrent_id).bind(
-            "click",
-            function (event) {
-                view_torrent(this);
-            }
-        );
-        $("#torrent_id_" + torrent_id).bind(
-            "mouseover",
-            function (event) {
-                select_torrent(this);
-            }
-        );
-        $("#torrent_id_" + torrent_id).bind(
-            "mouseout",
-            function (event) {
-                deselect_torrent(this);
-            }
-        );
-        $("#torrent_id_" + torrent_id).bind(
-            "dblclick",
-            function (event) {
-                navigate_torrent(this)
-            }
-        );
-        
-        $(newtorrentrow).fadeIn(2000, function() {
-            newtorrentrow.style.backgroundColor = null;
-            loadRClickMenus()
-            stripeTable();
-        });
     });
 }
 
-function create_controlSpan(alt, name, torrent_id) {
-    span = document.createElement("span");
-    span.className = "control_" + name + " control_button";
-    span.title = alt + " Torrent";
-    image = document.createElement("img");
-    image.className = "control_image";
-    image.alt = alt;
-    image.src = "/images/" + name + ".png";
-    image.style.cursor = "pointer";
-    image.style.paddingRight = "3px";
-    $(image).bind(
-        "click",
-        function (event) {
-            event.cancelBubble;
-            command(name + "_torrent","" + torrent_id);
-            return false;
-        }
-    );
-    span.appendChild(image);
-    return span;
-}
 function select_torrent(elem) {
     // elem.style.backgroundColor = "#00CCFF";
     elem.style.backgroundColor = "#0099FF";

@@ -36,6 +36,12 @@ td.heading {
     font-weight : bold;
     background-color : #3A3737;
     color : white;
+    min-width : 1em;
+}
+
+td.footing {
+    background-color : #3A3737;
+    height : 1em;
 }
 
 tr.torrent-div {
@@ -43,6 +49,16 @@ tr.torrent-div {
     -webkit-border-radius : 10px;
     padding : 0.5em; 
     margin : 0.5em;
+}
+
+tr.new-torrent-row {
+    opacity : 0.1;
+    background-color : #CDE472;
+}
+
+tr.old-torrent-row {
+    border : none;
+    background-color : red;
 }
 
 .drop_down {
