@@ -105,3 +105,4 @@ $.fn.slideRow = function(method,arg1,arg2,arg3) {
         }
     }
 };
+})(jQuery);

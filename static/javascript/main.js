@@ -173,7 +173,7 @@ function remove_torrentrow(torrent_id) {
         });
         $(row).fadeTo(2000, 0.1, function() {
             $(this).slideRow("up", 1000, function() {
-                $(this).remove();
+                $("#torrent_id_" + torrent_id).remove();
             });
         });
     }
