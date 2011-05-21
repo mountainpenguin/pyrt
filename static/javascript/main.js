@@ -28,7 +28,7 @@ $(document).ready(function () {
 });
 
 function stripeTable() {
-    var colour_classes = Array("green", "blue");
+    var colour_classes = Array("blue", "green");
     $(".torrent-div").each(
         function () {
             col = colour_classes.shift();

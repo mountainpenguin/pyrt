@@ -402,6 +402,9 @@ class Handler:
             <table id='torrent_list'>
                 %(torrent_headings)s
                 %(torrents_html)s
+                <tr>
+                    <td class='heading' colspan="0"></td>
+                </tr>
             </table>
         """ % {
             "torrent_headings" : TORRENT_TABLE_HEADINGS,
