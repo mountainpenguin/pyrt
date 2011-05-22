@@ -492,6 +492,8 @@ class Handler:
                 </div>
             </div>
         </div>
+        <div id="side_bar">
+        </div>
     </body>
 </html>
         """ % infoDict
