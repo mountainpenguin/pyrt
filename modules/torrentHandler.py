@@ -354,17 +354,17 @@ class Handler:
         """
 
         sorts = {
-            "namelink":"",
+            "name":"",
             "namesort" : "none",
-            "sizelink":"",
-            "sizesort" : "none",
-            "ratiolink":"",
+            "size":"",
+            "size" : "none",
+            "ratio":"",
             "ratiosort" : "none",
-            "upratelink" : "",
+            "uprate" : "",
             "upratesort" : "none",
-            "downratelink" : "",
+            "downrate" : "",
             "downratesort" : "none",
-            "statuslink" : "",
+            "status" : "",
             "statussort" : "none",
         }
         for type in sorts.keys():
@@ -385,22 +385,7 @@ class Handler:
                 return  '<div class="topbar-tab selected" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_tab(this);" title="%s" id="tab_%s">%s</div>' % (type, type, type.capitalize())
             else:
                 return '<div class="topbar-tab" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_tab(this);" title="%s" id="tab_%s">%s</div>' % (type, type, type.capitalize())
-        
-        return repr({
-            "main" : _genHTML("main", view),
-            "started" : _genHTML("started", view),
-            "stopped" : _genHTML("stopped", view),
-            "complete" : _genHTML("complete", view),
-            "incomplete" : _genHTML("incomplete", view),
-            "hashing" : _genHTML("hashing", view),
-            "seeding" : _genHTML("seeding", view),
-            "active" : _genHTML("active", view),
-            "global_stats" : system.generalHTML(),
-            "view" : view,
-            "sort" : sort,
-            "reverse" : (lambda x : not x and 'none' or x)(reverse),
-            "torrents_html" : "\n".join([self.getTorrentRow(t) for t in torrentList]),
-        }.update(sorts))
+
         HTML = """
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
@@ -456,12 +441,12 @@ class Handler:
                 <div id="torrent_table">
                     <table id='torrent_list'>
                         <tr id='torrent_list_headings'>
-                            <td class='heading' id="sortby_name" onclick="window.location='%(namelink)s';">Name <img alt="Sort By Name" src="../images/sort_%(namesort)s.gif" class="control_button"></td>
-                            <td class='heading' id="sortby_size" onclick="window.location='%(sizelink)s';">Size <img alt="Sort By Size" src="../images/sort_%(sizesort)s.gif" class="control_button"></td>
-                            <td class='heading' id="sortby_ratio" onclick="window.location='%(ratiolink)s';">Ratio <img alt="Sort By Ratio" src="../images/sort_%(ratiosort)s.gif" class="control_button"></td>
-                            <td class='heading' id="sortby_uprate" onclick="window.location='%(upratelink)s';">Upload speed <img alt="Sort By Upload Speed" src="../images/sort_%(upratesort)s.gif" class="control_button"></td>
-                            <td class='heading' id="sortby_downrate" onclick="window.location='%(downratelink)s';">Download speed <img alt="Sort By Download Speed" src="../images/sort_%(downratesort)s.gif" class="control_button"></td>
-                            <td class='heading' id="sortby_status" onclick="window.location='%(statuslink)s';">Status <img alt="Sort By Status" src="../images/sort_%(statussort)s.gif" class="control_button"></td>
+                            <td class='heading' id="sortby_name" onclick="window.location='%(name)s';">Name <img alt="Sort By Name" src="../images/sort_%(namesort)s.gif" class="control_button"></td>
+                            <td class='heading' id="sortby_size" onclick="window.location='%(size)s';">Size <img alt="Sort By Size" src="../images/sort_%(sizesort)s.gif" class="control_button"></td>
+                            <td class='heading' id="sortby_ratio" onclick="window.location='%(ratio)s';">Ratio <img alt="Sort By Ratio" src="../images/sort_%(ratiosort)s.gif" class="control_button"></td>
+                            <td class='heading' id="sortby_uprate" onclick="window.location='%(uprate)s';">Upload speed <img alt="Sort By Upload Speed" src="../images/sort_%(upratesort)s.gif" class="control_button"></td>
+                            <td class='heading' id="sortby_downrate" onclick="window.location='%(downrate)s';">Download speed <img alt="Sort By Download Speed" src="../images/sort_%(downratesort)s.gif" class="control_button"></td>
+                            <td class='heading' id="sortby_status" onclick="window.location='%(status)s';">Status <img alt="Sort By Status" src="../images/sort_%(statussort)s.gif" class="control_button"></td>
                             <td class='heading'></td>
                         </tr>
                         %(torrents_html)s
