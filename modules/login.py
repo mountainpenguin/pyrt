@@ -11,10 +11,10 @@ import string
 import config
 
 class User:
-    def __init__(self, pass_hash, sess_id=None, testing=[]):
+    def __init__(self, pass_hash, sess_id=None):
         self.password = pass_hash
         self.sess_id = sess_id
-        self.testing = testing
+        #self.testing = testing
         
 class Login:
     def __init__(self):
@@ -42,8 +42,8 @@ class Login:
     def checkLogin(self, cookies):
         try:
             session_id = cookies.get("sess_id").value
-            #if session_id == self.USER.sess_id:
-            if session_id in self.USER.testing:
+            if session_id == self.USER.sess_id:
+            #if session_id in self.USER.testing:
                 return True
             else:
                 return False
@@ -87,7 +87,7 @@ class Login:
         new_cookie = Cookie.SimpleCookie()
         new_cookie["sess_id"] = randstring
         #add sess_id to self.USER
-        #self.USER.sess_id = randstring
-        self.USER.testing += [randstring]
+        self.USER.sess_id = randstring
+        #self.USER.testing += [randstring]
         self._flush()
         return new_cookie
