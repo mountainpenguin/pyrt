@@ -29,7 +29,8 @@ class Detail:
                     <script src="/javascript/jquery-1.6.1.min.js" type="text/javascript"></script>
                     <script src="/javascript/jquery-ui-1.8.13.custom.min.js" type="text/javascript"></script>        
                     <script src="/javascript/jquery.cookie.js" type="text/javascript"></script>
-                    <script src="/javascript/jquery.treeview.js" type="text/javascript"></script>
+                    <script src="/javascript/jquery.jstree.js" type="text/javascript"></script>
+                    <!-- <script src="/javascript/jquery.treeview.js" type="text/javascript"></script> -->
                     <script src="/javascript/file.js" type="text/javascript"></script>
                     <script src="/javascript/detail.js" type="text/javascript"></script>  
                 </head>
