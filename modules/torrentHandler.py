@@ -386,6 +386,23 @@ class Handler:
             else:
                 return '<div class="topbar-tab" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_tab(this);" title="%s" id="tab_%s">%s</div>' % (type, type, type.capitalize())
 
+        infoDict = {
+            "main" : _genHTML("main", view),
+            "started" : _genHTML("started", view),
+            "stopped" : _genHTML("stopped", view),
+            "complete" : _genHTML("complete", view),
+            "incomplete" : _genHTML("incomplete", view),
+            "hashing" : _genHTML("hashing", view),
+            "seeding" : _genHTML("seeding", view),
+            "active" : _genHTML("active", view),
+            "global_stats" : system.generalHTML(),
+            "view" : view,
+            "sort" : sort,
+            "reverse" : (lambda x : not x and 'none' or x)(reverse),
+            "torrents_html" : "\n".join([self.getTorrentRow(t) for t in torrentList]),
+        }
+        infoDict.update(sorts)
+        
         HTML = """
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
@@ -477,19 +494,5 @@ class Handler:
         </div>
     </body>
 </html>
-        """ % {
-            "main" : _genHTML("main", view),
-            "started" : _genHTML("started", view),
-            "stopped" : _genHTML("stopped", view),
-            "complete" : _genHTML("complete", view),
-            "incomplete" : _genHTML("incomplete", view),
-            "hashing" : _genHTML("hashing", view),
-            "seeding" : _genHTML("seeding", view),
-            "active" : _genHTML("active", view),
-            "global_stats" : system.generalHTML(),
-            "view" : view,
-            "sort" : sort,
-            "reverse" : (lambda x : not x and 'none' or x)(reverse),
-            "torrents_html" : "\n".join([self.getTorrentRow(t) for t in torrentList]),
-        }.update(sorts)
+        """ % infoDict
         return HTML
