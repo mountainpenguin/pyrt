@@ -96,13 +96,17 @@ class Detail:
         """ % self._getInfo(torrent_id)
     
     def _getInfo(self, torrent_id):
+        #for use by other lines
+        _size = self.RT.getSizeBytes(torrent_id)
+        _trackers = self.RT.getTrackers(torrent_id)
+        #end 'preload'
+        
         #general info
         tname = self.RT.getNameByID(torrent_id)
         tcreated = time.strftime("%02d/%02m/%Y %02H:%02M:%02S", time.localtime(self.RT.getCreationDate(torrent_id)))
         tpath = self.RT.getPath(torrent_id)
         tpriority = self.RT.getPriorityStr(torrent_id)
         tstate = self.RT.getStateStr(torrent_id)
-        _size = self.RT.getSizeBytes(torrent_id)
         tsize = self.Handler.humanSize(_size)
         tratio = "%.02f" % (float(self.RT.getRatio(torrent_id))/1000)
         tuploaded = self.Handler.humanSize(self.RT.getUploadBytes(torrent_id))
@@ -111,15 +115,15 @@ class Detail:
         tuprate = "%s/s" % self.Handler.humanSize(self.RT.getUploadSpeed(torrent_id))
         tdownrate = "%s/s" % self.Handler.humanSize(self.RT.getDownloadSpeed(torrent_id))
         tseeds_connected = self.RT.conn.d.get_peers_complete(torrent_id)
-        tseeds_total = sum([tracker.seeds for tracker in trackers])
+        tseeds_total = sum([tracker.seeds for tracker in _trackers])
         tleechs_connected = self.RT.conn.d.get_peers_accounted(torrent_id)
-        tleechs_total = sum([tracker.leechs for tracker in trackers])
+        tleechs_total = sum([tracker.leechs for tracker in _trackers])
         #end general info
         
         #html inserts
         files = self.Handler.fileTreeHTML(self.RT.getFiles(torrent_id), self.RT.getRootDir())
         peer_table_rows = self.peers(torrent_id)
-        tracker_table_rows = self.trackers(torrent_id)
+        tracker_table_rows = self.trackers(_trackers)
         #end html inserts
         
         return {
@@ -145,7 +149,7 @@ class Detail:
             "trackers": tracker_table_rows,
         }
 
-    def peers(self, torrent_id=None):
+    def peers(self, torrent_id):
         PEER_ROW_TEMPLATE = """
             <tr class="peer_tablerow">
                 <td>%(address)s</td>
@@ -164,7 +168,7 @@ class Detail:
 
         return PEER_HTML
 
-    def trackers(self, torrent_id=None):
+    def trackers(self, trackers):
         TRACKER_ROW_TEMPLATE = """
             <tr class="tracker_tablerow">
                 <td>%(url)s</td>
@@ -176,7 +180,6 @@ class Detail:
             </tr>
         """
         TRACKER_HTML = ""
-        trackers = self.RT.getTrackers(torrent_id)
         for tracker in trackers:
             TRACKER_HTML += TRACKER_ROW_TEMPLATE % tracker.__dict__
         
