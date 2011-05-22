@@ -4,6 +4,7 @@ import random
 import string
 import os
 import re
+import system
 
 class Handler:
     """
@@ -289,7 +290,7 @@ class Handler:
             stopstart_button = "<span class='control_pause control_button' title='Pause Torrent'><img onclick='event.cancelBubble = true; command(\"pause_torrent\",\"%s\")'class='control_image' alt='Pause' src='../images/pause.png'></span>" % torrent.torrent_id
             stopstart_class = "rcpause"
             
-        ROW_HTML = """
+        TORRENT_TABLEROW = """
             <tr onmouseover='select_torrent(this);' 
                 onmouseout='deselect_torrent(this);' 
                 onclick='view_torrent(this);'
@@ -332,9 +333,9 @@ class Handler:
                         "stoporstart" : stopstart_class,
                     }
                     
-        return ROW_HTML
+        return TORRENT_TABLEROW
         
-    def torrentHTML(self, torrentList, sort, view, reverse=False):
+    def torrentHTML(self, torrentList, sort, view, reverse=None):
         """
             Sorts a list of torrent_ids with default information
             Arguments:
@@ -353,17 +354,17 @@ class Handler:
         """
 
         sorts = {
-            "name":"",
+            "namelink":"",
             "namesort" : "none",
-            "size":"",
+            "sizelink":"",
             "sizesort" : "none",
-            "ratio":"",
+            "ratiolink":"",
             "ratiosort" : "none",
-            "uprate" : "",
+            "upratelink" : "",
             "upratesort" : "none",
-            "downrate" : "",
+            "downratelink" : "",
             "downratesort" : "none",
-            "status" : "",
+            "statuslink" : "",
             "statussort" : "none",
         }
         for type in sorts.keys():
@@ -376,40 +377,14 @@ class Handler:
                 sorts[sort + "sort"] = "down"
             else:
                 sorts[sort + "sort"] = "up"
-                    
-        
-        TORRENT_TABLE_HEADINGS = """
-                <tr id='torrent_list_headings'>
-                    <td class='heading' id="sortby_name" onclick="window.location='%(name)s';">Name <img alt="Sort By Name" src="../images/sort_%(namesort)s.gif" class="control_button"></td>
-                    <td class='heading' id="sortby_size" onclick="window.location='%(size)s';">Size <img alt="Sort By Size" src="../images/sort_%(sizesort)s.gif" class="control_button"></td>
-                    <td class='heading' id="sortby_ratio" onclick="window.location='%(ratio)s';">Ratio <img alt="Sort By Ratio" src="../images/sort_%(ratiosort)s.gif" class="control_button"></td>
-                    <td class='heading' id="sortby_uprate" onclick="window.location='%(uprate)s';">Upload speed <img alt="Sort By Upload Speed" src="../images/sort_%(upratesort)s.gif" class="control_button"></td>
-                    <td class='heading' id="sortby_downrate" onclick="window.location='%(downrate)s';">Download speed <img alt="Sort By Download Speed" src="../images/sort_%(downratesort)s.gif" class="control_button"></td>
-                    <td class='heading' id="sortby_status" onclick="window.location='%(status)s';">Status <img alt="Sort By Status" src="../images/sort_%(statussort)s.gif" class="control_button"></td>
-                    <td class='heading'></td>
-                </tr>
-        """ % sorts
-        
-        div_colour_array = ["blue", "green"]
         
         torrentList = self.sortTorrents(torrentList, sort, reverse)
-        
-        TORRENT_ROWS = []
-        for t in torrentList:
-            TORRENT_ROWS.append(self.getTorrentRow(t))
 
-        TORRENT_HTML = """
-            <table id='torrent_list'>
-                %(torrent_headings)s
-                %(torrents_html)s
-                <tr id='foot'>
-                    <td class='footing' colspan="7"></td>
-                </tr>
-            </table>
-        """ % {
-            "torrent_headings" : TORRENT_TABLE_HEADINGS,
-            "torrents_html" : "\n".join(TORRENT_ROWS),
-        }
+        def _genHTML(type, VIEW):
+            if VIEW == type:
+                return  '<div class="topbar-tab selected" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_tab(this);" title="%s" id="tab_%s">%s</div>' % (type, type, type.capitalize())
+            else:
+                return '<div class="topbar-tab" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_tab(this);" title="%s" id="tab_%s">%s</div>' % (type, type, type.capitalize())
         
         HTML = """
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -428,29 +403,93 @@ class Handler:
         
     </head>
     <body>
-        <!-- BODY PLACEHOLDER -->
-        <div id="torrent_table">
-            %s
-        </div>
-        <div class="contextMenu" id="right_click_start">
-            <ul>
-                <li id="start"><img alt="start" src="/images/start.png"> Start</li>
-                <li id="stop"><img alt="stop" src="/images/stop.png"> Stop</li>
-                <li id="remove"><img alt="remove" src="/images/remove.png"> Remove and <strong>keep</strong> files</li>
-                <li id="delete"><img alt="delete" src="/images/delete.png"> Remove and <strong>delete</strong> files</li>
-                <li id="rehash"><img alt="rehash" src="/images/hash.png"> Rehash</li>
-            </ul>
-        </div>
-        <div class="contextMenu" id="right_click_pause">
-            <ul>
-                <li id="pause"><img alt="pause" src="/images/pause.png"> Pause</li>
-                <li id="stop"><img alt="stop" src="/images/stop.png"> Stop</li>
-                <li id="remove"><img alt="remove" src="/images/remove.png"> Remove and <strong>keep</strong> files</li>
-                <li id="delete"><img alt="delete" src="/images/delete.png"> Remove and <strong>delete</strong> files</li>
-                <li id="rehash"><img alt="rehash" src="/images/hash.png"> Rehash</li>
-            </ul>
+        <div id="header">
+            <div id="topbar">
+                %(main)s
+                %(started)s
+                %(stopped)s
+                %(complete)s
+                %(incomplete)s
+                %(hashing)s
+                %(seeding)s
+                %(active)s
+                <div id="tools-bar">
+                    <div class="topbar-tab_options" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_options(this);" title="Options" id="tab_options">Options</div>
+                </div>
+            </div>
+            <div id="actions-bar">
+                <a href="#" id="add-torrent-button">Add torrent</a>
+            </div>
+            <div id="main_body">
+                <div id="wrapper">
+                    <div id="add_torrent" style="display: none" title="Add a torrent">
+                        <form id="add_torrent_form" action="upload_torrent" method="post" enctype="multipart/form-data">
+                            <label>Select file:</label>
+                            <input id="add_torrent_input" accept="application/x-bittorrent" type="file" name="torrent">
+                            <div class="add_torrent_start_text"> 
+                                <input id="add_torrent_start" type="checkbox" name="start"> Start Immediately?
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div id="global_stats">
+                    %(global_stats)s
+                </div>
+                <div id="this_view" class="hidden">%(view)s</div>
+                <div id="this_sort" class="hidden">%(sort)s</div>
+                <div id="this_reverse" class="hidden">%(reverse)s</div>
+                <div id="torrent_table">
+                    <table id='torrent_list'>
+                        <tr id='torrent_list_headings'>
+                            <td class='heading' id="sortby_name" onclick="window.location='%(namelink)s';">Name <img alt="Sort By Name" src="../images/sort_%(namesort)s.gif" class="control_button"></td>
+                            <td class='heading' id="sortby_size" onclick="window.location='%(sizelink)s';">Size <img alt="Sort By Size" src="../images/sort_%(sizesort)s.gif" class="control_button"></td>
+                            <td class='heading' id="sortby_ratio" onclick="window.location='%(ratiolink)s';">Ratio <img alt="Sort By Ratio" src="../images/sort_%(ratiosort)s.gif" class="control_button"></td>
+                            <td class='heading' id="sortby_uprate" onclick="window.location='%(upratelink)s';">Upload speed <img alt="Sort By Upload Speed" src="../images/sort_%(upratesort)s.gif" class="control_button"></td>
+                            <td class='heading' id="sortby_downrate" onclick="window.location='%(downratelink)s';">Download speed <img alt="Sort By Download Speed" src="../images/sort_%(downratesort)s.gif" class="control_button"></td>
+                            <td class='heading' id="sortby_status" onclick="window.location='%(statuslink)s';">Status <img alt="Sort By Status" src="../images/sort_%(statussort)s.gif" class="control_button"></td>
+                            <td class='heading'></td>
+                        </tr>
+                        %(torrents_html)s
+                        <tr id='foot'>
+                            <td class='footing' colspan="7"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="contextMenu" id="right_click_start">
+                    <ul>
+                        <li id="start"><img alt="start" src="/images/start.png"> Start</li>
+                        <li id="stop"><img alt="stop" src="/images/stop.png"> Stop</li>
+                        <li id="remove"><img alt="remove" src="/images/remove.png"> Remove and <strong>keep</strong> files</li>
+                        <li id="delete"><img alt="delete" src="/images/delete.png"> Remove and <strong>delete</strong> files</li>
+                        <li id="rehash"><img alt="rehash" src="/images/hash.png"> Rehash</li>
+                    </ul>
+                </div>
+                <div class="contextMenu" id="right_click_pause">
+                    <ul>
+                        <li id="pause"><img alt="pause" src="/images/pause.png"> Pause</li>
+                        <li id="stop"><img alt="stop" src="/images/stop.png"> Stop</li>
+                        <li id="remove"><img alt="remove" src="/images/remove.png"> Remove and <strong>keep</strong> files</li>
+                        <li id="delete"><img alt="delete" src="/images/delete.png"> Remove and <strong>delete</strong> files</li>
+                        <li id="rehash"><img alt="rehash" src="/images/hash.png"> Rehash</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </body>
 </html>
-        """ % (TORRENT_HTML)
+        """ % {
+            "main" : _genHTML("main", view),
+            "started" : _genHTML("started", view),
+            "stopped" : _genHTML("stopped", view),
+            "complete" : _genHTML("complete", view),
+            "incomplete" : _genHTML("incomplete", view),
+            "hashing" : _genHTML("hashing", view),
+            "seeding" : _genHTML("seeding", view),
+            "active" : _genHTML("active", view),
+            "global_stats" : system.generalHTML(),
+            "view" : view,
+            "sort" : sort,
+            "reverse" : (lambda x : not x and 'none' or x)(reverse),
+            "torrents_html" : "\n".join([self.getTorrentRow(t) for t in torrentList]),
+        }.update(sorts)
         return HTML
