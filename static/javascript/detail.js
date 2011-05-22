@@ -12,8 +12,11 @@ function navigate_home() {
 }
 
 $(document).ready(function (){
-	$("#accordion").accordion();
-    $("#files_list").treeview({
-        collapsed : true,
+    $("#accordion").accordion({
+        create : function () {
+            $("#files_list").treeview({
+                collapsed : true,
+            });
+        }
     });
 });
