@@ -31,7 +31,6 @@ class Detail:
                     <script src="/javascript/jquery.cookie.js" type="text/javascript"></script>
                     <script src="/javascript/jquery.jstree.js" type="text/javascript"></script>
                     <!-- <script src="/javascript/jquery.treeview.js" type="text/javascript"></script> -->
-                    <script src="/javascript/file.js" type="text/javascript"></script>
                     <script src="/javascript/detail.js" type="text/javascript"></script>  
                 </head>
                 <body>
