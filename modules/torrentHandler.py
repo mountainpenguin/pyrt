@@ -357,7 +357,7 @@ class Handler:
             "name":"",
             "namesort" : "none",
             "size":"",
-            "size" : "none",
+            "sizesort" : "none",
             "ratio":"",
             "ratiosort" : "none",
             "uprate" : "",
@@ -448,47 +448,47 @@ class Handler:
                             </div>
                         </form>
                     </div>
-                </div>
-                <div id="global_stats">
-                    %(global_stats)s
-                </div>
-                <div id="this_view" class="hidden">%(view)s</div>
-                <div id="this_sort" class="hidden">%(sort)s</div>
-                <div id="this_reverse" class="hidden">%(reverse)s</div>
-                <div id="torrent_table">
-                    <table id='torrent_list'>
-                        <tr id='torrent_list_headings'>
-                            <td class='heading' id="sortby_name" onclick="window.location='%(name)s';">Name <img alt="Sort By Name" src="../images/sort_%(namesort)s.gif" class="control_button"></td>
-                            <td class='heading' id="sortby_size" onclick="window.location='%(size)s';">Size <img alt="Sort By Size" src="../images/sort_%(sizesort)s.gif" class="control_button"></td>
-                            <td class='heading' id="sortby_ratio" onclick="window.location='%(ratio)s';">Ratio <img alt="Sort By Ratio" src="../images/sort_%(ratiosort)s.gif" class="control_button"></td>
-                            <td class='heading' id="sortby_uprate" onclick="window.location='%(uprate)s';">Upload speed <img alt="Sort By Upload Speed" src="../images/sort_%(upratesort)s.gif" class="control_button"></td>
-                            <td class='heading' id="sortby_downrate" onclick="window.location='%(downrate)s';">Download speed <img alt="Sort By Download Speed" src="../images/sort_%(downratesort)s.gif" class="control_button"></td>
-                            <td class='heading' id="sortby_status" onclick="window.location='%(status)s';">Status <img alt="Sort By Status" src="../images/sort_%(statussort)s.gif" class="control_button"></td>
-                            <td class='heading'></td>
-                        </tr>
-                        %(torrents_html)s
-                        <tr id='foot'>
-                            <td class='footing' colspan="7"></td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="contextMenu" id="right_click_start">
-                    <ul>
-                        <li id="start"><img alt="start" src="/images/start.png"> Start</li>
-                        <li id="stop"><img alt="stop" src="/images/stop.png"> Stop</li>
-                        <li id="remove"><img alt="remove" src="/images/remove.png"> Remove and <strong>keep</strong> files</li>
-                        <li id="delete"><img alt="delete" src="/images/delete.png"> Remove and <strong>delete</strong> files</li>
-                        <li id="rehash"><img alt="rehash" src="/images/hash.png"> Rehash</li>
-                    </ul>
-                </div>
-                <div class="contextMenu" id="right_click_pause">
-                    <ul>
-                        <li id="pause"><img alt="pause" src="/images/pause.png"> Pause</li>
-                        <li id="stop"><img alt="stop" src="/images/stop.png"> Stop</li>
-                        <li id="remove"><img alt="remove" src="/images/remove.png"> Remove and <strong>keep</strong> files</li>
-                        <li id="delete"><img alt="delete" src="/images/delete.png"> Remove and <strong>delete</strong> files</li>
-                        <li id="rehash"><img alt="rehash" src="/images/hash.png"> Rehash</li>
-                    </ul>
+                    <div id="global_stats">
+                        %(global_stats)s
+                    </div>
+                    <div id="this_view" class="hidden">%(view)s</div>
+                    <div id="this_sort" class="hidden">%(sort)s</div>
+                    <div id="this_reverse" class="hidden">%(reverse)s</div>
+                    <div id="torrent_table">
+                        <table id='torrent_list'>
+                            <tr id='torrent_list_headings'>
+                                <td class='heading' id="sortby_name" onclick="window.location='%(name)s';">Name <img alt="Sort By Name" src="../images/sort_%(namesort)s.gif" class="control_button"></td>
+                                <td class='heading' id="sortby_size" onclick="window.location='%(size)s';">Size <img alt="Sort By Size" src="../images/sort_%(sizesort)s.gif" class="control_button"></td>
+                                <td class='heading' id="sortby_ratio" onclick="window.location='%(ratio)s';">Ratio <img alt="Sort By Ratio" src="../images/sort_%(ratiosort)s.gif" class="control_button"></td>
+                                <td class='heading' id="sortby_uprate" onclick="window.location='%(uprate)s';">Upload speed <img alt="Sort By Upload Speed" src="../images/sort_%(upratesort)s.gif" class="control_button"></td>
+                                <td class='heading' id="sortby_downrate" onclick="window.location='%(downrate)s';">Download speed <img alt="Sort By Download Speed" src="../images/sort_%(downratesort)s.gif" class="control_button"></td>
+                                <td class='heading' id="sortby_status" onclick="window.location='%(status)s';">Status <img alt="Sort By Status" src="../images/sort_%(statussort)s.gif" class="control_button"></td>
+                                <td class='heading'></td>
+                            </tr>
+                            %(torrents_html)s
+                            <tr id='foot'>
+                                <td class='footing' colspan="7"></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="contextMenu" id="right_click_start">
+                        <ul>
+                            <li id="start"><img alt="start" src="/images/start.png"> Start</li>
+                            <li id="stop"><img alt="stop" src="/images/stop.png"> Stop</li>
+                            <li id="remove"><img alt="remove" src="/images/remove.png"> Remove and <strong>keep</strong> files</li>
+                            <li id="delete"><img alt="delete" src="/images/delete.png"> Remove and <strong>delete</strong> files</li>
+                            <li id="rehash"><img alt="rehash" src="/images/hash.png"> Rehash</li>
+                        </ul>
+                    </div>
+                    <div class="contextMenu" id="right_click_pause">
+                        <ul>
+                            <li id="pause"><img alt="pause" src="/images/pause.png"> Pause</li>
+                            <li id="stop"><img alt="stop" src="/images/stop.png"> Stop</li>
+                            <li id="remove"><img alt="remove" src="/images/remove.png"> Remove and <strong>keep</strong> files</li>
+                            <li id="delete"><img alt="delete" src="/images/delete.png"> Remove and <strong>delete</strong> files</li>
+                            <li id="rehash"><img alt="rehash" src="/images/hash.png"> Rehash</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
