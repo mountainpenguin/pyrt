@@ -441,8 +441,9 @@ class Handler:
         <div id="main_body">
             <div id="wrapper">
                 <div id="add_torrent" style="display: none" title="Add a torrent">
-                    <form id="add_torrent_form" action="upload_torrent" method="post" enctype="multipart/form-data">
+                    <form id="add_torrent_form" action="ajax" method="post" enctype="multipart/form-data">
                         <label>Select file:</label>
+                        <input type="hidden" name="request" value="upload_torrent">
                         <input id="add_torrent_input" accept="application/x-bittorrent" type="file" name="torrent">
                         <div class="add_torrent_start_text"> 
                             <input id="add_torrent_start" type="checkbox" name="start"> Start Immediately?

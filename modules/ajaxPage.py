@@ -144,7 +144,8 @@ class Ajax:
         try:
             decoded = bencode.bdecode(inFile)
         except:
-            #Invalid torrent 
+            #Invalid torrent
+            print fileName
             return "ERROR/Invalid torrent file"
         else:
             #save file in /torrents
