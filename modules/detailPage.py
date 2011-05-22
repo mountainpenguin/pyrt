@@ -146,7 +146,7 @@ class Detail:
             "tleechs_total" : tleechs_total,
             "peer_table_rows" : peer_table_rows,
             "filelist" : files,
-            "trackers": tracker_table_rows,
+            "tracker_table_rows": tracker_table_rows,
         }
 
     def peers(self, torrent_id):

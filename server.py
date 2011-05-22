@@ -80,7 +80,8 @@ class mainHandler:
             else:
                 return L.loginHTML("Incorrect Password")
         
-        return detailPage.Detail(torrent_id)
+        Detail = detailPage.Detail(torrent_id)
+        return Detail.HTML
     detail.exposed = True
     
     def ajax(self, request=None, torrent_id=None, filepath=None, torrent=None, start=None, view=None, sortby=None, reverse=None, html=None):
