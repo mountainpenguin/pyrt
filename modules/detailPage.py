@@ -53,41 +53,45 @@ class Detail:
                         <p>Leechers: %(tleechs_connected)s (%(tleechs_total)s)</p>
                         <p>Seeders: %(tseeds_connected)s (%(tseeds_total)s)</p>
                     </div>
-                    <h3><a href="#">Peers</a></h3>                    
-                    <div id="peers_table">
-                        <table>
-                            <tr>
-                                <td class="heading">IP Address</td>
-                                <td class="heading">Port</td>
-                                <td class="heading">Client</td>
-                                <td class="heading">Completed</td>
-                                <td class="heading">Download Rate</td>
-                                <td class="heading">Download Total</td>
-                                <td class="heading">Upload Rate</td>
-                                <td class="heading">Upload Total</td>
-                                <td class="heading">Peer Rate</td>
-                                <td class="heading">Peer Total</td>
-                            </tr>
-                            %(peer_table_rows)s
-                        </table>
+                    <h3><a href="#">Peers</a></h3>
+                    <div>
+                        <div id="peers_table">
+                            <table>
+                                <tr>
+                                    <td class="heading">IP Address</td>
+                                    <td class="heading">Port</td>
+                                    <td class="heading">Client</td>
+                                    <td class="heading">Completed</td>
+                                    <td class="heading">Download Rate</td>
+                                    <td class="heading">Download Total</td>
+                                    <td class="heading">Upload Rate</td>
+                                    <td class="heading">Upload Total</td>
+                                    <td class="heading">Peer Rate</td>
+                                    <td class="heading">Peer Total</td>
+                                </tr>
+                                %(peer_table_rows)s
+                            </table>
+                        </div>
                     </div>
                     <h3><a href="#">File list</a></h3>                    
                     <div id="files_container>
                       %(filelist)s
                     </div>
-                    <h3><a href="#">Tracker list</a></h3>                    
+                    <h3><a href="#">Tracker list</a></h3>
+                    <div>
                     <div id="trackers_table">
-                      <table>
-                        <tr> 
-                            <td class="heading">URL</td> 
-                            <td class="heading">Type</td> 
-                            <td class="heading">Announce Interval</td> 
-                            <td class="heading">Seeders</td> 
-                            <td class="heading">Leechers</td> 
-                            <td class="heading">Enabled</td> 
-                        </tr>
-                        %(tracker_table_rows)s
-                      </table>
+                          <table>
+                            <tr> 
+                                <td class="heading">URL</td> 
+                                <td class="heading">Type</td> 
+                                <td class="heading">Announce Interval</td> 
+                                <td class="heading">Seeders</td> 
+                                <td class="heading">Leechers</td> 
+                                <td class="heading">Enabled</td> 
+                            </tr>
+                            %(tracker_table_rows)s
+                          </table>
+                        </div>
                     </div>
                   </div>
 
@@ -151,16 +155,16 @@ class Detail:
 
     def peers(self, torrent_id):
         PEER_ROW_TEMPLATE = """
-            <tr class="peer_tablerow">
-                <td>%(address)s</td>
-                <td>%(port)s</td>
-                <td>%(down_rate)s</td>
-                <td>%(down_total)s</td>
-                <td>%(up_rate)s</td>
-                <td>%(up_total)s</td>
-                <td>%(peer_rate)s</td>
-                <td>%(peer_total)s</td>
-            </tr>
+                                <tr class="peer_tablerow">
+                                    <td>%(address)s</td>
+                                    <td>%(port)s</td>
+                                    <td>%(down_rate)s</td>
+                                    <td>%(down_total)s</td>
+                                    <td>%(up_rate)s</td>
+                                    <td>%(up_total)s</td>
+                                    <td>%(peer_rate)s</td>
+                                    <td>%(peer_total)s</td>
+                                </tr>
         """
         PEER_HTML = ""
         for peer in self.RT.getPeers(torrent_id):
@@ -170,14 +174,14 @@ class Detail:
 
     def trackers(self, trackers):
         TRACKER_ROW_TEMPLATE = """
-            <tr class="tracker_tablerow">
-                <td>%(url)s</td>
-                <td>%(type)s</td>
-                <td>%(interval)s</td>
-                <td>%(seeds)s</td>
-                <td>%(leechs)s</td>
-                <td>%(enabled)s</td>
-            </tr>
+                                <tr class="tracker_tablerow">
+                                    <td>%(url)s</td>
+                                    <td>%(type)s</td>
+                                    <td>%(interval)s</td>
+                                    <td>%(seeds)s</td>
+                                    <td>%(leechs)s</td>
+                                    <td>%(enabled)s</td>
+                                </tr>
         """
         TRACKER_HTML = ""
         for tracker in trackers:
