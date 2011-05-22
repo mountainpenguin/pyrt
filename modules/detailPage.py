@@ -74,7 +74,7 @@ class Detail:
                         </div>
                     </div>
                     <h3><a href="#">File list</a></h3>                    
-                    <div id="files_container>
+                    <div id="files_list>
                       %(filelist)s
                     </div>
                     <h3><a href="#">Tracker list</a></h3>
