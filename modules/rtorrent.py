@@ -493,7 +493,10 @@ class File:
         self.size = size
         self.chunks = chunks
         self.chunk_size = chunk_size
-        self.percentage_complete = 100 * (float(self.completed_chunks) / self.chunks)
+        try:
+            self.percentage_complete = 100 * (float(self.completed_chunks) / self.chunks)
+        except:
+            self.percentage_complete = 100.0
 
 class Peer:
     def __init__(self, address, client_version, completed_percent, down_rate, down_total, up_rate, up_total, port, peer_rate, peer_total):
