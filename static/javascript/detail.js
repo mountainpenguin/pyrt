@@ -12,11 +12,8 @@ function navigate_home() {
 }
 
 $(document).ready(function (){
-	$("#accordion").accordion();
-});
-
-$(document).ready(function () {
     $("#files_list").treeview({
-        collapsed : true,
+        collapsed : true
     });
+    $("#accordion").accordion();
 });

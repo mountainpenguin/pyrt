@@ -29,8 +29,8 @@ class Detail:
                     <script src="/javascript/jquery-1.6.1.min.js" type="text/javascript"></script>
                     <script src="/javascript/jquery-ui-1.8.13.custom.min.js" type="text/javascript"></script>        
                     <script src="/javascript/jquery.cookie.js" type="text/javascript"></script>
+                    <!-- <script src="/javascript/jquery.jstree.js" type="text/javascript"></script> -->
                     <script src="/javascript/jquery.treeview.js" type="text/javascript"></script>
-                    <script src="/javascript/file.js" type="text/javascript"></script>
                     <script src="/javascript/detail.js" type="text/javascript"></script>  
                 </head>
                 <body>
@@ -75,7 +75,9 @@ class Detail:
                     </div>
                     <h3><a href="#">File list</a></h3>                    
                     <div id="files_within">
-                      %(filelist)s
+                        <div>
+                            %(filelist)s
+                        </div>
                     </div>
                     <h3><a href="#">Tracker list</a></h3>
                     <div id="trackers_within">
@@ -167,7 +169,17 @@ class Detail:
         """
         PEER_HTML = ""
         for peer in self.RT.getPeers(torrent_id):
-            PEER_HTML += PEER_ROW_TEMPLATE % peer.__dict__
+            peer_info = {
+                "address" : peer.address,
+                "port" : peer.port,
+                "down_rate" : "%s/s" % self.Handler.humanSize(peer.down_rate),
+                "down_total" : self.Handler.humanSize(peer.down_total),
+                "up_rate" : "%s/s" % self.Handler.humanSize(peer.up_rate),
+                "up_total" : self.Handler.humanSize(peer.up_total),
+                "peer_rate" : "%s/s" % self.Handler.humanSize(peer.peer_rate),
+                "peer_total" : self.Handler.humanSize(peer.peer_total)
+            }
+            PEER_HTML += PEER_ROW_TEMPLATE % peer_info
 
         return PEER_HTML
 
