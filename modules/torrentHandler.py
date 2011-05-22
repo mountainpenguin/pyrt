@@ -171,7 +171,9 @@ class Handler:
         
         def _getFiles(level):
             html = ""
-            for file in level["___files"]:
+            files = sorted(level["___files"], key=lambda x:os.path.basename(x.abs_path))
+            
+            for file in files:
                 # html += DOCUMENT_DIV % (HIDDEN, os.path.basename(fileDict[file].abs_path), self.humanSize(fileDict[file].size))
                 fileName = os.path.basename(fileDict[file].abs_path)
                 html += DOCUMENT_DIV % (_getFileType(fileName), fileName, fileDict[file].abs_path)
