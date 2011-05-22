@@ -80,17 +80,7 @@ class mainHandler:
             else:
                 return L.loginHTML("Incorrect Password")
         
-        Detail = detailPage.Detail()
-        if not torrent_id:
-            return "ERROR/Not Implemented"
-        elif not view or view == "info":
-            return Detail.main(torrent_id)
-        elif view == "peers":
-            return Detail.peers(torrent_id)
-        elif view == "files":
-            return Detail.files(torrent_id)
-        elif view == "trackers":
-            return Detail.trackers(torrent_id)
+        return detailPage.Detail(torrent_id)
     detail.exposed = True
     
     def ajax(self, request=None, torrent_id=None, filepath=None, torrent=None, start=None, view=None, sortby=None, reverse=None, html=None):

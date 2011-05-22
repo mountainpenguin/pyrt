@@ -107,7 +107,7 @@ class Detail:
         tratio = "%.02f" % (float(self.RT.getRatio(torrent_id))/1000)
         tuploaded = self.Handler.humanSize(self.RT.getUploadBytes(torrent_id))
         tdownloaded = self.Handler.humanSize(self.RT.getDownloadBytes(torrent_id))
-        tdone = "%.02f" % (100*(float(self.RT.conn.d.get_completed_bytes(torrent_id)) / _size)
+        tdone = "%.02f" % (100*(float(self.RT.conn.d.get_completed_bytes(torrent_id)) / _size))
         tuprate = "%s/s" % self.Handler.humanSize(self.RT.getUploadSpeed(torrent_id))
         tdownrate = "%s/s" % self.Handler.humanSize(self.RT.getDownloadSpeed(torrent_id))
         tseeds_connected = self.RT.conn.d.get_peers_complete(torrent_id)
