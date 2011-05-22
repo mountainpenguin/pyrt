@@ -1,21 +1,35 @@
-# This is an example config file for pyrt
-# this file should be edited and renamed to .pyrtrc
-#    mv pyrtrc.example .pyrtrc
-# config syntax is JSON with comments allowed
-# comments are prefixed with a # sign
+## This is an example config file for pyrt
+## this file should be edited and renamed to .pyrtrc
+##    mv pyrtrc.example .pyrtrc
+## config syntax is JSON with comments allowed
+## comments are prefixed with a # sign
 {
-    # the path to the rtorrent socket file
-    # this is defined in .rtorrent.rc as scgi_local
+    ## the *full* path to the rtorrent socket file
+    ## this is defined in .rtorrent.rc as scgi_local
+    ## REQUIRED
     "rtorrent_socket" : "/path/to/rtorrent/socket",
     
-    # the port that the server should run on
+    ## the port that the server should run on
+    ## REQUIRED
     "port" : 8000,
     
-    # the host that the server should run on
+    ## the host that the server should run on
+    ## REQUIRED
     "host" : "server.bytesized-hosting.com",
     
-    # hashed password that pyrt will use
-    # currently this uses unrealirc style md5 hashing
-    # you can use the provided mkpasswd utility to generate a hashed password
+    ## hashed password that pyrt will use
+    ## currently this uses unrealirc style md5 hashing
+    ## you can use the provided mkpasswd utility to generate a hashed password
+    ## REQUIRED
     "password" : "$5DFFfrLC$fkPjAF0rOpiL83gHzgIwcQ==" # this corresponds to a plaintext password of 'testing'
+    
+    ## the *full* path to the SSL certificate that pyrt should use
+    ## if this is not defined, pyrt will run a HTTP server
+    ## OPTIONAL
+#    "ssl_certificate" : "/path/to/ssl/certificate",
+
+    ## the *full* path to the SSL private key that pyrt should use
+    ## if this is not defined, pyrt will run a HTTP server
+    ## OPTIONAL
+#    "ssl_private_key" : "/path/to/ssl/private/key"
 }

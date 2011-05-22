@@ -18,11 +18,13 @@ class ConfigError(Exception):
         return self.__repr__()
         
 class ConfigStore:
-    def __init__(self, sockpath, serverhost, serverport, password):
+    def __init__(self, sockpath, serverhost, serverport, password, ssl_certificate=None, ssl_private_key=None):
         self.rtorrent_socket = sockpath
         self.host = serverhost
         self.port = serverport
         self.password = password
+        self.ssl_certificate = ssl_certificate
+        self.ssl_private_key = ssl_private_key
         
 class Config:
     def __init__(self):
@@ -53,11 +55,18 @@ class Config:
                 config_stripped += "\n"
         try:
             configfile = json.loads(config_stripped)
+            if "ssl_certificate" in configfile.keys() and "ssl_private_key" in configfile.keys():
+                cert = configfile["ssl_certificate"]
+                pkey = configfile["ssl_private_key"]
+            else:
+                cert, pkey = None, None
             self.CONFIG = ConfigStore(
                         sockpath = configfile["rtorrent_socket"],
                         serverhost = configfile["host"],
                         serverport = configfile["port"],
                         password = configfile["password"],
+                        ssl_certificate = cert,
+                        ssl_private_key = pkey,
                         )
             self._flush()
         except KeyError:

@@ -13,6 +13,8 @@ c.loadconfig()
 global_config = {
     "server.socket_host" : str(c.get("host")),
     "server.socket_port" : c.get("port"),
+    "server.ssl_certificate" : c.get("ssl_certificate"),
+    "server.ssl_private_key" : c.get("ssl_private_key"),
 }
 app_config = {
     "/css" : {
