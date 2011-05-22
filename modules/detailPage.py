@@ -167,7 +167,17 @@ class Detail:
         """
         PEER_HTML = ""
         for peer in self.RT.getPeers(torrent_id):
-            PEER_HTML += PEER_ROW_TEMPLATE % peer.__dict__
+            peer_info = {
+                "address" : peer.address,
+                "port" : peer.port,
+                "down_rate" : "%s/s" % self.humanSize(peer.down_rate),
+                "down_total" : self.humanSize(peer.down_total),
+                "up_rate" : "%s/s" % self.humanSize(peer.up_rate),
+                "up_total" : self.humanSize(peer.up_total),
+                "peer_rate" : "%s/s" % self.humanSize(peer.peer_rate),
+                "peer_total" : self.humanSize(peer.peer_total)
+            }
+            PEER_HTML += PEER_ROW_TEMPLATE % peer_info
 
         return PEER_HTML
 
