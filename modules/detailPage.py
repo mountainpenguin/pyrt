@@ -36,7 +36,7 @@ class Detail:
                 <body>
                   <div id="accordion">
                     <h3><a href="#">Torrent info</a></h3>
-                    <div id="maininfo">
+                    <div id="info_within">
                         <p>Name: %(tname)s</p>
                         <p>ID: %(tid)s</p>
                         <p>Created: %(tcreated)s</p>
@@ -54,7 +54,7 @@ class Detail:
                         <p>Seeders: %(tseeds_connected)s (%(tseeds_total)s)</p>
                     </div>
                     <h3><a href="#">Peers</a></h3>
-                    <div>
+                    <div id="peers_within">
                         <div id="peers_table">
                             <table>
                                 <tr>
@@ -74,27 +74,26 @@ class Detail:
                         </div>
                     </div>
                     <h3><a href="#">File list</a></h3>                    
-                    <div id="files_list>
+                    <div id="files_within">
                       %(filelist)s
                     </div>
                     <h3><a href="#">Tracker list</a></h3>
-                    <div>
-                    <div id="trackers_table">
-                          <table>
-                            <tr> 
-                                <td class="heading">URL</td> 
-                                <td class="heading">Type</td> 
-                                <td class="heading">Announce Interval</td> 
-                                <td class="heading">Seeders</td> 
-                                <td class="heading">Leechers</td> 
-                                <td class="heading">Enabled</td> 
-                            </tr>
-                            %(tracker_table_rows)s
-                          </table>
+                    <div id="trackers_within">
+                        <div id="trackers_table">
+                              <table>
+                                <tr> 
+                                    <td class="heading">URL</td> 
+                                    <td class="heading">Type</td> 
+                                    <td class="heading">Announce Interval</td> 
+                                    <td class="heading">Seeders</td> 
+                                    <td class="heading">Leechers</td> 
+                                    <td class="heading">Enabled</td> 
+                                </tr>
+                                %(tracker_table_rows)s
+                              </table>
+                            </div>
                         </div>
-                    </div>
-                  </div>
-
+                   </div>
               </body>
             </html>
         """ % self._getInfo(torrent_id)
