@@ -13,5 +13,7 @@ function navigate_home() {
 
 $(document).ready(function (){
     $("#accordion").accordion();
-    $("#files_list").jstree();
+    $("#files_list").treeview({
+        collapsed : true
+    });
 });
