@@ -96,7 +96,7 @@ function loadRClickMenus() {
     $("#tab_options").bind(
         "click",
         function () {
-        window.location = "/options";
+        window.location = "/options?test=test";
         }
     );
 }

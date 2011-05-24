@@ -57,12 +57,8 @@ class mainHandler:
             else:
                 return L.loginHTML("Incorrect Password")
         
-        if view == "option":
-            Options = optionPage.Options()
-            return Options.index()
-        else:
-            Index = indexPage.Index()
-            return Index.index(password, view, sortby, reverse)
+        Index = indexPage.Index()
+        return Index.index(password, view, sortby, reverse)
         
     index.exposed = True
     
