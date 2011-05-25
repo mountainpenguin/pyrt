@@ -51,9 +51,25 @@ class Options:
                                 <h3 id="pyrt-options-h3">PyRT Options</h3>
                                 <div id="pyrt-options-div">
                                     <form action="" method="POST">
-                                        <div class="row"><span class="column-1">Change Port:</span> <input type="text" id="pyrt-changeport-input" class="column-2" name="port" value="%(pyrt_port)s"></div>
+                                        <div id="change_port" class="sub_option">
+                                            <span class="column-1">Change Port:</span>
+                                            <span class="column-2">
+                                                <input type="text" id="pyrt-changeport-input" name="port" value="%(pyrt_port)s">
+                                            </span>
+                                        </div>
+                                        <div class="row">
+                                            <div id="change_password" class="sub_option">
+                                                <div class="column-1 sub_heading">Change Password</div>
+                                                <span class="column-1">Current Password:</span>
+                                                <span class="column-2"><input type="password" id="pyrt-curpw-input" name="current_password"></span>
+                                                <span class="column-1">New Password:</span>
+                                                <span class="column-2"><input type="password" id="pyrt-newpw-input" name="new_password"></span>
+                                                <span class="column-1">Confirm:</span>
+                                                <span class="column-2"><input type="password" id="pyrt-newpw_confirm-input"> <span id="pyrt-newpw_report-span"></span></span>
+                                            </div>
+                                        </div>
                                     </form>
-                                    <div class="row"><button id="pyrt-changepassword-button">Change Password</button> <button id="pyrt-restartserver-button">Restart Server</button></div>
+                                    
                                 </div>
                             </div>
                             <div id="rtorrent-options-wrapper">

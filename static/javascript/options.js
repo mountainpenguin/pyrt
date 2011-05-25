@@ -54,6 +54,22 @@ $(document).ready( function () {
          })();
       }
    );
+   $("#pyrt-newpw_confirm-input").bind(
+      "change",
+      function () {
+         pw1 = $("#pyrt-newpw-input").val();
+         pw2 = $(this).val();
+         if (pw1 !== pw2) {
+            $("#pyrt-newpw_report-span").html(
+               "X" 
+            ).removeClass("ok").addClass("bad");
+         } else {
+            $("#pyrt-newpw_report-span").html(
+               ":)"
+            ).removeClass("bad").addClass("ok");
+         }
+      }
+   );
 });
 
 function select_tab(elem) {
