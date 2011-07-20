@@ -495,11 +495,6 @@ class Handler:
                     </ul>
                 </div>
             </div>
-            <div id="detail_view">
-                <h1>Test</h1>
-                <div id="detail_contents">
-                </div>
-            </div>
         </div>
     </body>
 </html>

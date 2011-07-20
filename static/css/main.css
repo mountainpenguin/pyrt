@@ -439,11 +439,3 @@ img.file_img {
 .hidden {
     display : none;
 }
-
-div#detail_view {
-    float : right;
-    min-width : 200px;
-    max-width : 200px;
-    min-height : 100%;
-    background-color : rgb(150,150,150);
-}
