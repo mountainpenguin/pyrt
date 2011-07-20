@@ -99,7 +99,7 @@ function loadRClickMenus() {
         window.location = "/options?test=test";
         }
     );
-    $("#tab_RSS").bind(
+    $("#tab_rss").bind(
         "click",
         function() {
           window.location = "/RSS";
