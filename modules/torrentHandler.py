@@ -434,7 +434,7 @@ class Handler:
                 %(active)s
                 <div id="tools-bar">
                     <div class="topbar-tab_options" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_options(this);" title="Options" id="tab_options">Options</div>
-                    <div class="topbar-tab_RSS" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_RSS(this);" title="RSS" id="tab_rss">RSS</div>
+                    <div class="topbar-tab_options" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_RSS(this);" title="RSS" id="tab_rss">RSS</div>
                 </div>
             </div>
             <div id="actions-bar">
