@@ -475,6 +475,11 @@ class Handler:
                         </tr>
                     </table>
                 </div>
+                <div id="detail_view">
+                    <h1>Test</h1>
+                    <div id="detail_contents">
+                    </div>
+                </div>
                 <div class="contextMenu" id="right_click_start">
                     <ul>
                         <li id="start"><img alt="start" src="/images/start.png"> Start</li>
