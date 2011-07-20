@@ -17,7 +17,7 @@ function getFeeds() {
        context : feeds,
        dataType : "html",
        success : function (data) {
-        $(this).html() = data;
+        $(this).html(data);
        }
     });
 }
