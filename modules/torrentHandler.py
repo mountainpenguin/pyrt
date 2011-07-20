@@ -475,11 +475,7 @@ class Handler:
                         </tr>
                     </table>
                 </div>
-                <div id="detail_view">
-                    <h1>Test</h1>
-                    <div id="detail_contents">
-                    </div>
-                </div>
+
                 <div class="contextMenu" id="right_click_start">
                     <ul>
                         <li id="start"><img alt="start" src="/images/start.png"> Start</li>
@@ -497,6 +493,11 @@ class Handler:
                         <li id="delete"><img alt="delete" src="/images/delete.png"> Remove and <strong>delete</strong> files</li>
                         <li id="rehash"><img alt="rehash" src="/images/hash.png"> Rehash</li>
                     </ul>
+                </div>
+            </div>
+            <div id="detail_view">
+                <h1>Test</h1>
+                <div id="detail_contents">
                 </div>
             </div>
         </div>
