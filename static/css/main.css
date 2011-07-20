@@ -441,8 +441,9 @@ img.file_img {
 }
 
 div#detail_view {
-    float : left;
+    float : right;
     min-width : 200px;
     max-width : 200px;
-
+    min-height : 100%;
+    background-color : rgb(150,150,150);
 }
