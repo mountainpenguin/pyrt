@@ -99,6 +99,12 @@ function loadRClickMenus() {
         window.location = "/options?test=test";
         }
     );
+    $("#tab_RSS").bind(
+        "click",
+        function() {
+          window.location = "/RSS";
+        }
+    );
 }
 function refresh_content(repeat) {
     // get all torrent ids on page

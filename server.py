@@ -2,7 +2,7 @@
 
 from modules import config, login                    #'real' modules
 from modules import indexPage, detailPage, ajaxPage  # pages
-from modules import optionsPage                      # pages
+from modules import optionsPage, rssPage             # pages
 
 import cherrypy
 import os
@@ -142,6 +142,11 @@ class mainHandler:
             return Options.index()
     options.exposed = True
 
+    def RSS(self):
+        Rss = rssPage.Index()
+        return Rss.index()
+    RSS.exposed = True
+    
 if __name__ == "__main__":
     if os.path.exists(".user.pickle"):
         os.remove(".user.pickle")
