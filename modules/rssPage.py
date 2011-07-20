@@ -34,8 +34,7 @@ class Index:
         <div id="main_body">
             <div id="wrapper">
                 <div id="feed_wrapper">
-                    <div class="feed_entry">Feed 1</div>
-                    <div class="feed_entry">Feed 2</div>
+                    <span><img src="static/images/loading.gif" title="Loading..." alt="Loading..."></span>
                 </div>
                 <div class="feed_add"><button>Add Feed</button></div>
             </div>

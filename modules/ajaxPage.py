@@ -24,7 +24,7 @@ class Ajax:
         self.Handler = torrentHandler.Handler()
         
     def get_feeds(self):
-        pass
+        return "Nothing yet!"
     
     def get_torrent_info(self, torrent_id, html=None ):
         c = time.localtime(self.RT.getCreationDate(torrent_id))
