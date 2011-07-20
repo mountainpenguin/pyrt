@@ -23,6 +23,9 @@ class Ajax:
         self.RT = rtorrent.rtorrent(self.Config.get("rtorrent_socket"))
         self.Handler = torrentHandler.Handler()
         
+    def get_feeds(self):
+        pass
+    
     def get_torrent_info(self, torrent_id, html=None ):
         c = time.localtime(self.RT.getCreationDate(torrent_id))
         created = time.strftime("%d/%m/%Y %H:%M:%S", c)

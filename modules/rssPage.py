@@ -21,7 +21,7 @@ class Index:
         <script src="/javascript/jquery-ui-1.8.13.custom.min.js" type="text/javascript"></script>        
         <script src="/javascript/jquery.contextmenu.r2.js" type="text/javascript"></script>
         <script src="/javascript/jquery-sliderow.js" type="text/javascript"></script>
-        <script src="/javascript/main.js" type="text/javascript"></script>
+        <script src="/javascript/rss.js" type="text/javascript"></script>
         
     </head>
     <body>

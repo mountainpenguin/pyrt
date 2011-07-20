@@ -102,7 +102,6 @@ function loadRClickMenus() {
     $("#tab_rss").bind(
         "click",
         function () {
-          alert("RSS tab clicked!");
           window.location = "/RSS";
         }
     );
