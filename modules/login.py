@@ -18,14 +18,14 @@ class User:
         
 class Login:
     def __init__(self, conf=config.Config()):
-        self.CONFIG = conf
+        self.C = conf
         #get this from a pickled object
         #get pyrt root dir
         try:
             self.USER = pickle.load(open(".user.pickle"))
         except:
             #self.USER = User("mountainpenguin", self.hashPassword("testing"))
-            self.USER = User(c.CONFIG.password)
+            self.USER = User(self.C.CONFIG.password)
         
     def _flush(self):
         pickle.dump(self.USER, open(".user.pickle", "w"))
