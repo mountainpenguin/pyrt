@@ -3,8 +3,8 @@
 import config
 
 class Options:
-    def __init__(self):
-        self.C = config.Config()
+    def __init__(self, conf=config.Config()):
+        self.C = conf
     
     def index(self):
         #PyRT:

@@ -18,8 +18,8 @@ import system
 import base64
 
 class Ajax:
-    def __init__(self):
-        self.Config = config.Config()
+    def __init__(self, conf=config.Config()):
+        self.Config = conf
         self.RT = rtorrent.rtorrent(self.Config.get("rtorrent_socket"))
         self.Handler = torrentHandler.Handler()
         

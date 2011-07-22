@@ -41,11 +41,11 @@ app_config = {
 
 class mainHandler:
     def __init__(self):
-        self.L = login.Login()
-        self.INDEX = indexPage.Index()
-        self.AJAX = ajaxPage.Ajax()
-        self.OPTIONS = optionsPage.Options()
-        self.RSS_PAGE = rssPage.Index()
+        self.L = login.Login(conf=c)
+        self.INDEX = indexPage.Index(conf=c)
+        self.AJAX = ajaxPage.Ajax(conf=c)
+        self.OPTIONS = optionsPage.Options(conf=c)
+        self.RSS_PAGE = rssPage.Index(conf=c)
         self.GLOBALS = {
             "login" : self.L,
             "indexPage" : self.INDEX,
@@ -90,7 +90,7 @@ class mainHandler:
             else:
                 return self.L.loginHTML("Incorrect Password")
         
-        Detail = detailPage.Detail(torrent_id)
+        Detail = detailPage.Detail(torrent_id, config=c)
         return Detail.HTML
     detail.exposed = True
     
@@ -160,7 +160,7 @@ class mainHandler:
     
     def test(self):
         return repr(self.GLOBALS["config"].get("port"))
-    test.exposed = True
+    #test.exposed = True
         
 if __name__ == "__main__":
     if os.path.exists(".user.pickle"):

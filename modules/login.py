@@ -17,8 +17,8 @@ class User:
         self.testing = testing
         
 class Login:
-    def __init__(self):
-        c = config.Config()
+    def __init__(self, conf=config.Config()):
+        self.CONFIG = conf
         #get this from a pickled object
         #get pyrt root dir
         try:
