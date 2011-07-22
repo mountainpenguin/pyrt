@@ -45,7 +45,7 @@ class mainHandler:
         self.INDEX = indexPage.Index()
         self.AJAX = ajaxPage.Ajax()
         self.OPTIONS = optionsPage.Options()
-        self.RSS = rssPage.Index()
+        self.RSS_PAGE = rssPage.Index()
         
     def index(self, password=None, view=None, sortby=None, reverse=None, **kwargs):
         #check cookies
@@ -146,7 +146,7 @@ class mainHandler:
     options.exposed = True
 
     def RSS(self):
-        return self.RSS.index()
+        return self.RSS_PAGE.index()
     RSS.exposed = True
     
 if __name__ == "__main__":
