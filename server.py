@@ -46,6 +46,14 @@ class mainHandler:
         self.AJAX = ajaxPage.Ajax()
         self.OPTIONS = optionsPage.Options()
         self.RSS_PAGE = rssPage.Index()
+        self.GLOBALS = {
+            "login" : self.L,
+            "indexPage" : self.INDEX,
+            "ajaxPage" : self.AJAX,
+            "optionsPage" : self.OPTIONS,
+            "rssPage" : self.RSS_PAGE,
+            "config" : c,
+        }
         
     def index(self, password=None, view=None, sortby=None, reverse=None, **kwargs):
         #check cookies
@@ -149,6 +157,10 @@ class mainHandler:
         return self.RSS_PAGE.index()
     RSS.exposed = True
     
+    def test(self):
+        return self.GLOBALS["config"].get("port")
+    test.exposed = True
+        
 if __name__ == "__main__":
     if os.path.exists(".user.pickle"):
         os.remove(".user.pickle")
