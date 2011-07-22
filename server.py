@@ -52,7 +52,8 @@ class mainHandler:
             "ajaxPage" : self.AJAX,
             "optionsPage" : self.OPTIONS,
             "rssPage" : self.RSS_PAGE,
-            "config" : config.Config(),
+            "config" : c,
+            #"config" : config.Config(),
         }
         
     def index(self, password=None, view=None, sortby=None, reverse=None, **kwargs):
@@ -158,7 +159,7 @@ class mainHandler:
     RSS.exposed = True
     
     def test(self):
-        return self.GLOBALS["config"].get("port")
+        return repr(self.GLOBALS["config"].get("port"))
     test.exposed = True
         
 if __name__ == "__main__":
