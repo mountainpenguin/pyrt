@@ -52,7 +52,7 @@ class mainHandler:
             "ajaxPage" : self.AJAX,
             "optionsPage" : self.OPTIONS,
             "rssPage" : self.RSS_PAGE,
-            "config" : c,
+            "config" : config.Config(),
         }
         
     def index(self, password=None, view=None, sortby=None, reverse=None, **kwargs):
