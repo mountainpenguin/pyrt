@@ -28,7 +28,7 @@ class Index:
         <div id="header">
             <div id="topbar">
                 <div class="topbar-tab" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_tab_fromRSS(this);" title="main" id="tab_main">Main</div>
-                <div class="topbar-tab_options selected" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_tab(this);" title="RSS" id="tab_RSS">RSS</div>
+                <div class="topbar-tab_options selected" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" title="RSS" id="tab_RSS">RSS</div>
             </div>
         </div>
         <div id="main_body">
