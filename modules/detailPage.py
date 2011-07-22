@@ -12,8 +12,8 @@ import login
 import config
 
 class Detail:
-    def __init__(self, torrent_id):
-        self.Config = config.Config()
+    def __init__(self, torrent_id, conf=config.Config()):
+        self.Config = conf
         self.RT = rtorrent.rtorrent(self.Config.get("rtorrent_socket"))
         self.Handler = torrentHandler.Handler()
 

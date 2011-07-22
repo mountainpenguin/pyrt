@@ -90,7 +90,7 @@ class mainHandler:
             else:
                 return self.L.loginHTML("Incorrect Password")
         
-        Detail = detailPage.Detail(torrent_id, config=c)
+        Detail = detailPage.Detail(torrent_id, conf=self.GLOBALS["config"])
         return Detail.HTML
     detail.exposed = True
     
