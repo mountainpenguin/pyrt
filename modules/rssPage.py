@@ -37,7 +37,7 @@ class Index:
                 <div id="feed_wrapper">
                     <span><img src="static/images/loading.gif" title="Loading..." alt="Loading..."></span>
                 </div>
-                <div class="feed_add"><button>Add Feed</button></div>
+                <div class="feed_add"><img src="/images/add-rss.png" width=24 height=24><button>Add Feed</button></div>
             </div>
         </div>
     </body>
