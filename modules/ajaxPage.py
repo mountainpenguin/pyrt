@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import cgi
 import rtorrent
@@ -139,7 +140,7 @@ class Ajax:
         return fileContents
     
     def upload_torrent(self, torrent=None, start=None):
-        fileName = torrent.filename
+        fileName = unicode(torrent.filename)
         inFile = torrent.file.read()
         try:
             decoded = bencode.bdecode(inFile)
@@ -149,7 +150,7 @@ class Ajax:
             return "ERROR/Invalid torrent file"
         else:
             #save file in /torrents
-            newFile = open("torrents/%s" % (fileName), "wb")
+            newFile = open("torrents/%s" % (fileName.encode("utf-8")), "wb")
             newFile.write(inFile)
             newFile.close()
             #add file to rtorrent
