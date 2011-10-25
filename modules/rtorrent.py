@@ -718,7 +718,7 @@ class rtorrent:
         trackers = []
         resp = self.conn.t.multicall(
             id,
-            " ",
+            "",
             "t.get_url=",               #tracker url
             "t.get_type=",              #tracker type, {1:"http", 2:"udp", 3:"dht"
             "t.get_normal_interval=",   #default announce interval
@@ -737,7 +737,7 @@ class rtorrent:
         if peers_connected > 0:
             resp = self.conn.p.multicall(
                 id,
-                " ",
+                "",
                 "p.get_address=",
                 "p.get_port=",
                 "p.get_client_version=",
@@ -764,14 +764,13 @@ class rtorrent:
         files = []
         resp = self.conn.f.multicall(
             id,
-            " ",
+            "",
             "f.get_path_components=",
             "f.get_size_bytes=",
             "f.get_size_chunks=",
             "f.get_completed_chunks=",
             "f.get_priority=",
         )
-
         for file in resp:
             path_split = file[0]
             rel_path = "/".join(path_split)
