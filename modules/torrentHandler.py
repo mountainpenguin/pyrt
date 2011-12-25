@@ -433,7 +433,8 @@ class Handler:
                 %(seeding)s
                 %(active)s
                 <div id="tools-bar">
-                    <div class="topbar-tab_options" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_options(this);" title="Options" id="tab_options">Options</div>
+                    <div class="topbar-tab_options" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" title="Options" id="tab_options">Options</div>
+                    <div class="topbar-tab_options" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" title="RSS" id="tab_rss">RSS</div>
                 </div>
             </div>
             <div id="actions-bar">
@@ -475,6 +476,7 @@ class Handler:
                         </tr>
                     </table>
                 </div>
+
                 <div class="contextMenu" id="right_click_start">
                     <ul>
                         <li id="start"><img alt="start" src="/images/start.png"> Start</li>

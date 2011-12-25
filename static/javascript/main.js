@@ -96,7 +96,13 @@ function loadRClickMenus() {
     $("#tab_options").bind(
         "click",
         function () {
-        window.location = "/options";
+        window.location = "/options?test=test";
+        }
+    );
+    $("#tab_rss").bind(
+        "click",
+        function () {
+          window.location = "/RSS";
         }
     );
 }
@@ -235,6 +241,10 @@ function deselect_tab(elem) {
 
 function navigate_tab(elem) {
     window.location = "?view=" + elem.id.split("tab_")[1];
+}
+
+function navigate_tab_fromRSS(elem) {
+     window.location = "/?view=" + elem.id.split("tab_")[1];
 }
 
 function navigate_torrent(elem) {

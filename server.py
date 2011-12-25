@@ -2,7 +2,7 @@
 
 from modules import config, login                    #'real' modules
 from modules import indexPage, detailPage, ajaxPage  # pages
-from modules import optionsPage                      # pages
+from modules import optionsPage, rssPage             # pages
 
 import cherrypy
 import os
@@ -40,83 +40,92 @@ app_config = {
 }
 
 class mainHandler:
+    def __init__(self):
+        self.L = login.Login(conf=c)
+        self.INDEX = indexPage.Index(conf=c)
+        self.AJAX = ajaxPage.Ajax(conf=c)
+        self.OPTIONS = optionsPage.Options(conf=c)
+        self.RSS_PAGE = rssPage.Index(conf=c)
+        self.GLOBALS = {
+            "login" : self.L,
+            "indexPage" : self.INDEX,
+            "ajaxPage" : self.AJAX,
+            "optionsPage" : self.OPTIONS,
+            "rssPage" : self.RSS_PAGE,
+            "config" : c,
+            #"config" : config.Config(),
+        }
+        
     def index(self, password=None, view=None, sortby=None, reverse=None, **kwargs):
-            
         #check cookies
-        L = login.Login()
         client_cookie = cherrypy.request.cookie
-        Lcheck = L.checkLogin(client_cookie)
+        Lcheck = self.L.checkLogin(client_cookie)
         if not Lcheck and not password:
-            return L.loginHTML()
+            return self.L.loginHTML()
         elif not Lcheck and password:
             #check password
-            Pcheck = L.checkPassword(password)
+            Pcheck = self.L.checkPassword(password)
             if Pcheck:
                 #set a cookie
-                cherrypy.response.cookie = L.sendCookie()
+                cherrypy.response.cookie = self.L.sendCookie()
             else:
-                return L.loginHTML("Incorrect Password")
+                return self.L.loginHTML("Incorrect Password")
         
-        if view == "option":
-            Options = optionPage.Options()
-            return Options.index()
-        else:
-            Index = indexPage.Index()
-            return Index.index(password, view, sortby, reverse)
+        return self.INDEX.index(password, view, sortby, reverse)
         
     index.exposed = True
     
     def detail(self, view=None, torrent_id=None, password=None, **kwargs):
         #check cookies
-        L = login.Login()
         client_cookie = cherrypy.request.cookie
-        Lcheck = L.checkLogin(client_cookie)
+        Lcheck = self.L.checkLogin(client_cookie)
         if not Lcheck and not password:
-            return L.loginHTML()
+            return self.L.loginHTML()
         elif not Lcheck and password:
             #check password
-            Pcheck = L.checkPassword(password)
+            Pcheck = self.L.checkPassword(password)
             if Pcheck:
                 #set a cookie
-                cherrypy.response.cookie = L.sendCookie()
+                cherrypy.response.cookie = self.L.sendCookie()
             else:
-                return L.loginHTML("Incorrect Password")
+                return self.L.loginHTML("Incorrect Password")
         
-        Detail = detailPage.Detail(torrent_id)
+        Detail = detailPage.Detail(torrent_id, conf=self.GLOBALS["config"])
         return Detail.HTML
     detail.exposed = True
     
     def ajax(self, request=None, torrent_id=None, filepath=None, torrent=None, start=None, view=None, sortby=None, reverse=None, html=None):
         #check cookies
-        L = login.Login()
         client_cookie = cherrypy.request.cookie
-        Lcheck = L.checkLogin(client_cookie)
+        Lcheck = self.L.checkLogin(client_cookie)
         if not Lcheck:
             return
         #request=get_torrent_row&torrent_id=
-        Ajax = ajaxPage.Ajax()
         if request == "get_torrent_info" and torrent_id:
-            return Ajax.get_torrent_info(torrent_id, html)
+            return self.AJAX.get_torrent_info(torrent_id, html)
         elif request == "get_info_multi" and view:
-            return Ajax.get_info_multi(view, sortby, reverse)
+            return self.AJAX.get_info_multi(view, sortby, reverse)
         elif request == "get_torrent_row" and torrent_id:
-            return Ajax.get_torrent_row(torrent_id)
+            return self.AJAX.get_torrent_row(torrent_id)
         elif request == "pause_torrent" and torrent_id:
-            return Ajax.pause_torrent(torrent_id)
+            return self.AJAX.pause_torrent(torrent_id)
         elif request == "stop_torrent" and torrent_id:
-            return Ajax.stop_torrent(torrent_id)
+            return self.AJAX.stop_torrent(torrent_id)
         elif request == "start_torrent" and torrent_id:
-            return Ajax.start_torrent(torrent_id)
+            return self.AJAX.start_torrent(torrent_id)
         elif request == "remove_torrent" and torrent_id:
-            return Ajax.remove_torrent(torrent_id)
+            return self.AJAX.remove_torrent(torrent_id)
         elif request == "delete_torrent" and torrent_id:
-            return Ajax.delete_torrent(torrent_id)
+            return self.AJAX.delete_torrent(torrent_id)
         elif request == "hash_torrent" and torrent_id:
-            return Ajax.hash_torrent(torrent_id)
+            return self.AJAX.hash_torrent(torrent_id)
         elif request == "get_file" and torrent_id and filepath:
-            return Ajax.get_file(torrent_id, filepath)
+            return self.AJAX.get_file(torrent_id, filepath)
         elif request == "upload_torrent" and torrent is not None:
-            return Ajax.upload_torrent(torrent, start)
+            return self.AJAX.upload_torrent(torrent, start)
+        elif request == "get_feeds":
+            return self.AJAX.get_feeds()
+            
         else:
             raise cherrypy.HTTPError(message="Ajax Error Invalid Method")
     ajax.exposed = True
@@ -142,10 +151,17 @@ class mainHandler:
                 </html>
             """ % {"link" : link}
         else:
-            Options = optionsPage.Options()
-            return Options.index()
+            return self.OPTIONS.index()
     options.exposed = True
 
+    def RSS(self):
+        return self.RSS_PAGE.index()
+    RSS.exposed = True
+    
+    def test(self):
+        return repr(self.GLOBALS["config"].get("port"))
+    #test.exposed = True
+        
 if __name__ == "__main__":
     if os.path.exists(".user.pickle"):
         os.remove(".user.pickle")
