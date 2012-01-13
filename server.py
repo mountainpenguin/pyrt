@@ -15,6 +15,8 @@ global_config = {
     "server.socket_port" : c.get("port"),
     "server.ssl_certificate" : c.get("ssl_certificate"),
     "server.ssl_private_key" : c.get("ssl_private_key"),
+    "tools.encode.on" : True,
+    "tools.encode.encoding" : "utf-8",
 }
 app_config = {
     "/css" : {
@@ -40,7 +42,20 @@ app_config = {
 }
 
 class mainHandler:
+    """
+        Defines the web server options
+    """
     def __init__(self):
+        """
+            Initialisation function for mainHandler
+            
+            Initialises modules/:
+            self.L --> login.Login()
+            self.INDEX --> indexPage.Index()
+            self.AJAX --> ajaxPage.Ajax()
+            self.OPTIONS --> optionsPage.Options()
+            self.RSS_PAGE --> rssPage.Index()
+        """
         self.L = login.Login(conf=c)
         self.INDEX = indexPage.Index(conf=c)
         self.AJAX = ajaxPage.Ajax(conf=c)
@@ -57,6 +72,11 @@ class mainHandler:
         }
         
     def index(self, password=None, view=None, sortby=None, reverse=None, **kwargs):
+        """
+            Default page handler (/)
+            
+            Returns indexPage.Index.index() is user is logged in
+        """
         #check cookies
         client_cookie = cherrypy.request.cookie
         Lcheck = self.L.checkLogin(client_cookie)
@@ -76,6 +96,12 @@ class mainHandler:
     index.exposed = True
     
     def detail(self, view=None, torrent_id=None, password=None, **kwargs):
+        """
+            Detailed page view handler (/detail)
+            
+            Retrieves detailPage.Detail() passing the torrent_id argument.
+            This has attribute HTML, which is returned.
+        """
         #check cookies
         client_cookie = cherrypy.request.cookie
         Lcheck = self.L.checkLogin(client_cookie)
@@ -95,6 +121,24 @@ class mainHandler:
     detail.exposed = True
     
     def ajax(self, request=None, torrent_id=None, filepath=None, torrent=None, start=None, view=None, sortby=None, reverse=None, html=None):
+        """
+            Handler for ajax queries (/ajax)
+            
+            Hard-codes in multiple ajax requests and calls the
+            equivalent ajaxPage.Ajax() function:
+              get_torrent_info
+              get_info_multi
+              get_torrent_row
+              pause_torrent
+              stop_torrent
+              start_torrent
+              remove_torrent
+              delete_torrent
+              hash_torrent
+              get_file
+              upload_torrent
+              get_feeds
+        """
         #check cookies
         client_cookie = cherrypy.request.cookie
         Lcheck = self.L.checkLogin(client_cookie)
@@ -131,6 +175,13 @@ class mainHandler:
     ajax.exposed = True
     
     def options(self, test=False):
+        """
+            Handler for options page view (/options)
+            
+            *** Currently a work in progress ***
+            Can only be viewed if "test" is passed as an argument.
+            If it is, returns optionsPage.Options.index()
+        """
         if not test:
             try:
                 link = cherrypy.request.headers["Referer"]
