@@ -1,7 +1,15 @@
-- actions (delete queue add etc etc)
-- sortable index page
-- alter "active" / "seeding" tabs to show only connected torrents
 - make some "custom" views
     * views according to tracker?
 - allow searching on index
-- mktorrent / add torrent
+- mktorrent
+- batch actions
+- 'proper' details
+    * show on main page
+    * remove drop-down
+    * autorefresh
+- rtorrent settings
+- pyrt settings
+    * e.g. refresh rate
+- drag-and-drop add torrent
+- pretty statistics graphs
+- change priority on torrents / individual files

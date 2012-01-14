@@ -2,11 +2,11 @@
 
 import statvfs
 import os
-import psutil
 import time
 import rtorrent
 import config
 import torrentHandler
+import re
 
 def hdd(path="/"):
     """
@@ -31,15 +31,27 @@ def mem():
             index 0 : the used bytes of memory
             index 1 : the total bytes of memory
     """
-    used = psutil.used_phymem()
-    total = psutil.TOTAL_PHYMEM
-    return (used, total)
+    meminfofile = open("/proc/meminfo")
+    meminfo = meminfofile.read()
+    meminfofile.close()
+
+    try:
+        total = int(re.search("MemTotal:.*?(\d+) kB", meminfo).group(1))*1024
+        free = int(re.search("MemFree:.*?(\d+) kB", meminfo).group(1))*1024
+        used = total-free
+        return (used, total)
+    except:
+        return (0, 0)
     
 def uptime():
     """
         returns the number of seconds since the system was booted
     """
-    return int(time.time() - psutil.BOOT_TIME)
+    boot_time_match = re.search("btime (\d+)", open("/proc/stat").read())
+    if boot_time_match:
+        boot_time = int(boot_time_match.group(1))
+    handler = torrentHandler.Handler()
+    return handler.humanTimeDiff(int(time.time() - boot_time))
     
 def generalHTML():
     C = config.Config()
@@ -80,5 +92,5 @@ def generalHTML():
         "load5" : "%.02f" % load5,
         "load15" : "%.02f" % load15,
         "cpuusage" : "None",
-        "uptime" : handler.humanTimeDiff(uptime()),
+        "uptime" : str(uptime()),
     }   
