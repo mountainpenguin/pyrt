@@ -33,28 +33,30 @@ def mem():
     """
     
     if os.path.exists("/proc/meminfo"):
-      meminfofile = open("/proc/meminfo")
-      meminfo = meminfofile.read()
-      meminfofile.close()
-      try:
-          total = int(re.search("MemTotal:.*?(\d+) kB", meminfo).group(1))*1024
-          free = int(re.search("MemFree:.*?(\d+) kB", meminfo).group(1))*1024
-          used = total-free
-      except:
-          return (0, 0)
+        meminfofile = open("/proc/meminfo")
+        meminfo = meminfofile.read()
+        meminfofile.close()
+        try:
+            total = int(re.search("MemTotal:.*?(\d+) kB", meminfo).group(1))*1024
+            free = int(re.search("MemFree:.*?(\d+) kB", meminfo).group(1))*1024
+            used = total-free
+        except:
+            return (0, 0)
       
     else:
-      meminfofile = os.popen('vm_stat')
-      meminfo = meminfofile.read()
-      meminfofile.close()
-      try:
-        free = int(re.search("Pages free: .*?(\d+)", meminfo).group(1)) * 4096
-        active = int(re.search("Pages active: .*?(\d+)", meminfo).group(1)) * 4096 
-        inactive = int(re.search("Pages inactive: .*?(\d+)", meminfo).group(1)) * 4096
-        wired = int(re.search("Pages wired down: .*?(\d+)", meminfo).group(1)) * 4096
-        used = active + inactive + wired
-      except:
-          return (0, 0)
+        meminfofile = os.popen('vm_stat')
+        meminfo = meminfofile.read()
+        meminfofile.close()
+        try:
+            free = int(re.search("Pages free: .*?(\d+)", meminfo).group(1)) * 4096
+            active = int(re.search("Pages active: .*?(\d+)", meminfo).group(1)) * 4096 
+            inactive = int(re.search("Pages inactive: .*?(\d+)", meminfo).group(1)) * 4096
+            wired = int(re.search("Pages wired down: .*?(\d+)", meminfo).group(1)) * 4096
+            used = active + inactive + wired
+            total = used + free
+            return (used, total)
+        except:
+            return (0, 0)
 
     return (used, total)
     
