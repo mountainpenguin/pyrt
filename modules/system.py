@@ -54,7 +54,6 @@ def mem():
             wired = int(re.search("Pages wired down: .*?(\d+)", meminfo).group(1)) * 4096
             used = active + inactive + wired
             total = used + free
-            return (used, total)
         except:
             return (0, 0)
 
