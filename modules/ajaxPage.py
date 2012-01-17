@@ -186,5 +186,27 @@ class Ajax:
         torrentObj = self.RT.getTorrentObj_less(torrent_id)
         return self.Handler.getTorrentRow(torrentObj)
         
-                
-        
+    def start_batch(self, torrentListStr):
+        torrentList = torrentListStr.split(",")
+        for torrent_id in torrentList:
+            self.start_torrent(torrent_id)
+            
+    def pause_batch(self, torrentListStr):
+        torrentList = torrentListStr.split(",")
+        for torrent_id in torrentList:
+            self.pause_torrent(torrent_id)
+            
+    def stop_batch(self, torrentListStr):
+        torrentList = torrentListStr.split(",")
+        for torrent_id in torrentList:
+            self.stop_torrent(torrent_id)
+            
+    def remove_batch(self, torrentListStr):
+        torrentList = torrentListStr.split(",")
+        for torrent_id in torrentList:
+            self.remove_torrent(torrent_id)
+            
+    def delete_batch(self, torrentListStr):
+        torrentList = torrentListStr.split(",")
+        for torrent_id in torrentList:
+            self.delete_torrent(torrent_id)

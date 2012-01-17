@@ -120,7 +120,7 @@ class mainHandler:
         return Detail.HTML
     detail.exposed = True
     
-    def ajax(self, request=None, torrent_id=None, filepath=None, torrent=None, start=None, view=None, sortby=None, reverse=None, html=None):
+    def ajax(self, request=None, torrent_id=None, filepath=None, torrent=None, start=None, view=None, sortby=None, reverse=None, html=None, torrentIDs=None):
         """
             Handler for ajax queries (/ajax)
             
@@ -138,6 +138,11 @@ class mainHandler:
               get_file
               upload_torrent
               get_feeds
+              start_batch
+              pause_batch
+              stop_batch
+              remove_batch
+              delete_batch
         """
         #check cookies
         client_cookie = cherrypy.request.cookie
@@ -169,6 +174,16 @@ class mainHandler:
             return self.AJAX.upload_torrent(torrent, start)
         elif request == "get_feeds":
             return self.AJAX.get_feeds()
+        elif request == "start_batch" and torrentIDs is not None:
+            return self.AJAX.start_batch(torrentIDs)
+        elif request == "pause_batch" and torrentIDs is not None:
+            return self.AJAX.pause_batch(torrentIDs)
+        elif request == "stop_batch" and torrentIDs is not None:
+            return self.AJAX.stop_batch(torrentIDs)
+        elif request == "remove_batch" and torrentIDs is not None:
+            return self.AJAX.remove_batch(torrentIDs)
+        elif request == "delete_batch" and torrentIDs is not None:
+            return self.AJAX.delete_batch(torrentIDs)
             
         else:
             raise cherrypy.HTTPError(message="Ajax Error Invalid Method")

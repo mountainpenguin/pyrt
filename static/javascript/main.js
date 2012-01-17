@@ -54,9 +54,22 @@ $(document).ready(function () {
      }).mouseout(function (e) {
           deselect_torrent(this);
      });
+     $(".batch-control").live("click", function (e) {
+          action = this.id.split("batch-")[1];
+          torrentIDs = new Array();
+          for (i=0; i<SELECTED.length; i++) {
+               torrentIDs.push(SELECTED[i].split("torrent_id_")[1]);
+          }
+          $.post(
+               "/ajax",
+               {
+                    "request" : action + "_batch",
+                    "torrentIDs" : torrentIDs.join(",")
+               }
+          );
+     })
 });
 function select_group_torrent(elem, e) {
-     console.log(e);
      sel_index = SELECTED.indexOf(elem.id);
      if (sel_index !== -1) {
           SELECTED.splice(sel_index, 1);
@@ -75,11 +88,17 @@ function select_group_torrent(elem, e) {
 function createBatchActionBox(x, y) {
      batchActionsBox = $("<div id='batchActionBox'></div>");
      head = $("<div id='batch-head'><strong>Batch Action</strong></div>");
-     pause = $("<img class='batch-control' src='../images/pause.png'></div>");
-     stop = $("<img class='batch-control' src='../images/stop.png'></div>");
-     remove = $("<img class='batch-control' src='../images/remove.png'></div>");
-     del = $("<img class='batch-control' src='../images/delete.png'></div>");
-     controls = $("<div id='batch-controls'></div>").append(pause, stop, remove, del);
+     
+     start = $("<img class='batch-control' id='batch-start' src='../images/start.png' title='Start Batch'>");
+     pause = $("<img class='batch-control' id='batch-pause' src='../images/pause.png' title='Pause Batch'>");
+     stop = $("<img class='batch-control' id='batch-stop' src='../images/stop.png' title='Stop Batch'>");
+     startpausestop = $("<div id='batch-control-row1'></div>").append(start, pause, stop);
+     
+     remove = $("<img class='batch-control' id='batch-remove' src='../images/remove.png' title='Remove Batch'>");
+     del = $("<img class='batch-control' id='batch-delete' src='../images/delete.png' title='Delete Batch'>");
+     removedelete = $("<div id='batch-control-row2'></div>").append(remove, del);
+     
+     controls = $("<div id='batch-controls'></div>").append(startpausestop, removedelete);
      newElem = batchActionsBox.append(head, controls);
      $("body").append(newElem);
 }

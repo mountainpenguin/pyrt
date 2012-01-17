@@ -465,4 +465,12 @@ img.file_img {
 }
 .batch-control {
     padding : 2px;
+    cursor : pointer;
+}
+
+#batch-control-row1 {
+    padding-left : 10px;
+}
+#batch-control-row2 {
+    padding-left : 20px;
 }
