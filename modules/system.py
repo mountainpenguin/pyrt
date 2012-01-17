@@ -31,25 +31,44 @@ def mem():
             index 0 : the used bytes of memory
             index 1 : the total bytes of memory
     """
-    meminfofile = open("/proc/meminfo")
-    meminfo = meminfofile.read()
-    meminfofile.close()
+    
+    if os.path.exists("/proc/meminfo"):
+        meminfofile = open("/proc/meminfo")
+        meminfo = meminfofile.read()
+        meminfofile.close()
+        try:
+            total = int(re.search("MemTotal:.*?(\d+) kB", meminfo).group(1))*1024
+            free = int(re.search("MemFree:.*?(\d+) kB", meminfo).group(1))*1024
+            used = total-free
+        except:
+            return (0, 0)
+      
+    else:
+        meminfofile = os.popen('vm_stat')
+        meminfo = meminfofile.read()
+        meminfofile.close()
+        try:
+            free = int(re.search("Pages free: .*?(\d+)", meminfo).group(1)) * 4096
+            active = int(re.search("Pages active: .*?(\d+)", meminfo).group(1)) * 4096 
+            inactive = int(re.search("Pages inactive: .*?(\d+)", meminfo).group(1)) * 4096
+            wired = int(re.search("Pages wired down: .*?(\d+)", meminfo).group(1)) * 4096
+            used = active + inactive + wired
+            total = used + free
+        except:
+            return (0, 0)
 
-    try:
-        total = int(re.search("MemTotal:.*?(\d+) kB", meminfo).group(1))*1024
-        free = int(re.search("MemFree:.*?(\d+) kB", meminfo).group(1))*1024
-        used = total-free
-        return (used, total)
-    except:
-        return (0, 0)
+    return (used, total)
     
 def uptime():
     """
         returns the number of seconds since the system was booted
     """
-    boot_time_match = re.search("btime (\d+)", open("/proc/stat").read())
-    if boot_time_match:
-        boot_time = int(boot_time_match.group(1))
+    if os.path.exists("/proc/stat"):
+        boot_time_match = re.search("btime (\d+)", open("/proc/stat").read())
+        if boot_time_match:
+            boot_time = int(boot_time_match.group(1))
+    else:
+      boot_time = int(10)
     handler = torrentHandler.Handler()
     return handler.humanTimeDiff(int(time.time() - boot_time))
     

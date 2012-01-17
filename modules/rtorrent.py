@@ -771,7 +771,6 @@ class rtorrent:
             "f.get_completed_chunks=",
             "f.get_priority=",
         )
-
         for file in resp:
             path_split = file[0]
             rel_path = "/".join(path_split)
