@@ -1,11 +1,14 @@
+var SHIFT_SELECTED = false;
+var SELECTED = new Array();
+
 $(document).ready(function () {
      setTimeout(function () {
-        refresh_content("yes");
+          refresh_content("yes");
      }, 5000);
-    $("#add-torrent-button").click(function(){
-      $("#add_torrent").dialog("open");
-    })
-    $("#add_torrent").dialog({
+     $("#add-torrent-button").click(function(){
+          $("#add_torrent").dialog("open");
+     })
+     $("#add_torrent").dialog({
           height: 220,
           width: 420,
           modal: true,
@@ -22,11 +25,67 @@ $(document).ready(function () {
                     $( this ).dialog( "close" );
                   }
                 }
-        });
-    loadRClickMenus();
-    stripeTable();
+     });
+     
+     loadRClickMenus();
+     stripeTable();
+     $(document).keydown(function (e) {
+          if (e.shiftKey && !(SHIFT_SELECTED)) {
+               SHIFT_SELECTED = true;
+               $("body").css({cursor : "copy"})
+               e.preventDefault();
+               e.stopPropagation();
+          }
+     });
+     $(document).keyup(function (e) {
+          if (e.which == 16 && SHIFT_SELECTED) {
+               SHIFT_SELECTED = false;
+               $("body").css("cursor", "");
+          }
+     })
+     $(".torrent-div").click(function (e) {
+          if (e.shiftKey) {
+               select_group_torrent(this, e);
+          } else {
+               view_torrent(this);
+          }
+     }).mouseover(function (e) {
+          select_torrent(this);
+     }).mouseout(function (e) {
+          deselect_torrent(this);
+     });
 });
-
+function select_group_torrent(elem, e) {
+     console.log(e);
+     sel_index = SELECTED.indexOf(elem.id);
+     if (sel_index !== -1) {
+          SELECTED.splice(sel_index, 1);
+          elem.style.backgroundColor = null;
+          if (SELECTED.length == 0) {
+               destroyBatchActionBox();
+          }
+     } else {
+          SELECTED.push(elem.id);
+          elem.style.backgroundColor = "#7ae41b";
+          if (SELECTED.length == 1) {
+               createBatchActionBox(e.pageX, e.pageY);
+          }
+     }
+}
+function createBatchActionBox(x, y) {
+     batchActionsBox = $("<div id='batchActionBox'></div>");
+     head = $("<div id='batch-head'><strong>Batch Action</strong></div>");
+     pause = $("<img class='batch-control' src='../images/pause.png'></div>");
+     stop = $("<img class='batch-control' src='../images/stop.png'></div>");
+     remove = $("<img class='batch-control' src='../images/remove.png'></div>");
+     del = $("<img class='batch-control' src='../images/delete.png'></div>");
+     controls = $("<div id='batch-controls'></div>").append(pause, stop, remove, del);
+     newElem = batchActionsBox.append(head, controls);
+     $("body").append(newElem);
+}
+function destroyBatchActionBox() {
+     $("#batchActionBox").remove();
+}
 function stripeTable() {
     var colour_classes = Array("blue", "green");
     $(".torrent-div").each(
@@ -39,72 +98,72 @@ function stripeTable() {
     );
 }
 function loadRClickMenus() {
-    $(".torrent-div.rcstart").contextMenu("right_click_start", {
-        bindings : {
-            "start" : function (t) {
-                var torrent_id = t.id.split("torrent_id_")[1];
-                command("start_torrent", torrent_id);
-            },
-            "stop" : function (t) {
-                var torrent_id = t.id.split("torrent_id_")[1];
-                command("stop_torrent", torrent_id);            
-            },
-            "remove" : function (t) {
-                var torrent_id = t.id.split("torrent_id_")[1];
-                command("remove_torrent", torrent_id);
-            },
-            "delete" : function (t) {
-                var torrent_id = t.id.split("torrent_id_")[1];
-                command("delete_torrent", torrent_id);
-            },
-            "rehash" : function (t) {
-                var torrent_id = t.id.split("torrent_id_")[1];
-                command("hash_torrent", torrent_id);
-            },
-        },
-        menuStyle : {
-            minWidth : "10em"
-        }
-    });
-    $(".torrent-div.rcpause").contextMenu("right_click_pause", {
-        bindings : {
-            "pause" : function (t) {
-                var torrent_id = t.id.split("torrent_id_")[1];
-                command("pause_torrent", torrent_id);
-            },
-            "stop" : function (t) {
-                var torrent_id = t.id.split("torrent_id_")[1];
-                command("stop_torrent", torrent_id);            
-            },
-            "remove" : function (t) {
-                var torrent_id = t.id.split("torrent_id_")[1];
-                command("remove_torrent", torrent_id);
-            },
-            "delete" : function (t) {
-                var torrent_id = t.id.split("torrent_id_")[1];
-                command("delete_torrent", torrent_id);
-            },
-            "rehash" : function (t) {
-                var torrent_id = t.id.split("torrent_id_")[1];
-                command("hash_torrent", torrent_id);
-            },
-        },
-        menuStyle : {
-            minWidth : "10em"
-        }
-    });
-    $("#tab_options").bind(
-        "click",
-        function () {
-        window.location = "/options?test=test";
-        }
-    );
-    $("#tab_rss").bind(
-        "click",
-        function () {
-          window.location = "/RSS";
-        }
-    );
+     $(".torrent-div.rcstart").contextMenu("right_click_start", {
+          bindings : {
+              "start" : function (t) {
+                  var torrent_id = t.id.split("torrent_id_")[1];
+                  command("start_torrent", torrent_id);
+               },
+               "stop" : function (t) {
+                   var torrent_id = t.id.split("torrent_id_")[1];
+                   command("stop_torrent", torrent_id);            
+               },
+               "remove" : function (t) {
+                   var torrent_id = t.id.split("torrent_id_")[1];
+                   command("remove_torrent", torrent_id);
+               },
+               "delete" : function (t) {
+                   var torrent_id = t.id.split("torrent_id_")[1];
+                   command("delete_torrent", torrent_id);
+               },
+               "rehash" : function (t) {
+                   var torrent_id = t.id.split("torrent_id_")[1];
+                   command("hash_torrent", torrent_id);
+               },
+          },
+          menuStyle : {
+              minWidth : "10em"
+          }
+     });
+     $(".torrent-div.rcpause").contextMenu("right_click_pause", {
+         bindings : {
+             "pause" : function (t) {
+                 var torrent_id = t.id.split("torrent_id_")[1];
+                 command("pause_torrent", torrent_id);
+             },
+             "stop" : function (t) {
+                 var torrent_id = t.id.split("torrent_id_")[1];
+                 command("stop_torrent", torrent_id);            
+             },
+             "remove" : function (t) {
+                 var torrent_id = t.id.split("torrent_id_")[1];
+                 command("remove_torrent", torrent_id);
+             },
+             "delete" : function (t) {
+                 var torrent_id = t.id.split("torrent_id_")[1];
+                 command("delete_torrent", torrent_id);
+             },
+             "rehash" : function (t) {
+                 var torrent_id = t.id.split("torrent_id_")[1];
+                 command("hash_torrent", torrent_id);
+             },
+         },
+         menuStyle : {
+             minWidth : "10em"
+         }
+     });
+     $("#tab_options").bind(
+         "click",
+         function () {
+         window.location = "/options?test=test";
+         }
+     );
+     $("#tab_rss").bind(
+         "click",
+         function () {
+           window.location = "/RSS";
+         }
+     );
 }
 function refresh_content(repeat) {
     // get all torrent ids on page
@@ -223,13 +282,19 @@ function add_torrentrow(torrent_id, torrent_data) {
 }
 
 function select_torrent(elem) {
-    // elem.style.backgroundColor = "#00CCFF";
-    elem.style.backgroundColor = "#0099FF";
-    elem.style.cursor = "help";
+     // elem.style.backgroundColor = "#00CCFF";
+     if ((SELECTED.indexOf(elem.id) !== -1) && (SHIFT_SELECTED)) {
+          elem.style.backgroundColor = "#fe0701";
+     } else {
+          elem.style.backgroundColor = "#0099FF";
+     }
 }
 function deselect_torrent(elem) {
-    elem.style.backgroundColor = null;
-    elem.style.cursor = "default";
+     if (SELECTED.indexOf(elem.id) !== -1) {
+          elem.style.backgroundColor = "#7ae41b";
+     } else {
+          elem.style.backgroundColor = null;
+     }
 }
 function select_tab(elem) {
    elem.style.backgroundColor = "#bbbbbb"; 
