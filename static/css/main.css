@@ -37,7 +37,17 @@ td.heading {
     background-color : #3A3737;
     color : white;
     min-width : 1em;
+    padding: 10px;
 }
+
+td.heading:first-child{
+  border-top-left-radius: 10px;
+}
+
+td.heading:last-child{
+  border-top-right-radius: 10px;
+}
+
 
 td.footing {
     background-color : #3A3737;
@@ -49,6 +59,13 @@ tr.torrent-div {
     -webkit-border-radius : 10px;
     padding : 0.5em; 
     margin : 0.5em;
+    border-left:none;
+    border-right:none;
+}
+
+tr.torrent-div:hover {
+  background-color: #3A3737;
+  color: #FEA;
 }
 
 tr.new-torrent-row {
@@ -172,6 +189,7 @@ div.topbar-tab {
     color: white;
     font-weight: bold;
     cursor : pointer;
+    display: inline-block;
     -moz-border-radius-topleft: 8px;
     -webkit-border-top-left-radius: 8px;
     border-top-left-radius: 8px;
@@ -180,6 +198,14 @@ div.topbar-tab {
     border-top-right-radius: 8px;
 }
 
+div..topbar-tab_options:hover{
+  color: #FFEEAA;
+}
+
+div.topbar-tab:hover{
+  color: #FFEEAA;
+  
+}
 div.topbar-tab.selected{
   border-bottom: none;
   background: white;

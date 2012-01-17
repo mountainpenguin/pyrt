@@ -53,6 +53,7 @@ def mem():
         inactive = int(re.search("Pages inactive: .*?(\d+)", meminfo).group(1)) * 4096
         wired = int(re.search("Pages wired down: .*?(\d+)", meminfo).group(1)) * 4096
         used = active + inactive + wired
+        total = used + free
       except:
           return (0, 0)
 
