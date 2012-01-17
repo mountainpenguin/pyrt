@@ -79,7 +79,7 @@ class Handler:
     
     def HTMLredirect(self, url, refresh=0, body=""):
         return """
-        <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+        <!DOCTYPE HTML>
         <html>
             <head>
                 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
@@ -293,11 +293,7 @@ class Handler:
             stopstart_class = "rcpause"
             
         TORRENT_TABLEROW = """
-            <tr onmouseover='select_torrent(this);' 
-                onmouseout='deselect_torrent(this);' 
-                onclick='view_torrent(this);'
-                ondblclick='navigate_torrent(this);'
-                class='torrent-div %(stoporstart)s' 
+            <tr class='torrent-div %(stoporstart)s' 
                 id='torrent_id_%(t_id)s'>
                 <td id="t_name_%(t_id)s">%(t_name)s</td>
                 <td id="t_size_%(t_id)s">%(t_size)s</td>
@@ -406,7 +402,7 @@ class Handler:
         infoDict.update(sorts)
         
         HTML = """
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE HTML>
 <html>
     <head>
         <!-- HEAD PLACEHOLDER -->
@@ -414,7 +410,7 @@ class Handler:
         <title>rTorrent - webUI</title>
         <link rel="stylesheet" type="text/css" href="/css/main.css">
         <link rel="stylesheet" type="text/css" href="/css/smoothness/jquery-ui-1.8.13.custom.css">                
-        <script src="/javascript/jquery-1.6.1.min.js" type="text/javascript"></script>
+        <script src="/javascript/jquery-1.7.min.js" type="text/javascript"></script>
         <script src="/javascript/jquery-ui-1.8.13.custom.min.js" type="text/javascript"></script>        
         <script src="/javascript/jquery.contextmenu.r2.js" type="text/javascript"></script>
         <script src="/javascript/jquery-sliderow.js" type="text/javascript"></script>
