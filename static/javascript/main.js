@@ -304,23 +304,12 @@ function select_torrent(elem) {
      // elem.style.backgroundColor = "#00CCFF";
      if ((SELECTED.indexOf(elem.id) !== -1) && (SHIFT_SELECTED)) {
           elem.style.backgroundColor = "#fe0701";
-     } else {
-          elem.style.backgroundColor = "#0099FF";
      }
 }
 function deselect_torrent(elem) {
      if (SELECTED.indexOf(elem.id) !== -1) {
           elem.style.backgroundColor = "#7ae41b";
-     } else {
-          elem.style.backgroundColor = null;
      }
-}
-function select_tab(elem) {
-   elem.style.backgroundColor = "#bbbbbb"; 
-}
-
-function deselect_tab(elem) {
-    elem.style.backgroundColor = null;
 }
 
 function navigate_tab(elem) {

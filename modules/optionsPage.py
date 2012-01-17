@@ -28,20 +28,20 @@ class Options:
                 <body>
                     <div id="header">
                         <div id="topbar">
-                            <div class="topbar-tab" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" title="Main" id="tab_main">Main</div>
+                            <div class="topbar-tab" title="Main" id="tab_main">Main</div>
                             <div id="slide-me">
-                                <div class="topbar-tab" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" title="Started" id="tab_started">Started</div>
-                                <div class="topbar-tab" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" title="Stopped" id="tab_stopped">Stopped</div>
-                                <div class="topbar-tab" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" title="Complete" id="tab_complete">Complete</div>
-                                <div class="topbar-tab" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" title="Incomplete" id="tab_incomplete">Incomplete</div>
-                                <div class="topbar-tab" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" title="Hashing" id="tab_hashing">Hashing</div>
-                                <div class="topbar-tab" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" title="Seeding" id="tab_seeding">Seeding</div>
-                                <div class="topbar-tab" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" title="Active" id="tab_active">Active</div>
+                                <div class="topbar-tab" title="Started" id="tab_started">Started</div>
+                                <div class="topbar-tab" title="Stopped" id="tab_stopped">Stopped</div>
+                                <div class="topbar-tab" title="Complete" id="tab_complete">Complete</div>
+                                <div class="topbar-tab" title="Incomplete" id="tab_incomplete">Incomplete</div>
+                                <div class="topbar-tab" title="Hashing" id="tab_hashing">Hashing</div>
+                                <div class="topbar-tab" title="Seeding" id="tab_seeding">Seeding</div>
+                                <div class="topbar-tab" title="Active" id="tab_active">Active</div>
                             </div>
                             <div id="tools-bar">
-                                <div class="topbar-tab_options selected" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" title="Options" id="tab_options">Options</div>
-                                <div class="topbar-tab_options hidden" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" title="PyRT Options" id="tab_pyrt">PyRT</div>
-                                <div class="topbar-tab_options hidden" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" title="rTorrent Options" id="tab_rtorrent">rTorrent</div>
+                                <div class="topbar-tab_options selected"  title="Options" id="tab_options">Options</div>
+                                <div class="topbar-tab_options hidden" title="PyRT Options" id="tab_pyrt">PyRT</div>
+                                <div class="topbar-tab_options hidden" title="rTorrent Options" id="tab_rtorrent">rTorrent</div>
                             </div>
                         </div>
                     </div>
