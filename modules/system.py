@@ -56,7 +56,7 @@ def mem():
             total = used + free
         except:
             return (0, 0)
-   return (used, total)
+    return (used, total)
     
 def uptime():
     """

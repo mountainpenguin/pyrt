@@ -49,16 +49,16 @@ $(document).ready(function () {
           } else {
                view_torrent(this);
           }
-     }).mouseover(function (e) {
-          select_torrent(this);
-     }).mouseout(function (e) {
-          deselect_torrent(this);
-     });
+     })
      $(".batch-control").live("click", function (e) {
           action = this.id.split("batch-")[1];
           torrentIDs = new Array();
           for (i=0; i<SELECTED.length; i++) {
                torrentIDs.push(SELECTED[i].split("torrent_id_")[1]);
+          }
+          if (action == "delete" || action == "remove") {
+               SELECTED = new Array();
+               destroyBatchActionBox();
           }
           $.post(
                "/ajax",
