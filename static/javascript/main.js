@@ -1,4 +1,3 @@
-var SHIFT_SELECTED = false;
 var CTRL_SELECTED = false;
 var SELECTED = new Array();
 
@@ -31,7 +30,7 @@ $(document).ready(function () {
      loadRClickMenus();
      stripeTable();
      $(document).keydown(function (e) {
-          if (e.ctrlKey && !(CTRL_SELECTED)) {
+          if (((e.ctrlKey) || (e.which == 91))  && !(CTRL_SELECTED))  {
                CTRL_SELECTED = true;
                $("#torrent_table").selectable({
                     filter : ".torrent-div",
@@ -43,7 +42,7 @@ $(document).ready(function () {
           }
      });
      $(document).keyup(function (e) {
-          if (e.which == 17 && CTRL_SELECTED) {
+          if ((e.which == 17) || (e.which == 91) && CTRL_SELECTED) {
                CTRL_SELECTED = false;
                $("#torrent_table").selectable("destroy");
                $("body").css("cursor", "");
