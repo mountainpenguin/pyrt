@@ -89,6 +89,14 @@ $(document).ready(function () {
           select_group_torrent(ui.selected, event);
      }).live("selectableunselected", function(event, ui) {
           deselect_group_torrent(ui.unselected, event);
+     }).live("selectableselecting", function(event, ui) {
+          if (SELECTED.indexOf(ui.selecting.id) == -1) {
+               $(ui.selecting).css({"background-color" : "#d9ffd9"});
+          }
+     }).live("selectableunselecting", function(event, ui) {
+          if (SELECTED.indexOf(ui.unselecting.id) == -1) {
+               $(ui.unselecting).css({"background-color" : ""});
+          }
      })
 });
 function select_group_torrent(elem, e) {
