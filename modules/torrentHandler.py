@@ -411,7 +411,7 @@ class Handler:
         <link rel="stylesheet" type="text/css" href="/css/main.css">
         <link rel="stylesheet" type="text/css" href="/css/smoothness/jquery-ui-1.8.13.custom.css">                
         <script src="/javascript/jquery-1.7.min.js" type="text/javascript"></script>
-        <script src="/javascript/jquery-ui-1.8.13.custom.min.js" type="text/javascript"></script>        
+        <script src="/javascript/jquery-ui-1.8.17.custom.min.js" type="text/javascript"></script>        
         <script src="/javascript/jquery.contextmenu.r2.js" type="text/javascript"></script>
         <script src="/javascript/jquery-sliderow.js" type="text/javascript"></script>
         <script src="/javascript/main.js" type="text/javascript"></script>
@@ -429,8 +429,8 @@ class Handler:
                 %(seeding)s
                 %(active)s
                 <div id="tools-bar">
-                    <div class="topbar-tab_options" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" title="Options" id="tab_options">Options</div>
-                    <div class="topbar-tab_options" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" title="RSS" id="tab_rss">RSS</div>
+                    <div class="topbar-tab_options" title="Options" id="tab_options">Options</div>
+                    <div class="topbar-tab_options" title="RSS" id="tab_rss">RSS</div>
                 </div>
             </div>
             <div id="actions-bar">

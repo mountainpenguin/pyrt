@@ -1,4 +1,5 @@
 var SHIFT_SELECTED = false;
+var CTRL_SELECTED = false;
 var SELECTED = new Array();
 
 $(document).ready(function () {
@@ -30,22 +31,27 @@ $(document).ready(function () {
      loadRClickMenus();
      stripeTable();
      $(document).keydown(function (e) {
-          if (e.shiftKey && !(SHIFT_SELECTED)) {
-               SHIFT_SELECTED = true;
-               $("body").css({cursor : "copy"})
+          if (e.ctrlKey && !(CTRL_SELECTED)) {
+               CTRL_SELECTED = true;
+               $("#torrent_table").selectable({
+                    filter : ".torrent-div",
+                    tolerance : "touch"
+               })
+               $("body").css({cursor : "copy"});
                e.preventDefault();
                e.stopPropagation();
           }
      });
      $(document).keyup(function (e) {
-          if (e.which == 16 && SHIFT_SELECTED) {
-               SHIFT_SELECTED = false;
+          if (e.which == 17 && CTRL_SELECTED) {
+               CTRL_SELECTED = false;
+               $("#torrent_table").selectable("destroy");
                $("body").css("cursor", "");
           }
      })
+     
      $(".torrent-div").click(function (e) {
-          if (e.shiftKey) {
-               select_group_torrent(this, e);
+          if (e.ctrlKey) {
           } else {
                view_torrent(this);
           }
@@ -68,15 +74,26 @@ $(document).ready(function () {
                }
           );
      })
+     $("#batch-deselect").live("click", function (e) {
+          for (i=0; i<SELECTED.length; i++) {
+               torrent = $("#" + SELECTED[i]);
+               torrent.css({"background-color" : ""});
+               torrent.removeClass("ui-selected ui-selecting");
+          }
+          SELECTED = new Array();
+          destroyBatchActionBox();
+     })
+
+     $("#torrent_table")
+       .live("selectableselected", function(event, ui) {
+          select_group_torrent(ui.selected, event);
+     }).live("selectableunselected", function(event, ui) {
+          deselect_group_torrent(ui.unselected, event);
+     })
 });
 function select_group_torrent(elem, e) {
      sel_index = SELECTED.indexOf(elem.id);
      if (sel_index !== -1) {
-          SELECTED.splice(sel_index, 1);
-          elem.style.backgroundColor = null;
-          if (SELECTED.length == 0) {
-               destroyBatchActionBox();
-          }
      } else {
           SELECTED.push(elem.id);
           elem.style.backgroundColor = "#7ae41b";
@@ -85,9 +102,19 @@ function select_group_torrent(elem, e) {
           }
      }
 }
+function deselect_group_torrent(elem, e) {
+     sel_index = SELECTED.indexOf(elem.id);
+     if (sel_index != -1) {
+          SELECTED.splice(sel_index, 1);
+          $(elem).css({"background-color" : ""});
+          if (SELECTED.length == 0) {
+               destroyBatchActionBox();
+          }
+     }
+}
 function createBatchActionBox(x, y) {
      batchActionsBox = $("<div id='batchActionBox'></div>");
-     head = $("<div id='batch-head'><strong>Batch Action</strong></div>");
+     head = $("<div id='batch-head' class='heading'>Batch Action</div>");
      
      start = $("<img class='batch-control' id='batch-start' src='../images/start.png' title='Start Batch'>");
      pause = $("<img class='batch-control' id='batch-pause' src='../images/pause.png' title='Pause Batch'>");
@@ -96,11 +123,14 @@ function createBatchActionBox(x, y) {
      
      remove = $("<img class='batch-control' id='batch-remove' src='../images/remove.png' title='Remove Batch'>");
      del = $("<img class='batch-control' id='batch-delete' src='../images/delete.png' title='Delete Batch'>");
-     removedelete = $("<div id='batch-control-row2'></div>").append(remove, del);
+     startpausestop.append(remove, del);
      
-     controls = $("<div id='batch-controls'></div>").append(startpausestop, removedelete);
+     deselect = $("<div id='batch-deselect'>Deselect all</div>");
+     
+     controls = $("<div id='batch-controls'></div>").append(startpausestop, deselect);
      newElem = batchActionsBox.append(head, controls);
      $("body").append(newElem);
+     $("#batchActionBox").animate({"left" : "0px"}, 200);
 }
 function destroyBatchActionBox() {
      $("#batchActionBox").remove();

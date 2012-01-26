@@ -2,10 +2,13 @@ var rtorrent_display = false;
 var pyrt_display = false;
 
 $(document).ready( function () {
-   $("#slide-me").hide("slide", { direction : "left" }, 1000, function () {
-      $("#tab_pyrt").show("slide", { direction : "left" }, 500);
-      $("#tab_rtorrent").show("slide", { direction : "left" }, 500);
-   });
+   //$("#slide-me").hide("slide", { direction : "left" }, 0, function () {
+   //   //$("#tab_pyrt").show("slide", { direction : "left" }, 0);
+   //   //$("#tab_rtorrent").show("slide", { direction : "left" }, 0);
+   //});
+   $("#slide-me").hide()
+   $("#tab_pyrt").show()
+   $("#tab_rtorrent").show()
    $("#tab_main").bind(
       "click",
       function () {

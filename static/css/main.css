@@ -519,3 +519,10 @@ img.file_img {
     cursor : pointer;
     padding-left : 1em;
 }
+
+.ui-selecting {
+    background-color : red;
+}
+.ui-selected {
+    background-color : green;
+}
