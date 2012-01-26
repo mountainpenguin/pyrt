@@ -4,7 +4,7 @@ import cookielib
 import Cookie
 import cPickle as pickle
 import os
-import md5
+import hashlib
 import base64
 import random
 import string
@@ -54,8 +54,8 @@ class Login:
         if not salt:
             salt = os.urandom(6)
         salt_encoded = base64.b64encode(salt)
-        md5_1 = md5.new(pw).digest()
-        md5_2 = md5.new(md5_1 + salt).digest()
+        md5_1 = hashlib.md5(pw).digest()
+        md5_2 = hashlib.md5(md5_1 + salt).digest()
         md5_encoded = base64.b64encode(md5_2)
         return "$%s$%s" % (salt_encoded, md5_encoded)
         
