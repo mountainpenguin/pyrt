@@ -42,6 +42,7 @@ td.heading {
     color : white;
     min-width : 1em;
     padding: 10px;
+    cursor : pointer;
 }
 
 td.heading:first-child{
@@ -202,13 +203,16 @@ div.topbar-tab {
     border-top-right-radius: 8px;
 }
 
-div..topbar-tab_options:hover{
-  color: #FFEEAA;
+div.topbar-tab_options:hover{
+    background-color : #c0c0c0;  
+    /*color: #ffff00;*/
+    color : black;
 }
 
 div.topbar-tab:hover{
-  color: #FFEEAA;
-  
+    background-color : #c0c0c0;  
+    /*color: #ffff00;*/
+    color : black;
 }
 div.topbar-tab.selected{
   border-bottom: none;
@@ -472,31 +476,46 @@ img.file_img {
 
 #batchActionBox {
     position : fixed;
-    left : 2px;
+    left : -91px;
     top : 150px;
     border: 1px solid black;
     background-color : #dce1bb;
-    padding : 1em;
+    /*padding : 1em;*/
     -moz-border-top-right-radius : 15px;
     -moz-border-bottom-right-radius : 15px;
     border-top-right-radius : 15px;
     border-bottom-right-radius : 15px;
-    -moz-border-top-left-radius : 2px;
-    -moz-border-bottom-left-radius : 2px;
-    border-top-left-radius : 2px;
-    border-bottom-left-radius : 2px;
+    /*-moz-border-top-left-radius : 2px;*/
+    /*-moz-border-bottom-left-radius : 2px;*/
+    /*border-top-left-radius : 2px;*/
+    /*border-bottom-left-radius : 2px;*/
 }
 #batch-controls {
     padding-top : 1em;
+    padding-bottom : 1em;
 }
 .batch-control {
     padding : 2px;
     cursor : pointer;
 }
 
-#batch-control-row1 {
-    padding-left : 10px;
+#batch-head {
+    font-weight : bold;
+    background-color : #3A3737;
+    color : white;
+    min-width : 1em;
+    padding: 10px;
+    -moz-border-top-right-radius : 14px;
+    border-top-right-radius : 14px;
 }
-#batch-control-row2 {
-    padding-left : 20px;
+
+#batch-control-row1 {
+    padding-left : 2px;
+}
+#batch-deselect {
+    padding-top : 1em;
+    color : blue;
+    font-size : smaller;
+    cursor : pointer;
+    padding-left : 1em;
 }
