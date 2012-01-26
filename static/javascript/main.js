@@ -211,7 +211,7 @@ function loadRClickMenus() {
      $("#tab_options").bind(
          "click",
          function () {
-         window.location = "/options?test=test";
+         window.location = "/options";
          }
      );
      $("#tab_rss").bind(
