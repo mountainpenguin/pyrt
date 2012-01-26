@@ -103,7 +103,7 @@ function select_group_torrent(elem, e) {
      if (sel_index !== -1) {
      } else {
           SELECTED.push(elem.id);
-          elem.style.backgroundColor = "#7ae41b";
+          elem.style.backgroundColor = "#AEC798";
           if (SELECTED.length == 1) {
                createBatchActionBox(e.pageX, e.pageY);
           }
