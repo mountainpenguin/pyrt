@@ -5,6 +5,7 @@ import string
 import os
 import re
 import system
+from Cheetah.Template import Template
 
 class Handler:
     """
@@ -283,56 +284,6 @@ class Handler:
             
         return torrentList
         
-    def getTorrentRow(self, torrent):
-        status = self.getState(torrent)
-        if status == "Stopped" or status == "Paused":
-            stopstart_button = "<span class='control_start control_button' title='Start Torrent'><img onclick='event.cancelBubble = true; command(\"start_torrent\",\"%s\")' class='control_image' alt='Start' src='../images/start.png'></span>" % torrent.torrent_id
-            stopstart_class = "rcstart"
-        else:
-            stopstart_button = "<span class='control_pause control_button' title='Pause Torrent'><img onclick='event.cancelBubble = true; command(\"pause_torrent\",\"%s\")'class='control_image' alt='Pause' src='../images/pause.png'></span>" % torrent.torrent_id
-            stopstart_class = "rcpause"
-            
-        TORRENT_TABLEROW = """
-            <tr class='torrent-div %(stoporstart)s' 
-                id='torrent_id_%(t_id)s'>
-                <td id="t_name_%(t_id)s">%(t_name)s</td>
-                <td id="t_size_%(t_id)s">%(t_size)s</td>
-                <td id="t_ratio_%(t_id)s" title='%(t_uploaded)s up / %(t_downloaded)s down'>%(t_ratio).02f</td>
-                <td id="t_uprate_%(t_id)s">%(t_uprate)s/s</td>
-                <td id="t_downrate_%(t_id)s">%(t_downrate)s/s</td>
-                <td id="t_status_%(t_id)s">%(t_status)s</td>
-                <td id="t_controls_%(t_id)s">
-                    %(control_startpause)s
-                    <span class='control_stop control_button' title='Stop Torrent'>
-                        <img onclick='event.cancelBubble = true; command(\"stop_torrent\",\"%(t_id)s\")'
-                             class='control_image' alt='Stop' src='../images/stop.png'>
-                    </span>
-                    <span class='control_remove control_button' title='Remove Torrent'>
-                        <img onclick='event.cancelBubble = true; command(\"remove_torrent\",\"%(t_id)s\")'
-                             class='control_image' alt='Remove' src='../images/remove.png'>
-                    </span>
-                    <span class='control_delete control_button' title='Remove Torrent and Files'>
-                        <img onclick='event.cancelBubble = true; command(\"delete_torrent\",\"%(t_id)s\")'
-                             class='control_image' alt='Delete' src='../images/delete.png'>
-                    </span>
-                </td>
-            </tr>
-                    """ % {
-                        "t_id" : torrent.torrent_id, 
-                        "t_name" : torrent.name,
-                        "t_size" : self.humanSize(torrent.size),
-                        "t_uploaded" : self.humanSize(torrent.up_total),
-                        "t_downloaded" : self.humanSize(torrent.down_total),
-                        "t_ratio" : float(torrent.ratio)/1000,
-                        "t_uprate" : self.humanSize(torrent.up_rate),
-                        "t_downrate" : self.humanSize(torrent.down_rate),
-                        "t_status" : status,
-                        "control_startpause" : stopstart_button,
-                        "stoporstart" : stopstart_class,
-                    }
-                    
-        return TORRENT_TABLEROW
-        
     def torrentHTML(self, torrentList, sort, view, reverse=None):
         """
             Sorts a list of torrent_ids with default information
@@ -350,150 +301,27 @@ class Handler:
                 leechs, seeds, and peers are shorthand for leechs_connected, 
                 seeds_connected and peers_connected respectively
         """
-
-        sorts = {
-            "name":"",
-            "namesort" : "none",
-            "size":"",
-            "sizesort" : "none",
-            "ratio":"",
-            "ratiosort" : "none",
-            "uprate" : "",
-            "upratesort" : "none",
-            "downrate" : "",
-            "downratesort" : "none",
-            "status" : "",
-            "statussort" : "none",
-        }
-        for type in sorts.keys():
-            if type in self.SORT_METHODS:
-                sorts[type] = "?view=%s&amp;sortby=%s" % (view, type)
-                if type == sort and not reverse:
-                    sorts[type] += "&amp;reverse=1"
-        if sort in sorts.keys():
-            if reverse:
-                sorts[sort + "sort"] = "down"
-            else:
-                sorts[sort + "sort"] = "up"
         
         torrentList = self.sortTorrents(torrentList, sort, reverse)
-
-        def _genHTML(type, VIEW):
-            if VIEW == type:
-                return  '<div class="topbar-tab selected" onclick="navigate_tab(this);" title="%s" id="tab_%s">%s</div>' % (type, type, type.capitalize())
-            else:
-                return '<div class="topbar-tab" onclick="navigate_tab(this);" title="%s" id="tab_%s">%s</div>' % (type, type, type.capitalize())
-
-        infoDict = {
-            "main" : _genHTML("main", view),
-            "started" : _genHTML("started", view),
-            "stopped" : _genHTML("stopped", view),
-            "complete" : _genHTML("complete", view),
-            "incomplete" : _genHTML("incomplete", view),
-            "hashing" : _genHTML("hashing", view),
-            "seeding" : _genHTML("seeding", view),
-            "active" : _genHTML("active", view),
-            "global_stats" : system.generalHTML(),
-            "view" : view,
-            "sort" : sort,
-            "reverse" : (lambda x : not x and 'none' or x)(reverse),
-            "torrents_html" : "\n".join([self.getTorrentRow(t) for t in torrentList]),
-        }
-        infoDict.update(sorts)
+        updated_torrentList = []
+        for t in torrentList:
+            t.t_size = self.humanSize(t.size)
+            t.t_uploaded = self.humanSize(t.up_total)
+            t.t_downloaded = self.humanSize(t.down_total)
+            t.t_ratio = "%.02f" % (float(t.ratio)/1000)
+            t.t_uprate = self.humanSize(t.up_rate)
+            t.t_downrate = self.humanSize(t.down_rate)
+            updated_torrentList += [t]
         
-        HTML = """
-<!DOCTYPE HTML>
-<html>
-    <head>
-        <!-- HEAD PLACEHOLDER -->
-        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-        <title>rTorrent - webUI</title>
-        <link rel="stylesheet" type="text/css" href="/css/main.css">
-        <link rel="stylesheet" type="text/css" href="/css/smoothness/jquery-ui-1.8.13.custom.css">                
-        <script src="/javascript/jquery-1.7.min.js" type="text/javascript"></script>
-        <script src="/javascript/jquery-ui-1.8.17.custom.min.js" type="text/javascript"></script>        
-        <script src="/javascript/jquery.contextmenu.r2.js" type="text/javascript"></script>
-        <script src="/javascript/jquery-sliderow.js" type="text/javascript"></script>
-        <script src="/javascript/main.js" type="text/javascript"></script>
+        searchList = [{
+            "global" : system.get_global(),
+            "torrent_list" : updated_torrentList,
+            "this_view" : view,
+            "this_sort" : sort,
+            "this_reverse" : reverse,
+            "self" : self,
+            
+        }]
         
-    </head>
-    <body>
-        <div id="header">
-            <div id="topbar">
-                %(main)s
-                %(started)s
-                %(stopped)s
-                %(complete)s
-                %(incomplete)s
-                %(hashing)s
-                %(seeding)s
-                %(active)s
-                <div id="tools-bar">
-                    <div class="topbar-tab_options" title="Options" id="tab_options">Options</div>
-                    <div class="topbar-tab_options" title="RSS" id="tab_rss">RSS</div>
-                </div>
-            </div>
-            <div id="actions-bar">
-                <a href="#" id="add-torrent-button">Add torrent</a>
-            </div>
-        </div>
-        <div id="main_body">
-            <div id="wrapper">
-                <div id="add_torrent" style="display: none" title="Add a torrent">
-                    <form id="add_torrent_form" action="ajax" method="post" enctype="multipart/form-data">
-                        <label>Select file:</label>
-                        <input type="hidden" name="request" value="upload_torrent">
-                        <input id="add_torrent_input" accept="application/x-bittorrent" type="file" name="torrent">
-                        <div class="add_torrent_start_text"> 
-                            <input id="add_torrent_start" type="checkbox" name="start"> Start Immediately?
-                        </div>
-                    </form>
-                </div>
-                <div id="global_stats">
-                    %(global_stats)s
-                </div>
-                <div id="this_view" class="hidden">%(view)s</div>
-                <div id="this_sort" class="hidden">%(sort)s</div>
-                <div id="this_reverse" class="hidden">%(reverse)s</div>
-                <div id="torrent_table">
-                    <table id='torrent_list'>
-                        <tr id='torrent_list_headings'>
-                            <td class='heading' id="sortby_name" onclick="window.location='%(name)s';">Name <img alt="Sort By Name" src="../images/sort_%(namesort)s.gif" class="control_button"></td>
-                            <td class='heading' id="sortby_size" onclick="window.location='%(size)s';">Size <img alt="Sort By Size" src="../images/sort_%(sizesort)s.gif" class="control_button"></td>
-                            <td class='heading' id="sortby_ratio" onclick="window.location='%(ratio)s';">Ratio <img alt="Sort By Ratio" src="../images/sort_%(ratiosort)s.gif" class="control_button"></td>
-                            <td class='heading' id="sortby_uprate" onclick="window.location='%(uprate)s';">Upload speed <img alt="Sort By Upload Speed" src="../images/sort_%(upratesort)s.gif" class="control_button"></td>
-                            <td class='heading' id="sortby_downrate" onclick="window.location='%(downrate)s';">Download speed <img alt="Sort By Download Speed" src="../images/sort_%(downratesort)s.gif" class="control_button"></td>
-                            <td class='heading' id="sortby_status" onclick="window.location='%(status)s';">Status <img alt="Sort By Status" src="../images/sort_%(statussort)s.gif" class="control_button"></td>
-                            <td class='heading'></td>
-                        </tr>
-                        %(torrents_html)s
-                        <tr id='foot'>
-                            <td class='footing' colspan="7"></td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="contextMenu" id="right_click_start">
-                    <ul>
-                        <li id="start"><img alt="start" src="/images/start.png"> Start</li>
-                        <li id="stop"><img alt="stop" src="/images/stop.png"> Stop</li>
-                        <li id="remove"><img alt="remove" src="/images/remove.png"> Remove and <strong>keep</strong> files</li>
-                        <li id="delete"><img alt="delete" src="/images/delete.png"> Remove and <strong>delete</strong> files</li>
-                        <li id="rehash"><img alt="rehash" src="/images/hash.png"> Rehash</li>
-                    </ul>
-                </div>
-                <div class="contextMenu" id="right_click_pause">
-                    <ul>
-                        <li id="pause"><img alt="pause" src="/images/pause.png"> Pause</li>
-                        <li id="stop"><img alt="stop" src="/images/stop.png"> Stop</li>
-                        <li id="remove"><img alt="remove" src="/images/remove.png"> Remove and <strong>keep</strong> files</li>
-                        <li id="delete"><img alt="delete" src="/images/delete.png"> Remove and <strong>delete</strong> files</li>
-                        <li id="rehash"><img alt="rehash" src="/images/hash.png"> Rehash</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </body>
-</html>
-        """ % infoDict
+        HTML = Template(file="htdocs/torrentHTML.tmpl", searchList=searchList).respond()
         return HTML
