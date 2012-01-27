@@ -17,6 +17,7 @@ import shutil
 import bencode
 import system
 import base64
+from Cheetah.Template import Template
 
 class Ajax:
     def __init__(self, conf=config.Config()):
@@ -45,19 +46,7 @@ class Ajax:
         if not html:
             return json.dumps(jsonObject)
         else:
-            return """
-                <div class='drop_down'>
-                    <div class='column-1'>ID:</div><div class='column-2'>%(torrent_id)s</div>
-                    <div class='column-1'>Size:</div><div class='column-2'>%(size)s</div>
-                    <div class='column-1'>Percentage:</div><div class='column-2'>%(percentage)s%%</div>
-                    <div class='column-1'>Downloaded:</div><div class='column-2'>%(downloaded)s</div>
-                    <div class='column-1'>Uploaded:</div><div class='column-2'>%(uploaded)s</div>
-                    <div class='column-1'>Ratio:</div><div class='column-2'>%(ratio)s</div>
-                    <div class='column-1'>Peers:</div><div class='column-2'>%(peers)s</div>
-                    <div class='column-1'>Created:</div><div class='column-2'>%(created)s</div>
-                    <div class='column-2' style='clear : left;'><span class='fakelink' onClick='removerow("%(torrent_id)s")'>Close</span> <a style='color : blue;' href='detail?torrent_id=%(torrent_id)s'>Detailed View</a></div>
-                </div>
-            """ % jsonObject
+            return Template(file="htdocs/dropDownHTML.tmpl", searchList=jsonObject).respond()
         
     def pause_torrent(self, torrent_id):
         try:
