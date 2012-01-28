@@ -96,6 +96,8 @@ class Ajax:
                 #single file
                 if files[0].base_path == self.RT.getRootDir():
                     delete = files[0].abs_path
+                else:
+                    delete = files[0].base_path
             else:
                 delete = files[0].base_path
             
@@ -168,7 +170,11 @@ class Ajax:
                 "ratio" : "%.02f" % (float(t.ratio)/1000),
                 "uprate" : self.Handler.humanSize(t.up_rate),
                 "downrate" : self.Handler.humanSize(t.down_rate),
-                "status" : self.Handler.getState(t)
+                "status" : self.Handler.getState(t),
+                "name" : t.name,
+                "size" : self.Handler.humanSize(t.size),
+                "up_total" : self.Handler.humanSize(t.up_total),
+                "down_total" : self.Handler.humanSize(t.down_total),
             }
         return json.dumps(returnDict)
         
