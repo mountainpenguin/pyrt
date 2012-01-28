@@ -7,6 +7,10 @@ import rtorrent
 import config
 import torrentHandler
 import re
+try:
+    import json
+except ImportError:
+    import simplejson as json
 
 class Global(object):
     def __init__(self, kwargs):
@@ -88,7 +92,7 @@ def uptime():
     handler = torrentHandler.Handler()
     return handler.humanTimeDiff(int(time.time() - boot_time))
     
-def get_global():
+def get_global(encode_json=False):
     C = config.Config()
     RT = rtorrent.rtorrent(C.get("rtorrent_socket"))
     handler = torrentHandler.Handler()
@@ -111,7 +115,10 @@ def get_global():
     cpuusage = "None"
     server_uptime = str(uptime())
     
-    return Global(locals())
+    if not encode_json:
+        return Global(locals())
+    else:
+        return json.dumps(Global(locals()).__dict__)
         
 def generalHTML():
     C = config.Config()

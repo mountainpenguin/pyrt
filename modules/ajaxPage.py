@@ -159,7 +159,7 @@ class Ajax:
         torrentList = self.Handler.sortTorrents(self.RT.getTorrentList2(view), sortby, reverse)
         returnDict = {
             "torrents" : {},
-            "system" : system.generalHTML(),
+            "system" : system.get_global(encode_json=True),
             #"system" : base64.b64encode(system.generalHTML()),
             "torrent_index" : [x.torrent_id for x in torrentList],
         }

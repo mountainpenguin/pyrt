@@ -45,22 +45,22 @@
                 </div>
                 <div id="global_stats">
                     <h2>Global Stats</h2>
-                    <div class="column-1">Upload Rate:</div><div class="column-2">${global.uprate}/s</div>
-                    <div class="column-3">Total Up:</div><div class="column-4">${global.uptot}</div>
-                    <div class="column-5">Disk Usage:</div><div class="column-6">${global.diskused} / ${global.disktotal}</div>
+                    <div class="column-1">Upload Rate:</div><div class="column-2" id="global_uprate">${global.uprate}/s</div>
+                    <div class="column-3">Total Up:</div><div class="column-4" id="global_uptot">${global.uptot}</div>
+                    <div class="column-5">Disk Usage:</div><div class="column-6" id="global_diskusage">${global.diskused} / ${global.disktotal}</div>
                     
-                    <div class="column-1">Download Rate:</div><div class="column-2">${global.downrate}/s</div>
-                    <div class="column-3">Total Down:</div><div class="column-4">${global.downtot}</div>
-                    <div class="column-5">Mem Usage:</div><div class="column-6">${global.memused} / ${global.memtotal}</div>
+                    <div class="column-1">Download Rate:</div><div class="column-2" id="global_downrate">${global.downrate}/s</div>
+                    <div class="column-3">Total Down:</div><div class="column-4" id="global_downtot">${global.downtot}</div>
+                    <div class="column-5">Mem Usage:</div><div class="column-6" id="global_memusage">${global.memused} / ${global.memtotal}</div>
                     
                     <div class="column-1">Load Average:</div>
                     <div class="column-2">
-                        <span title="Last minute">${global.load1}</span>,
-                        <span title="Last 5 minutes">${global.load5}</span>,
-                        <span title="Last 15 minutes">${global.load15}</span>
+                        <span title="Last minute" id="global_load1">${global.load1}</span>,
+                        <span title="Last 5 minutes" id="global_load5">${global.load5}</span>,
+                        <span title="Last 15 minutes" id="global_load15">${global.load15}</span>
                     </div>
-                    <div class="column-3">Uptime:</div><div class="column-4">${global.uptime}</div>
-                    <div class="column-5">CPU Usage:</div><div class="column-6">${global.cpuusage}%%</div>
+                    <div class="column-3">Uptime:</div><div class="column-4" id="global_uptime">${global.uptime}</div>
+                    <div class="column-5">CPU Usage:</div><div class="column-6" id="global_cpuusage">${global.cpuusage}%</div>
                 </div>
                 
                 <div id="this_view" class="hidden">${this_view}</div>
@@ -126,31 +126,21 @@
                                 #if $t_status == "Stopped" or $t_status == "Paused"
                                     <span class='control_start control_button'
                                           title='Start Torrent'>
-                                        <img onclick='event.cancelBubble = true; command(\"start_torrent\",\"${t.torrent_id}\")'
-                                             class='control_image'
-                                             alt='Start'
-                                             src='../images/start.png'>
+                                        <img class='control_image control_start_me' alt='Start' src='../images/start.png'>
                                     </span>
                                 #else
-                                    <span class='control_pause control_button'
-                                          title='Pause Torrent'>
-                                        <img onclick='event.cancelBubble = true; command(\"pause_torrent\",\"${t.torrent_id}\")'
-                                             class='control_image'
-                                             alt='Pause'
-                                             src='../images/pause.png'>
+                                    <span class='control_pause control_button' title='Pause Torrent'>
+                                        <img class='control_image control_pause_me' alt='Pause' src='../images/pause.png'>
                                     </span>
                                 #end if
                                     <span class='control_stop control_button' title='Stop Torrent'>
-                                        <img onclick='event.cancelBubble = true; command(\"stop_torrent\",\"${t.torrent_id}\")'
-                                             class='control_image' alt='Stop' src='../images/stop.png'>
+                                        <img class='control_image control_stop_me' alt='Stop' src='../images/stop.png'>
                                     </span>
                                     <span class='control_remove control_button' title='Remove Torrent'>
-                                        <img onclick='event.cancelBubble = true; command(\"remove_torrent\",\"${t.torrent_id}\")'
-                                             class='control_image' alt='Remove' src='../images/remove.png'>
+                                        <img class='control_image control_remove_me' alt='Remove' src='../images/remove.png'>
                                     </span>
                                     <span class='control_delete control_button' title='Remove Torrent and Files'>
-                                        <img onclick='event.cancelBubble = true; command(\"delete_torrent\",\"${t.torrent_id}\")'
-                                             class='control_image' alt='Delete' src='../images/delete.png'>
+                                        <img class='control_image control_delete_me' alt='Delete' src='../images/delete.png'>
                                     </span>
                                 </td>
                             </tr>

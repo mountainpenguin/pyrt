@@ -1,5 +1,7 @@
 var CTRL_SELECTED = false;
 var SELECTED = new Array();
+var statusArrayInactive = new Array("Stopped","Paused");
+var statusArrayActive = new Array("Seeding (idle)", "Seeding", "Leeching (idle)", "Leeching", "Hashing");
 
 $(document).ready(function () {
      setTimeout(function () {
@@ -50,6 +52,9 @@ $(document).ready(function () {
      })
      
      $(".torrent-div").click(function (e) {
+          if ($(e.target).is("img")) {
+               return;
+          }
           if (e.ctrlKey) {
           } else {
                view_torrent(this);
@@ -96,7 +101,32 @@ $(document).ready(function () {
           if (SELECTED.indexOf(ui.unselecting.id) == -1) {
                $(ui.unselecting).css({"background-color" : ""});
           }
-     })
+     });
+     $(".control_start_me").live("click", function (event) {
+          torrent_id = $(this).parents(".torrent-div").attr("id").split("torrent_id_")[1];
+          command("start_torrent", torrent_id);
+          return false;
+     });
+     $(".control_pause_me").live("click", function (event, ui) {
+          torrent_id = $(this).parents(".torrent-div").attr("id").split("torrent_id_")[1];
+          command("pause_torrent", torrent_id);
+          return false;
+     });
+     $(".control_stop_me").live("click", function (event) {
+          torrent_id = $(this).parents(".torrent-div").attr("id").split("torrent_id_")[1];
+          command("stop_torrent", torrent_id);
+          return false;
+     });
+     $(".control_remove_me").live("click", function (event) {
+          torrent_id = $(this).parents(".torrent-div").attr("id").split("torrent_id_")[1];
+          command("remove_torrent", torrent_id);
+          return false;
+     });
+     $(".control_delete_me").live("click", function (event) {
+          torrent_id = $(this).parents(".torrent-div").attr("id").split("torrent_id_")[1];
+          command("delete_torrent", torrent_id);
+          return false; 
+     });
 });
 function select_group_torrent(elem, e) {
      sel_index = SELECTED.indexOf(elem.id);
@@ -231,19 +261,27 @@ function refresh_content(repeat) {
         req += "&reverse=" + $("#this_reverse").html();
     }
     $.getJSON(req, function (data) {
-        $("#global_stats").html(data.system);
-        
+          system = JSON.parse(data.system);
+          $("#global_uprate").html(system.uprate + "/s");
+          $("#global_uptot").html(system.uptot);
+          $("#global_diskusage").html(system.diskused + " / " + system.disktotal);
+          $("#global_downrate").html(system.downrate + "/s");
+          $("#global_downtot").html(system.downtot);
+          $("#global_memusage").html(system.memused + " / " + system.memtotal);
+          $("#global_load1").html(system.load1);
+          $("#global_load5").html(system.load5);
+          $("#global_load15").html(system.load15);
+          $("#global_uptime").html(system.uptime);
+          $("#global_cpuusage").html(system.cpuusage + "%");
+          
         // data has structure:
             //{
             //    "torrents" : {},
             //    "system" : system_html,
             //    "torrent_index" : [id, id, id] // this is in the order that they are arranged in the page (or should be if this has changed)
             //}
-        torrent_list = $("#torrent_list").find($("tr")).filter(
-            function (index) {
-                return (!($(this).attr("id").indexOf("torrent_id_") === -1))
-            }
-        )
+        torrent_list = $("#torrent_list").find($("tr.torrent-div"))
+        
         cur_t_ids = new Array();
         for (i=0; i<torrent_list.length; i++) {
             var torrent_id = $(torrent_list[i]).attr("id").split("torrent_id_")[1];
@@ -257,23 +295,31 @@ function refresh_content(repeat) {
                 $("#t_ratio_" + torrent_id).html(torrent_data.ratio);
                 $("#t_uprate_" + torrent_id).html(torrent_data.uprate + "/s");
                 $("#t_downrate_" + torrent_id).html(torrent_data.downrate + "/s");
-                var oldstatus = $("#t_status_" + torrent_id)
-                if (oldstatus.html() != torrent_data.status) {
-                    oldstatus.html(torrent_data.status);
-                    var reqrefresh = "/ajax?request=get_torrent_row&torrent_id=" + torrent_id;
-                    $.ajax({
-                        url : reqrefresh,
-                        context : $("#t_controls_" + torrent_id),
-                        dataType : "html",
-                        success : function (newrowhtml) {
-                            $(this).html(
-                                $("#" + $(this).attr("id"), newrowhtml).html()
-                            );
-                        },
-                        error : function (jqXHR, textStatus, errorThrown) {
-                            alert("Error " + jqXHR + " (" + errorThrown + ")");
-                        }
-                    });
+                var oldstatuselem = $("#t_status_" + torrent_id);
+                var oldstatus = oldstatuselem.html()
+                if (oldstatus != torrent_data.status) {
+                    oldstatuselem.html(torrent_data.status);
+                    // update buttons
+                    if ( ( $.inArray(oldstatus, statusArrayActive) != -1 ) && ( $.inArray(torrent_data.status, statusArrayInactive) != -1 ) ) {
+                         $("#t_controls_" + torrent_id + " > .control_pause").replaceWith(
+                              $("<span />").addClass("control_start control_button")
+                                           .attr("title", "Start Torrent")
+                                           .append(
+                                              $("<img />").addClass("control_image control_start_me")
+                                               .attr("alt", "Start").attr("src","../images/start.png")
+                                           )
+                         );
+                    
+                    } else if ( ( $.inArray(oldstatus, statusArrayInactive) != -1 ) && ( $.inArray(torrent_data.status, statusArrayActive) != -1 ) ) {
+                         $("#t_controls_" + torrent_id + " > .control_start").replaceWith(
+                              $("<span />").addClass("control_pause control_button")
+                                           .attr("title", "Pause Torrent")
+                                           .append(
+                                              $("<img />").addClass("control_image control_pause_me")
+                                               .attr("alt", "Pause").attr("src","../images/pause.png")
+                                           )
+                         )
+                    }
                 }
                 
             }
