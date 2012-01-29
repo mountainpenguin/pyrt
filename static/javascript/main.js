@@ -52,7 +52,7 @@ $(document).ready(function () {
           }
      })
      
-     $(".torrent-div").click(function (e) {
+     $(".torrent-div").live("click", function (e) {
           if ($(e.target).is("img")) {
                return;
           }
@@ -60,7 +60,7 @@ $(document).ready(function () {
           } else {
                view_torrent(this);
           }
-     })
+     });
      $(".batch-control").live("click", function (e) {
           action = this.id.split("batch-")[1];
           torrentIDs = new Array();
@@ -350,6 +350,7 @@ function refresh_content(repeat) {
             }
         }
         
+        stripeTable();
         loadRClickMenus();
 
         if (repeat === "yes") {
@@ -400,7 +401,7 @@ function add_torrentrow(torrent_id, torrent_data, torrent_index) {
     //        alert("Error " + jqXHR + " (" + errorThrown + ")");
     //    }
     //});
-    newrow = $("<tr />").addClass("new-torrent-row torrent-div").attr("id","torrent_id_" + torrent_id);
+    var newrow = $("<tr />").addClass("torrent-div").attr("id","torrent_id_" + torrent_id);
     if (torrent_data.completed) {
           newrow.append($("<td />")
                         .attr("id", "t_name_" + torrent_id)
@@ -499,14 +500,14 @@ function add_torrentrow(torrent_id, torrent_data, torrent_index) {
     
     $("#torrent_list > tbody > tr:eq(" + torrent_index + ")").after(newrow);
     
-     $("#torrent_id_" + torrent_id).slideRow("down", 1000, function () {
-          $("#torrent_id_" + torrent_id).fadeTo(2000, 1.0, function() {
-               $("#torrent_id_" + torrent_id).effect("pulsate", { times : 1 }, "slow", function () {
-                    $("#torrent_id_" + torrent_id).toggleClass("new-torrent-row");
-                    stripeTable();
-               })
-          })
-     });
+     //$("#torrent_id_" + torrent_id).slideRow("down", 1000, function () {
+     //     $("#torrent_id_" + torrent_id).fadeTo(2000, 1.0, function() {
+     //          $("#torrent_id_" + torrent_id).effect("pulsate", { times : 1 }, "slow", function () {
+     //               $("#torrent_id_" + torrent_id).toggleClass("new-torrent-row");
+     //               stripeTable();
+     //          })
+     //     })
+     //});
 }
 
 function select_torrent(elem) {
