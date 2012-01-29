@@ -117,9 +117,9 @@
                             #end if
                                 id='torrent_id_$t.torrent_id'>
                                 #if $t.completed_bytes >= $t.size
-                                <td id="t_name_$t.torrent_id">$t.name</td>
+                                <td id="t_name_$t.torrent_id" class="t_name">$t.name</td>
                                 #else
-                                <td id="t_name_$t.torrent_id" class="progress-gradient" style="background-size : $t.t_percentage% 100%, 100% 100%">$t.name</td>
+                                <td id="t_name_$t.torrent_id" class="progress-gradient t_name" style="background-size : $t.t_percentage% 100%, 100% 100%">$t.name</td>
                                 #end if
                                 <td id="t_size_$t.torrent_id">$t.t_size</td>
                                 <td id="t_ratio_$t.torrent_id" title='$t.t_uploaded up / $t.t_downloaded down'>$t.t_ratio</td>

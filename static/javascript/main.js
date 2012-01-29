@@ -404,14 +404,15 @@ function add_torrentrow(torrent_id, torrent_data, torrent_index) {
     if (torrent_data.completed) {
           newrow.append($("<td />")
                         .attr("id", "t_name_" + torrent_id)
+                        .addClass("t_name")
                         .html(torrent_data.name)
                         )
     } else {
           newrow.append($("<td />")
                         .attr("id","t_name_" + torrent_id)
                         .html(torrent_data.name)
-                        .addClass("progress-gradient")
-                        .css("background-size", torrent_data.percentage + "% 100%, 100% 100%")
+                        .addClass("progress-gradient t_name")
+                        .css("background-size", torrent_data.percentage + "%, auto")
                         )
     }
      newrow.append($("<td />")
