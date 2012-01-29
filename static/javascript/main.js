@@ -297,7 +297,15 @@ function refresh_content(repeat) {
             } else {
                 // refresh torrent data
                 torrent_data = data.torrents[torrent_id];
-                // returned data: ratio, uprate, downrate, status
+                
+                if (torrent_data.completed) {
+                    $("#t_name_" + torrent_id).removeClass("progress-gradient")
+                } else {
+                    $("#t_name_" + torrent_id).addClass("progress-gradient").css({
+                         "background-size" : torrent_data.percentage + "% 100%",
+                    })
+                }
+               
                 $("#t_ratio_" + torrent_id).html(torrent_data.ratio).attr("title",torrent_data.up_total + " up / " + torrent_data.down_total + " down");
                 $("#t_uprate_" + torrent_id).html(torrent_data.uprate + "/s");
                 $("#t_downrate_" + torrent_id).html(torrent_data.downrate + "/s");

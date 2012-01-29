@@ -531,3 +531,33 @@ img.file_img {
 .ui-selected {
     background-color : green;
 }
+.progress-gradient {
+    /* Chrome, Safari */
+    background-image : -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        from(rgba(78,234,30,0)),
+        to(rgba(78,234,30,1)),
+        color-stop(.9,rgba(78,234,30,0))
+    );
+    /* Opera */
+    background-image : -o-linear-gradient(
+        bottom,
+        rgba(78,234,30,1) 0%,
+        rgba(78,234,30,0) 10%
+    );
+    /* Firefox */
+    background-image : -moz-linear-gradient(
+        bottom,
+        rgba(78,234,30,1) 0%,
+        rgba(78,234,30,0) 10%
+    );
+    /* IE10+ */
+    background-image : -ms-linear-gradient(
+        bottom,
+        rgba(78,234,30,1) 0%,
+        rgba(78,234,30,0) 10%
+    );
+    background-repeat : no-repeat;
+}

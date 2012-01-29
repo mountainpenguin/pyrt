@@ -32,6 +32,11 @@ class Ajax:
         c = time.localtime(self.RT.getCreationDate(torrent_id))
         created = time.strftime("%d/%m/%Y %H:%M:%S", c)
         size = self.RT.getSizeBytes(torrent_id)
+        completed_bytes = self.RT.getCompletedBytes(torrent_id)
+        if completed_bytes >= size:
+            completed = True
+        else:
+            completed = False
         jsonObject = {
             "name" : self.RT.getNameByID(torrent_id),
             "uploaded" : self.Handler.humanSize(self.RT.getUploadBytes(torrent_id)),
@@ -42,6 +47,7 @@ class Ajax:
             "size" : self.Handler.humanSize(size),
             "ratio" : "%.02f" % (float(self.RT.getRatio(torrent_id))/1000),
             "percentage" : "%i" % ((float(self.RT.getCompletedBytes(torrent_id)) / size) * 100),
+            "completed" : completed
         }
         if not html:
             return json.dumps(jsonObject)
@@ -166,6 +172,12 @@ class Ajax:
             "torrent_index" : [x.torrent_id for x in torrentList],
         }
         for t in torrentList:
+            if t.completed_bytes >= t.size:
+                completed = True
+                perc = None
+            else:
+                completed = False
+                perc = int((float(t.completed_bytes) / t.size)*100)
             returnDict["torrents"][t.torrent_id] = {
                 "ratio" : "%.02f" % (float(t.ratio)/1000),
                 "uprate" : self.Handler.humanSize(t.up_rate),
@@ -175,6 +187,8 @@ class Ajax:
                 "size" : self.Handler.humanSize(t.size),
                 "up_total" : self.Handler.humanSize(t.up_total),
                 "down_total" : self.Handler.humanSize(t.down_total),
+                "completed" : completed,
+                "percentage" : perc,
             }
         return json.dumps(returnDict)
         
