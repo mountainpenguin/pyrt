@@ -302,7 +302,7 @@ function refresh_content(repeat) {
                     $("#t_name_" + torrent_id).removeClass("progress-gradient")
                 } else {
                     $("#t_name_" + torrent_id).addClass("progress-gradient").css({
-                         "background-size" : torrent_data.percentage + "% 100%, 100% 10%",
+                         "background-size" : torrent_data.percentage + "% 100%, 100% 100%",
                     })
                 }
                
