@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import config
-from Cheetah.Template import Template
+from modules.Cheetah.Template import Template
 
 class Options:
     def __init__(self, conf=config.Config()):
