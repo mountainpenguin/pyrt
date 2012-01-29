@@ -540,24 +540,43 @@ img.file_img {
         from(rgba(78,234,30,0)),
         to(rgba(78,234,30,1)),
         color-stop(.9,rgba(78,234,30,0))
+    ), -webkit-gradient(
+        linear,
+        left top,
+        right top,
+        from(rgba(140,147,151,0.4)),
+        to(rgba(140,147,151,0.4))
     );
     /* Opera */
     background-image : -o-linear-gradient(
         bottom,
         rgba(78,234,30,1) 0%,
         rgba(78,234,30,0) 10%
+    ), -o-linear-gradient(
+        left,
+        rgba(140,147,151,0.4) 0%,
+        rgba(140,147,151,0.4) 100%
     );
     /* Firefox */
     background-image : -moz-linear-gradient(
         bottom,
         rgba(78,234,30,1) 0%,
         rgba(78,234,30,0) 10%
+    ), -moz-linear-gradient(
+        left,
+        rgba(140,147,151,0.4) 0%,
+        rgba(140,147,151,0.4) 100%
     );
     /* IE10+ */
     background-image : -ms-linear-gradient(
         bottom,
         rgba(78,234,30,1) 0%,
         rgba(78,234,30,0) 10%
+    ), -ms-linear-gradient(
+        left,
+        rgba(140,147,151,0.4) 0%,
+        rgba(140,147,151,0.4) 100%
     );
     background-repeat : no-repeat;
+    background-position : 0% 0%, 0% 100%;
 }
