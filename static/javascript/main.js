@@ -400,7 +400,7 @@ function add_torrentrow(torrent_id, torrent_data, torrent_index) {
     //        alert("Error " + jqXHR + " (" + errorThrown + ")");
     //    }
     //});
-    newrow = $("<tr />").addClass("new-torrent-row").attr("id","torrent_id_" + torrent_id);
+    newrow = $("<tr />").addClass("new-torrent-row torrent-div").attr("id","torrent_id_" + torrent_id);
     if (torrent_data.completed) {
           newrow.append($("<td />")
                         .attr("id", "t_name_" + torrent_id)
@@ -499,10 +499,10 @@ function add_torrentrow(torrent_id, torrent_data, torrent_index) {
     
     $("#torrent_list > tbody > tr:eq(" + torrent_index + ")").after(newrow);
     
-     newrow.slideRow("down", 1000, function () {
+     $("#torrent_id_" + torrent_id).slideRow("down", 1000, function () {
           newrow.fadeTo(2000, 1.0, function() {
                newrow.effect("pulsate", { times : 1 }, "slow", function () {
-                    newrow.toggleClass("new-torrent-row torrent-div");
+                    newrow.toggleClass("new-torrent-row");
                     stripeTable();
                })
           })
