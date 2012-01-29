@@ -7,7 +7,28 @@ import rtorrent
 import config
 import torrentHandler
 import re
+try:
+    import json
+except ImportError:
+    import simplejson as json
 
+class Global(object):
+    def __init__(self, kwargs):
+        self.uprate = kwargs["uprate"]
+        self.uptot = kwargs["uptot"]
+        self.diskused = kwargs["diskused"]
+        self.disktotal = kwargs["disktotal"]
+        self.downrate = kwargs["downrate"]
+        self.downtot = kwargs["downtot"]
+        self.memused = kwargs["memused"]
+        self.memtotal = kwargs["memtotal"]
+        self.load1 = kwargs["load1"]
+        self.load5 = kwargs["load5"]
+        self.load15 = kwargs["load15"]
+        self.load = (self.load1, self.load5, self.load15)
+        self.uptime = kwargs["server_uptime"]
+        self.cpuusage = kwargs["cpuusage"]
+    
 def hdd(path="/"):
     """
         Stats the root filesystem
@@ -71,6 +92,34 @@ def uptime():
     handler = torrentHandler.Handler()
     return handler.humanTimeDiff(int(time.time() - boot_time))
     
+def get_global(encode_json=False):
+    C = config.Config()
+    RT = rtorrent.rtorrent(C.get("rtorrent_socket"))
+    handler = torrentHandler.Handler()
+    
+    diskused, disktotal = hdd()
+    memused, memtotal = mem()
+    load1, load5, load15 = os.getloadavg()
+    
+    uprate = handler.humanSize(RT.getGlobalUpRate())
+    downrate = handler.humanSize(RT.getGlobalDownRate())
+    uptot = handler.humanSize(RT.getGlobalUpBytes())
+    downtot = handler.humanSize(RT.getGlobalDownBytes())
+    diskused = handler.humanSize(diskused)
+    disktotal = handler.humanSize(disktotal)
+    memused = handler.humanSize(memused)
+    memtotal = handler.humanSize(memtotal)
+    load1 = "%.02f" % load1
+    load5 = "%.02f" % load5
+    load15 = "%.02f" % load15
+    cpuusage = "None"
+    server_uptime = str(uptime())
+    
+    if not encode_json:
+        return Global(locals())
+    else:
+        return json.dumps(Global(locals()).__dict__)
+        
 def generalHTML():
     C = config.Config()
     RT = rtorrent.rtorrent(C.get("rtorrent_socket"))

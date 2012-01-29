@@ -1,0 +1,180 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <!-- HEAD PLACEHOLDER -->
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+        <title>rTorrent - webUI</title>
+        <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <link rel="stylesheet" type="text/css" href="/css/smoothness/jquery-ui-1.8.13.custom.css">                
+        <script src="/javascript/jquery-1.7.min.js" type="text/javascript"></script>
+        <script src="/javascript/jquery-ui-1.8.17.custom.min.js" type="text/javascript"></script>        
+        <script src="/javascript/jquery.contextmenu.r2.js" type="text/javascript"></script>
+        <script src="/javascript/jquery-sliderow.js" type="text/javascript"></script>
+        <script src="/javascript/main.js" type="text/javascript"></script>
+    </head>
+    <body>
+        <div id="header">
+            <div id="topbar">
+            #for $topbartype in ["main","started","stopped","complete","incomplete","hashing","seeding","active"]
+                #if $topbartype == $this_view
+                    <div class="topbar-tab selected" onclick="navigate_tab(this);" title="$topbartype.capitalize()" id="tab_$topbartype">$topbartype.capitalize()</div>
+                #else
+                    <div class="topbar-tab" onclick="navigate_tab(this);" title="$topbartype.capitalize()" id="tab_$topbartype">$topbartype.capitalize()</div>
+                #end if
+            #end for
+                <div id="tools-bar">
+                    <div class="topbar-tab_options" title="Options" id="tab_options">Options</div>
+                    <div class="topbar-tab_options" title="RSS" id="tab_rss">RSS</div>
+                </div>
+            </div>
+            <div id="actions-bar">
+                <a href="#" id="add-torrent-button">Add torrent</a>
+            </div>
+        </div>
+        <div id="main_body">
+            <div id="wrapper">
+                <div id="add_torrent" style="display: none" title="Add a torrent">
+                    <form id="add_torrent_form" action="ajax" method="post" enctype="multipart/form-data">
+                        <label>Select file:</label>
+                        <input type="hidden" name="request" value="upload_torrent">
+                        <input id="add_torrent_input" accept="application/x-bittorrent" type="file" name="torrent">
+                        <div class="add_torrent_start_text"> 
+                            <input id="add_torrent_start" type="checkbox" name="start"> Start Immediately?
+                        </div>
+                    </form>
+                </div>
+                <div id="global_stats">
+                    <h2>Global Stats</h2>
+                    <div class="column-1">Upload Rate:</div><div class="column-2" id="global_uprate">${global.uprate}/s</div>
+                    <div class="column-3">Total Up:</div><div class="column-4" id="global_uptot">${global.uptot}</div>
+                    <div class="column-5">Disk Usage:</div><div class="column-6" id="global_diskusage">${global.diskused} / ${global.disktotal}</div>
+                    
+                    <div class="column-1">Download Rate:</div><div class="column-2" id="global_downrate">${global.downrate}/s</div>
+                    <div class="column-3">Total Down:</div><div class="column-4" id="global_downtot">${global.downtot}</div>
+                    <div class="column-5">Mem Usage:</div><div class="column-6" id="global_memusage">${global.memused} / ${global.memtotal}</div>
+                    
+                    <div class="column-1">Load Average:</div>
+                    <div class="column-2">
+                        <span title="Last minute" id="global_load1">${global.load1}</span>,
+                        <span title="Last 5 minutes" id="global_load5">${global.load5}</span>,
+                        <span title="Last 15 minutes" id="global_load15">${global.load15}</span>
+                    </div>
+                    <div class="column-3">Uptime:</div><div class="column-4" id="global_uptime">${global.uptime}</div>
+                    <div class="column-5">CPU Usage:</div><div class="column-6" id="global_cpuusage">${global.cpuusage}%</div>
+                </div>
+                
+                <div id="this_view" class="hidden">${this_view}</div>
+                <div id="this_sort" class="hidden">${this_sort}</div>
+                <div id="this_reverse" class="hidden">${this_reverse}</div>
+                <div id="torrent_table">
+                    <table id='torrent_list'>
+                        <tr id='torrent_list_headings'>
+                        #set $SORTTYPES = ["name", "size", "ratio", "uprate", "downrate", "status"]
+                        #for $sorttype in $SORTTYPES
+                            <td class='heading'
+                                id="sortby_$sorttype"
+                                #if $sorttype == $this_sort and $this_reverse != "1"
+                                    onclick="window.location='?view=$this_view&amp;sortby=$sorttype&amp;reverse=1';">
+                                #else
+                                    onclick="window.location='?view=$this_view&amp;sortby=$sorttype';">
+                                #end if
+                                $sorttype.capitalize()
+                                <img alt="Sort by $sorttype"
+                                #if $this_sort in $SORTTYPES
+                                    #if $this_reverse == "1" and $sorttype == $this_sort
+                                     src="../images/sort_down.gif"
+                                    #elif $sorttype == $this_sort
+                                     src="../images/sort_up.gif"
+                                    #else
+                                     src="../images/sort_none.gif"
+                                    #end if
+                                #else
+                                     src="../images/sort_none.gif"
+                                #end if
+                                     class="control_button">
+                            </td>
+                        #end for
+                            <td class='heading'></td>
+                        </tr>
+
+                        #for $t in $torrent_list
+                            #if $t.status == "Active" and $t.completed_bytes == $t.size and $t.peers_connected > 0
+                                #set $t_status = "Seeding"
+                            #elif $t.status == "Active" and $t.completed_bytes == $t.size and $t.peers_connected == 0
+                                #set $t_status = "Seeding (idle)"
+                            #elif $t.status == "Active" and $t.completed_bytes != $t.size and ($t.seeds_connected > 0 or $t.peers_connected > 0)
+                                #set $t_status = "Leeching"
+                            #elif $t.status == "Active" and $t.completed_bytes != $t.size and $t.seeds_connected == 0 and $t.peers_connected == 0
+                                #set $t_status = "Leeching (idle)"
+                            #else
+                                #set $t_status = $t.status
+                            #end if
+                            
+                            #if $t_status == "Stopped" or $t_status == "Paused"
+                                <tr class='torrent-div rcstart'
+                            #else
+                                <tr class='torrent-div rcpause'
+                            #end if
+                                id='torrent_id_$t.torrent_id'>
+                                #if $t.completed_bytes >= $t.size
+                                <td id="t_name_$t.torrent_id" class="t_name">$t.name</td>
+                                #else
+                                <td id="t_name_$t.torrent_id" class="progress-gradient t_name" style="background-size : $t.t_percentage% 100%, 100% 100%">$t.name</td>
+                                #end if
+                                <td id="t_size_$t.torrent_id">$t.t_size</td>
+                                <td id="t_ratio_$t.torrent_id" title='$t.t_uploaded up / $t.t_downloaded down'>$t.t_ratio</td>
+                                <td id="t_uprate_$t.torrent_id">$t.t_uprate/s</td>
+                                <td id="t_downrate_$t.torrent_id">$t.t_downrate/s</td>
+                                <td id="t_status_$t.torrent_id">$t_status</td>
+                                <td id="t_controls_$t.torrent_id">
+                                #if $t_status == "Stopped" or $t_status == "Paused"
+                                    <span class='control_start control_button'
+                                          title='Start Torrent'>
+                                        <img class='control_image control_start_me' alt='Start' src='../images/start.png'>
+                                    </span>
+                                #else
+                                    <span class='control_pause control_button' title='Pause Torrent'>
+                                        <img class='control_image control_pause_me' alt='Pause' src='../images/pause.png'>
+                                    </span>
+                                #end if
+                                    <span class='control_stop control_button' title='Stop Torrent'>
+                                        <img class='control_image control_stop_me' alt='Stop' src='../images/stop.png'>
+                                    </span>
+                                    <span class='control_remove control_button' title='Remove Torrent'>
+                                        <img class='control_image control_remove_me' alt='Remove' src='../images/remove.png'>
+                                    </span>
+                                    <span class='control_delete control_button' title='Remove Torrent and Files'>
+                                        <img class='control_image control_delete_me' alt='Delete' src='../images/delete.png'>
+                                    </span>
+                                </td>
+                            </tr>
+                        #end for
+                        
+                        <tr id='foot'>
+                            <td class='footing' colspan="7"></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="contextMenu" id="right_click_start">
+                    <ul>
+                        <li id="start"><img alt="start" src="/images/start.png"> Start</li>
+                        <li id="stop"><img alt="stop" src="/images/stop.png"> Stop</li>
+                        <li id="remove"><img alt="remove" src="/images/remove.png"> Remove and <strong>keep</strong> files</li>
+                        <li id="delete"><img alt="delete" src="/images/delete.png"> Remove and <strong>delete</strong> files</li>
+                        <li id="rehash"><img alt="rehash" src="/images/hash.png"> Rehash</li>
+                    </ul>
+                </div>
+                <div class="contextMenu" id="right_click_pause">
+                    <ul>
+                        <li id="pause"><img alt="pause" src="/images/pause.png"> Pause</li>
+                        <li id="stop"><img alt="stop" src="/images/stop.png"> Stop</li>
+                        <li id="remove"><img alt="remove" src="/images/remove.png"> Remove and <strong>keep</strong> files</li>
+                        <li id="delete"><img alt="delete" src="/images/delete.png"> Remove and <strong>delete</strong> files</li>
+                        <li id="rehash"><img alt="rehash" src="/images/hash.png"> Rehash</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

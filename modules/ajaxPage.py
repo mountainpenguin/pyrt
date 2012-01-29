@@ -17,6 +17,7 @@ import shutil
 import bencode
 import system
 import base64
+from Cheetah.Template import Template
 
 class Ajax:
     def __init__(self, conf=config.Config()):
@@ -31,6 +32,11 @@ class Ajax:
         c = time.localtime(self.RT.getCreationDate(torrent_id))
         created = time.strftime("%d/%m/%Y %H:%M:%S", c)
         size = self.RT.getSizeBytes(torrent_id)
+        completed_bytes = self.RT.getCompletedBytes(torrent_id)
+        if completed_bytes >= size:
+            completed = True
+        else:
+            completed = False
         jsonObject = {
             "name" : self.RT.getNameByID(torrent_id),
             "uploaded" : self.Handler.humanSize(self.RT.getUploadBytes(torrent_id)),
@@ -41,23 +47,12 @@ class Ajax:
             "size" : self.Handler.humanSize(size),
             "ratio" : "%.02f" % (float(self.RT.getRatio(torrent_id))/1000),
             "percentage" : "%i" % ((float(self.RT.getCompletedBytes(torrent_id)) / size) * 100),
+            "completed" : completed
         }
         if not html:
             return json.dumps(jsonObject)
         else:
-            return """
-                <div class='drop_down'>
-                    <div class='column-1'>ID:</div><div class='column-2'>%(torrent_id)s</div>
-                    <div class='column-1'>Size:</div><div class='column-2'>%(size)s</div>
-                    <div class='column-1'>Percentage:</div><div class='column-2'>%(percentage)s%%</div>
-                    <div class='column-1'>Downloaded:</div><div class='column-2'>%(downloaded)s</div>
-                    <div class='column-1'>Uploaded:</div><div class='column-2'>%(uploaded)s</div>
-                    <div class='column-1'>Ratio:</div><div class='column-2'>%(ratio)s</div>
-                    <div class='column-1'>Peers:</div><div class='column-2'>%(peers)s</div>
-                    <div class='column-1'>Created:</div><div class='column-2'>%(created)s</div>
-                    <div class='column-2' style='clear : left;'><span class='fakelink' onClick='removerow("%(torrent_id)s")'>Close</span> <a style='color : blue;' href='detail?torrent_id=%(torrent_id)s'>Detailed View</a></div>
-                </div>
-            """ % jsonObject
+            return Template(file="htdocs/dropDownHTML.tmpl", searchList=jsonObject).respond()
         
     def pause_torrent(self, torrent_id):
         try:
@@ -107,6 +102,8 @@ class Ajax:
                 #single file
                 if files[0].base_path == self.RT.getRootDir():
                     delete = files[0].abs_path
+                else:
+                    delete = files[0].base_path
             else:
                 delete = files[0].base_path
             
@@ -170,16 +167,28 @@ class Ajax:
         torrentList = self.Handler.sortTorrents(self.RT.getTorrentList2(view), sortby, reverse)
         returnDict = {
             "torrents" : {},
-            "system" : system.generalHTML(),
+            "system" : system.get_global(encode_json=True),
             #"system" : base64.b64encode(system.generalHTML()),
             "torrent_index" : [x.torrent_id for x in torrentList],
         }
         for t in torrentList:
+            if t.completed_bytes >= t.size:
+                completed = True
+                perc = None
+            else:
+                completed = False
+                perc = int((float(t.completed_bytes) / t.size)*100)
             returnDict["torrents"][t.torrent_id] = {
                 "ratio" : "%.02f" % (float(t.ratio)/1000),
                 "uprate" : self.Handler.humanSize(t.up_rate),
                 "downrate" : self.Handler.humanSize(t.down_rate),
-                "status" : self.Handler.getState(t)
+                "status" : self.Handler.getState(t),
+                "name" : t.name,
+                "size" : self.Handler.humanSize(t.size),
+                "up_total" : self.Handler.humanSize(t.up_total),
+                "down_total" : self.Handler.humanSize(t.down_total),
+                "completed" : completed,
+                "percentage" : perc,
             }
         return json.dumps(returnDict)
         

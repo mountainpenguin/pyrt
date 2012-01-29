@@ -189,7 +189,7 @@ class mainHandler:
             raise cherrypy.HTTPError(message="Ajax Error Invalid Method")
     ajax.exposed = True
     
-    def options(self, test=False):
+    def options(self, test=False, password=None):
         """
             Handler for options page view (/options)
             
@@ -197,6 +197,19 @@ class mainHandler:
             Can only be viewed if "test" is passed as an argument.
             If it is, returns optionsPage.Options.index()
         """
+        client_cookie = cherrypy.request.cookie
+        Lcheck = self.L.checkLogin(client_cookie)
+        if not Lcheck and not password:
+            return self.L.loginHTML()
+        elif not Lcheck and password:
+            #check password
+            Pcheck = self.L.checkPassword(password)
+            if Pcheck:
+                #set a cookie
+                cherrypy.response.cookie = self.L.sendCookie()
+            else:
+                return self.L.loginHTML("Incorrect Password")
+                
         if not test:
             try:
                 link = cherrypy.request.headers["Referer"]

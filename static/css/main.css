@@ -76,6 +76,7 @@ tr.torrent-div:hover {
 tr.new-torrent-row {
     opacity : 0.1;
     background-color : #CDE472;
+    display : none;
 }
 
 tr.old-torrent-row {
@@ -97,6 +98,10 @@ tr.green {
 }
 tr.red {
     background-color : red;
+}
+tr.deleting-torrent-row {
+    background-color : #676767;
+    color : #a6a6a6;
 }
 form input[type="text"], form input[type="number"], form input[type="password"], form input[type="email"], form select {
   height: 40px;
@@ -525,4 +530,60 @@ img.file_img {
 }
 .ui-selected {
     background-color : green;
+}
+.progress-gradient {
+    /* Chrome, Safari */
+    background-image : -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        from(rgba(78,234,30,0.5)),
+        to(rgba(78,234,30,0.5)),
+        color-stop(0.5, rgba(78,234,30,1))
+    ), -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        from(rgba(140,147,151,0.2)),
+        to(rgba(140,147,151,0.2)),
+        color-stop(0.5, rgba(140,147,151,0.4))
+    );
+    /* Opera */
+    background-image : -o-linear-gradient(
+        top,
+        rgba(78,234,30,0.5) 0%,
+        rgba(78,234,30,1) 50%,
+        rgba(78,234,30,0.5) 100%
+    ), -o-linear-gradient(
+        top,
+        rgba(140,147,151,0.2) 0%,
+        rgba(140,147,151,0.4) 50%,
+        rgba(140,147,151,0.2) 100%
+    );
+    /* Firefox */
+    background-image : -moz-linear-gradient(
+        top,
+        rgba(78,234,30,0.5) 0%,
+        rgba(78,234,30,1) 50%,
+        rgba(78,234,30,0.5) 100%
+    ), -moz-linear-gradient(
+        top,
+        rgba(140,147,151,0.2) 0%,
+        rgba(140,147,151,0.4) 50%,
+        rgba(140,147,151,0.2) 100%
+    );
+    /* IE10+ */
+    background-image : -ms-linear-gradient(
+        top,
+        rgba(78,234,30,0.5) 0%,
+        rgba(78,234,30,1) 50%,
+        rgba(78,234,30,0.5) 100%
+    ), -ms-linear-gradient(
+        top,
+        rgba(140,147,151,0.2) 0%,
+        rgba(140,147,151,0.4) 50%,
+        rgba(140,147,151,0.2) 100%
+    );
+    background-repeat : no-repeat;
+    background-position : 0% 0%, 0% 0%;
 }
