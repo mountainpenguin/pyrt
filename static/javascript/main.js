@@ -401,11 +401,20 @@ function add_torrentrow(torrent_id, torrent_data, torrent_index) {
     //    }
     //});
     newrow = $("<tr />").addClass("new-torrent-row").attr("id","torrent_id_" + torrent_id);
-    newrow.append($("<td />")
-                  .attr("id","t_name_" + torrent_id)
-                  .html(torrent_data.name)
-                  )
-          .append($("<td />")
+    if (torrent_data.completed) {
+          newrow.append($("<td />")
+                        .attr("id", "t_name_" + torrent_id)
+                        .html(torrent_data.name)
+                        )
+    } else {
+          newrow.append($("<td />")
+                        .attr("id","t_name_" + torrent_id)
+                        .html(torrent_data.name)
+                        .addClass("progress-gradient")
+                        .css("background-size", torrent_data.percentage + "% 100%, 100% 100%")
+                        )
+    }
+     newrow.append($("<td />")
                   .attr("id","t_size_" + torrent_id)
                   .html(torrent_data.size)
                   )
