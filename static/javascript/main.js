@@ -500,9 +500,9 @@ function add_torrentrow(torrent_id, torrent_data, torrent_index) {
     $("#torrent_list > tbody > tr:eq(" + torrent_index + ")").after(newrow);
     
      $("#torrent_id_" + torrent_id).slideRow("down", 1000, function () {
-          newrow.fadeTo(2000, 1.0, function() {
-               newrow.effect("pulsate", { times : 1 }, "slow", function () {
-                    newrow.toggleClass("new-torrent-row");
+          $(this).fadeTo(2000, 1.0, function() {
+               $(this).effect("pulsate", { times : 1 }, "slow", function () {
+                    $(this).toggleClass("new-torrent-row");
                     stripeTable();
                })
           })
