@@ -5,7 +5,7 @@ import string
 import os
 import re
 import system
-from Cheetah.Template import Template
+from modules.Cheetah.Template import Template
 
 class Handler:
     """
