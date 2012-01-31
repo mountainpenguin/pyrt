@@ -7,5 +7,12 @@
     <div class='column-1'>Ratio:</div><div class='column-2'>$ratio</div>
     <div class='column-1'>Peers:</div><div class='column-2'>$peers</div>
     <div class='column-1'>Created:</div><div class='column-2'>$created</div>
+    <div class='column-1'>Trackers:</div>
+     <div class='column-2'>
+      #for $tracker in $trackers
+        <img alt="$tracker.root_url" title="$tracker.root_url" src="$tracker.favicon_url" width=16 height=16>
+      #end for
+     </div>
+     <!-- $trackers -->
     <div class='column-2' style='clear : left;'><span class='fakelink' onClick='removerow("$torrent_id")'>Close</span> <a style='color : blue;' href='detail?torrent_id=$torrent_id'>Detailed View</a></div>
 </div>

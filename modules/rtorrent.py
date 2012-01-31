@@ -478,14 +478,15 @@ xmlrpc_dialect
 """
 
 class Tracker(object):
-    def __init__(self, url, type, interval, seeds, leechs, enabled, favicon):
+    def __init__(self, url, type, interval, seeds, leechs, enabled, favicon, root_url):
         self.url = url
         self.type = type
         self.interval = interval
         self.seeds = seeds
         self.leechs = leechs
         self.enabled = enabled
-        self.favicon_uri = favicon
+        self.favicon_url = favicon
+        self.root_url = root_url
 class File(object):
     def __init__(self, abs_path, base_path, path_components, completed_chunks, priority, size, chunks, chunk_size):
         self.abs_path = abs_path
@@ -731,29 +732,32 @@ class rtorrent:
             "t.is_enabled=",            #{0:"disabled", 1:"enabled"}
         )
         for track_resp in resp:
-            faviconurl = None
             url = track_resp[0]
-            url_parsed = urlparse.urlparse(url)
-            root_url = re.split(":\d+", url_parsed.netloc)[0]
-            if os.path.exists("static/favicons/%s.ico" % root_url):
-                fav_icon = True
+            if url == "dht://":
+                faviconurl = "/favicons/dht.ico"
+                root_url = "DHT"
             else:
-                fav_icon_url = "%s://%s/favicon.ico" % (url_parsed.scheme, root_url)
-                try:
-                    fav_icon = urllib2.urlopen(fav_icon_url, timeout=2).read()
-                    open("static/favicons/%s.ico" % (root_url),"wb").write(fav_icon)
-                except urllib2.URLError:
-                    fav_icon_url2 = "%s://%s/favicon.ico" % (url_parsed.scheme, ".".join(root_url.split(".")[1:]))
-                    print fav_icon_url2
+                url_parsed = urlparse.urlparse(url)
+                root_url = re.split(":\d+", url_parsed.netloc)[0]
+                if os.path.exists("static/favicons/%s.ico" % root_url):
+                    fav_icon = True
+                else:
+                    fav_icon_url = "%s://%s/favicon.ico" % (url_parsed.scheme, root_url)
                     try:
-                        fav_icon = urllib2.urlopen(fav_icon_url2, timeout=2).read()
+                        fav_icon = urllib2.urlopen(fav_icon_url, timeout=2).read()
                         open("static/favicons/%s.ico" % (root_url),"wb").write(fav_icon)
                     except urllib2.URLError:
-                        fav_icon = None
-            if fav_icon == None:
-                os.symlink("default.ico", "static/favicons/%s.ico" % root_url)
-            faviconurl = "/favicons/%s.ico" % root_url
-            trackers += [Tracker(track_resp[0], track_resp[1], track_resp[2], track_resp[3], track_resp[4], bool(track_resp[5]), faviconurl)]
+                        fav_icon_url2 = "%s://%s/favicon.ico" % (url_parsed.scheme, ".".join(root_url.split(".")[1:]))
+                        print fav_icon_url2
+                        try:
+                            fav_icon = urllib2.urlopen(fav_icon_url2, timeout=2).read()
+                            open("static/favicons/%s.ico" % (root_url),"wb").write(fav_icon)
+                        except urllib2.URLError:
+                            fav_icon = None
+                if fav_icon == None:
+                    os.symlink("default.ico", "static/favicons/%s.ico" % root_url)
+                faviconurl = "/favicons/%s.ico" % root_url
+            trackers += [Tracker(track_resp[0], track_resp[1], track_resp[2], track_resp[3], track_resp[4], bool(track_resp[5]), faviconurl, root_url)]
 #url, type, interval, seeds, leechs, enabled
         return trackers
 

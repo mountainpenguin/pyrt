@@ -52,7 +52,8 @@ class Ajax:
             "size" : self.Handler.humanSize(size),
             "ratio" : "%.02f" % (float(self.RT.getRatio(torrent_id))/1000),
             "percentage" : "%i" % ((float(self.RT.getCompletedBytes(torrent_id)) / size) * 100),
-            "completed" : completed
+            "completed" : completed,
+            "trackers" : [x.__dict__ for x in self.RT.getTrackers(torrent_id)],
         }
         if not html:
             return json.dumps(jsonObject)
