@@ -757,10 +757,10 @@ class rtorrent:
                                 open("static/favicons/%s.ico" % (root_url),"wb").write(fav_icon)
                             except urllib2.URLError:
                                 fav_icon = None
-                    if fav_icon == None:
-                        faviconurl = "/favicons/default.ico"
-                    else:
-                        faviconurl = "/favicons/%s.ico" % root_url
+                if fav_icon == None:
+                    faviconurl = "/favicons/default.ico"
+                else:
+                    faviconurl = "/favicons/%s.ico" % root_url
             trackers += [Tracker(track_resp[0], track_resp[1], track_resp[2], track_resp[3], track_resp[4], bool(track_resp[5]), faviconurl, root_url)]
 #url, type, interval, seeds, leechs, enabled
         return trackers
