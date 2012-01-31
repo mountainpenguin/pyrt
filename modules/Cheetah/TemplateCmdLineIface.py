@@ -21,7 +21,7 @@ try:
 except ImportError:
     from pickle import load
 
-from Cheetah.Version import Version
+from modules.Cheetah.Version import Version
 
 class Error(Exception):
     pass

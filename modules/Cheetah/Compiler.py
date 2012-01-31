@@ -19,16 +19,16 @@ import random
 import warnings
 import copy
 
-from Cheetah.Version import Version, VersionTuple
-from Cheetah.SettingsManager import SettingsManager
-from Cheetah.Utils.Indenter import indentize # an undocumented preprocessor
-from Cheetah import ErrorCatchers
-from Cheetah import NameMapper
-from Cheetah.Parser import Parser, ParseError, specialVarRE, \
+from modules.Cheetah.Version import Version, VersionTuple
+from modules.Cheetah.SettingsManager import SettingsManager
+from modules.Cheetah.Utils.Indenter import indentize # an undocumented preprocessor
+from modules.Cheetah import ErrorCatchers
+from modules.Cheetah import NameMapper
+from modules.Cheetah.Parser import Parser, ParseError, specialVarRE, \
      STATIC_CACHE, REFRESH_CACHE, SET_LOCAL, SET_GLOBAL, SET_MODULE, \
      unicodeDirectiveRE, encodingDirectiveRE, escapedNewlineRE
 
-from Cheetah.NameMapper import NotFound, valueForName, valueFromSearchList, valueFromFrameOrSearchList
+from modules.Cheetah.NameMapper import NotFound, valueForName, valueFromSearchList, valueFromFrameOrSearchList
 VFFSL=valueFromFrameOrSearchList
 VFSL=valueFromSearchList
 VFN=valueForName
@@ -1622,14 +1622,14 @@ class ModuleCompiler(SettingsManager, GenUtils):
             "from os.path import getmtime, exists",
             "import time",
             "import types",
-            "from Cheetah.Version import MinCompatibleVersion as RequiredCheetahVersion",            
-            "from Cheetah.Version import MinCompatibleVersionTuple as RequiredCheetahVersionTuple",
-            "from Cheetah.Template import Template",
-            "from Cheetah.DummyTransaction import *",
-            "from Cheetah.NameMapper import NotFound, valueForName, valueFromSearchList, valueFromFrameOrSearchList",
-            "from Cheetah.CacheRegion import CacheRegion",
-            "import Cheetah.Filters as Filters",
-            "import Cheetah.ErrorCatchers as ErrorCatchers",
+            "from modules.Cheetah.Version import MinCompatibleVersion as RequiredCheetahVersion",            
+            "from modules.Cheetah.Version import MinCompatibleVersionTuple as RequiredCheetahVersionTuple",
+            "from modules.Cheetah.Template import Template",
+            "from modules.Cheetah.DummyTransaction import *",
+            "from modules.Cheetah.NameMapper import NotFound, valueForName, valueFromSearchList, valueFromFrameOrSearchList",
+            "from modules.Cheetah.CacheRegion import CacheRegion",
+            "import modules.Cheetah.Filters as Filters",
+            "import modules.Cheetah.ErrorCatchers as ErrorCatchers",
             ]        
 
         self._importedVarNames = ['sys',
@@ -1990,7 +1990,7 @@ if not hasattr(%(mainClassName)s, '_initCheetahAttributes'):
 ##################################################
 ## if run from command line:
 if __name__ == '__main__':
-    from Cheetah.TemplateCmdLineIface import CmdLineIface
+    from modules.Cheetah.TemplateCmdLineIface import CmdLineIface
     CmdLineIface(templateObj=%(className)s()).run()
 
 """ % {'className':self._mainClassName}

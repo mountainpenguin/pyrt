@@ -19,9 +19,9 @@ import getopt, glob, os, pprint, re, shutil, sys
 import cPickle as pickle
 from optparse import OptionParser
 
-from Cheetah.Version import Version
-from Cheetah.Template import Template, DEFAULT_COMPILER_SETTINGS
-from Cheetah.Utils.Misc import mkdirsWithPyInitFiles
+from modules.Cheetah.Version import Version
+from modules.Cheetah.Template import Template, DEFAULT_COMPILER_SETTINGS
+from modules.Cheetah.Utils.Misc import mkdirsWithPyInitFiles
 
 optionDashesRE = re.compile(  R"^-{1,2}"  )
 moduleNameRE = re.compile(  R"^[a-zA-Z_][a-zA-Z_0-9]*$"  )
@@ -197,7 +197,7 @@ Files are %s""", args, pprint.pformat(vars(opts)), files)
         if opts.print_settings:
             print() 
             print('>> Available Cheetah compiler settings:')
-            from Cheetah.Compiler import _DEFAULT_COMPILER_SETTINGS
+            from modules.Cheetah.Compiler import _DEFAULT_COMPILER_SETTINGS
             listing = _DEFAULT_COMPILER_SETTINGS
             listing.sort(key=lambda l: l[0][0].lower())
 
@@ -231,7 +231,7 @@ Files are %s""", args, pprint.pformat(vars(opts)), files)
         self._compileOrFill()
 
     def fill(self):
-        from Cheetah.ImportHooks import install
+        from modules.Cheetah.ImportHooks import install
         install()
         self._compileOrFill()
 
@@ -255,7 +255,7 @@ you do have write permission to and re-run the tests.""")
             f.close()
             os.remove(TEST_WRITE_FILENAME)
         # @@MO: End ugly kludge.
-        from Cheetah.Tests import Test
+        from modules.Cheetah.Tests import Test
         import unittest
         verbosity = 1
         if '-q' in self.testOpts:

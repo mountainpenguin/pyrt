@@ -21,7 +21,7 @@ except ImportError:
     pass
 
 try:
-    from Cheetah.NameMapper import valueForKey as lookup_func
+    from modules.Cheetah.NameMapper import valueForKey as lookup_func
 except ImportError:
     def lookup_func(obj, name):
         if hasattr(obj, name):

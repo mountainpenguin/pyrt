@@ -13,17 +13,17 @@ TODO
 import sys
 import unittest
 
-from Cheetah.Tests import SyntaxAndOutput
-from Cheetah.Tests import NameMapper
-from Cheetah.Tests import Misc
-from Cheetah.Tests import Filters
-from Cheetah.Tests import Template
-from Cheetah.Tests import Cheps
-from Cheetah.Tests import Parser
-from Cheetah.Tests import Regressions
-from Cheetah.Tests import Unicode
-from Cheetah.Tests import CheetahWrapper
-from Cheetah.Tests import Analyzer
+from modules.Cheetah.Tests import SyntaxAndOutput
+from modules.Cheetah.Tests import NameMapper
+from modules.Cheetah.Tests import Misc
+from modules.Cheetah.Tests import Filters
+from modules.Cheetah.Tests import Template
+from modules.Cheetah.Tests import Cheps
+from modules.Cheetah.Tests import Parser
+from modules.Cheetah.Tests import Regressions
+from modules.Cheetah.Tests import Unicode
+from modules.Cheetah.Tests import CheetahWrapper
+from modules.Cheetah.Tests import Analyzer
 
 SyntaxAndOutput.install_eols()
 

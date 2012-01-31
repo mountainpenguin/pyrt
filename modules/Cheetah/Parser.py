@@ -19,11 +19,11 @@ from tokenize import pseudoprog
 import inspect
 import traceback
 
-from Cheetah.SourceReader import SourceReader
-from Cheetah import Filters
-from Cheetah import ErrorCatchers
-from Cheetah.Unspecified import Unspecified
-from Cheetah.Macros.I18n import I18n
+from modules.Cheetah.SourceReader import SourceReader
+from modules.Cheetah import Filters
+from modules.Cheetah import ErrorCatchers
+from modules.Cheetah.Unspecified import Unspecified
+from modules.Cheetah.Macros.I18n import I18n
 
 # re tools
 _regexCache = {}
@@ -2279,7 +2279,7 @@ class _HighLevelParser(_LowLevelParser):
              '%end def'])
 
         
-        from Cheetah.Template import Template
+        from modules.Cheetah.Template import Template
         templateAPIClass = self.setting('templateAPIClassForDefMacro', default=Template)
         compilerSettings = self.setting('compilerSettingsForDefMacro', default={})
         searchListForMacros = self.setting('searchListForDefMacro', default=[])

@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- encoding: utf8 -*-
 
-from Cheetah.Template import Template
-from Cheetah import CheetahWrapper
-from Cheetah import DummyTransaction
+from modules.Cheetah.Template import Template
+from modules.Cheetah import CheetahWrapper
+from modules.Cheetah import DummyTransaction
 import imp
 import os
 import sys

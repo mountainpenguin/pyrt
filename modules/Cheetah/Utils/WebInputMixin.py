@@ -14,7 +14,7 @@ Last Revision Date: $Date: 2006/01/06 21:56:54 $
 __author__ = "Mike Orr <iron@mso.oz.net>"
 __revision__ = "$Revision: 1.10 $"[11:-2]
 
-from Cheetah.Utils.Misc import useOrRaise
+from modules.Cheetah.Utils.Misc import useOrRaise
 
 class NonNumericInputError(ValueError): pass
 

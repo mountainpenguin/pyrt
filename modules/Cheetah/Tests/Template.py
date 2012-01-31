@@ -8,7 +8,7 @@ import os.path
 import tempfile
 import shutil
 import unittest
-from Cheetah.Template import Template
+from modules.Cheetah.Template import Template
 
 majorVer, minorVer = sys.version_info[0], sys.version_info[1]
 versionTuple = (majorVer, minorVer)
@@ -210,7 +210,7 @@ class Preprocessors(TemplateTest):
         class Settings1: tokens = '@ %' 
         Settings1 = Settings1()
             
-        from Cheetah.Template import TemplatePreprocessor
+        from modules.Cheetah.Template import TemplatePreprocessor
         settings = Template._normalizePreprocessorSettings(Settings1)
         preprocObj = TemplatePreprocessor(settings)
 

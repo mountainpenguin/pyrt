@@ -2,7 +2,7 @@
 
 import unittest
 
-from Cheetah import DirectiveAnalyzer
+from modules.Cheetah import DirectiveAnalyzer
 
 
 class AnalyzerTests(unittest.TestCase):

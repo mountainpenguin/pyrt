@@ -25,7 +25,7 @@ except ImportError:
     from md5 import md5
 
 import time
-import Cheetah.CacheStore
+from modules.Cheetah import CacheStore
 
 class CacheItem(object):
     '''
@@ -102,7 +102,7 @@ class CacheRegion(object):
         self._regionID = regionID
         self._templateCacheIdPrefix = templateCacheIdPrefix
         if not cacheStore:
-            cacheStore = Cheetah.CacheStore.MemoryCacheStore()
+            cacheStore = CacheStore.MemoryCacheStore()
         self._cacheStore = cacheStore
         self._wrappedCacheDataStore = _CacheDataStoreWrapper(
             cacheStore, keyPrefix=templateCacheIdPrefix+':'+regionID+':')

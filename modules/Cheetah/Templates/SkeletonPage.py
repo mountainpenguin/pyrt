@@ -13,15 +13,15 @@ from os.path import getmtime, exists
 import time
 import types
 import __builtin__
-from Cheetah.Version import MinCompatibleVersion as RequiredCheetahVersion
-from Cheetah.Version import MinCompatibleVersionTuple as RequiredCheetahVersionTuple
-from Cheetah.Template import Template
-from Cheetah.DummyTransaction import DummyTransaction
-from Cheetah.NameMapper import NotFound, valueForName, valueFromSearchList, valueFromFrameOrSearchList
-from Cheetah.CacheRegion import CacheRegion
-import Cheetah.Filters as Filters
-import Cheetah.ErrorCatchers as ErrorCatchers
-from Cheetah.Templates._SkeletonPage import _SkeletonPage
+from modules.Cheetah.Version import MinCompatibleVersion as RequiredCheetahVersion
+from modules.Cheetah.Version import MinCompatibleVersionTuple as RequiredCheetahVersionTuple
+from modules.Cheetah.Template import Template
+from modules.Cheetah.DummyTransaction import DummyTransaction
+from modules.Cheetah.NameMapper import NotFound, valueForName, valueFromSearchList, valueFromFrameOrSearchList
+from modules.Cheetah.CacheRegion import CacheRegion
+import modules.Cheetah.Filters as Filters
+import modules.Cheetah.ErrorCatchers as ErrorCatchers
+from modules.Cheetah.Templates._SkeletonPage import _SkeletonPage
 
 ##################################################
 ## MODULE CONSTANTS
@@ -266,7 +266,7 @@ if not hasattr(SkeletonPage, '_initCheetahAttributes'):
 ##################################################
 ## if run from command line:
 if __name__ == '__main__':
-    from Cheetah.TemplateCmdLineIface import CmdLineIface
+    from modules.Cheetah.TemplateCmdLineIface import CmdLineIface
     CmdLineIface(templateObj=SkeletonPage()).run()
 
 

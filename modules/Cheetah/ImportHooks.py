@@ -19,10 +19,10 @@ import string
 import traceback
 import types
 
-from Cheetah import ImportManager
-from Cheetah.ImportManager import DirOwner
-from Cheetah.Compiler import Compiler
-from Cheetah.convertTmplPathToModuleName import convertTmplPathToModuleName
+from modules.Cheetah import ImportManager
+from modules.Cheetah.ImportManager import DirOwner
+from modules.Cheetah.Compiler import Compiler
+from modules.Cheetah.convertTmplPathToModuleName import convertTmplPathToModuleName
 
 _installed = False
 

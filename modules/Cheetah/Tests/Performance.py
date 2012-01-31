@@ -9,8 +9,8 @@ import unittest
 from test import pystone
 import time
 
-import Cheetah.NameMapper 
-import Cheetah.Template
+import modules.Cheetah.NameMapper as NameMapper
+import modules.Cheetah.Template as Template
 
 # This can be turned on with the `--debug` flag when running the test
 # and will cause the tests to all just dump out how long they took
@@ -79,7 +79,7 @@ class DynamicTemplatePerformanceTest(unittest.TestCase):
             #end def
         '''
         for i in range(self.loops):
-            klass = Cheetah.Template.Template.compile(template)
+            klass = Template.Template.compile(template)
             assert klass
     test_BasicDynamic = perftest(1200)(test_BasicDynamic)
 
@@ -118,7 +118,7 @@ class DynamicMethodCompilationTest(PerformanceTest):
                 #return $foo[0]
             #end def
         '''
-        template = Cheetah.Template.Template.compile(template, 
+        template = Template.Template.compile(template, 
             keepRefToGeneratedCode=False)
         template = template()
         value = template.testMethod()
@@ -134,7 +134,7 @@ class BunchOfWriteCalls(PerformanceTest):
                 $i
             #end for
         '''
-        template = Cheetah.Template.Template.compile(template, 
+        template = Template.Template.compile(template, 
             keepRefToGeneratedCode=False)
         template = template()
         value = template.respond()
@@ -151,7 +151,7 @@ class DynamicSimpleCompilationTest(PerformanceTest):
 
             Here's an array too: $foo
         '''
-        template = Cheetah.Template.Template.compile(template, 
+        template = Template.Template.compile(template, 
             keepRefToGeneratedCode=False)
         template = template()
         template = unicode(template)
@@ -168,7 +168,7 @@ class FilterTest(PerformanceTest):
 
             $foo, $foo, $foo
         '''
-        template = Cheetah.Template.Template.compile(template, 
+        template = Template.Template.compile(template, 
             keepRefToGeneratedCode=False)
         self.template = template()
 
@@ -179,14 +179,14 @@ class FilterTest(PerformanceTest):
 class LongCompileTest(PerformanceTest):
     ''' Test the compilation on a sufficiently large template '''
     def compile(self, template):
-        return Cheetah.Template.Template.compile(template, keepRefToGeneratedCode=False)
+        return Template.Template.compile(template, keepRefToGeneratedCode=False)
 
     def performanceSample(self):
         template = '''
             #import sys
-            #import Cheetah.Template
+            #import modules.Cheetah.Template
 
-            #extends Cheetah.Template.Template
+            #extends modules.Cheetah.Template.Template
 
             #def header()
                 <center><h2>This is my header</h2></center>
@@ -226,7 +226,7 @@ class LongCompileTest(PerformanceTest):
 
 class LongCompile_CompilerSettingsTest(LongCompileTest):
     def compile(self, template):
-        return Cheetah.Template.Template.compile(template, keepRefToGeneratedCode=False,
+        return Template.Template.compile(template, keepRefToGeneratedCode=False,
             compilerSettings={'useStackFrames' : True, 'useAutocalling' : True})
 
 class LongCompileAndRun(LongCompileTest):

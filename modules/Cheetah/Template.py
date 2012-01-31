@@ -45,26 +45,26 @@ else:
 
 
 
-from Cheetah.Version import convertVersionStringToTuple, MinCompatibleVersionTuple
-from Cheetah.Version import MinCompatibleVersion
+from modules.Cheetah.Version import convertVersionStringToTuple, MinCompatibleVersionTuple
+from modules.Cheetah.Version import MinCompatibleVersion
 # Base classes for Template
-from Cheetah.Servlet import Servlet                 
+from modules.Cheetah.Servlet import Servlet                 
 # More intra-package imports ...
-from Cheetah.Parser import ParseError, SourceReader
-from Cheetah.Compiler import Compiler, DEFAULT_COMPILER_SETTINGS
-from Cheetah import ErrorCatchers              # for placeholder tags
-from Cheetah import Filters                    # the output filters
-from Cheetah.convertTmplPathToModuleName import convertTmplPathToModuleName
+from modules.Cheetah.Parser import ParseError, SourceReader
+from modules.Cheetah.Compiler import Compiler, DEFAULT_COMPILER_SETTINGS
+from modules.Cheetah import ErrorCatchers              # for placeholder tags
+from modules.Cheetah import Filters                    # the output filters
+from modules.Cheetah.convertTmplPathToModuleName import convertTmplPathToModuleName
 
-from Cheetah.Utils.Misc import checkKeywords     # Used in Template.__init__
-from Cheetah.Utils.Indenter import Indenter      # Used in Template.__init__ and for
+from modules.Cheetah.Utils.Misc import checkKeywords     # Used in Template.__init__
+from modules.Cheetah.Utils.Indenter import Indenter      # Used in Template.__init__ and for
                                                  # placeholders
-from Cheetah.NameMapper import NotFound, valueFromSearchList
-from Cheetah.CacheStore import MemoryCacheStore, MemcachedCacheStore
-from Cheetah.CacheRegion import CacheRegion
-from Cheetah.Utils.WebInputMixin import _Converter, _lookup, NonNumericInputError
+from modules.Cheetah.NameMapper import NotFound, valueFromSearchList
+from modules.Cheetah.CacheStore import MemoryCacheStore, MemcachedCacheStore
+from modules.Cheetah.CacheRegion import CacheRegion
+from modules.Cheetah.Utils.WebInputMixin import _Converter, _lookup, NonNumericInputError
 
-from Cheetah.Unspecified import Unspecified
+from modules.Cheetah.Unspecified import Unspecified
 
 # Decide whether to use the file modification time in file's cache key 
 __checkFileMtime = True
@@ -231,7 +231,7 @@ class Template(Servlet):
              is currently no way to pass them in.
 
     If you need to subclass a dynamically compiled Cheetah class, do something like this:
-        from Cheetah.Template import Template
+        from modules.Cheetah.Template import Template
         T1 = Template.compile('$meth1 #def meth1: this is meth1 in T1')
         T2 = Template.compile('#implements meth1\nthis is meth1 redefined in T2', baseclass=T1)
         print T1, T1()
