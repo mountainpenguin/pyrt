@@ -8,6 +8,9 @@ import sys
 import os
 import itertools
 import base64
+import urllib2
+import urlparse
+import re
 
 """Available commands
 
@@ -474,15 +477,16 @@ xmlrpc_dialect
 
 """
 
-class Tracker:
-    def __init__(self, url, type, interval, seeds, leechs, enabled):
+class Tracker(object):
+    def __init__(self, url, type, interval, seeds, leechs, enabled, favicon):
         self.url = url
         self.type = type
         self.interval = interval
         self.seeds = seeds
         self.leechs = leechs
         self.enabled = enabled
-class File:
+        self.favicon_uri = favicon
+class File(object):
     def __init__(self, abs_path, base_path, path_components, completed_chunks, priority, size, chunks, chunk_size):
         self.abs_path = abs_path
         self.base_path = base_path
@@ -498,7 +502,7 @@ class File:
         except:
             self.percentage_complete = 100.0
 
-class Peer:
+class Peer(object):
     def __init__(self, address, client_version, completed_percent, down_rate, down_total, up_rate, up_total, port, peer_rate, peer_total):
         self.address = address
         self.client_version = client_version
@@ -511,7 +515,7 @@ class Peer:
         self.peer_rate = peer_rate
         self.peer_total = peer_total
 
-class Torrent:
+class Torrent(object):
     def __init__(self, id, name, base_path, size_chunks, chunk_size, completed_bytes, creation_date, down_rate, up_rate, peers_connected, peers_total, seeders_connected, seeders_total, priority, ratio, size, up_total, down_total, status, private, trackers):
         self.torrent_id = id
         self.name = name
@@ -727,7 +731,29 @@ class rtorrent:
             "t.is_enabled=",            #{0:"disabled", 1:"enabled"}
         )
         for track_resp in resp:
-            trackers += [Tracker(track_resp[0], track_resp[1], track_resp[2], track_resp[3], track_resp[4], bool(track_resp[5]))]
+            faviconurl = None
+            url = track_resp[0]
+            url_parsed = urlparse.urlparse(url)
+            root_url = re.split(":\d+", url_parsed.netloc)[0]
+            if os.path.exists("static/favicons/%s.ico" % root_url):
+                fav_icon = True
+            else:
+                fav_icon_url = "%s://%s/favicon.ico" % (url_parsed.scheme, root_url)
+                try:
+                    fav_icon = urllib2.urlopen(fav_icon_url, timeout=2).read()
+                    open("static/favicons/%s.ico" % (root_url),"wb").write(fav_icon)
+                except urllib2.URLError:
+                    fav_icon_url2 = "%s://%s/favicon.ico" % (url_parsed.scheme, ".".join(root_url.split(".")[1:]))
+                    print fav_icon_url2
+                    try:
+                        fav_icon = urllib2.urlopen(fav_icon_url2, timeout=2).read()
+                        open("static/favicons/%s.ico" % (root_url),"wb").write(fav_icon)
+                    except urllib2.URLError:
+                        fav_icon = None
+            if fav_icon == None:
+                os.symlink("default.ico", "static/favicons/%s.ico" % root_url)
+            faviconurl = "/favicons/%s.ico" % root_url
+            trackers += [Tracker(track_resp[0], track_resp[1], track_resp[2], track_resp[3], track_resp[4], bool(track_resp[5]), faviconurl)]
 #url, type, interval, seeds, leechs, enabled
         return trackers
 

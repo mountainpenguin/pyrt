@@ -17,7 +17,12 @@ import shutil
 import bencode
 import system
 import base64
-from Cheetah.Template import Template
+import urlparse
+import re
+import urllib
+import urllib2
+
+from modules.Cheetah.Template import Template
 
 class Ajax:
     def __init__(self, conf=config.Config()):
@@ -220,3 +225,19 @@ class Ajax:
         torrentList = torrentListStr.split(",")
         for torrent_id in torrentList:
             self.delete_torrent(torrent_id)
+            
+    def get_tracker_favicon(self, torrentID):
+        tracker_urls = [urlparse.urlparse(x.url) for x in self.RT.getTrackers(torrentID)]
+        netloc = re.split(":\d+", tracker_urls[0].netloc)[0]
+        scheme = tracker_urls[0].scheme
+        try:
+            test_fav = urllib2.urlopen("%s://%s/favicon.ico" % (scheme, netloc)).read()
+        except urllib2.URLError as e:
+            try:
+                test_fav = urllib2.urlopen("%s://%s/favicon.ico" % (scheme, ".".join(netloc.split(".")[1:]))).read()
+            except urllib2.URLError as e:
+                return "ERROR '%s://%s/favicon.ico' [%s]" % (scheme, ".".join(netloc.split(".")[1:]), e.__repr__())
+            else:
+                return "<html><body><img src='data:image/x-icon;base64,%s'></body></html>" % base64.b64encode(test_fav)
+        else:
+            return "<html><body><img src='data:image/x-icon;base64,%s'></body></html>" % base64.b64encode(test_fav)
