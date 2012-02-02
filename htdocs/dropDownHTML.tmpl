@@ -22,7 +22,7 @@
         <li>
             <h2 class="drop_down_h2"><span>Peers</span></h2>
             <div id="drop_down_peers_$torrent_id" class="drop_down_peers drop_down_div">
-                <table>
+                <table class="drop_down_peers_inner">
                     <thead class="drop_down_peers">
                         <tr>
                             <th>IP Address</th>
@@ -58,8 +58,10 @@
         </li>
         <li>
             <h2 class="drop_down_h2"><span>Files</span></h2>
-            <div id="drop_down_files_$torrent_id" class="drop_down_files drop_down_div">
-                $file_tree
+            <div>
+                <div id="drop_down_files_$torrent_id" class="drop_down_files drop_down_div">
+                    $file_tree
+                </div>
             </div>
         </li>
     </ol>
