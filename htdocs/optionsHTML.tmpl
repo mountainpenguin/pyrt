@@ -6,59 +6,65 @@
         <link rel="stylesheet" href="/css/options.css" type="text/css">
         <script src="/javascript/jquery-1.7.min.js" type="text/javascript"></script>
         <script src="/javascript/jquery-ui-1.8.17.custom.min.js" type="text/javascript"></script>
-        <!--<script src="/javascript/liteaccordion.jquery.min.js" type="text/javascript"></script>-->
         <script src="/javascript/options.js" type="text/javascript"></script>
     </head>
     <body>
         <div id="header">
             <div id="topbar">
                 <div class="topbar-tab" title="Main" id="tab_main">Main</div>
-                <div id="slide-me">
-                    <div class="topbar-tab" title="Started" id="tab_started">Started</div>
-                    <div class="topbar-tab" title="Stopped" id="tab_stopped">Stopped</div>
-                    <div class="topbar-tab" title="Complete" id="tab_complete">Complete</div>
-                    <div class="topbar-tab" title="Incomplete" id="tab_incomplete">Incomplete</div>
-                    <div class="topbar-tab" title="Hashing" id="tab_hashing">Hashing</div>
-                    <div class="topbar-tab" title="Seeding" id="tab_seeding">Seeding</div>
-                    <div class="topbar-tab" title="Active" id="tab_active">Active</div>
-                </div>
                 <div id="tools-bar">
                     <div class="topbar-tab_options selected"  title="Options" id="tab_options">Options</div>
-                    <div class="topbar-tab_options hidden" title="PyRT Options" id="tab_pyrt">PyRT</div>
-                    <div class="topbar-tab_options hidden" title="rTorrent Options" id="tab_rtorrent">rTorrent</div>
                 </div>
             </div>
         </div>
         <div id="main_body">
             <div id="wrapper">
-                <div id="pyrt-options-wrapper">
-                    <h3 id="pyrt-options-h3">PyRT Options</h3>
-                    <div id="pyrt-options-div">
-                        <form action="" method="POST">
-                            <div id="change_port" class="sub_option">
-                                <span class="column-1">Change Port:</span>
-                                <span class="column-2">
-                                    <input type="text" id="pyrt-changeport-input" name="port" value="$pyrt_port">
-                                </span>
-                            </div>
-                            <div class="row">
-                                <div id="change_password" class="sub_option">
-                                    <div class="column-1 sub_heading">Change Password</div>
-                                    <span class="column-1">Current Password:</span>
-                                    <span class="column-2"><input type="password" id="pyrt-curpw-input" name="current_password"></span>
-                                    <span class="column-1">New Password:</span>
-                                    <span class="column-2"><input type="password" id="pyrt-newpw-input" name="new_password"></span>
-                                    <span class="column-1">Confirm:</span>
-                                    <span class="column-2"><input type="password" id="pyrt-newpw_confirm-input"> <span id="pyrt-newpw_report-span"></span></span>
-                                </div>
-                            </div>
-                        </form>
-                        
+                <div id="main_contents">
+                    <div id="sidebar">
+                        <ol class="sidebar-list">
+                            <li id="pyrt-tab" class="selected">PyRT</li>
+                            ##password
+                            ##animations
+                            ##refresh rate
+                            <li id="throttle-tab">Throttle</li>
+                            ##global
+                            <li id="network-tab">Network</li>
+                            ##port range
+                            ##dl dir
+                            ##move on complete
+                            <li id="priority-tab">Priority</li>
+                            ##on_ratio - set priorities
+                            ##trackers - set priorities
+                            <li id="trackers-tab">Trackers</li>
+                            ##show cached favicons
+                            ##allow changing
+                        </ol>
                     </div>
-                </div>
-                <div id="rtorrent-options-wrapper">
-                    <h3 id="rtorrent-options-h3">rTorrent Options</h3>
-                    <div id="rtorrent-options-div"></div>
+                    <div class="options-wrapper selected">
+                        <div id="pyrt" class="options">
+                            <span>PyRT Settings Placeholder</span>
+                        </div>
+                    </div>
+                    <div class="options-wrapper">
+                        <div id="throttle" class="options">
+                            <span>Throttling Placeholder</span>
+                        </div>
+                    </div>
+                    <div class="options-wrapper">
+                        <div id="network" class="options">
+                            <span>Network Settings Placeholder</span>
+                        </div>
+                    </div>
+                    <div class="options-wrapper">
+                        <div id="priority" class="options">
+                            <span>Priority Settings Placeholder</span>
+                        </div>
+                    </div>
+                    <div class="options-wrapper">
+                        <div id="trackers" class="options">
+                            <span>Trackers Placeholder</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
