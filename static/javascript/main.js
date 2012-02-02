@@ -3,6 +3,7 @@ var SELECTED = new Array();
 var statusArrayInactive = new Array("Stopped","Paused");
 var statusArrayActive = new Array("Seeding (idle)", "Seeding", "Leeching (idle)", "Leeching", "Hashing");
 var DELETING = new Array();
+var DROP_OPEN = new Array();
 
 $(document).ready(function () {
      setTimeout(function () {
@@ -58,7 +59,15 @@ $(document).ready(function () {
           }
           if (e.ctrlKey) {
           } else {
-               drop_down(this);
+               torrent_id = $(e.target).parent().attr("id").split("torrent_id_")[1];
+               if ($.inArray(torrent_id, DROP_OPEN) == -1) {
+                    DROP_OPEN.push(torrent_id);
+                    drop_down(this);
+               } else {
+                    drop_index = DROP_OPEN.indexOf(torrent_id);
+                    DROP_OPEN.splice(drop_index, 1);
+                    drop_up(torrent_id);
+               }
           }
      });
      $(".batch-control").live("click", function (e) {
