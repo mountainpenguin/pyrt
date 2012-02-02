@@ -27,7 +27,8 @@ class Global(object):
         self.load15 = kwargs["load15"]
         self.load = (self.load1, self.load5, self.load15)
         self.uptime = kwargs["server_uptime"]
-        self.cpuusage = kwargs["cpuusage"]
+        self.throttle_up = kwargs["throttle_up"]
+        self.throttle_down = kwargs["throttle_down"]
     
 def hdd(path="/"):
     """
@@ -112,7 +113,8 @@ def get_global(encode_json=False):
     load1 = "%.02f" % load1
     load5 = "%.02f" % load5
     load15 = "%.02f" % load15
-    cpuusage = "None"
+    throttle_up = handler.humanSize(RT.getGlobalUpThrottle())
+    throttle_down = handler.humanSize(RT.getGlobalDownThrottle())
     server_uptime = str(uptime())
     
     if not encode_json:

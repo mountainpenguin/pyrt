@@ -869,6 +869,12 @@ class rtorrent:
     
     def getGlobalDownRate(self):
         return self.conn.get_down_rate()
+        
+    def getGlobalUpThrottle(self):
+        return self.conn.get_upload_rate()
+        
+    def getGlobalDownThrottle(self):
+        return self.conn.get_download_rate()
 
     def getCreationDate(self, id):
         return self.conn.d.get_creation_date(id)

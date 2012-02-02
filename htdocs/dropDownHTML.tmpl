@@ -3,16 +3,16 @@
         <li>
             <h2 class="drop_down_h2"><span>Details</span></h2>
             <div id="drop_down_main_$torrent_id" class="drop_down_main drop_down_div">
-                <div class='column-1'>ID:</div><div class='column-2'>$torrent_id</div>
-                <div class='column-1'>Size:</div><div class='column-2'>$size</div>
-                <div class='column-1'>Percentage:</div><div class='column-2'>$percentage%</div>
-                <div class='column-1'>Downloaded:</div><div class='column-2'>$downloaded</div>
-                <div class='column-1'>Uploaded:</div><div class='column-2'>$uploaded</div>
-                <div class='column-1'>Ratio:</div><div class='column-2'>$ratio</div>
-                <div class='column-1'>Peers:</div><div class='column-2'>$peers</div>
-                <div class='column-1'>Created:</div><div class='column-2'>$created</div>
-                <div class='column-1'>Trackers:</div>
-                <div class='column-2'>
+                <div class='column strong new'>ID:</div><div class='column value'>$torrent_id</div>
+                <div class='column strong new'>Size:</div><div class='column value'>$size</div>
+                <div class='column strong new'>Percentage:</div><div class='column value'>$percentage%</div>
+                <div class='column strong new'>Downloaded:</div><div class='column value'>$downloaded</div>
+                <div class='column strong new'>Uploaded:</div><div class='column value'>$uploaded</div>
+                <div class='column strong new'>Ratio:</div><div class='column value'>$ratio</div>
+                <div class='column strong new'>Peers:</div><div class='column value'>$peers</div>
+                <div class='column strong new'>Created:</div><div class='column value'>$created</div>
+                <div class='column strong new'>Trackers:</div>
+                <div class='column value'>
                  #for $tracker in $trackers
                    <img alt="$tracker.root_url" title="$tracker.root_url" src="$tracker.favicon_url" width=16 height=16>
                  #end for
@@ -64,5 +64,5 @@
         </li>
     </ol>
         
-    <div class='column-2' style='clear : left;'><span class='fakelink' onClick='drop_up("$torrent_id");'>Close</span> <!-- <a style='color : blue;' href='detail?torrent_id=$torrent_id'>Detailed View</a> --> </div>
+    <div class='column value' style='clear : left;'><span class='fakelink' onClick='drop_up("$torrent_id");'>Close</span> <!-- <a style='color : blue;' href='detail?torrent_id=$torrent_id'>Detailed View</a> --> </div>
 </div>

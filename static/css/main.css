@@ -156,38 +156,22 @@ a:hover { color : white; }
     cursor : pointer;
     text-decoration : underline;
 }
-.column-1 {
+
+.column {
     float : left;
+}
+
+.column.strong {
+    font-weight : bold;
+    min-width : 9em;
+}
+
+.column.new {
     clear : left;
-    min-width : 9em;
-    font-weight : bold;
 }
 
-.column-2 {
-    float : left;
-    min-width : 9em;
-}
-
-.column-3 {
-    float : left;
-    min-width : 9em;
-    font-weight : bold;
-}
-
-.column-4 {
-    float : left;
-    min-width : 9em;
-}
-
-.column-5 {
-    float : left;
-    min-width : 9em;
-    font-weight : bold;
-}
-
-.column-6 {
-    float : left;
-    min-width : 9em;
+.column.value {
+    min-width : 9.5em;
 }
 
 .down-1 {
