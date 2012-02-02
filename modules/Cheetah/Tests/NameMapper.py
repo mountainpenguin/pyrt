@@ -6,7 +6,7 @@ import os
 import os.path
 
 import unittest
-from Cheetah.NameMapper import NotFound, valueForKey, \
+from modules.Cheetah.NameMapper import NotFound, valueForKey, \
      valueForName, valueFromSearchList, valueFromFrame, valueFromFrameOrSearchList
 
 
@@ -532,7 +532,7 @@ if sys.platform.startswith('java'):
 
 class MapBuiltins(unittest.TestCase):
     def test_int(self):
-        from Cheetah.Template import Template
+        from modules.Cheetah.Template import Template
         t = Template('''
             #def intify(val)
                 #return $int(val)

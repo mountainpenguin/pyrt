@@ -17,7 +17,7 @@ __revision__ = "$Revision: 1.13 $"[11:-2]
 import time, types, os, sys
 
 # intra-package imports ...
-from Cheetah.Template import Template
+from modules.Cheetah.Template import Template
 
 
 ##################################################

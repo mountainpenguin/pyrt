@@ -29,8 +29,8 @@ table {
 td {
   padding: 3px;
 }
-td:nth-child(1) {
-  width: 37%;
+td.t_name {
+  width: 30em;
 }
 td.torrentid {
     font-size : 12px;
@@ -85,9 +85,18 @@ tr.old-torrent-row {
 }
 
 .drop_down {
-    border-left : 1px dotted;
-    border-right : 1px dotted;
-    background-color : #EEEEEE;
+    /*border-left : 1px dotted;*/
+    /*border-right : 1px dotted;*/
+    /*background-color : #EEEEEE;*/
+    -moz-user-select: text;
+    -khtml-user-select: text;
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+.drop_down_td {
+    box-shadow : inset 5px 5px 5px #888;
+    padding : 0.5em;
 }
 
 tr.blue {

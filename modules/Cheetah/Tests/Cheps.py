@@ -2,9 +2,9 @@
 
 import unittest
 
-import Cheetah
-import Cheetah.Parser
-import Cheetah.Template
+import modules.Cheetah as Cheetah
+import modules.Cheetah.Parser as Parser
+import modules.Cheetah.Template as Template
 
 class Chep_2_Conditionalized_Import_Behavior(unittest.TestCase):
     def test_ModuleLevelImport(self):
@@ -24,8 +24,8 @@ class Chep_2_Conditionalized_Import_Behavior(unittest.TestCase):
             #end def
         '''
         try:
-            template = Cheetah.Template.Template.compile(template)
-        except Cheetah.Parser.ParseError, ex:
+            template = Template.Template.compile(template)
+        except Parser.ParseError, ex:
             self.fail('Failed to properly generate code %s' % ex)
         template = template()
         rc = tepmlate.funky('abc def')

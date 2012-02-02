@@ -227,7 +227,7 @@ class Handler:
         else:
             #walk through dictionary
             #should only ever be one root_key, "." or the base directory
-            html = "<ul id=\"files_list\" class=\"filetree\">"
+            html = "<ul class=\"filetree\">"
             root = fileStruct[root_keys[0]]
             #html += DIRECTORY_DIV % ("", root_keys[0], self.humanSize(root["___size"]))
             html += DIRECTORY_DIV % (root_keys[0])

@@ -2,7 +2,7 @@
 
 import unittest
 
-from Cheetah import Parser
+from modules.Cheetah import Parser
 
 class ArgListTest(unittest.TestCase):
     def setUp(self):

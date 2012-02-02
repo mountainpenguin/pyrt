@@ -3,8 +3,8 @@
 import sys
 import unittest
 
-import Cheetah.Template
-import Cheetah.Filters
+import modules.Cheetah.Template as Template
+import modules.Cheetah.Filters as Filters
 
 majorVer, minorVer = sys.version_info[0], sys.version_info[1]
 versionTuple = (majorVer, minorVer)
@@ -15,7 +15,7 @@ class BasicMarkdownFilterTest(unittest.TestCase):
     '''
     def test_BasicHeader(self):
         template = '''  
-#from Cheetah.Filters import Markdown
+#from Filters import Markdown
 #transform Markdown
 $foo
 
@@ -25,7 +25,7 @@ Header
         expected = '''<p>bar</p>
 <h1>Header</h1>'''
         try:
-            template = Cheetah.Template.Template(template, searchList=[{'foo' : 'bar'}])
+            template = Template.Template(template, searchList=[{'foo' : 'bar'}])
             template = str(template)
             assert template == expected
         except ImportError, ex:
@@ -44,24 +44,24 @@ class BasicCodeHighlighterFilterTest(unittest.TestCase):
     '''
     def test_Python(self):
         template = '''  
-#from Cheetah.Filters import CodeHighlighter
+#from Filters import CodeHighlighter
 #transform CodeHighlighter
 
 def foo(self):
     return '$foo'
         '''
-        template = Cheetah.Template.Template(template, searchList=[{'foo' : 'bar'}])
+        template = Template.Template(template, searchList=[{'foo' : 'bar'}])
         template = str(template)
         assert template, (template, 'We should have some content here...')
 
     def test_Html(self):
         template = '''  
-#from Cheetah.Filters import CodeHighlighter
+#from Filters import CodeHighlighter
 #transform CodeHighlighter
 
 <html><head></head><body>$foo</body></html>
         '''
-        template = Cheetah.Template.Template(template, searchList=[{'foo' : 'bar'}])
+        template = Template.Template(template, searchList=[{'foo' : 'bar'}])
         template = str(template)
         assert template, (template, 'We should have some content here...')
 

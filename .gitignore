@@ -4,3 +4,4 @@ config/.pyrtrc
 .user.pickle
 .pyrtconfig
 torrents/*
+static/favicons/*.ico

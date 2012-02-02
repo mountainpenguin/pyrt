@@ -9,9 +9,9 @@ except ImportError:
     # Assume we have reduce
     pass
 
-from Cheetah import Parser
-from Cheetah import Compiler
-from Cheetah import Template
+from modules.Cheetah import Parser
+from modules.Cheetah import Compiler
+from modules.Cheetah import Template
 
 class Analyzer(Parser.Parser):
     def __init__(self, *args, **kwargs):

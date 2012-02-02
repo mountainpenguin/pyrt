@@ -21,7 +21,7 @@ import tempfile
 import unittest
 
 from optparse import OptionParser
-from Cheetah.CheetahWrapper import CheetahWrapper  # Used by NoBackup.
+from modules.Cheetah.CheetahWrapper import CheetahWrapper  # Used by NoBackup.
 
 try:
     from subprocess import Popen, PIPE, STDOUT

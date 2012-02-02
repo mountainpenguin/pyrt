@@ -12,7 +12,7 @@ __author__ = "Tavis Rudd <tavis@damnsimple.com>"
 __revision__ = "$Revision: 1.7 $"[11:-2]
 
 import time
-from Cheetah.NameMapper import NotFound
+from modules.Cheetah.NameMapper import NotFound
 
 class Error(Exception):
     pass

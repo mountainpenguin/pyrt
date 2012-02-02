@@ -38,6 +38,11 @@ app_config = {
         "tools.staticfile.on" : True,
         "tools.staticfile.root" : os.getcwd(),
         "tools.staticfile.filename" : "static/favicon.ico",
+    },
+    "/favicons" : {
+        "tools.staticdir.on" : True,
+        "tools.staticdir.root" : os.getcwd(),
+        "tools.staticdir.dir" : "static/favicons",
     }
 }
 
@@ -184,6 +189,8 @@ class mainHandler:
             return self.AJAX.remove_batch(torrentIDs)
         elif request == "delete_batch" and torrentIDs is not None:
             return self.AJAX.delete_batch(torrentIDs)
+        elif request == "get_tracker_favicon" and torrent_id is not None:
+            return self.AJAX.get_tracker_favicon(torrent_id)
             
         else:
             raise cherrypy.HTTPError(message="Ajax Error Invalid Method")

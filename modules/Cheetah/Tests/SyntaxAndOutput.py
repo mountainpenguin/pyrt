@@ -25,11 +25,11 @@ import os.path
 import warnings
 import unittest
 
-from Cheetah.NameMapper import NotFound
-from Cheetah.NameMapper import C_VERSION as NameMapper_C_VERSION
-from Cheetah.Template import Template
-from Cheetah.Parser import ParseError
-from Cheetah.Compiler import Compiler, DEFAULT_COMPILER_SETTINGS
+from modules.Cheetah.NameMapper import NotFound
+from modules.Cheetah.NameMapper import C_VERSION as NameMapper_C_VERSION
+from modules.Cheetah.Template import Template
+from modules.Cheetah.Parser import ParseError
+from modules.Cheetah.Compiler import Compiler, DEFAULT_COMPILER_SETTINGS
 
 class Unspecified(object):
     pass
@@ -1803,13 +1803,13 @@ class DecoratorDirective(OutputTest):
         self.verify("#@23 blah", "#@23 blah")
         self.verify("#@@TR: comment", "#@@TR: comment")
 
-        self.verify("#from Cheetah.Tests.SyntaxAndOutput import testdecorator\n"
+        self.verify("#from modules.Cheetah.Tests.SyntaxAndOutput import testdecorator\n"
                     +"#@testdecorator"
                     +"\n#def $testMeth():1234\n$testMeth",
                     
                     "1234")
 
-        self.verify("#from Cheetah.Tests.SyntaxAndOutput import testdecorator\n"
+        self.verify("#from modules.Cheetah.Tests.SyntaxAndOutput import testdecorator\n"
                     +"#@testdecorator"
                     +"\n#block $testMeth():1234",
                     
@@ -1817,7 +1817,7 @@ class DecoratorDirective(OutputTest):
 
         try:
             self.verify(
-                "#from Cheetah.Tests.SyntaxAndOutput import testdecorator\n"
+                "#from modules.Cheetah.Tests.SyntaxAndOutput import testdecorator\n"
                 +"#@testdecorator\n sdf"
                 +"\n#def $testMeth():1234\n$testMeth",                        
 
@@ -1829,7 +1829,7 @@ class DecoratorDirective(OutputTest):
 
     def test2(self):
         """#def with multiple decorators"""
-        self.verify("#from Cheetah.Tests.SyntaxAndOutput import testdecorator\n"
+        self.verify("#from modules.Cheetah.Tests.SyntaxAndOutput import testdecorator\n"
                     +"#@testdecorator\n"
                     +"#@testdecorator\n"
                     +"#def testMeth\n"
@@ -2720,8 +2720,8 @@ if sys.platform.startswith('java'):
 class ExtendsDirective(OutputTest):
 
     def test1(self):
-        """#extends Cheetah.Templates._SkeletonPage"""
-        self.verify("""#from Cheetah.Templates._SkeletonPage import _SkeletonPage
+        """#extends modules.Cheetah.Templates._SkeletonPage"""
+        self.verify("""#from modules.Cheetah.Templates._SkeletonPage import _SkeletonPage
 #extends _SkeletonPage
 #implements respond
 $spacer()
@@ -2729,7 +2729,7 @@ $spacer()
                     '<img src="spacer.gif" width="1" height="1" alt="" />\n')
 
 
-        self.verify("""#from Cheetah.Templates._SkeletonPage import _SkeletonPage
+        self.verify("""#from modules.Cheetah.Templates._SkeletonPage import _SkeletonPage
 #extends _SkeletonPage
 #implements respond(foo=1234)
 $spacer()$foo
@@ -2737,16 +2737,16 @@ $spacer()$foo
                     '<img src="spacer.gif" width="1" height="1" alt="" />1234\n')
 
     def test2(self):
-        """#extends Cheetah.Templates.SkeletonPage without #import"""
-        self.verify("""#extends Cheetah.Templates.SkeletonPage
+        """#extends modules.Cheetah.Templates.SkeletonPage without #import"""
+        self.verify("""#extends modules.Cheetah.Templates.SkeletonPage
 #implements respond
 $spacer()
 """,
                     '<img src="spacer.gif" width="1" height="1" alt="" />\n')
 
     def test3(self):
-        """#extends Cheetah.Templates.SkeletonPage.SkeletonPage without #import"""
-        self.verify("""#extends Cheetah.Templates.SkeletonPage.SkeletonPage
+        """#extends modules.Cheetah.Templates.SkeletonPage.SkeletonPage without #import"""
+        self.verify("""#extends modules.Cheetah.Templates.SkeletonPage.SkeletonPage
 #implements respond
 $spacer()
 """,
@@ -2754,7 +2754,7 @@ $spacer()
 
     def test4(self):
         """#extends with globals and searchList test"""
-        self.verify("""#extends Cheetah.Templates.SkeletonPage
+        self.verify("""#extends modules.Cheetah.Templates.SkeletonPage
 #set global g="Hello"
 #implements respond
 $g $numOne
@@ -2982,7 +2982,7 @@ class CGI(OutputTest):
     def test1(self):
         """A regular template."""
         self._guaranteeNoCGI()
-        source = "#extends Cheetah.Tools.CGITemplate\n" + \
+        source = "#extends modules.Cheetah.Tools.CGITemplate\n" + \
                  "#implements respond\n" + \
                  "$cgiHeaders#slurp\n" + \
                  "Hello, world!" 
@@ -2992,7 +2992,7 @@ class CGI(OutputTest):
     def test2(self):
         """A CGI script."""
         self._beginCGI()
-        source = "#extends Cheetah.Tools.CGITemplate\n" + \
+        source = "#extends modules.Cheetah.Tools.CGITemplate\n" + \
                  "#implements respond\n" + \
                  "$cgiHeaders#slurp\n" + \
                  "Hello, world!" 
@@ -3014,7 +3014,7 @@ class CGI(OutputTest):
            better not call $cgiImport() because it would be misled.
         """
         self._beginCGI()
-        source = "#extends Cheetah.Tools.CGITemplate\n" + \
+        source = "#extends modules.Cheetah.Tools.CGITemplate\n" + \
                  "#implements respond\n" + \
                  "<% self._CHEETAH__isControlledByWebKit = True %>#slurp\n" + \
                  "$cgiHeaders#slurp\n" + \
@@ -3027,7 +3027,7 @@ class CGI(OutputTest):
         """A CGI script with a GET variable."""
         self._beginCGI()
         os.environ['QUERY_STRING'] = "cgiWhat=world"
-        source = "#extends Cheetah.Tools.CGITemplate\n" + \
+        source = "#extends modules.Cheetah.Tools.CGITemplate\n" + \
                  "#implements respond\n" + \
                  "$cgiHeaders#slurp\n" + \
                  "#silent $webInput(['cgiWhat'])##slurp\n" + \

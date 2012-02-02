@@ -2,7 +2,7 @@
 
 import unittest
 
-from Cheetah import SettingsManager
+from modules.Cheetah import SettingsManager
 
 
 class SettingsManagerTests(unittest.TestCase):

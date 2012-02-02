@@ -550,7 +550,7 @@ function view_torrent(elem) {
     var newrow = table.insertRow(elem.rowIndex + 1);
     var newcell = newrow.insertCell(0);
     newrow.id = "newrow_torrent_id_" + torrent_id;
-    newrow.className += " drop_down";
+    newrow.className += "drop_down";
     newcell.innerHTML = "<img src='/images/loading.gif'> <span style='color:red;'>Loading</span>";
     newcell.colSpan = "7";
     var xmlhttp = new XMLHttpRequest();
@@ -560,11 +560,37 @@ function view_torrent(elem) {
     xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             var response = xmlhttp.responseText;
-            newcell.innerHTML = response;
+            newcell.className += "drop_down_td";
+            newcellcontents = $(response);
+            newcellcontents = accordionise(newcellcontents);
+            newcellcontents = filetreeise(newcellcontents, torrent_id);
+            newcellcontents = scrollpaneise(newcellcontents);
+            $(newcell).html(newcellcontents);
         }
     }
     var params = "request=get_torrent_info&html=yesplease&torrent_id=" + torrent_id;
     xmlhttp.send(params);
+}
+
+function accordionise(cell) {
+     cell.liteAccordion({
+          containerWidth : $(".torrent-div").first().width()
+     });
+     return cell;
+}
+
+function filetreeise(cell, torrent_id) {
+     cell.find("#drop_down_files_" + torrent_id + " > ul").treeview({
+          collapsed : true
+     });
+     return cell;
+}
+
+function scrollpaneise(cell) {
+     //$.each(cell.find("li > div"), function(i, lidiv) {
+     //     $(lidiv).jScrollPane();
+     //});
+     return cell;
 }
 
 function command(cmd, t_id) {
