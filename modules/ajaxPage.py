@@ -178,7 +178,11 @@ class Ajax:
                 self.RT.load_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
             return self.Handler.HTMLredirect("/")
             
-    def get_info_multi(self, view, sortby, reverse):
+    def get_info_multi(self, view, sortby, reverse, drop_down_ids):
+        drop_downs = {}
+        if drop_down_ids:
+            for t_id in drop_down_ids.split(","):
+                drop_downs[t_id] = self.get_torrent_info(t_id, html="yes please")
         #wanted:
         #   system info
         #   ratio, dl speed, ul speed, status
@@ -188,6 +192,8 @@ class Ajax:
             "system" : system.get_global(encode_json=True),
             #"system" : base64.b64encode(system.generalHTML()),
             "torrent_index" : [x.torrent_id for x in torrentList],
+            "drop_downs" : drop_downs,
+            "drop_down_keys" : drop_downs.keys(),
         }
         for t in torrentList:
             if t.completed_bytes >= t.size:
