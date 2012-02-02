@@ -5,6 +5,7 @@ body {
     padding: 0;
     margin: 0;
     background: #393939;
+    min-width : 1200px;
 }
 h3 {
   font-size: 16px;
@@ -66,6 +67,7 @@ tr.torrent-div {
     margin : 0.5em;
     border-left:none;
     border-right:none;
+    cursor : pointer;
 }
 
 tr.torrent-div:hover {
@@ -95,17 +97,21 @@ tr.old-torrent-row {
 }
 
 .drop_down_td {
-    box-shadow : inset 5px 5px 5px #888;
+    box-shadow : inset 0 2px 8px #888;
     padding : 0.5em;
 }
 
-.drop_down_main {
+.drop_down_main, .drop_down_files {
     margin : 1em;
 }
 
 .drop_down_h2 {
     /*box-shadow : inset 5px 5px 5px #FFF;*/
     border-radius : 10px;
+}
+
+.drop_down_peers_inner {
+    margin : 1em;
 }
 
 tr.blue {
@@ -156,38 +162,22 @@ a:hover { color : white; }
     cursor : pointer;
     text-decoration : underline;
 }
-.column-1 {
+
+.column {
     float : left;
+}
+
+.column.strong {
+    font-weight : bold;
+    min-width : 9em;
+}
+
+.column.new {
     clear : left;
-    min-width : 9em;
-    font-weight : bold;
 }
 
-.column-2 {
-    float : left;
-    min-width : 9em;
-}
-
-.column-3 {
-    float : left;
-    min-width : 9em;
-    font-weight : bold;
-}
-
-.column-4 {
-    float : left;
-    min-width : 9em;
-}
-
-.column-5 {
-    float : left;
-    min-width : 9em;
-    font-weight : bold;
-}
-
-.column-6 {
-    float : left;
-    min-width : 9em;
+.column.value {
+    min-width : 9.5em;
 }
 
 .down-1 {
@@ -405,6 +395,7 @@ img.control_image {
 
 .control_button {
     cursor : pointer;
+    vertical-align : bottom;
 }
 
 #add_torrent {

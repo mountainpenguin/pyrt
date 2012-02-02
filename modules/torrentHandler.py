@@ -42,13 +42,13 @@ class Handler:
             returns a string of <bytes> in a human readable unit (with two decimal places)
             (currently supports TB, GB, MB, KB and B)
         """
-        if bytes > 1024*1024*1024*1024:
+        if bytes >= 1024*1024*1024*1024:
             return "%.02f TB" % (float(bytes) / 1024 / 1024 / 1024 / 1024)
-        elif bytes > 1024*1024*1024:
+        elif bytes >= 1024*1024*1024:
             return "%.02f GB" % (float(bytes) / 1024 / 1024 / 1024)
-        elif bytes > 1024*1024:
+        elif bytes >= 1024*1024:
             return "%.02f MB" % (float(bytes) / 1024 / 1024)
-        elif bytes > 1024:
+        elif bytes >= 1024:
             return "%.02f KB" % (float(bytes) / 1024)
         else:
             return "%i B" % bytes

@@ -50,22 +50,23 @@
                 </div>
                 <div id="global_stats">
                     <h2>Global Stats</h2>
-                    <div class="column-1">Upload Rate:</div><div class="column-2" id="global_uprate">${global.uprate}/s</div>
-                    <div class="column-3">Total Up:</div><div class="column-4" id="global_uptot">${global.uptot}</div>
-                    <div class="column-5">Disk Usage:</div><div class="column-6" id="global_diskusage">${global.diskused} / ${global.disktotal}</div>
+                    <div class="column strong new">Upload Rate:</div><div class="column value" id="global_uprate">${global.uprate}/s</div>
+                    <div class="column strong">Total Up:</div><div class="column value" id="global_uptot">${global.uptot}</div>
+                    <div class="column strong">Disk Usage:</div><div class="column value" id="global_diskusage">${global.diskused} / ${global.disktotal}</div>
                     
-                    <div class="column-1">Download Rate:</div><div class="column-2" id="global_downrate">${global.downrate}/s</div>
-                    <div class="column-3">Total Down:</div><div class="column-4" id="global_downtot">${global.downtot}</div>
-                    <div class="column-5">Mem Usage:</div><div class="column-6" id="global_memusage">${global.memused} / ${global.memtotal}</div>
+                    <div class="column strong new">Download Rate:</div><div class="column value" id="global_downrate">${global.downrate}/s</div>
+                    <div class="column strong">Total Down:</div><div class="column value" id="global_downtot">${global.downtot}</div>
+                    <div class="column strong">Mem Usage:</div><div class="column value" id="global_memusage">${global.memused} / ${global.memtotal}</div>
                     
-                    <div class="column-1">Load Average:</div>
-                    <div class="column-2">
+                    <div class="column strong new">Uptime:</div><div class="column value" id="global_uptime">${global.uptime}</div>
+                    <div class="column strong">Torrents:</div>
+                    <div class="column value">$len($torrent_list)</div>
+                    <div class="column strong">Load Average:</div>
+                    <div class="column value">
                         <span title="Last minute" id="global_load1">${global.load1}</span>,
                         <span title="Last 5 minutes" id="global_load5">${global.load5}</span>,
                         <span title="Last 15 minutes" id="global_load15">${global.load15}</span>
                     </div>
-                    <div class="column-3">Uptime:</div><div class="column-4" id="global_uptime">${global.uptime}</div>
-                    <div class="column-5">CPU Usage:</div><div class="column-6" id="global_cpuusage">${global.cpuusage}%</div>
                 </div>
                 
                 <div id="this_view" class="hidden">${this_view}</div>
