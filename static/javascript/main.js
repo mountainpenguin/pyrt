@@ -3,6 +3,7 @@ var SELECTED = new Array();
 var statusArrayInactive = new Array("Stopped","Paused");
 var statusArrayActive = new Array("Seeding (idle)", "Seeding", "Leeching (idle)", "Leeching", "Hashing");
 var DELETING = new Array();
+var DROP_OPEN = new Array();
 
 $(document).ready(function () {
      setTimeout(function () {
@@ -58,7 +59,12 @@ $(document).ready(function () {
           }
           if (e.ctrlKey) {
           } else {
-               view_torrent(this);
+               torrent_id = $(e.target).parent().attr("id").split("torrent_id_")[1];
+               if ($.inArray(torrent_id, DROP_OPEN) == -1) {
+                    drop_down(this);
+               } else {
+                    drop_up(torrent_id);
+               }
           }
      });
      $(".batch-control").live("click", function (e) {
@@ -254,7 +260,12 @@ function loadRClickMenus() {
 }
 function refresh_content(repeat) {
     // get all torrent ids on page
-    req = "/ajax?request=get_info_multi&view=" + $("#this_view").html()
+    if (DROP_OPEN.length > 0) {
+     req = "/ajax?request=get_info_multi&view=" + $("#this_view").html() + "&drop_down_ids=" + DROP_OPEN.join(",") 
+    } else {
+     req = "/ajax?request=get_info_multi&view=" + $("#this_view").html()
+    }
+    
     if (!($("#this_sort").html() === "none")) {
         req += "&sortby=" + $("#this_sort").html();
     }
@@ -284,6 +295,25 @@ function refresh_content(repeat) {
         torrent_list = $("#torrent_list").find($("tr.torrent-div"))
         
         cur_t_ids = new Array();
+        
+        if ((DROP_OPEN.length > 0) && (data.drop_down_keys.length > 0)) {
+            for (i=0; i<DROP_OPEN.length; i++) {
+               tid = DROP_OPEN[i];
+               if (data.drop_down_keys.indexOf(tid) !== -1) {
+                    htmldata = data.drop_downs[tid];
+                    cur_pane = 1;
+                    $("#drop_down_container_" + tid).find(".slide").each(function(i, elem) {
+                         if ($(elem).find("h2.selected").length !== 0) {
+                              cur_pane = i + 1;
+                         }
+                    });
+                    htmldata = accordionise($(htmldata), cur_pane);
+                    htmldata = filetreeise($(htmldata), tid);
+                    $("#newrow_torrent_id_" + tid + " > td").html(htmldata);
+               }
+            }
+        }
+        
         for (i=0; i<torrent_list.length; i++) {
             var torrent_id = $(torrent_list[i]).attr("id").split("torrent_id_")[1];
             cur_t_ids.push(torrent_id);
@@ -541,55 +571,63 @@ function removerow(torrent_id) {
     }
     
 }
-function view_torrent(elem) {
-    var torrent_id = elem.id.split("torrent_id_")[1];
-    var table = document.getElementById("torrent_list");
-    if (oldrow = document.getElementById('newrow_torrent_id_' + torrent_id)) {
-        table.deleteRow(oldrow.rowIndex);
-    }
-    var newrow = table.insertRow(elem.rowIndex + 1);
-    var newcell = newrow.insertCell(0);
-    newrow.id = "newrow_torrent_id_" + torrent_id;
-    newrow.className += "drop_down";
-    newcell.innerHTML = "<img src='/images/loading.gif'> <span style='color:red;'>Loading</span>";
-    newcell.colSpan = "7";
-    var xmlhttp = new XMLHttpRequest();
-    var url="ajax"
-    xmlhttp.open("POST",url,true);
-    xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    xmlhttp.onreadystatechange = function () {
-        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-            var response = xmlhttp.responseText;
-            newcell.className += "drop_down_td";
-            newcellcontents = $(response);
-            newcellcontents = accordionise(newcellcontents);
-            newcellcontents = filetreeise(newcellcontents, torrent_id);
-            newcellcontents = scrollpaneise(newcellcontents);
-            $(newcell).html(newcellcontents);
-        }
-    }
-    var params = "request=get_torrent_info&html=yesplease&torrent_id=" + torrent_id;
-    xmlhttp.send(params);
+function drop_down(elem) {
+     var torrent_id = elem.id.split("torrent_id_")[1];
+     DROP_OPEN.push(torrent_id);
+     var table = document.getElementById("torrent_list");
+     if (oldrow = document.getElementById('newrow_torrent_id_' + torrent_id)) {
+          table.deleteRow(oldrow.rowIndex);
+     }
+     var newrow = table.insertRow(elem.rowIndex + 1);
+     var newcell = newrow.insertCell(0);
+     newrow.id = "newrow_torrent_id_" + torrent_id;
+     newrow.className += "drop_down";
+     newcell.innerHTML = "<img src='/images/loading.gif'> <span style='color:red;'>Loading</span>";
+     newcell.colSpan = "7";
+     var xmlhttp = new XMLHttpRequest();
+     var url="ajax"
+     xmlhttp.open("POST",url,true);
+     xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+     xmlhttp.onreadystatechange = function () {
+          if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+              var response = xmlhttp.responseText;
+              newcell.className += "drop_down_td";
+              newcellcontents = $(response);
+              newcellcontents = accordionise(newcellcontents, 1);
+              newcellcontents = filetreeise(newcellcontents, torrent_id);
+              newcellcontents.css({"display" : "none"});
+              $(newcell).html(newcellcontents);
+              newcellcontents.slideDown('slow');
+          }
+     }
+     var params = "request=get_torrent_info&html=yesplease&torrent_id=" + torrent_id;
+     xmlhttp.send(params);
 }
 
-function accordionise(cell) {
+function drop_up(t_id) {
+     drop_index = DROP_OPEN.indexOf(torrent_id);
+     DROP_OPEN.splice(drop_index, 1);
+     $("#newrow_torrent_id_" + t_id + " > td > div").slideUp("slow", function () {
+          $("#newrow_torrent_id_" + t_id).remove();
+     })
+     /*"slow", function() {
+          $(this).remove();
+     });*/
+}
+
+function accordionise(cell, curr_pane) {
      cell.liteAccordion({
-          containerWidth : $(".torrent-div").first().width()
+          containerWidth : $(".torrent-div").first().width(),
+          firstSlide : curr_pane
      });
      return cell;
 }
 
 function filetreeise(cell, torrent_id) {
      cell.find("#drop_down_files_" + torrent_id + " > ul").treeview({
-          collapsed : true
+          collapsed : true,
+          persist: "cookie",
      });
-     return cell;
-}
-
-function scrollpaneise(cell) {
-     //$.each(cell.find("li > div"), function(i, lidiv) {
-     //     $(lidiv).jScrollPane();
-     //});
      return cell;
 }
 

@@ -125,7 +125,7 @@ class mainHandler:
         return Detail.HTML
     detail.exposed = True
     
-    def ajax(self, request=None, torrent_id=None, filepath=None, torrent=None, start=None, view=None, sortby=None, reverse=None, html=None, torrentIDs=None):
+    def ajax(self, request=None, torrent_id=None, filepath=None, torrent=None, start=None, view=None, sortby=None, reverse=None, html=None, torrentIDs=None, drop_down_ids=None):
         """
             Handler for ajax queries (/ajax)
             
@@ -158,7 +158,7 @@ class mainHandler:
         if request == "get_torrent_info" and torrent_id:
             return self.AJAX.get_torrent_info(torrent_id, html)
         elif request == "get_info_multi" and view:
-            return self.AJAX.get_info_multi(view, sortby, reverse)
+            return self.AJAX.get_info_multi(view, sortby, reverse, drop_down_ids)
         elif request == "get_torrent_row" and torrent_id:
             return self.AJAX.get_torrent_row(torrent_id)
         elif request == "pause_torrent" and torrent_id:
