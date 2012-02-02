@@ -103,6 +103,10 @@ tr.old-torrent-row {
     margin : 1em;
 }
 
+div.drop_down_peers {
+    margin : 1em 0 0 0;
+}
+
 .drop_down_h2 {
     /*box-shadow : inset 5px 5px 5px #FFF;*/
     border-radius : 10px;
