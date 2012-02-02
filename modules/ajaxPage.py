@@ -33,6 +33,15 @@ class Ajax:
     def get_feeds(self):
         return "Nothing yet!"
     
+    def _peerProcess(self, peer):
+        peer.dlrate = self.Handler.humanSize(peer.down_rate)
+        peer.dltot = self.Handler.humanSize(peer.down_total)
+        peer.uprate = self.Handler.humanSize(peer.up_rate)
+        peer.uptot = self.Handler.humanSize(peer.up_total)
+        peer.rate = self.Handler.humanSize(peer.peer_rate)
+        peer.total = self.Handler.humanSize(peer.peer_total)
+        return peer.__dict__
+
     def get_torrent_info(self, torrent_id, html=None ):
         c = time.localtime(self.RT.getCreationDate(torrent_id))
         created = time.strftime("%d/%m/%Y %H:%M:%S", c)
@@ -42,11 +51,12 @@ class Ajax:
             completed = True
         else:
             completed = False
+        peers = self.RT.getPeers(torrent_id)
         jsonObject = {
             "name" : self.RT.getNameByID(torrent_id),
             "uploaded" : self.Handler.humanSize(self.RT.getUploadBytes(torrent_id)),
             "downloaded" : self.Handler.humanSize(self.RT.getDownloadBytes(torrent_id)),
-            "peers" : len(self.RT.getPeers(torrent_id)),
+            "peers" : len(peers),
             "torrent_id" : torrent_id,
             "created" : created,
             "size" : self.Handler.humanSize(size),
@@ -54,6 +64,8 @@ class Ajax:
             "percentage" : "%i" % ((float(self.RT.getCompletedBytes(torrent_id)) / size) * 100),
             "completed" : completed,
             "trackers" : [x.__dict__ for x in self.RT.getTrackers(torrent_id)],
+            "peer_details" : [self._peerProcess(x) for x in peers],
+            "file_tree" : self.Handler.fileTreeHTML(self.RT.getFiles(torrent_id), self.RT.getRootDir()),
         }
         if not html:
             return json.dumps(jsonObject)

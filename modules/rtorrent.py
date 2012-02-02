@@ -758,6 +758,10 @@ class rtorrent:
                             except urllib2.URLError:
                                 fav_icon = None
                 if fav_icon == None:
+                    try:
+                        os.symlink("default.ico", "static/favicons/%s.ico" % root_url)
+                    except:
+                        pass
                     faviconurl = "/favicons/default.ico"
                 else:
                     faviconurl = "/favicons/%s.ico" % root_url
