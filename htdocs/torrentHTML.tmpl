@@ -59,12 +59,8 @@
                     <div class="column strong">Mem Usage:</div><div class="column value" id="global_memusage">${global.memused} / ${global.memtotal}</div>
                     
                     <div class="column strong new">Uptime:</div><div class="column value" id="global_uptime">${global.uptime}</div>
-                    <div class="column strong">Throttle:</div>
-                    <div class="column value">
-                        <span title="Upload Throttle" id="global_throttle_up">${global.throttle_up}/s</span>
-                        -
-                        <span title="Download Throttle" id="global_throttle_down">${global.throttle_down}/s</span>
-                    </div>
+                    <div class="column strong">Torrents:</div>
+                    <div class="column value">$len($torrent_list)</div>
                     <div class="column strong">Load Average:</div>
                     <div class="column value">
                         <span title="Last minute" id="global_load1">${global.load1}</span>,
