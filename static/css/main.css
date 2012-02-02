@@ -99,6 +99,15 @@ tr.old-torrent-row {
     padding : 0.5em;
 }
 
+.drop_down_div {
+    margin : 1em;
+}
+
+.drop_down_h2 {
+    /*box-shadow : inset 5px 5px 5px #FFF;*/
+    border-radius : 10px;
+}
+
 tr.blue {
     background-color : #ECE9D8;
 }

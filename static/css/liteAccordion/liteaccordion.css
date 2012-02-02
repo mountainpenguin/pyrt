@@ -98,7 +98,7 @@
     background: -ms-linear-gradient(top,  #3a3a3a 0%,#363636 100%);
     background: linear-gradient(top,  #3a3a3a 0%,#363636 100%);
 }
-.dark .slide > div { background: #030303; margin-left: 5px }
+/* .dark .slide > div { background: #030303; margin-left: 5px } */
 
 /***************************************** Light */
 .light { 
