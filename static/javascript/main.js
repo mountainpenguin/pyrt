@@ -58,7 +58,7 @@ $(document).ready(function () {
           }
           if (e.ctrlKey) {
           } else {
-               view_torrent(this);
+               drop_down(this);
           }
      });
      $(".batch-control").live("click", function (e) {
@@ -541,7 +541,7 @@ function removerow(torrent_id) {
     }
     
 }
-function view_torrent(elem) {
+function drop_down(elem) {
     var torrent_id = elem.id.split("torrent_id_")[1];
     var table = document.getElementById("torrent_list");
     if (oldrow = document.getElementById('newrow_torrent_id_' + torrent_id)) {
@@ -564,12 +564,22 @@ function view_torrent(elem) {
             newcellcontents = $(response);
             newcellcontents = accordionise(newcellcontents);
             newcellcontents = filetreeise(newcellcontents, torrent_id);
-            newcellcontents = scrollpaneise(newcellcontents);
+            newcellcontents.css({"display" : "none"});
             $(newcell).html(newcellcontents);
+            newcellcontents.show('slow');
         }
     }
     var params = "request=get_torrent_info&html=yesplease&torrent_id=" + torrent_id;
     xmlhttp.send(params);
+}
+
+function drop_up(t_id) {
+     $("#newrow_torrent_id_" + t_id + " > td > div").slideUp("slow", function () {
+          $("#newrow_torrent_id_" + t_id).remove();
+     })
+     /*"slow", function() {
+          $(this).remove();
+     });*/
 }
 
 function accordionise(cell) {
@@ -583,13 +593,6 @@ function filetreeise(cell, torrent_id) {
      cell.find("#drop_down_files_" + torrent_id + " > ul").treeview({
           collapsed : true
      });
-     return cell;
-}
-
-function scrollpaneise(cell) {
-     //$.each(cell.find("li > div"), function(i, lidiv) {
-     //     $(lidiv).jScrollPane();
-     //});
      return cell;
 }
 
