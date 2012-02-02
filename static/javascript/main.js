@@ -566,7 +566,7 @@ function drop_down(elem) {
             newcellcontents = filetreeise(newcellcontents, torrent_id);
             newcellcontents.css({"display" : "none"});
             $(newcell).html(newcellcontents);
-            newcellcontents.show('slow');
+            newcellcontents.slideDown('slow');
         }
     }
     var params = "request=get_torrent_info&html=yesplease&torrent_id=" + torrent_id;
