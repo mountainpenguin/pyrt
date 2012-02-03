@@ -98,7 +98,7 @@ div#tools-bar {
    margin: 0 auto;
    padding: 10px 30px;
    width: 83%;
-   background: white;
+   background-color : #F8F8FF;
    box-shadow: 0 0 9px black;
    -webkit-box-shadow: 0 0 9px black;
    -moz-box-shadow: 0 0 9px black;
@@ -108,36 +108,43 @@ div#tools-bar {
 }
 
 ol.sidebar-list {
-    position: relative;
     overflow: hidden;
     /*height: 100%;*/
-    margin: 0;
-    padding: 0;
+    margin: 0.5em;
     list-style-type: none;
     float : left;
+    background-color : white;
+    width : 80px;
+    min-height : 430px;
+    /*box-shadow : inset 0 2px 8px #888;*/
+    /*-webkit-box-shadow : inset 0 2px 8px #888;*/
+    /*-moz-box-shadow : inset 0 2px 8px #888;*/
+    border : 1px solid grey;
+    padding-top : 3px;
 }
 
 ol.sidebar-list > li {
-    font-weight : bold;
-    background-color : #ECE9D8;
-    padding-left : 2em;
-    padding-right : 2em;
-    padding-bottom : 1em;
-    padding-top : 1em;
-    border-top-left-radius : 10px;
-    border-bottom-left-radius : 10px;
-    margin-bottom : 2px;
-    width : 45px;
+    position : relative;
+    width : 100px;
     cursor : pointer;
+    float : left;
+    left : -38px;
+    vertical-align : bottom;
 }
-
+ol.sidebar-list > li:not(.selected) {
+    padding : 1px 1px 3px 15px;
+}
 ol.sidebar-list > li.selected {
-    background-color : #CCC;
+    padding-left : 14px;
+    padding-bottom : 2px;
+    border : 1px dotted grey;
+    background-color : rgba(0,128,255,0.7);
+    color : white;
 }
 
 ol.sidebar-list > li:hover:not(.selected) {
-    background-color : #333;
-    color : white;
+    background-color : #3A3737;
+    color: #FEA;
 }
 
 div.options-wrapper {
@@ -147,24 +154,22 @@ div.options-wrapper {
 div.options-wrapper.selected {
     display : block;
     float : left;
-    background-color : #CCC;
-    min-height : 385px;
-    min-width : 400px;
-    padding : 1em;
-    border-bottom-left-radius : 10px;
-    border-top-right-radius : 10px;
-    border-bottom-right-radius : 10px;
+    background-color : inherit;
+    margin-left : 1em;
+    margin-top : 0.5em;
+    /*min-height : 385px;*/
+    /*min-width : 400px;*/
+    /*padding : 1em;*/
+    /*border-bottom-left-radius : 10px;*/
+    /*border-top-right-radius : 10px;*/
+    /*border-bottom-right-radius : 10px;*/
 }
 
 div.options {
-    box-shadow : inset 0 2px 8px #888;
-    background-color : #F8F8FF;
-    display : block;
-    min-height : inherit;
-    min-width : inherit;
-    padding : 1em;
-}
-
-div#main_contents {
-    margin-top : 1em;
+    /*box-shadow : inset 0 2px 8px #888;*/
+    /*background-color : #F8F8FF;*/
+    /*display : block;*/
+    /*min-height : inherit;*/
+    /*min-width : inherit;*/
+    /*padding : 1em;*/
 }

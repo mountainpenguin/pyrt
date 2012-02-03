@@ -1,0 +1,477 @@
+/* light colours */
+$l1 : #EEE;
+
+/* dark colours */
+$d1 : #393939; /* used by body */
+$d2 : #2F2F2F; /* used by label */
+$d3 : #3A3737; /* used by td headings and tr hover */
+
+/* arranged alphabetically */
+
+a {
+    &:link, &:visited, &:active, &:hover { color : white; }
+}
+
+#actions {
+  margin-top: 10px;
+}
+
+#actions-bar {
+    float: right;
+    height: 25px;
+    padding: 0px 10px;
+    margin-right: 5px;
+    font-size: 9pt;
+    line-height: 25px;
+    color: white;
+    font-weight: bold;
+    a {
+        &:link, &:visited, &:active {
+            color : #FF7C25; 
+        }
+    }
+}
+
+#add_img {
+    width : 40px;
+    height : 40px;
+    cursor : pointer;
+}
+
+#add_torrent {
+    padding : 1em;
+}
+
+.add_torrent_button {
+    text-decoration : underline;
+    float : left;
+    clear : left;
+    cursor : pointer;
+    padding-left : 3px;
+}
+
+#batchActionBox {
+    position : fixed;
+    left : -91px;
+    top : 150px;
+    border: 1px solid black;
+    background-color : #dce1bb;
+    /*padding : 1em;*/
+    border-top-right-radius : 15px;
+    border-bottom-right-radius : 15px;
+}
+
+.batch-control {
+    padding : 2px;
+    cursor : pointer;
+}
+
+#batch-controls {
+    padding-top : 1em;
+    padding-bottom : 1em;
+}
+
+#batch-control-row1 {
+    padding-left : 2px;
+}
+
+#batch-deselect {
+    padding-top : 1em;
+    color : blue;
+    font-size : smaller;
+    cursor : pointer;
+    padding-left : 1em;
+}
+
+#batch-head {
+    font-weight : bold;
+    background-color : #3A3737;
+    color : white;
+    min-width : 1em;
+    padding: 10px;
+    -moz-border-top-right-radius : 14px;
+    border-top-right-radius : 14px;
+}
+
+body {
+    font-family: "Helvetica", "Trebuchet MS", "sans-serif";
+    font-size: 14px;
+    background-color: $l1;
+    padding: 0;
+    margin: 0;
+    background: $d1;
+    min-width : 1200px;
+}
+
+.column {
+    float : left;
+    &.strong {
+        font-weight : bold;
+        min-width : 9em;
+    }
+    &.new {
+        clear : left;
+    }
+    &.value {
+        min-width : 9.5em;
+    }
+}
+
+.control_button {
+    cursor : pointer;
+    vertical-align : bottom;
+}
+
+.control_image {
+    width : 20px;
+    height : 20px;
+    border : none;
+    vertical-align : bottom;
+}
+
+.drop_down {
+    /*border-left : 1px dotted;*/ 
+    /*border-right : 1px dotted;*/
+    /*background-color : #EEEEEE;*/
+    -moz-user-select: text;
+    -khtml-user-select: text;
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+.drop_down_main, .drop_down_files, .drop_down_peers_inner{
+    margin : 1em;
+}
+
+.fakelink {
+    color : blue;
+    cursor : pointer;
+    text-decoration : underline;
+}
+
+#files_div, #files_list {
+    float : left;
+    clear : left;
+    margin-top : 1em;
+}
+
+form {
+    input[type="number"], input[type="password"], input[type="email"], select {
+        height: 40px;
+        background-clip: padding-box;
+        border: 1px solid #d4d4d4;
+        -moz-border-radius: 4px;
+        -webkit-border-radius: 4px;
+        border-radius: 4px;
+        color: black;
+        font-size: 14pt;
+        outline: none;
+        width: 95%;
+        padding: 5px;
+    }
+}
+
+#global_stats {
+    width: 100%;
+    margin-bottom: 45px;
+    padding: 0em 1em 1em 1em;
+}
+
+.hidden {
+    display : none;
+}
+
+h2 {
+    &.drop_down_h2 {
+        border-radius : 10px;
+    }
+}
+
+#header {
+  padding-top: 20px;
+  width: 80%;
+  min-width: 800px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    font-family: "Verdana";
+    color: $d2;
+    font-size: 13px;
+}
+
+#login_div {
+    position : absolute;
+    top : 50%;
+    left : 50%;
+    width : 30em;
+    min-height: 200px;
+    margin-left : -15em;
+    margin-top : -10em;
+    background: #fafafa;
+    padding: 10px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    box-shadow: 0px 5px 5px #bbbbbb;
+    -webkit-box-shadow: 0px 5px 5px #bbbbbb;
+    -moz-box-shadow: 0px 5px 5px #bbbbbb;
+}
+
+#main {
+    float : left;
+    clear : left;
+    border : 1px solid;
+    padding : 1em;
+    min-width : 100%;
+    background-color : white;
+}
+
+#main_body {
+    background: #DDD;
+    margin-top: 0;
+    padding-top: 0;
+    min-height: 100%;
+    height: 100%;
+}
+
+.notice {
+    font-size: 14px;
+    width : 95%;
+    font-weight : bold;
+    color : #D00007;
+    padding: 10px;
+    margin-top : 1em;
+    background: #F5F5F5;
+    border: 1px solid #BEBEBE;
+}
+
+#peers_table {
+    margin-top: 1em;
+}
+
+.progress-gradient {
+    /* Chrome, Safari */
+    background-image : -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        from(rgba(78,234,30,0.5)),
+        to(rgba(78,234,30,0.5)),
+        color-stop(0.5, rgba(78,234,30,1))
+    ), -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        from(rgba(140,147,151,0.2)),
+        to(rgba(140,147,151,0.2)),
+        color-stop(0.5, rgba(140,147,151,0.4))
+    );
+    /* Opera */
+    background-image : -o-linear-gradient(
+        top,
+        rgba(78,234,30,0.5) 0%,
+        rgba(78,234,30,1) 50%,
+        rgba(78,234,30,0.5) 100%
+    ), -o-linear-gradient(
+        top,
+        rgba(140,147,151,0.2) 0%,
+        rgba(140,147,151,0.4) 50%,
+        rgba(140,147,151,0.2) 100%
+    );
+    /* Firefox */
+    background-image : -moz-linear-gradient(
+        top,
+        rgba(78,234,30,0.5) 0%,
+        rgba(78,234,30,1) 50%,
+        rgba(78,234,30,0.5) 100%
+    ), -moz-linear-gradient(
+        top,
+        rgba(140,147,151,0.2) 0%,
+        rgba(140,147,151,0.4) 50%,
+        rgba(140,147,151,0.2) 100%
+    );
+    /* IE10+ */
+    background-image : -ms-linear-gradient(
+        top,
+        rgba(78,234,30,0.5) 0%,
+        rgba(78,234,30,1) 50%,
+        rgba(78,234,30,0.5) 100%
+    ), -ms-linear-gradient(
+        top,
+        rgba(140,147,151,0.2) 0%,
+        rgba(140,147,151,0.4) 50%,
+        rgba(140,147,151,0.2) 100%
+    );
+    background-repeat : no-repeat;
+    background-position : 0% 0%, 0% 0%;
+}
+
+span {
+    &.file_completion {
+        float : left;
+        min-width : 4em;
+    }
+    &.file_priority {
+        @extend .file_completion;
+        clear : left;
+    }
+    &.file_size {
+        float : left;
+        min-width : 6em;
+    }
+    &.file_name {
+        @extend .file_completion;
+    }
+}
+
+table {
+  width: 98%;
+  border-collapse: collapse;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+td {
+    padding: 3px;
+    &.heading {
+        font-weight: bold;
+        background-color : $d3;
+        color : white;
+        min-width : 1em;
+        padding: 10px;
+        cursor : pointer;
+        &:first-child {
+            border-top-left-radius: 10px;
+        }
+        &:last-child {
+            border-top-right-radius: 10px;
+        }
+    }
+    &.footing {
+        background-color : $d3;
+        height : 1em;
+    }
+    &.drop_down_td {
+        box-shadow : inset 0 2px 8px #888;
+        padding : 0.5em;
+    }
+    &.t_name {
+        width: 30em;
+    }
+    &.torrentid {
+        font-size : 12px;
+    }
+}
+
+#tools-bar {
+    float : left;
+    margin-left : 2em;
+}
+
+#topbar {
+    float : left;
+}
+
+@mixin tabstyle {
+    float : left;
+    padding : 0em 1em;
+    cursor : pointer;
+    line-height: 25px;
+    font-weight: bold;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    font-size: 9pt;
+}
+
+.topbar-tab {
+    @include tabstyle;
+    height: 25px;
+    margin-right: 5px;
+    color: white;
+    display: inline-block;
+    &:hover {
+        background-color : #c0c0c0;  
+        /*color: #ffff00;*/
+        color : black;
+    }
+    &.selected {
+        border-bottom: none;
+        background: white;
+        color: black;
+    }
+}
+
+.topbar-tab_options {
+    @include tabstyle;
+    border : 1px none;
+    border-bottom : 0px none;
+    color : #FFEEAA;
+    &:hover {
+        background-color : #c0c0c0;  
+        color : black;
+    }
+}
+
+#torrent_table {
+    width: 100%;
+    padding: 1em;
+    margin-bottom: 15px;
+}
+
+tr {
+    &.torrent-div {
+        border : 1px solid;
+        -webkit-border-radius : 10px;
+        padding : 0.5em; 
+        margin : 0.5em;
+        border-left:none;
+        border-right:none;
+        cursor : pointer;
+        &:hover {
+            background-color: $d3;
+            color: #FEA;
+        }
+    }
+    &.new-torrent-row {
+        opacity : 0.1;
+        background-color : #CDE472;
+        display : none;
+    }
+    &.old-torrent-row {
+        border : none;
+        background-color : red;
+    }
+    &.deleting-torrent-row {
+        background-color : #676767;
+        color : #a6a6a6;
+    }
+    &.blue {
+        background-color : #ECE9D8;
+    }
+    &.green {
+        background-color : #CCCCCC;
+    }
+    &.red {
+        background-color : red;
+    }
+}
+
+#wrapper{
+   overflow: hidden;
+   margin: 0 auto;
+   padding: 10px 30px;
+   width: 83%;
+   background: white;
+   box-shadow: 0 0 9px black;
+   -webkit-box-shadow: 0 0 9px black;
+   -moz-box-shadow: 0 0 9px black;
+   min-height: 450px;
+   height: auto !important;
+   height: 100%;
+}

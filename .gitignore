@@ -5,3 +5,5 @@ config/.pyrtrc
 .pyrtconfig
 torrents/*
 static/favicons/*.ico
+static/css/*.backup
+.sass-cache
