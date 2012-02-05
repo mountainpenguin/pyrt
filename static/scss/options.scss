@@ -1,0 +1,189 @@
+body {
+    font-family: "Helvetica", "Trebuchet MS", "sans-serif";
+    font-size: 14px;
+    background-color: #EEE;
+    padding: 0;
+    margin: 0;
+    background: #393939;
+    min-width : 1200px;
+}
+
+a {
+    &:link, &:visited, &:active, &:hover { color : white; }
+}
+
+#header {
+  padding-top: 20px;
+  width: 80%;
+  min-width: 800px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+#topbar {
+    float : left;
+}
+
+.topbar-tab {
+    float : left;
+    height: 25px;
+    padding: 0px 10px;
+    margin-right: 5px;
+    font-size: 9pt;
+    line-height: 25px;
+    color: white;
+    font-weight: bold;
+    cursor : pointer;
+    -moz-border-radius-topleft: 8px;
+    -webkit-border-top-left-radius: 8px;
+    border-top-left-radius: 8px;
+    -moz-border-radius-topright: 8px;
+    -webkit-border-top-right-radius: 8px;
+    border-top-right-radius: 8px;
+    &:hover {
+        background-color : #c0c0c0;  
+        /*color: #ffff00;*/
+        color : black;
+    }
+}
+
+.topbar-tab_options {
+    float : left;
+    padding : 0em 1em;
+    border : 1px none;
+    border-bottom : 0px none;
+    border-top-right-radius : 25px 50px;
+    border-top-left-radius : 25px 50px;
+    cursor : pointer;
+    color : #FFEEAA;
+    font-size: 9pt;
+    line-height: 25px;
+    font-weight : bold;
+    -moz-border-radius-topleft: 8px;
+    -webkit-border-top-left-radius: 8px;
+    border-top-left-radius: 8px;
+    -moz-border-radius-topright: 8px;
+    -webkit-border-top-right-radius: 8px;
+    border-top-right-radius: 8px;
+    margin-right : 5px;
+}
+
+.selected{
+  border-bottom: none;
+  background: white;
+  color: black;
+}
+
+.hidden {
+    display : none;
+}
+
+#main_body {
+  background: #DDD;
+  margin-top: 0;
+  padding-top: 0;
+  min-height: 100%;
+  height: 100%;
+}
+
+#tools-bar {
+    float : left;
+    margin-left : 2em;
+}
+
+#wrapper{
+   overflow: hidden;
+   margin: 0 auto;
+   padding: 10px 30px;
+   width: 83%;
+   background-color : #F8F8FF;
+   box-shadow: 0 0 9px black;
+   -webkit-box-shadow: 0 0 9px black;
+   -moz-box-shadow: 0 0 9px black;
+   min-height: 450px;
+   height: auto !important;
+   height: 100%;
+}
+
+@mixin blah {
+    border-top-left-radius : 10px;
+    border-bottom-left-radius : 10px;
+    border-left : 1px solid #888;
+    border-top : 1px solid #888;
+    border-bottom : 1px solid #888;
+}
+        
+ol {
+    &.sidebar-list {
+        overflow: hidden;
+        /*height: 100%;*/
+        margin: 0.5em;
+        list-style-type: none;
+        float : left;
+        /*background-color : white;*/
+        width : 80px;
+        min-height : 430px;
+        padding-top : 3px;
+        border-right : 1px solid #888;
+    }
+    li {
+        position : relative;
+        width : 100px;
+        cursor : pointer;
+        float : left;
+        left : -38px;
+        vertical-align : bottom;
+        padding: 1em;
+        border : 1px solid white;
+        
+        &.selected {
+            background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(207,207,207,0.5)), to(rgba(187,187,187,0.7)));
+            font-weight: bold;
+            @include blah;
+
+        }
+        &:hover {
+            &:not(.selected) {
+                background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(207,207,207,0.1)), to(rgba(187,187,187,0.3)));
+                @include blah;
+            }
+        }
+    }
+}
+
+.options-wrapper {
+    display : none;
+    &.selected {
+        display : block;
+        float : left;
+        background-color : inherit;
+        margin-left : 1em;
+        margin-top : 10px;
+        /*min-height : 385px;*/
+        /*min-width : 400px;*/
+        /*padding : 1em;*/
+        /*border-bottom-left-radius : 10px;*/
+        /*border-top-right-radius : 10px;*/
+        /*border-bottom-right-radius : 10px;*/
+    }
+}
+
+.options-box {
+    border : 1px solid #888;
+    padding-left : 1em;
+    padding-bottom : 1em;
+    margin-bottom : 1em;
+    border-radius : 10px;
+    min-width : 800px;
+    background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(240,240,240,0.5)), to(rgba(200,200,200,0.7)));
+    input[type="password"] {
+        width : 200px;
+        height : 25px;
+        font-size : 20px;
+    }
+}
+
+
+#sidebar {
+    border-top : 1px solid #888;
+}
