@@ -123,8 +123,9 @@ ol {
         /*background-color : white;*/
         width : 80px;
         min-height : 430px;
-        padding-top : 3px;
+        padding-top : 15px;
         border-right : 1px solid #888;
+        margin-top : 0px;
     }
     li {
         position : relative;
@@ -135,16 +136,19 @@ ol {
         vertical-align : bottom;
         padding: 1em;
         border : 1px solid white;
+        margin-bottom : 1em;
         
         &.selected {
-            background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(207,207,207,0.5)), to(rgba(187,187,187,0.7)));
+            /*background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(207,207,207,0.5)), to(rgba(187,187,187,0.7)));*/
+            background-color : rgba(187,187,187,0.7);
             font-weight: bold;
             @include blah;
 
         }
         &:hover {
             &:not(.selected) {
-                background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(207,207,207,0.1)), to(rgba(187,187,187,0.3)));
+                /*background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(207,207,207,0.1)), to(rgba(187,187,187,0.3)));*/
+                background-color : rgba(187,187,187,0.3);
                 @include blah;
             }
         }
@@ -176,7 +180,7 @@ ol {
     border-radius : 10px;
     min-width : 800px;
     &:not(.error),&:not(.ok) {
-        background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(200,200,200,0.7)), to(rgba(240,240,240,0.5)));
+        background-color : rgba(240,240,240,0.5);
     }
     /*&.error {*/
     /*    background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(240,0,0,0.7)), to(rgba(255,45,45,0.3)))*/
@@ -236,16 +240,18 @@ ol {
 }
 
 .submit-box {
-    border : 1px solid #888;
+    border : 1px solid #ffffff;
     width : 114px;
     padding : 10px;
     border-radius : 5px;
-    background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(0,128,0,0.7)), to(rgba(0,170,0,0.5)));
+    /*background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(0,128,0,0.7)), to(rgba(0,170,0,0.5)));*/
+    background-color : rgba(0,170,0,0.5);
     color : white;
     font-weight : bold;
     cursor : pointer;
     &:hover {
-        background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(0,100,0,0.7)), to(rgba(0,128,0,0.5)));
+        /*background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(0,100,0,0.7)), to(rgba(0,128,0,0.5)));*/
+        background-color : rgba(0,128,0,0.5);
     }
 }
 

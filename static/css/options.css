@@ -102,8 +102,9 @@ ol.sidebar-list {
   /*background-color : white;*/
   width: 80px;
   min-height: 430px;
-  padding-top: 3px;
-  border-right: 1px solid #888; }
+  padding-top: 15px;
+  border-right: 1px solid #888;
+  margin-top: 0px; }
 ol li {
   position: relative;
   width: 100px;
@@ -112,9 +113,11 @@ ol li {
   left: -38px;
   vertical-align: bottom;
   padding: 1em;
-  border: 1px solid white; }
+  border: 1px solid white;
+  margin-bottom: 1em; }
   ol li.selected {
-    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(207, 207, 207, 0.5)), to(rgba(187, 187, 187, 0.7)));
+    /*background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(207,207,207,0.5)), to(rgba(187,187,187,0.7)));*/
+    background-color: rgba(187, 187, 187, 0.7);
     font-weight: bold;
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
@@ -122,7 +125,8 @@ ol li {
     border-top: 1px solid #888;
     border-bottom: 1px solid #888; }
   ol li:hover:not(.selected) {
-    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(207, 207, 207, 0.1)), to(rgba(187, 187, 187, 0.3)));
+    /*background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(207,207,207,0.1)), to(rgba(187,187,187,0.3)));*/
+    background-color: rgba(187, 187, 187, 0.3);
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
     border-left: 1px solid #888;
@@ -155,7 +159,7 @@ ol li {
   /*    background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(240,0,0,0.7)), to(rgba(255,45,45,0.3)))*/
   /*}*/ }
   .options-box:not(.error), .options-box:not(.ok) {
-    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(200, 200, 200, 0.7)), to(rgba(240, 240, 240, 0.5))); }
+    background-color: rgba(240, 240, 240, 0.5); }
   .options-box #network-dir {
     width: 780px; }
   .options-box #network-moveto {
@@ -194,16 +198,18 @@ ol li {
     padding-right: 1em; }
 
 .submit-box {
-  border: 1px solid #888;
+  border: 1px solid #ffffff;
   width: 114px;
   padding: 10px;
   border-radius: 5px;
-  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 128, 0, 0.7)), to(rgba(0, 170, 0, 0.5)));
+  /*background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(0,128,0,0.7)), to(rgba(0,170,0,0.5)));*/
+  background-color: rgba(0, 170, 0, 0.5);
   color: white;
   font-weight: bold;
   cursor: pointer; }
   .submit-box:hover {
-    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 100, 0, 0.7)), to(rgba(0, 128, 0, 0.5))); }
+    /*background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(0,100,0,0.7)), to(rgba(0,128,0,0.5)));*/
+    background-color: rgba(0, 128, 0, 0.5); }
 
 #sidebar {
   border-top: 1px solid #888; }
