@@ -175,11 +175,54 @@ ol {
     margin-bottom : 1em;
     border-radius : 10px;
     min-width : 800px;
-    background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(240,240,240,0.5)), to(rgba(200,200,200,0.7)));
-    input[type="password"] {
+    &:not(.error),&:not(.ok) {
+        background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(200,200,200,0.7)), to(rgba(240,240,240,0.5)));
+    }
+    /*&.error {*/
+    /*    background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(240,0,0,0.7)), to(rgba(255,45,45,0.3)))*/
+    /*}*/
+    input[type="password"], input[type="text"] {
         width : 200px;
         height : 25px;
         font-size : 20px;
+        border-radius : 5px;
+        border : 1px solid #999;
+        outline : none;
+    }
+    div {
+        padding-bottom : 0.5em;
+    }
+    label {
+        &#foroldpass {
+            padding-right : 5px;
+        }
+        &#fornewpass {
+            padding-right : 26px;
+        }
+        &#fornewpassconf {
+            padding-left : 5px;
+            padding-right : 5px;
+        }
+    }
+    span#forrefreshrate {
+        padding-left : 5px;
+    }
+    #refreshrate, #pyrtport {
+        width : 75px;
+    }
+}
+
+.submit-box {
+    border : 1px solid #888;
+    width : 114px;
+    padding : 10px;
+    border-radius : 5px;
+    background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(0,128,0,0.7)), to(rgba(0,170,0,0.5)));
+    color : white;
+    font-weight : bold;
+    cursor : pointer;
+    &:hover {
+        background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(0,100,0,0.7)), to(rgba(0,128,0,0.5)));
     }
 }
 

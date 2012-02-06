@@ -26,6 +26,7 @@
                             ##password
                             ##animations
                             ##refresh rate
+                            ##port
                             <li id="throttle-tab">Throttle</li>
                             ##global
                             <li id="network-tab">Network</li>
@@ -44,35 +45,75 @@
                         <div id="pyrt" class="options">
                             <div id="pyrt-password" class="options-box">
                                 <h3>Change your password</h3>
-                                <label for="oldpass">Current password:</label>
-                                <input type="password" id="oldpass">
-                                <label for="newpass">New password:</label>
-                                <input type="password" id="newpass">
+                                <div>
+                                    <label id="foroldpass" for="oldpass">Current password:</label>
+                                    <input type="password" id="oldpass">
+                                </div>
+                                <div>
+                                    <label id="fornewpass" for="newpass">New password:</label>
+                                    <input type="password" id="newpass">
+                                    <label id="fornewpassconf" for="newpassconf">Confirm:</label>
+                                    <input type="password" id="newpassconf">
+                                </div>
                             </div>
                             <div id="pyrt-refresh" class="options-box">
                                 <h3>Refresh rate</h3>
-                                <input type="text" id="refreshrate">
+                                <input type="text" id="refreshrate" placeholder="$config.refresh"><span id="forrefreshrate">seconds</span>
+                            </div>
+                            <div id="pyrt-port" class="options-box error">
+                                <h3>PyRT Port</h3>
+                                <label for="pyrtport" id="forpyrtport">$config.host : </label>
+                                <input type="text" id="pyrtport" placeholder="$config.port">
+                            </div>
+                            <div id="pyrt-submit" class="submit-box">
+                                Submit Changes
                             </div>
                         </div>
                     </div>
                     <div class="options-wrapper">
                         <div id="throttle" class="options">
-                            <h3>Throttling Placeholder</h3>
+                            <div id="throttle-throttle" class="options-box">
+                                <h3>Throttling Placeholder</h3>
+                                <div>
+                                    Testing
+                                </div>
+                            </div>
+                            <div id="throttle-submit" class="submit-box">
+                                Submit Changes
+                            </div>
                         </div>
                     </div>
                     <div class="options-wrapper">
                         <div id="network" class="options">
-                            <h3>Network Settings Placeholder</h3>
+                            <div id="network-settings" class="options-box">
+                                <h3>Network Settings Placeholder</h3>
+                                <div>Testing</div>
+                            </div>
+                            <div id="network-submit" class="submit-box">
+                                Submit Changes
+                            </div>
                         </div>
                     </div>
                     <div class="options-wrapper">
                         <div id="priority" class="options">
-                            <h3>Priority Settings Placeholder</h3>
+                            <div id="priority-settings" class="options-box">
+                                <h3>Priority Settings Placeholder</h3>
+                                <div>Testing</div>
+                            </div>
+                            <div id="priority-submit" class="submit-box">
+                                Submit Changes
+                            </div>
                         </div>
                     </div>
                     <div class="options-wrapper">
                         <div id="trackers" class="options">
-                            <h3>Trackers Placeholder</h3>
+                            <div id="trackers-settings" class="options-box">
+                                <h3>Trackers Placeholder</h3>
+                                <div>Testing</div>
+                            </div>
+                            <div id="trackers-submit" class="submit-box">
+                                Submit Changes
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -16,7 +16,8 @@ class Options:
             #global upload throttle
             #global download throttle
         definitions = {
-            "pyrt_port" : self.C.get("port")
+            "pyrt_port" : self.C.get("port"),
+            "config" : self.C.CONFIG,
         }
         HTML = Template(file="htdocs/optionsHTML.tmpl", searchList=definitions).respond()
         
