@@ -181,13 +181,28 @@ ol {
     /*&.error {*/
     /*    background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(240,0,0,0.7)), to(rgba(255,45,45,0.3)))*/
     /*}*/
+    #network-dir {
+        width : 780px;
+    }
+    #network-moveto {
+        width : 709px;
+    }
+    #refreshrate, #pyrtport, .network-port {
+        width : 75px;
+    }
+    #throttle-up, #throttle-down {
+        width : 50px;
+    }
     input[type="password"], input[type="text"] {
-        width : 200px;
         height : 25px;
         font-size : 20px;
         border-radius : 5px;
         border : 1px solid #999;
         outline : none;
+        padding-left : 1px;
+    }
+    input[type="password"] {
+        width : 200px;
     }
     div {
         padding-bottom : 0.5em;
@@ -203,12 +218,20 @@ ol {
             padding-left : 5px;
             padding-right : 5px;
         }
+        &#fornetwork-movecheck {
+            padding-top : 1px;
+        }
     }
-    span#forrefreshrate {
+    span.after-text {
         padding-left : 5px;
     }
-    #refreshrate, #pyrtport {
-        width : 75px;
+    .tracker {
+        display : inline;
+    }
+    .trackericon {
+        border : none;
+        outline : none;
+        padding-right : 1em;
     }
 }
 

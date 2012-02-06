@@ -19,4 +19,13 @@ $(document).ready( function () {
          $("#" + e.target.id.split("-tab")[0]).parent().addClass("selected");
       }
    )
+   $("input").bind("change", function (e) {
+      if (e.target.id == "network-movecheck") {
+         if (e.target.checked == true) {
+            $(".network-moveto").show();
+         } else {
+            $(".network-moveto").hide();
+         }
+      }
+   });
 });

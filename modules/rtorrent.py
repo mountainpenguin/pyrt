@@ -837,6 +837,12 @@ class rtorrent:
 
     def getPath(self, id):
         return self.conn.d.get_directory(id)
+        
+    def getRootPath(self):
+        return self.conn.get_directory()
+        
+    def getPortRange(self):
+        return self.conn.get_port_range()
 
     def getPriorityStr(self, id):
         return self.conn.d.get_priority_str(id)

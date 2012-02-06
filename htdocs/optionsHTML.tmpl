@@ -33,7 +33,7 @@
                             ##port range
                             ##dl dir
                             ##move on complete
-                            <li id="priority-tab">Priority</li>
+                            <!--<li id="priority-tab">Priority</li>-->
                             ##on_ratio - set priorities
                             ##trackers - set priorities
                             <li id="trackers-tab">Trackers</li>
@@ -58,7 +58,8 @@
                             </div>
                             <div id="pyrt-refresh" class="options-box">
                                 <h3>Refresh rate</h3>
-                                <input type="text" id="refreshrate" placeholder="$config.refresh"><span id="forrefreshrate">seconds</span>
+                                <input type="text" id="refreshrate" placeholder="$config.refresh">
+                                    <span id="forrefreshrate" class="after-text">seconds</span>
                             </div>
                             <div id="pyrt-port" class="options-box error">
                                 <h3>PyRT Port</h3>
@@ -72,10 +73,15 @@
                     </div>
                     <div class="options-wrapper">
                         <div id="throttle" class="options">
-                            <div id="throttle-throttle" class="options-box">
-                                <h3>Throttling Placeholder</h3>
+                            <div id="throttle-global" class="options-box">
+                                <h3>Global Throttle</h3>
                                 <div>
-                                    Testing
+                                    <label for="throttle-up" id="forthrottle-up">Up:</label>
+                                    <input type="text" id="throttle-up" placeholder="$throttleup">
+                                    <span id="forthrottle-up-text" class="after-text">KB/s</span>
+                                    <label for="throttle-down" id="forthrottle-down">Down:</label>
+                                    <input type="text" id="throttle-down" placeholder="$throttledown">
+                                    <span id="forthrottle-down-text" class="after-text">KB/s</span>
                                 </div>
                             </div>
                             <div id="throttle-submit" class="submit-box">
@@ -85,9 +91,28 @@
                     </div>
                     <div class="options-wrapper">
                         <div id="network" class="options">
-                            <div id="network-settings" class="options-box">
-                                <h3>Network Settings Placeholder</h3>
-                                <div>Testing</div>
+                            <div id="network-portrange" class="options-box">
+                                <h3>Port range</h3>
+                                <div>
+                                    <input type="text" id="network-portfrom" class="network-port" placeholder="$networkportfrom">
+                                    <span>-</span>
+                                    <input type="text" id="network-portto" class="network-port" placeholder="$networkportto">
+                                </div>
+                            </div>
+                            <div id="network-dldir" class="options-box">
+                                <h3>Download directory</h3>
+                                <div>
+                                    <input type="text" id="network-dir" placeholder="$networkdir">
+                                </div>
+                            </div>
+                            <div id="network-move" class="options-box">
+                                <h3>Move on complete</h3>
+                                <div>
+                                    <label for="network-movecheck" id="fornetwork-movecheck">Enable</label>
+                                    <input type="checkbox" id="network-movecheck">
+                                    <label for="network-moveto" id="fornetwork-moveto" class="network-moveto hidden">
+                                    <input type="text" id="network-moveto" class="network-moveto hidden">
+                                </div>
                             </div>
                             <div id="network-submit" class="submit-box">
                                 Submit Changes
@@ -108,8 +133,15 @@
                     <div class="options-wrapper">
                         <div id="trackers" class="options">
                             <div id="trackers-settings" class="options-box">
-                                <h3>Trackers Placeholder</h3>
-                                <div>Testing</div>
+                                <h3>Tracker icons</h3>
+                                <div>
+                                    #for $tracker, $trackericon in $trackericons.iteritems()
+                                    <div id="tracker-$tracker">
+                                        <img class="trackericon" src="$trackericon">
+                                        <div class="tracker">$tracker</div>
+                                    </div>
+                                    #end for
+                                </div>
                             </div>
                             <div id="trackers-submit" class="submit-box">
                                 Submit Changes

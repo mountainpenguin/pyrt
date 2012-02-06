@@ -156,13 +156,23 @@ ol li {
   /*}*/ }
   .options-box:not(.error), .options-box:not(.ok) {
     background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(200, 200, 200, 0.7)), to(rgba(240, 240, 240, 0.5))); }
+  .options-box #network-dir {
+    width: 780px; }
+  .options-box #network-moveto {
+    width: 709px; }
+  .options-box #refreshrate, .options-box #pyrtport, .options-box .network-port {
+    width: 75px; }
+  .options-box #throttle-up, .options-box #throttle-down {
+    width: 50px; }
   .options-box input[type="password"], .options-box input[type="text"] {
-    width: 200px;
     height: 25px;
     font-size: 20px;
     border-radius: 5px;
     border: 1px solid #999;
-    outline: none; }
+    outline: none;
+    padding-left: 1px; }
+  .options-box input[type="password"] {
+    width: 200px; }
   .options-box div {
     padding-bottom: 0.5em; }
   .options-box label#foroldpass {
@@ -172,10 +182,16 @@ ol li {
   .options-box label#fornewpassconf {
     padding-left: 5px;
     padding-right: 5px; }
-  .options-box span#forrefreshrate {
+  .options-box label#fornetwork-movecheck {
+    padding-top: 1px; }
+  .options-box span.after-text {
     padding-left: 5px; }
-  .options-box #refreshrate, .options-box #pyrtport {
-    width: 75px; }
+  .options-box .tracker {
+    display: inline; }
+  .options-box .trackericon {
+    border: none;
+    outline: none;
+    padding-right: 1em; }
 
 .submit-box {
   border: 1px solid #888;
