@@ -1,3 +1,7 @@
+html {
+    height : 100%;
+}
+
 body {
     font-family: "Helvetica", "Trebuchet MS", "sans-serif";
     font-size: 14px;
@@ -98,7 +102,6 @@ a {
 }
 
 #wrapper{
-   overflow: hidden;
    margin: 0 auto;
    padding: 10px 30px;
    width: 83%;
@@ -108,7 +111,7 @@ a {
    -moz-box-shadow: 0 0 9px black;
    min-height: 450px;
    /*height: auto !important;*/
-   height: 100%;
+   height: 97%;
 }
 
 @mixin blah {
@@ -125,19 +128,18 @@ ol {
         /*height: 100%;*/
         margin: 0.5em;
         list-style-type: none;
-        float : left;
         /*background-color : white;*/
         width : 80px;
-        min-height : 430px;
         padding-top : 11px;
         border-right : 1px solid #888;
         margin-top : 0px;
+        position : absolute;
+        height : 96%;
     }
     li {
         position : relative;
         width : 100px;
         cursor : pointer;
-        float : left;
         left : -38px;
         vertical-align : bottom;
         padding: 1em;
@@ -168,7 +170,7 @@ ol {
         display : block;
         float : left;
         background-color : inherit;
-        margin-left : 1em;
+        margin-left : 140px;
         margin-top : 10px;
         height : 100%;
         /*min-height : 385px;*/
@@ -252,8 +254,16 @@ ol {
             padding-right : 5px;
         }
     }
-    span.after-text {
+    .after-text {
         padding-left : 5px;
+    }
+    .inputerror {
+        padding-left : 5px;
+        color : red;
+    }
+    div.inputerror {
+        padding-top : 5px;
+        margin-left : -5px;
     }
     .tracker {
         display : inline;

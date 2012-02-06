@@ -152,7 +152,9 @@ class mainHandler:
         #check cookies
         client_cookie = cherrypy.request.cookie
         Lcheck = self.L.checkLogin(client_cookie)
-        if not Lcheck:
+        if not Lcheck and request == "verify_conf_value":
+            return "Session Ended"
+        elif not Lcheck:
             return
         #request=get_torrent_row&torrent_id=
         if request == "get_torrent_info" and torrent_id:

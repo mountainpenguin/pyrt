@@ -52,7 +52,7 @@ class Ajax:
                 currpass = self.Config.get("password")
                 salt = base64.b64decode(currpass.split("$")[1])
                 return "RESPONSE/NO/Incorrect Password"
-        elif key == "refreshrate":
+        elif key in ["refreshrate", "throttle-up", "throttle-down"]:
             try:
                 test = int(value)
                 return "RESPONSE/OK/OK"
@@ -71,20 +71,33 @@ class Ajax:
             else:
                 s.close()
                 return "RESPONSE/OK/OK"
-        elif key == "throttle-up":
-            return "RESPONSE/NO/Not Implemented"
-        elif key == "throttle-down":
-            return "RESPONSE/NO/Not Implemented"
-        elif key == "network-portfrom":
-            return "RESPONSE/NO/Not Implemented"
-        elif key == "network-portto":
-            return "RESPONSE/NO/Not Implemented"
-        elif key == "network-dir":
-            return "RESPONSE/NO/Not Implemented"
+        elif key in ["network-portfrom", "network-portto"]:
+            try:
+                testport = int(value)
+            except ValueError:
+                return "RESPONSE/NO/Value must be an integer"
+            else:
+                if testport > 65555:
+                    return "RESPONSE/NO/Out of port range"
+                elif testport < 1024:
+                    return "RESPONSE/NO/Restricted port"
+                else:
+                    return "RESPONSE/OK/OK"
+        elif key in ["network-dir","network-moveto"]:
+            if os.path.exists(value):
+                if not os.path.isdir(value):
+                    return "RESPONSE/NO/Not a directory"
+                elif not os.access(value, os.W_OK):
+                    return "RESPONSE/NO/Insufficient permissions"
+                else:
+                    return "RESPONSE/OK/OK"
+            else:
+                return "RESPONSE/NO/No such path"
         elif key == "network-moveto":
             return "RESPONSE/NO/Not Implemented"
         else:
             return "RESPONSE/NO/Unknown key"
+        
     def get_feeds(self):
         return "Nothing yet!"
     

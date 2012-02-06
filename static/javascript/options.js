@@ -28,11 +28,11 @@ $(document).ready( function () {
          }
       } else if (e.target.value == "") {
          $(e.target).removeClass("badinput goodinput warninginput");
+         $("#" + e.target.id + "error").html("");
       } else {
          verify(e.target.id, e.target.value);
       }
    }).bind("change", function (e) {
-      console.log("<" + e.target.value + ">");
       if (e.target.id == "network-movecheck") {
          if (e.target.checked == true) {
             $(".network-moveto").show();
@@ -46,7 +46,6 @@ $(document).ready( function () {
 });
 
 function verify(key, value) {
-   console.log(key + " changed to " + value + "!");
    $.ajax({
       url: "/ajax?request=verify_conf_value&key=" + key + "&value=" + encodeURIComponent(value),
       success: function (data) {
@@ -54,11 +53,14 @@ function verify(key, value) {
          respo = data.substr(9,2);
          msg = data.substr(12);
          if (verif === "RESPONSE" && respo == "OK") {
-            $("#" + key).removeClass("badinput warninginput").addClass("goodinput").attr("title","");
+            $("#" + key).removeClass("badinput warninginput").addClass("goodinput");
+            $("#" + key + "error").html("");
          } else if (verif === "RESPONSE" && respo == "NO") {
-            $("#" + key).removeClass("goodinput warninginput").addClass("badinput").attr("title", msg);
+            $("#" + key).removeClass("goodinput warninginput").addClass("badinput");
+            $("#" + key + "error").html(msg);
          } else {
-            $("#" + key).removeClass("goodinput badinput").addClass("warninginput").attr("title", "Unexpected response: " + data);
+            $("#" + key).removeClass("goodinput badinput").addClass("warninginput");
+            $("#" + key + "error").html("Unexpected response: " + data)
          }
       }
    })

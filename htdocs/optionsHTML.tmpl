@@ -59,12 +59,14 @@
                             <div id="pyrt-refresh" class="options-box">
                                 <h3>Refresh rate</h3>
                                 <input type="text" id="refreshrate" placeholder="$config.refresh">
-                                    <span id="forrefreshrate" class="after-text">seconds</span>
+                                <span id="forrefreshrate" class="after-text">seconds</span>
+                                <span id="refreshrateerror" class="inputerror"></span>
                             </div>
                             <div id="pyrt-port" class="options-box error">
                                 <h3>PyRT Port</h3>
                                 <label for="pyrtport" id="forpyrtport">$config.host : </label>
                                 <input type="text" id="pyrtport" placeholder="$config.port">
+                                <span id="pyrtporterror" class="inputerror"></span>
                             </div>
                             <div id="pyrt-submit" class="submit-box">
                                 Submit Changes
@@ -79,11 +81,13 @@
                                     <label for="throttle-up" id="forthrottle-up">Up:</label>
                                     <input type="text" id="throttle-up" placeholder="$throttleup">
                                     <span id="forthrottle-up-text" class="after-text">KB/s</span>
+                                    <span id="throttle-uperror" class="inputerror"></span>
                                 </div>
                                 <div>
                                     <label for="throttle-down" id="forthrottle-down">Down:</label>
                                     <input type="text" id="throttle-down" placeholder="$throttledown">
                                     <span id="forthrottle-down-text" class="after-text">KB/s</span>
+                                    <span id="throttle-downerror" class="inputerror"></span>
                                 </div>
                             </div>
                             <div id="throttle-submit" class="submit-box">
@@ -99,12 +103,15 @@
                                     <input type="text" id="network-portfrom" class="network-port" placeholder="$networkportfrom">
                                     <span>-</span>
                                     <input type="text" id="network-portto" class="network-port" placeholder="$networkportto">
+                                    <span id="network-porttoerror" class="inputerror"></span>
+                                    <div id="network-portfromerror" class="inputerror"></div>
                                 </div>
                             </div>
                             <div id="network-dldir" class="options-box">
                                 <h3>Download directory</h3>
                                 <div>
                                     <input type="text" id="network-dir" placeholder="$networkdir">
+                                    <div id="network-direrror" class="inputerror"></div>
                                 </div>
                             </div>
                             <div id="network-move" class="options-box">
@@ -114,6 +121,7 @@
                                     <input type="checkbox" id="network-movecheck">
                                     <label for="network-moveto" id="fornetwork-moveto" class="network-moveto hidden">
                                     <input type="text" id="network-moveto" class="network-moveto hidden">
+                                    <div id="network-movetoerror" class="inputerror"></div>
                                 </div>
                             </div>
                             <div id="network-submit" class="submit-box">
