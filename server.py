@@ -125,7 +125,7 @@ class mainHandler:
         return Detail.HTML
     detail.exposed = True
     
-    def ajax(self, request=None, torrent_id=None, filepath=None, torrent=None, start=None, view=None, sortby=None, reverse=None, html=None, torrentIDs=None, drop_down_ids=None):
+    def ajax(self, request=None, torrent_id=None, filepath=None, torrent=None, start=None, view=None, sortby=None, reverse=None, html=None, torrentIDs=None, drop_down_ids=None, key=None, value=None):
         """
             Handler for ajax queries (/ajax)
             
@@ -191,6 +191,8 @@ class mainHandler:
             return self.AJAX.delete_batch(torrentIDs)
         elif request == "get_tracker_favicon" and torrent_id is not None:
             return self.AJAX.get_tracker_favicon(torrent_id)
+        elif request == "verify_conf_value" and key is not None and value is not None:
+            return self.AJAX.verify_conf_value(key, value)
             
         else:
             raise cherrypy.HTTPError(message="Ajax Error Invalid Method")

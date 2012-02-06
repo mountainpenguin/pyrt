@@ -21,6 +21,7 @@ import urlparse
 import re
 import urllib
 import urllib2
+import socket
 
 from modules.Cheetah.Template import Template
 
@@ -29,7 +30,61 @@ class Ajax:
         self.Config = conf
         self.RT = rtorrent.rtorrent(self.Config.get("rtorrent_socket"))
         self.Handler = torrentHandler.Handler()
+        self.Login = login.Login(conf=self.Config)
         
+    def verify_conf_value(self, key, value):
+        """
+            keys:
+                oldpass
+                refreshrate
+                pyrtport
+                throttle-up
+                throttle-down
+                network-portfrom
+                network-portto
+                network-dir
+                network-moveto
+        """
+        if key == "oldpass":
+            if self.Login.checkPassword(value):
+                return "RESPONSE/OK/OK"
+            else:
+                currpass = self.Config.get("password")
+                salt = base64.b64decode(currpass.split("$")[1])
+                return "RESPONSE/NO/Incorrect Password"
+        elif key == "refreshrate":
+            try:
+                test = int(value)
+                return "RESPONSE/OK/OK"
+            except ValueError:
+                return "RESPONSE/NO/Value must be an integer"
+        elif key == "pyrtport":
+            try:
+                testport = int(value)
+                s = socket.socket(socket.AF_INET)
+                s.bind((self.Config.get("host"), testport))
+            except ValueError:
+                return "RESPONSE/NO/Value must be an integer"
+            except socket.error as e:
+                s.close()
+                return "RESPONSE/NO/%s" % e
+            else:
+                s.close()
+                return "RESPONSE/OK/OK"
+        elif key == "throttle-up":
+            return "RESPONSE/NO/Not Implemented"
+        elif key == "throttle-down":
+            return "RESPONSE/NO/Not Implemented"
+        elif key == "network-portfrom":
+            return "RESPONSE/NO/Not Implemented"
+        elif key == "network-portto":
+            return "RESPONSE/NO/Not Implemented"
+        elif key == "network-dir":
+            return "RESPONSE/NO/Not Implemented"
+        elif key == "network-moveto":
+            return "RESPONSE/NO/Not Implemented"
+        else:
+            return "RESPONSE/NO/Unknown key"
     def get_feeds(self):
         return "Nothing yet!"
     

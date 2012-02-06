@@ -19,7 +19,17 @@ $(document).ready( function () {
          $("#" + e.target.id.split("-tab")[0]).parent().addClass("selected");
       }
    )
-   $("input").bind("change", function (e) {
+   $("input").bind("keyup", function (e) {
+      if (e.target.id == "newpass" || e.target.id == "newpassconf") {
+         if ($("#newpass").attr("value") == $("#newpassconf").attr("value")) {
+            $("#newpassconf").removeClass("badinput");
+         } else {
+            $("#newpassconf").addClass("badinput");
+         }
+      } else {
+         verify(e.target.id, e.target.value);
+      }
+   }).bind("change", function (e) {
       if (e.target.id == "network-movecheck") {
          if (e.target.checked == true) {
             $(".network-moveto").show();
@@ -29,3 +39,23 @@ $(document).ready( function () {
       }
    });
 });
+
+function verify(key, value) {
+   console.log(key + " changed to " + value + "!");
+   $.ajax({
+      url: "/ajax?request=verify_conf_value&key=" + key + "&value=" + encodeURIComponent(value),
+      success: function (data) {
+         verif = data.substr(0,8);
+         respo = data.substr(9,2);
+         msg = data.substr(12);
+         if (verif === "RESPONSE" && respo == "OK") {
+            $("#" + key).removeClass("badinput").addClass("goodinput").attr("title","");
+         } else if (verif === "RESPONSE" && respo == "NO") {
+            $("#" + key).removeClass("goodinput").addClass("badinput").attr("title", msg);
+         } else {
+            $("#" + key).removeClass("goodinput").addClass("warninginput").attr("title", "Unexpected response: " + data);
+         }
+      }
+   })
+   return false;
+}
