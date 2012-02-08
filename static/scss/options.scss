@@ -197,11 +197,8 @@ ol {
     /*&.error {*/
     /*    background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(240,0,0,0.7)), to(rgba(255,45,45,0.3)))*/
     /*}*/
-    #general-dir {
+    #general-dir, #general-moveto {
         width : 780px;
-    }
-    #general-moveto {
-        width : 709px;
     }
     input[type="password"], input[type="text"] {
         height : 25px;

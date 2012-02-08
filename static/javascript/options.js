@@ -39,6 +39,12 @@ $(document).ready( function () {
          } else {
             $(".general-moveto").hide();
          }
+      } else if (e.target.id == "general-stopcheck") {
+         if (e.target.checked == true) {
+            $("#general-stopat-parent").removeClass("hidden");
+         } else {
+            $("#general-stopat-parent").addClass("hidden");
+         }
       } else if (e.target.value == "") {
          $(e.target).removeClass("badinput goodinput warninginput");
       }

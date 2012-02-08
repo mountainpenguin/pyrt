@@ -101,10 +101,27 @@
                                 <div>
                                     <label for="general-movecheck" id="forgeneral-movecheck">Enable</label>
                                     <input type="checkbox" id="general-movecheck">
-                                    <label for="general-moveto" id="forgeneral-moveto" class="general-moveto hidden">
+                                </div>
+                                <div>
                                     <input type="text" id="general-moveto" class="general-moveto hidden">
                                     <div id="general-movetoerror" class="inputerror"></div>
                                 </div>
+                            </div>
+                            <div id="general-stop" class="options-box">
+                                <h3>Stop when disk space low</h3>
+                                <div>
+                                    <label for="general-stopcheck" id="forgeneral-stopcheck">Enable</label>
+                                    <input type="checkbox" id="general-stopcheck">
+                                </div>
+                                <div class="hidden" id="general-stopat-parent">
+                                    <label for="general-stopat" id="forgeneral-stopat">Limit</label>
+                                    <input type="text" class="small" id="general-stopat">
+                                    <span class="after-text">MB</span>
+                                    <span class="inputerror" id="general-stopaterror"></span>
+                                </div>
+                            </div>
+                            <div class="submit-box" id="general-submit">
+                                Submit Changes
                             </div>
                         </div>
                     </div>

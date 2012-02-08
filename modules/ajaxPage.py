@@ -52,7 +52,12 @@ class Ajax:
                 currpass = self.Config.get("password")
                 salt = base64.b64decode(currpass.split("$")[1])
                 return "RESPONSE/NO/Incorrect Password"
-        elif key in ["refreshrate", "throttle-up", "throttle-down", "network-simuluploads", "network-simuldownloads","network-maxpeers","network-maxpeersseed","network-maxopensockets","network-maxopenhttp","performance-maxmemory","performance-maxfilesize","performance-maxopenfiles","performance-receivebuffer","performance-sendbuffer","performance-readahead"]:
+        elif key in ["refreshrate", "throttle-up", "throttle-down", "network-simuluploads",
+                     "network-simuldownloads","network-maxpeers","network-maxpeersseed",
+                     "network-maxopensockets","network-maxopenhttp","performance-maxmemory",
+                     "performance-maxfilesize","performance-maxopenfiles",
+                     "performance-receivebuffer","performance-sendbuffer",
+                     "performance-readahead","general-stopat"]:
             try:
                 test = int(value)
                 return "RESPONSE/OK/OK"

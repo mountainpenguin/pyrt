@@ -137,6 +137,8 @@ form input[type="number"], form input[type="password"], form input[type="email"]
   outline: none;
   width: 95%;
   padding: 5px; }
+form input[type="file"] {
+  outline: none; }
 
 #global_stats {
   width: 100%;

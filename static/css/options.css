@@ -170,10 +170,8 @@ ol li {
   /*}*/ }
   .options-box:not(.error), .options-box:not(.ok) {
     background-color: rgba(240, 240, 240, 0.5); }
-  .options-box #general-dir {
+  .options-box #general-dir, .options-box #general-moveto {
     width: 780px; }
-  .options-box #general-moveto {
-    width: 709px; }
   .options-box input[type="password"], .options-box input[type="text"] {
     height: 25px;
     font-size: 20px;
