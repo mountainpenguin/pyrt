@@ -625,6 +625,7 @@ function accordionise(cell, curr_pane) {
 
 function filetreeise(cell, torrent_id) {
      cell.find("#drop_down_files_" + torrent_id + " > ul").treeview({
+          collapsed : true,
           persist: "cookie",
      });
      return cell;

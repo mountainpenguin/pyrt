@@ -143,7 +143,7 @@ form input[type="number"], form input[type="password"], form input[type="email"]
   margin-bottom: 45px;
   padding: 0em 1em 1em 1em; }
 
-.hidden {
+.hidden, .fullpath {
   display: none; }
 
 h2.drop_down_h2 {

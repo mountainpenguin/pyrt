@@ -838,10 +838,10 @@ class rtorrent:
     def getPath(self, id):
         return self.conn.d.get_directory(id)
         
-    def getRootPath(self):
+    def getGlobalRootPath(self):
         return self.conn.get_directory()
         
-    def getPortRange(self):
+    def getGlobalPortRange(self):
         return self.conn.get_port_range()
 
     def getPriorityStr(self, id):
@@ -887,6 +887,42 @@ class rtorrent:
         
     def getCompletedBytes(self, id):
         return self.conn.d.get_completed_bytes(id)
+        
+    def getGlobalMaxMemoryUsage(self):
+        return self.conn.get_max_memory_usage()
+
+    def getGlobalSendBufferSize(self):
+        return self.conn.get_send_buffer_size()
+        
+    def getGlobalReceiveBufferSize(self):
+        return self.conn.get_receive_buffer_size()
+        
+    def getGlobalHashReadAhead(self):
+        return self.conn.get_hash_read_ahead()
+        
+    def getGlobalMaxDownloads(self):
+        return self.conn.get_max_downloads_global()
+    
+    def getGlobalMaxUploads(self):
+        return self.conn.get_max_uploads_global()
+        
+    def getGlobalMaxPeers(self):
+        return self.conn.get_max_peers()
+        
+    def getGlobalMaxPeersSeed(self):
+        return self.conn.get_max_peers_seed()
+        
+    def getGlobalMaxOpenSockets(self):
+        return self.conn.get_max_open_sockets()
+        
+    def getGlobalMaxOpenHttp(self):
+        return self.conn.get_max_open_http()
+        
+    def getGlobalMaxFileSize(self):
+        return self.conn.get_max_file_size()
+        
+    def getGlobalMaxOpenFiles(self):
+        return self.conn.get_max_open_files()
         
     def wait_completed(self, Id):
         time.sleep(2)

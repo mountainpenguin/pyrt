@@ -5,7 +5,7 @@ body {
   font-family: "Helvetica", "Trebuchet MS", "sans-serif";
   font-size: 14px;
   background-color: #EEE;
-  padding: 0;
+  margin: 0;
   margin: 0;
   background: #393939;
   min-width: 1200px;
@@ -149,6 +149,8 @@ ol li {
     margin-left: 140px;
     margin-top: 10px;
     height: 100%;
+    /*overflow : scroll;*/
+    max-height: 100%;
     /*min-height : 385px;*/
     /*min-width : 400px;*/
     /*padding : 1em;*/
@@ -168,21 +170,18 @@ ol li {
   /*}*/ }
   .options-box:not(.error), .options-box:not(.ok) {
     background-color: rgba(240, 240, 240, 0.5); }
-  .options-box #network-dir {
+  .options-box #general-dir {
     width: 780px; }
-  .options-box #network-moveto {
+  .options-box #general-moveto {
     width: 709px; }
-  .options-box #refreshrate, .options-box #pyrtport, .options-box .network-port {
-    width: 75px; }
-  .options-box #throttle-up, .options-box #throttle-down {
-    width: 50px; }
   .options-box input[type="password"], .options-box input[type="text"] {
     height: 25px;
     font-size: 20px;
     border-radius: 5px;
     border: 1px solid #999;
     outline: none;
-    padding-left: 1px; }
+    padding-left: 1px;
+    text-align: center; }
     .options-box input[type="password"].badinput, .options-box input[type="text"].badinput {
       border: 1px solid red;
       background-color: rgba(255, 94, 94, 0.5); }
@@ -192,23 +191,52 @@ ol li {
     .options-box input[type="password"].warninginput, .options-box input[type="text"].warninginput {
       border: 1px solid yellow;
       background-color: rgba(255, 255, 106, 0.5); }
+    .options-box input[type="password"].small, .options-box input[type="text"].small {
+      width: 75px; }
+    .options-box input[type="password"].smaller, .options-box input[type="text"].smaller {
+      width: 50px; }
   .options-box input[type="password"] {
     width: 200px; }
   .options-box div {
     padding-bottom: 0.5em; }
-  .options-box label#foroldpass {
-    padding-right: 5px; }
-  .options-box label#fornewpass {
-    padding-right: 26px; }
-  .options-box label#fornewpassconf {
-    padding-left: 5px;
-    padding-right: 5px; }
-  .options-box label#fornetwork-movecheck {
-    padding-top: 1px; }
-  .options-box label#forthrottle-up {
-    padding-right: 23px; }
-  .options-box label#forthrottle-down {
-    padding-right: 5px; }
+  .options-box label {
+    margin-right: 5px;
+    /*
+    &#forperformance- {
+        margin-right : px;
+    }
+    */ }
+    .options-box label#foroldpass {
+      margin-right: 5px; }
+    .options-box label#fornewpass {
+      margin-right: 26px; }
+    .options-box label#fornewpassconf {
+      margin-left: 5px; }
+    .options-box label#forgeneral-movecheck {
+      margin-top: 1px;
+      margin-right: 0; }
+    .options-box label#forthrottle-up {
+      margin-right: 23px; }
+    .options-box label#forperformance-sendbuffer {
+      margin-right: 94px; }
+    .options-box label#forperformance-receivebuffer {
+      margin-right: 76px; }
+    .options-box label#forperformance-readahead {
+      margin-right: 17px; }
+    .options-box label#forperformance-maxfilesize {
+      margin-right: 52px; }
+    .options-box label#forperformance-maxopenfiles {
+      margin-right: 37px; }
+    .options-box label#fornetwork-simuluploads {
+      margin-right: 22px; }
+    .options-box label#fornetwork-maxpeers {
+      margin-right: 122px; }
+    .options-box label#fornetwork-maxpeersseed {
+      margin-right: 58px; }
+    .options-box label#fornetwork-maxopensockets {
+      margin-right: 74px; }
+    .options-box label#fornetwork-maxopenhttp {
+      margin-right: 98px; }
   .options-box .after-text {
     padding-left: 5px; }
   .options-box .inputerror {

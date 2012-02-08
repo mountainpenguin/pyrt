@@ -52,7 +52,7 @@ class Ajax:
                 currpass = self.Config.get("password")
                 salt = base64.b64decode(currpass.split("$")[1])
                 return "RESPONSE/NO/Incorrect Password"
-        elif key in ["refreshrate", "throttle-up", "throttle-down"]:
+        elif key in ["refreshrate", "throttle-up", "throttle-down", "network-simuluploads", "network-simuldownloads","network-maxpeers","network-maxpeersseed","network-maxopensockets","network-maxopenhttp","performance-maxmemory","performance-maxfilesize","performance-maxopenfiles","performance-receivebuffer","performance-sendbuffer","performance-readahead"]:
             try:
                 test = int(value)
                 return "RESPONSE/OK/OK"
@@ -83,7 +83,7 @@ class Ajax:
                     return "RESPONSE/NO/Restricted port"
                 else:
                     return "RESPONSE/OK/OK"
-        elif key in ["network-dir","network-moveto"]:
+        elif key in ["general-dir","general-moveto"]:
             if os.path.exists(value):
                 if not os.path.isdir(value):
                     return "RESPONSE/NO/Not a directory"
@@ -93,8 +93,6 @@ class Ajax:
                     return "RESPONSE/OK/OK"
             else:
                 return "RESPONSE/NO/No such path"
-        elif key == "network-moveto":
-            return "RESPONSE/NO/Not Implemented"
         else:
             return "RESPONSE/NO/Unknown key"
         

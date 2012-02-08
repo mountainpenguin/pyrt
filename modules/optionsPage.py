@@ -20,16 +20,32 @@ class Options:
         #rTorrent
             #global upload throttle
             #global download throttle
-        portrange = self.RT.getPortRange()
+        portrange = self.RT.getGlobalPortRange()
         favicons = dict([(os.path.basename(x.split(".ico")[0]), "/favicons/%s" % os.path.basename(x)) for x in glob.glob("static/favicons/*.ico")])
+        maxpeers = self.RT.getGlobalMaxPeers()
+        maxpeersseed = self.RT.getGlobalMaxPeersSeed()
+        if maxpeersseed == -1:
+            maxpeersseed = maxpeers
         definitions = {
             "config" : self.C.CONFIG,
             "throttleup" : int(float(self.RT.getGlobalUpThrottle()) / 1024) ,
             "throttledown" : int(float(self.RT.getGlobalDownThrottle()) / 1024),
-            "networkdir" : self.RT.getRootPath(),
+            "generaldir" : self.RT.getGlobalRootPath(),
             "networkportfrom" : portrange.split("-")[0],
             "networkportto" : portrange.split("-")[1],
             "trackericons" : favicons,
+            "performancemaxmemory" : int(float(self.RT.getGlobalMaxMemoryUsage())/1024/1024),
+            "performancereceivebuffer" : int(float(self.RT.getGlobalReceiveBufferSize())/1024/1024),
+            "performancesendbuffer" : int(float(self.RT.getGlobalSendBufferSize())/1024/1024),
+            "performancemaxopenfiles" : self.RT.getGlobalMaxOpenFiles(),
+            "performancemaxfilesize" : int(float(self.RT.getGlobalMaxFileSize())/1024/1024),
+            "performancereadahead" : int(float(self.RT.getGlobalHashReadAhead())/1024/1024),
+            "networksimuluploads" : self.RT.getGlobalMaxUploads(),
+            "networksimuldownloads" : self.RT.getGlobalMaxDownloads(),
+            "networkmaxpeers" : maxpeers,
+            "networkmaxpeersseed" : maxpeersseed,
+            "networkmaxopensockets" : self.RT.getGlobalMaxOpenSockets(),
+            "networkmaxopenhttp" : self.RT.getGlobalMaxOpenHttp(),
         }
         HTML = Template(file="htdocs/optionsHTML.tmpl", searchList=definitions).respond()
         

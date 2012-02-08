@@ -33,11 +33,11 @@ $(document).ready( function () {
          verify(e.target.id, e.target.value);
       }
    }).bind("change", function (e) {
-      if (e.target.id == "network-movecheck") {
+      if (e.target.id == "general-movecheck") {
          if (e.target.checked == true) {
-            $(".network-moveto").show();
+            $(".general-moveto").show();
          } else {
-            $(".network-moveto").hide();
+            $(".general-moveto").hide();
          }
       } else if (e.target.value == "") {
          $(e.target).removeClass("badinput goodinput warninginput");
@@ -46,6 +46,7 @@ $(document).ready( function () {
 });
 
 function verify(key, value) {
+   console.log("verifying key: " + key + " value: " + value)
    $.ajax({
       url: "/ajax?request=verify_conf_value&key=" + key + "&value=" + encodeURIComponent(value),
       success: function (data) {

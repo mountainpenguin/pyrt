@@ -6,7 +6,7 @@ body {
     font-family: "Helvetica", "Trebuchet MS", "sans-serif";
     font-size: 14px;
     background-color: #EEE;
-    padding: 0;
+    margin: 0;
     margin: 0;
     background: #393939;
     min-width : 1200px;
@@ -173,6 +173,8 @@ ol {
         margin-left : 140px;
         margin-top : 10px;
         height : 100%;
+        /*overflow : scroll;*/
+        max-height : 100%;
         /*min-height : 385px;*/
         /*min-width : 400px;*/
         /*padding : 1em;*/
@@ -195,17 +197,11 @@ ol {
     /*&.error {*/
     /*    background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(240,0,0,0.7)), to(rgba(255,45,45,0.3)))*/
     /*}*/
-    #network-dir {
+    #general-dir {
         width : 780px;
     }
-    #network-moveto {
+    #general-moveto {
         width : 709px;
-    }
-    #refreshrate, #pyrtport, .network-port {
-        width : 75px;
-    }
-    #throttle-up, #throttle-down {
-        width : 50px;
     }
     input[type="password"], input[type="text"] {
         height : 25px;
@@ -214,6 +210,7 @@ ol {
         border : 1px solid #999;
         outline : none;
         padding-left : 1px;
+        text-align : center;
         &.badinput {
             border : 1px solid red;
             background-color : rgba(255,94,94,0.5);
@@ -226,6 +223,12 @@ ol {
             border : 1px solid yellow;
             background-color : rgba(255,255,106,0.5);
         }
+        &.small {
+            width : 75px;
+        }
+        &.smaller {
+            width : 50px;
+        }
     }
     input[type="password"] {
         width : 200px;
@@ -234,25 +237,58 @@ ol {
         padding-bottom : 0.5em;
     }
     label {
+        margin-right : 5px;
         &#foroldpass {
-            padding-right : 5px;
+            margin-right : 5px;
         }
         &#fornewpass {
-            padding-right : 26px;
+            margin-right : 26px;
         }
         &#fornewpassconf {
-            padding-left : 5px;
-            padding-right : 5px;
+            margin-left : 5px;
         }
-        &#fornetwork-movecheck {
-            padding-top : 1px;
+        &#forgeneral-movecheck {
+            margin-top : 1px;
+            margin-right : 0;
         }
         &#forthrottle-up {
-            padding-right : 23px;
+            margin-right : 23px;
         }
-        &#forthrottle-down {
-            padding-right : 5px;
+        &#forperformance-sendbuffer {
+            margin-right : 94px;
         }
+        &#forperformance-receivebuffer {
+            margin-right : 76px;
+        }
+        &#forperformance-readahead {
+            margin-right : 17px;
+        }
+        &#forperformance-maxfilesize {
+            margin-right : 52px;
+        }
+        &#forperformance-maxopenfiles {
+            margin-right : 37px;
+        }
+        &#fornetwork-simuluploads {
+            margin-right : 22px;
+        }
+        &#fornetwork-maxpeers {
+            margin-right : 122px;
+        }
+        &#fornetwork-maxpeersseed {
+            margin-right : 58px;
+        }
+        &#fornetwork-maxopensockets {
+            margin-right : 74px;
+        }
+        &#fornetwork-maxopenhttp {
+            margin-right : 98px;
+        }
+        /*
+        &#forperformance- {
+            margin-right : px;
+        }
+        */
     }
     .after-text {
         padding-left : 5px;
