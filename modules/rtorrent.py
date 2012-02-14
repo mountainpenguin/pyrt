@@ -369,7 +369,7 @@ set_max_downloads_div
 set_max_downloads_global
 set_max_file_size
 set_max_memory_usage
-set_max_open_files
+set_2_files
 set_max_open_http
 set_max_open_sockets
 set_max_peers
@@ -837,12 +837,6 @@ class rtorrent:
 
     def getPath(self, id):
         return self.conn.d.get_directory(id)
-        
-    def getGlobalRootPath(self):
-        return self.conn.get_directory()
-        
-    def getGlobalPortRange(self):
-        return self.conn.get_port_range()
 
     def getPriorityStr(self, id):
         return self.conn.d.get_priority_str(id)
@@ -861,8 +855,28 @@ class rtorrent:
         elif ope and act and not has:
             return "Active"
 
+    def getCreationDate(self, id):
+        return self.conn.d.get_creation_date(id)
+        
+    def getCompletedBytes(self, id):
+        return self.conn.d.get_completed_bytes(id)
+        
+    ### START 'GLOBAL' FUNCTIONS ###
     def getRootDir(self):
         return self.conn.get_directory()
+        
+    def getGlobalRootPath(self):
+        return self.conn.get_directory()
+        
+    def setGlobalRootPath(self, path):
+        #edit .rtorrent.rc?
+        return self.conn.set_directory(path)
+        
+    def getGlobalPortRange(self):
+        return self.conn.get_port_range()
+        
+    def setGlobalPortRange(self, range):
+        return self.conn.set_port_range(range)
 
     def getGlobalUpBytes(self):
         return self.conn.get_up_total()
@@ -879,51 +893,94 @@ class rtorrent:
     def getGlobalUpThrottle(self):
         return self.conn.get_upload_rate()
         
+    def setGlobalUpThrottle(self, throttle):
+        #throttle must be in bytes
+        return self.conn.set_upload_rate(throttle)
+        
     def getGlobalDownThrottle(self):
         return self.conn.get_download_rate()
-
-    def getCreationDate(self, id):
-        return self.conn.d.get_creation_date(id)
         
-    def getCompletedBytes(self, id):
-        return self.conn.d.get_completed_bytes(id)
+    def setGlobalDownThrottle(self, throttle):
+        return self.conn.set_download_rate(throttle)
         
     def getGlobalMaxMemoryUsage(self):
         return self.conn.get_max_memory_usage()
+        
+    def setGlobalMaxMemoryUsage(self, mem):
+        #mem in bytes
+        #convert to str to allow large values
+        return self.conn.set_max_memory_usage(str(mem))
 
     def getGlobalSendBufferSize(self):
         return self.conn.get_send_buffer_size()
         
+    def setGlobalSendBufferSize(self, buffer):
+        #buffer in bytes -> converted to str
+        return self.conn.set_send_buffer_size(str(buffer))
+        
     def getGlobalReceiveBufferSize(self):
         return self.conn.get_receive_buffer_size()
+        
+    def setGlobalReceiveBufferSize(self, buffer):
+        return self.conn.set_receive_buffer_size(str(buffer))
         
     def getGlobalHashReadAhead(self):
         return self.conn.get_hash_read_ahead()
         
+    def setGlobalHashReadAhead(self, readahead):
+        return self.conn.set_hash_read_ahead(str(readahead))
+        
     def getGlobalMaxDownloads(self):
         return self.conn.get_max_downloads_global()
+        
+    def setGlobalMaxDownloads(self, max):
+        return self.conn.set_max_downloads_global(max)
     
     def getGlobalMaxUploads(self):
         return self.conn.get_max_uploads_global()
         
+    def setGlobalMaxUploads(self, max):
+        return self.conn.set_max_uploads_global(max)
+        
     def getGlobalMaxPeers(self):
         return self.conn.get_max_peers()
+        
+    def setGlobalMaxPeers(self, peers):
+        return self.conn.set_max_peers(peers)
         
     def getGlobalMaxPeersSeed(self):
         return self.conn.get_max_peers_seed()
         
+    def setGlobalMaxPeersSeed(self, peers):
+        return self.conn.set_max_peers_seed(peers)
+        
     def getGlobalMaxOpenSockets(self):
         return self.conn.get_max_open_sockets()
         
+    def setGlobalMaxOpenSockets(self, sockets):
+        return self.conn.set_max_open_sockets(sockets)
+        
     def getGlobalMaxOpenHttp(self):
         return self.conn.get_max_open_http()
+    
+    def setGlobalMaxOpenHttp(self, http):
+        return self.conn.set_max_open_http(http)
         
     def getGlobalMaxFileSize(self):
         return self.conn.get_max_file_size()
         
+    def setGlobalMaxFileSize(self, size):
+        #size must be in bytes
+        #converting size to a str to avoid XML-RPC complaining about long ints
+        return self.conn.set_max_file_size(str(size))
+        
     def getGlobalMaxOpenFiles(self):
         return self.conn.get_max_open_files()
         
+    def setGlobalMaxOpenFiles(self, files):
+        return self.conn.set_max_open_files(files)
+        
+    ### END 'GLOBAL' FUNCTIONS ###
     def wait_completed(self, Id):
         time.sleep(2)
         

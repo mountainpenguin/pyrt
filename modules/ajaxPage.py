@@ -22,6 +22,7 @@ import re
 import urllib
 import urllib2
 import socket
+import traceback
 
 from modules.Cheetah.Template import Template
 
@@ -32,27 +33,132 @@ class Ajax:
         self.Handler = torrentHandler.Handler()
         self.Login = login.Login(conf=self.Config)
         
+    def mbtob(self, value):
+        """
+            Converts MiB to B
+        """
+        return int(value)*1024*1024
+        
+    def kbtob(self, value):
+        """
+            Converts KiB to B
+        """
+        return int(value)*1024
+        
+    def throttleUp(self, value):
+        return self.RT.setGlobalUpThrottle(self.kbtob(value))
+        
+    def throttleDown(self, value):
+        return self.RT.setGlobalDownThrottle(self.kbtob(value))
+        
+    def maxFileSize(self, value):
+        return self.RT.setGlobalMaxFileSize(self.mbtob(value))
+        
+    def mem(self, value):
+        return self.RT.setGlobalMaxMemoryUsage(self.mbtob(value))
+        
+    def rBuffer(self, value):
+        return self.RT.setGlobalReceiveBufferSize(self.kbtob(value))
+        
+    def sBuffer(self, value):
+        return self.RT.setGlobalSendBufferSize(self.kbtob(value))
+        
+    def readahead(self, value):
+        return self.RT.setGlobalHashReadAhead(self.mbtob(value))
+        
+    def set_config_multiple(self, keys, values):
+        """
+            pyrt-oldpass
+            pyrt-newpass
+            pyrt-newpassconf
+            pyrt-refreshrate
+            pyrt-port
+            general-dir
+            general-moveto
+            general-stopat
+            throttle-up
+            throttle-down
+            network-portfrom
+            network-portto
+            network-simuluploads
+            network-simuldownloads
+            network-maxpeers
+            network-maxpeersseed
+            network-maxopensockets
+            network-maxopenhttp
+            performance-maxmemory
+            performance-maxfilesize
+            performance-maxopenfiles
+            performance-receivebuffer
+            performance-sendbuffer
+            performance-readahead
+        """
+        actions = {
+            #key : function
+            #"pyrt-refreshrate" : ,
+            #"pyrt-port" : ,
+            "general-dir" : self.RT.setGlobalRootPath,
+            "throttle-up" : self.throttleUp,
+            "throttle-down" : self.throttleDown,
+            "network-simuluploads" : self.RT.setGlobalMaxUploads,
+            "network-simuldownloads" : self.RT.setGlobalMaxDownloads,
+            "network-maxpeers" : self.RT.setGlobalMaxPeers,
+            "network-maxpeersseed" : self.RT.setGlobalMaxPeersSeed,
+            "network-maxopensockets" : self.RT.setGlobalMaxOpenSockets,
+            "network-maxopenhttp" : self.RT.setGlobalMaxOpenHttp,
+            "performance-maxmemory" : self.mem,
+            "performance-maxfilesize" : self.maxFileSize,
+            "performance-maxopenfiles" : self.RT.setGlobalMaxOpenFiles,
+            "performance-receivebuffer" : self.rBuffer,
+            "performance-sendbuffer" : self.sBuffer,
+            "performance-readahead" : self.RT.setGlobalHashReadAhead,
+        }
+        #"pyrt-refreshrate": "unknown", "pyrt-newpass": "unknown", "pyrt-newpassconf": "unknown", "pyrt-oldpass": "unknown", "pyrt-port": "unknown"
+        
+        responses = {}
+        
+        ks = keys.split(",")
+        vs = values.split(",")
+        kvdict = dict([(ks[i], urllib.unquote(vs[i])) for i in range(len(ks))])
+        for i in range(len(ks)):
+            k = ks[i]
+            v = urllib.unquote(vs[i])
+            if k in actions.keys():
+                try:
+                    responses[k] = actions[k](v)
+                except:
+                    traceback.print_exc()
+                    responses[k] = "error"
+            elif k == "pyrt-newpassconf":
+                if "pyrt-newpass" in ks and "pyrt-oldpass" in ks:
+                    responses[k] = "ok"
+                else:
+                    responses[k] = "error required: pyrt-oldpass, pyrt-newpass"
+            elif k == "network-portto":
+                #require network-portto & network-portfrom
+                if "network-portto" in ks and "network-portfrom" in ks:
+                    responses["network-port"] = self.RT.setGlobalPortRange("%s-%s" % (kvdict["network-portfrom"], kvdict["network-portto"]))
+                else:
+                    responses[k] = "error required: network-portto, network-portfrom"
+            elif k == "general-moveto":
+                responses[k] = "recognised"
+            elif k == "general-stopat":
+                responses[k] = "recognised"
+            elif k in ["pyrt-newpass", "pyrt-oldpass", "network-portfrom"]:
+                pass
+            else:
+                responses[k] = "unknown"
+        return json.dumps(responses)
+            
     def verify_conf_value(self, key, value):
-        """
-            keys:
-                oldpass
-                refreshrate
-                pyrtport
-                throttle-up
-                throttle-down
-                network-portfrom
-                network-portto
-                network-dir
-                network-moveto
-        """
-        if key == "oldpass":
+        if key == "pyrt-oldpass":
             if self.Login.checkPassword(value):
                 return "RESPONSE/OK/OK"
             else:
                 currpass = self.Config.get("password")
                 salt = base64.b64decode(currpass.split("$")[1])
                 return "RESPONSE/NO/Incorrect Password"
-        elif key in ["refreshrate", "throttle-up", "throttle-down", "network-simuluploads",
+        elif key in ["pyrt-refreshrate", "throttle-up", "throttle-down", "network-simuluploads",
                      "network-simuldownloads","network-maxpeers","network-maxpeersseed",
                      "network-maxopensockets","network-maxopenhttp","performance-maxmemory",
                      "performance-maxfilesize","performance-maxopenfiles",
@@ -63,7 +169,7 @@ class Ajax:
                 return "RESPONSE/OK/OK"
             except ValueError:
                 return "RESPONSE/NO/Value must be an integer"
-        elif key == "pyrtport":
+        elif key == "pyrt-port":
             try:
                 testport = int(value)
                 s = socket.socket(socket.AF_INET)

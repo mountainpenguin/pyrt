@@ -35,6 +35,9 @@ class Config:
         else:
             self.loadconfig()
     
+    def set(self, key, value):
+        pass
+        
     def _flush(self):
         pickle.dump(self.CONFIG, open(os.path.join("config",".pyrtconfig"),"w"))
         
