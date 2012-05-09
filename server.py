@@ -128,45 +128,45 @@ class ajax(web.RequestHandler):
         values = self.get_argument("values", None)
         
         if request == "get_torrent_info" and torrent_id:
-            return self.application._pyrtAJAX.get_torrent_info(torrent_id, html)
+            self.write(self.application._pyrtAJAX.get_torrent_info(torrent_id, html))
         elif request == "get_info_multi" and view:
-            return self.application._pyrtAJAX.get_info_multi(view, sortby, reverse, drop_down_ids)
+            self.write(self.application._pyrtAJAX.get_info_multi(view, sortby, reverse, drop_down_ids))
         elif request == "get_torrent_row" and torrent_id:
-            return self.application._pyrtAJAX.get_torrent_row(torrent_id)
+            self.write(self.application._pyrtAJAX.get_torrent_row(torrent_id))
         elif request == "pause_torrent" and torrent_id:
-            return self.application._pyrtAJAX.pause_torrent(torrent_id)
+            self.write(self.application._pyrtAJAX.pause_torrent(torrent_id))
         elif request == "stop_torrent" and torrent_id:
-            return self.application._pyrtAJAX.stop_torrent(torrent_id)
+            self.write(self.application._pyrtAJAX.stop_torrent(torrent_id))
         elif request == "start_torrent" and torrent_id:
-            return self.application._pyrtAJAX.start_torrent(torrent_id)
+            self.write(self.application._pyrtAJAX.start_torrent(torrent_id))
         elif request == "remove_torrent" and torrent_id:
-            return self.application._pyrtAJAX.remove_torrent(torrent_id)
+            self.write(self.application._pyrtAJAX.remove_torrent(torrent_id))
         elif request == "delete_torrent" and torrent_id:
-            return self.application._pyrtAJAX.delete_torrent(torrent_id)
+            self.write(self.application._pyrtAJAX.delete_torrent(torrent_id))
         elif request == "hash_torrent" and torrent_id:
-            return self.application._pyrtAJAX.hash_torrent(torrent_id)
+            self.write(self.application._pyrtAJAX.hash_torrent(torrent_id))
         elif request == "get_file" and torrent_id and filepath:
-            return self.application._pyrtAJAX.get_file(torrent_id, filepath)
+            self.write(self.application._pyrtAJAX.get_file(torrent_id, filepath))
         elif request == "upload_torrent" and torrent is not None:
-            return self.application._pyrtAJAX.upload_torrent(torrent, start)
+            self.write(self.application._pyrtAJAX.upload_torrent(torrent, start))
         elif request == "get_feeds":
-            return self.application._pyrtAJAX.get_feeds()
+            self.write(self.application._pyrtAJAX.get_feeds())
         elif request == "start_batch" and torrentIDs is not None:
-            return self.application._pyrtAJAX.start_batch(torrentIDs)
+            self.write(self.application._pyrtAJAX.start_batch(torrentIDs))
         elif request == "pause_batch" and torrentIDs is not None:
-            return self.application._pyrtAJAX.pause_batch(torrentIDs)
+            self.write(self.application._pyrtAJAX.pause_batch(torrentIDs))
         elif request == "stop_batch" and torrentIDs is not None:
-            return self.application._pyrtAJAX.stop_batch(torrentIDs)
+            self.write(self.application._pyrtAJAX.stop_batch(torrentIDs))
         elif request == "remove_batch" and torrentIDs is not None:
-            return self.application._pyrtAJAX.remove_batch(torrentIDs)
+            self.write(self.application._pyrtAJAX.remove_batch(torrentIDs))
         elif request == "delete_batch" and torrentIDs is not None:
-            return self.application._pyrtAJAX.delete_batch(torrentIDs)
+            self.write(self.application._pyrtAJAX.delete_batch(torrentIDs))
         elif request == "get_tracker_favicon" and torrent_id is not None:
-            return self.application._pyrtAJAX.get_tracker_favicon(torrent_id)
+            self.write(self.application._pyrtAJAX.get_tracker_favicon(torrent_id))
         elif request == "verify_conf_value" and key is not None and value is not None:
-            return self.application._pyrtAJAX.verify_conf_value(key, value)
+            self.write(self.application._pyrtAJAX.verify_conf_value(key, value))
         elif request == "set_config_multiple" and keys is not None and values is not None:
-            return self.application._pyrtAJAX.set_config_multiple(keys, values)
+            self.write(self.application._pyrtAJAX.set_config_multiple(keys, values))
         else:
             raise web.HTTPError(400, log_message="Ajax Error Invalid Method")
         
