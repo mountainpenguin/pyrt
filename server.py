@@ -170,6 +170,8 @@ class ajax(web.RequestHandler):
         else:
             raise web.HTTPError(400, log_message="Ajax Error Invalid Method")
         
+    post = get
+    
 class options(web.RequestHandler):
     """Handler for options page view (/options)
             
