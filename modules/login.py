@@ -82,8 +82,10 @@ class Login:
         </html>
         """ % msg
         
-    def sendCookie(self):
+    def sendCookie(self, getSessID=False):
         randstring = "".join([random.choice(string.letters + string.digits) for i in range(20)])
+        if getSessID:
+            return randstring
         new_cookie = Cookie.SimpleCookie()
         new_cookie["sess_id"] = randstring
         #add sess_id to self.USER

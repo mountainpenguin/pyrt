@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 from modules import config, login                    #'real' modules
 from modules import indexPage, detailPage, ajaxPage  # pages
 from modules import optionsPage, rssPage             # pages
 
-import cherrypy
+import tornado.ioloop as ioloop
+import tornado.web as web
+import tornado.httpserver as httpserver
 import os
 
 c = config.Config()
@@ -13,124 +16,70 @@ c.loadconfig()
 global_config = {
     "server.socket_host" : str(c.get("host")),
     "server.socket_port" : c.get("port"),
-    "server.ssl_certificate" : c.get("ssl_certificate"),
-    "server.ssl_private_key" : c.get("ssl_private_key"),
-    "tools.encode.on" : True,
-    "tools.encode.encoding" : "utf-8",
-}
-app_config = {
-    "/css" : {
-        "tools.staticdir.on" : True,
-        "tools.staticdir.root" : os.getcwd(),
-        "tools.staticdir.dir" : "static/css/",
-    },
-    "/javascript" : {
-        "tools.staticdir.on" : True,
-        "tools.staticdir.root" : os.getcwd(),
-        "tools.staticdir.dir" : "static/javascript",
-    },
-    "/images" : {
-        "tools.staticdir.on" : True,
-        "tools.staticdir.root" : os.getcwd(),
-        "tools.staticdir.dir" : "static/images",
-    },
-    "/favicon.ico" : {
-        "tools.staticfile.on" : True,
-        "tools.staticfile.root" : os.getcwd(),
-        "tools.staticfile.filename" : "static/favicon.ico",
-    },
-    "/favicons" : {
-        "tools.staticdir.on" : True,
-        "tools.staticdir.root" : os.getcwd(),
-        "tools.staticdir.dir" : "static/favicons",
-    }
 }
 
-class mainHandler:
-    """
-        Defines the web server options
-    """
-    def __init__(self):
-        """
-            Initialisation function for mainHandler
-            
-            Initialises modules/:
-            self.L --> login.Login()
-            self.INDEX --> indexPage.Index()
-            self.AJAX --> ajaxPage.Ajax()
-            self.OPTIONS --> optionsPage.Options()
-            self.RSS_PAGE --> rssPage.Index()
-        """
-        self.L = login.Login(conf=c)
-        self.INDEX = indexPage.Index(conf=c)
-        self.AJAX = ajaxPage.Ajax(conf=c)
-        self.OPTIONS = optionsPage.Options(conf=c)
-        self.RSS_PAGE = rssPage.Index(conf=c)
-        self.GLOBALS = {
-            "login" : self.L,
-            "indexPage" : self.INDEX,
-            "ajaxPage" : self.AJAX,
-            "optionsPage" : self.OPTIONS,
-            "rssPage" : self.RSS_PAGE,
-            "config" : c,
-            #"config" : config.Config(),
-        }
-        
-    def index(self, password=None, view=None, sortby=None, reverse=None, **kwargs):
-        """
-            Default page handler (/)
-            
-            Returns indexPage.Index.index() is user is logged in
-        """
-        #check cookies
-        client_cookie = cherrypy.request.cookie
-        Lcheck = self.L.checkLogin(client_cookie)
-        if not Lcheck and not password:
-            return self.L.loginHTML()
-        elif not Lcheck and password:
-            #check password
-            Pcheck = self.L.checkPassword(password)
-            if Pcheck:
-                #set a cookie
-                cherrypy.response.cookie = self.L.sendCookie()
-            else:
-                return self.L.loginHTML("Incorrect Password")
-        
-        return self.INDEX.index(password, view, sortby, reverse)
-        
-    index.exposed = True
+class index(web.RequestHandler):
+    """Default page handler for /
     
-    def detail(self, view=None, torrent_id=None, password=None, **kwargs):
-        """
-            Detailed page view handler (/detail)
-            
-            Retrieves detailPage.Detail() passing the torrent_id argument.
-            This has attribute HTML, which is returned.
-        """
-        #check cookies
-        client_cookie = cherrypy.request.cookie
-        Lcheck = self.L.checkLogin(client_cookie)
-        if not Lcheck and not password:
-            return self.L.loginHTML()
-        elif not Lcheck and password:
-            #check password
-            Pcheck = self.L.checkPassword(password)
-            if Pcheck:
-                #set a cookie
-                cherrypy.response.cookie = self.L.sendCookie()
-            else:
-                return self.L.loginHTML("Incorrect Password")
+        Writes indexPage.Index.index() if user is logged in
+        else writes login page
+    """
+    def get(self):
+        password = self.get_argument("password", None)
+        view = self.get_argument("view", None)
+        sortby = self.get_argument("sortby", None)
+        reverse = self.get_argument("reverse", None)
         
-        Detail = detailPage.Detail(torrent_id, conf=self.GLOBALS["config"])
-        return Detail.HTML
-    detail.exposed = True
+        client_cookie = self.cookies
+        Lcheck = self.application._pyrtL.checkLogin(client_cookie)
+        if not Lcheck and not password:
+            self.write(self.application._pyrtL.loginHTML())
+            return
+        elif not Lcheck and password:
+            Pcheck = self.application._pyrtL.checkPassword(password)
+            if Pcheck:
+                #set cookie
+                self.set_cookie("sess_id", self.application._pyrtL.sendCookie(True))
+            else:
+                self.write(self.application._pyrtL.loginHTML("Incorrect Password"))
+                return
+            
+        self.write(self.application._pyrtINDEX.index(password, view, sortby, reverse))
+        
+    post = get
     
-    def ajax(self, request=None, torrent_id=None, filepath=None, torrent=None,
-             start=None, view=None, sortby=None, reverse=None, html=None,
-             torrentIDs=None, drop_down_ids=None, key=None, value=None,
-             keys=None, values=None):
-        """
-            Handler for ajax queries (/ajax)
+class detail(web.RequestHandler):
+    """Detailed page view handler (/detail)
+            
+        Retrieves detailPage.Detail() passing the torrent_id argument.
+        This has attribute HTML, which is written.
+    """
+    def get(self):
+        view = self.get_argument("view", None)
+        torrent_id = self.get_argument("torrend_id", None)
+        password = self.get_argument("password", None)
+        
+        client_cookie = self.cookies
+        Lcheck = self.application._pyrtL.checkLogin(client_cookie)
+        if not Lcheck and not password:
+            self.write(self.application._pyrtL.loginHTML())
+            return
+        elif not Lcheck and password:
+            Pcheck = self.application._pyrtL.checkPassword(password)
+            if Pcheck:
+                #set cookie
+                self.set_cookie("sess_id", self.application._pyrtL.sendCookie(True))
+            else:
+                self.write(self.application._pyrtL.loginHTML("Incorrect Password"))
+                return
+            
+        Detail = detailPage.Detail(torrent_id, conf=self.application._pyrtGLOBALS["config"])
+        self.write(Detail.HTML)
+        
+    post = get
+    
+class ajax(web.RequestHandler):
+    """Handler for ajax queries (/ajax)
             
             Hard-codes in multiple ajax requests and calls the
             equivalent ajaxPage.Ajax() function:
@@ -151,114 +100,187 @@ class mainHandler:
               stop_batch
               remove_batch
               delete_batch
-        """
-        #check cookies
-        client_cookie = cherrypy.request.cookie
-        Lcheck = self.L.checkLogin(client_cookie)
+    """
+    def get(self):
+        request = self.get_argument("request")
+        
+        client_cookie = self.cookies
+        Lcheck = self.application._pyrtL.checkLogin(client_cookie)
         if not Lcheck and request == "verify_conf_value":
-            return "Session Ended"
+            self.write("Session Ended")
+            return
         elif not Lcheck:
             return
-        #request=get_torrent_row&torrent_id=
+        
+        torrent_id = self.get_argument("torrent_id", None)
+        filepath = self.get_argument("filepath", None)
+        torrent = self.get_argument("torrent", None)
+        start = self.get_argument("start", None)
+        view = self.get_argument("view", None)
+        sortby = self.get_argument("sortby", None)
+        reverse = self.get_argument("reverse", None)
+        html = self.get_argument("html", None)
+        torrentIDs = self.get_argument("torrentIDs", None)
+        drop_down_ids = self.get_argument("drop_down_ids", None)
+        key = self.get_argument("key", None)
+        value = self.get_argument("value", None)
+        keys = self.get_argument("keys", None)
+        values = self.get_argument("values", None)
+        
         if request == "get_torrent_info" and torrent_id:
-            return self.AJAX.get_torrent_info(torrent_id, html)
+            return self.application._pyrtAJAX.get_torrent_info(torrent_id, html)
         elif request == "get_info_multi" and view:
-            return self.AJAX.get_info_multi(view, sortby, reverse, drop_down_ids)
+            return self.application._pyrtAJAX.get_info_multi(view, sortby, reverse, drop_down_ids)
         elif request == "get_torrent_row" and torrent_id:
-            return self.AJAX.get_torrent_row(torrent_id)
+            return self.application._pyrtAJAX.get_torrent_row(torrent_id)
         elif request == "pause_torrent" and torrent_id:
-            return self.AJAX.pause_torrent(torrent_id)
+            return self.application._pyrtAJAX.pause_torrent(torrent_id)
         elif request == "stop_torrent" and torrent_id:
-            return self.AJAX.stop_torrent(torrent_id)
+            return self.application._pyrtAJAX.stop_torrent(torrent_id)
         elif request == "start_torrent" and torrent_id:
-            return self.AJAX.start_torrent(torrent_id)
+            return self.application._pyrtAJAX.start_torrent(torrent_id)
         elif request == "remove_torrent" and torrent_id:
-            return self.AJAX.remove_torrent(torrent_id)
+            return self.application._pyrtAJAX.remove_torrent(torrent_id)
         elif request == "delete_torrent" and torrent_id:
-            return self.AJAX.delete_torrent(torrent_id)
+            return self.application._pyrtAJAX.delete_torrent(torrent_id)
         elif request == "hash_torrent" and torrent_id:
-            return self.AJAX.hash_torrent(torrent_id)
+            return self.application._pyrtAJAX.hash_torrent(torrent_id)
         elif request == "get_file" and torrent_id and filepath:
-            return self.AJAX.get_file(torrent_id, filepath)
+            return self.application._pyrtAJAX.get_file(torrent_id, filepath)
         elif request == "upload_torrent" and torrent is not None:
-            return self.AJAX.upload_torrent(torrent, start)
+            return self.application._pyrtAJAX.upload_torrent(torrent, start)
         elif request == "get_feeds":
-            return self.AJAX.get_feeds()
+            return self.application._pyrtAJAX.get_feeds()
         elif request == "start_batch" and torrentIDs is not None:
-            return self.AJAX.start_batch(torrentIDs)
+            return self.application._pyrtAJAX.start_batch(torrentIDs)
         elif request == "pause_batch" and torrentIDs is not None:
-            return self.AJAX.pause_batch(torrentIDs)
+            return self.application._pyrtAJAX.pause_batch(torrentIDs)
         elif request == "stop_batch" and torrentIDs is not None:
-            return self.AJAX.stop_batch(torrentIDs)
+            return self.application._pyrtAJAX.stop_batch(torrentIDs)
         elif request == "remove_batch" and torrentIDs is not None:
-            return self.AJAX.remove_batch(torrentIDs)
+            return self.application._pyrtAJAX.remove_batch(torrentIDs)
         elif request == "delete_batch" and torrentIDs is not None:
-            return self.AJAX.delete_batch(torrentIDs)
+            return self.application._pyrtAJAX.delete_batch(torrentIDs)
         elif request == "get_tracker_favicon" and torrent_id is not None:
-            return self.AJAX.get_tracker_favicon(torrent_id)
+            return self.application._pyrtAJAX.get_tracker_favicon(torrent_id)
         elif request == "verify_conf_value" and key is not None and value is not None:
-            return self.AJAX.verify_conf_value(key, value)
+            return self.application._pyrtAJAX.verify_conf_value(key, value)
         elif request == "set_config_multiple" and keys is not None and values is not None:
-            return self.AJAX.set_config_multiple(keys, values)
-            
+            return self.application._pyrtAJAX.set_config_multiple(keys, values)
         else:
-            raise cherrypy.HTTPError(message="Ajax Error Invalid Method")
-    ajax.exposed = True
-    
-    def options(self, test=False, password=None):
-        """
-            Handler for options page view (/options)
+            raise web.HTTPError(400, log_message="Ajax Error Invalid Method")
+        
+class options(web.RequestHandler):
+    """Handler for options page view (/options)
             
             *** Currently a work in progress ***
             Can only be viewed if "test" is passed as an argument.
-            If it is, returns optionsPage.Options.index()
-        """
-        client_cookie = cherrypy.request.cookie
-        Lcheck = self.L.checkLogin(client_cookie)
+            If it is, writes optionsPage.Options.index()
+    """
+    def get(self):
+        test = self.get_argument("test", False)
+        password = self.get_argument("password", None)
+    
+        client_cookie = self.cookies
+        Lcheck = self.application._pyrtL.checkLogin(client_cookie)
         if not Lcheck and not password:
-            return self.L.loginHTML()
+            self.write(self.application._pyrtL.loginHTML())
+            return
         elif not Lcheck and password:
-            #check password
-            Pcheck = self.L.checkPassword(password)
+            Pcheck = self.application._pyrtL.checkPassword(password)
             if Pcheck:
-                #set a cookie
-                cherrypy.response.cookie = self.L.sendCookie()
+                #set cookie
+                self.set_cookie("sess_id", self.application._pyrtL.sendCookie(True))
             else:
-                return self.L.loginHTML("Incorrect Password")
-                
+                self.write(self.application._pyrtL.loginHTML("Incorrect Password"))
+                return
+            
         if not test:
             try:
-                link = cherrypy.request.headers["Referer"]
+                link = self.request.headers["Referer"]
             except KeyError:
                 link = "/index"
-            return """
-                <html>
-                    <head>
-                        <title>Options</title>
-                        <link rel="stylesheet" type="text/css" href="/css/main.css">
-                    </head>
-                    <body>
-                        <div style="background-color : white; padding : 2em;">
-                            <div>Nothing here yet</div>
-                            Go back to <a style="color:black;" href="%(link)s">%(link)s</a>
-                        </div>
-                    </body>
-                </html>
-            """ % {"link" : link}
+            self.write("""
+                        <html>
+                            <head>
+                                <title>Options</title>
+                                <link rel="stylesheet" type="text/css" href="/css/main.css">
+                            </head>
+                            <body>
+                                <div style="background-color : white; padding : 2em;">
+                                    <div>Nothing here yet</div>
+                                    Go back to <a style="color:black;" href="%(link)s">%(link)s</a>
+                                </div>
+                            </body>
+                        </html>
+                       """ % {"link" : link})
+            return
         else:
-            return self.OPTIONS.index()
-    options.exposed = True
+            self.write(self.application._pyrtOPTIONS.index())
 
-    def RSS(self):
-        return self.RSS_PAGE.index()
-    RSS.exposed = True
+    post = get
     
-    def test(self):
-        return repr(self.GLOBALS["config"].get("port"))
-    #test.exposed = True
+class RSS(web.RequestHandler):
+    def get(self):
+        password = self.get_argument("password", None)
+    
+        client_cookie = self.cookies
+        Lcheck = self.application._pyrtL.checkLogin(client_cookie)
+        if not Lcheck and not password:
+            self.write(self.application._pyrtL.loginHTML())
+            return
+        elif not Lcheck and password:
+            Pcheck = self.application._pyrtL.checkPassword(password)
+            if Pcheck:
+                #set cookie
+                self.set_cookie("sess_id", self.application._pyrtL.sendCookie(True))
+            else:
+                self.write(self.application._pyrtL.loginHTML("Incorrect Password"))
+                return
+            
+        self.write(self.application._pyrtRSS_PAGE.index())
         
+class test(web.RequestHandler):
+    def get(self):
+        self.write(repr(self.application._pyrtGLOBALS["config"].get("port")))
+        return
+
 if __name__ == "__main__":
     if os.path.exists(".user.pickle"):
         os.remove(".user.pickle")
-    cherrypy.config.update(global_config)
-    cherrypy.quickstart(mainHandler(), config=app_config)
+    print(os.path.join(os.getcwd(), "static/favicon.ico"))
+    print(os.path.exists(os.path.join(os.getcwd(), "static/favicon.ico")))
+    settings = {
+        "static_path" : os.path.join(os.getcwd(), "static")
+    }
+    application = web.Application([
+        (r"/css/(.*)", web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/css/")}),
+        (r"/javascript/(.*)", web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/javascript/")}),
+        (r"/images/(.*)", web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/images/") }),
+        (r"/favicons/(.*)", web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/favicons/") }),
+        (r"/", index),
+        (r"/index", index),
+        (r"/detail", detail),
+        (r"/ajax", ajax),
+        (r"/options", options),
+        (r"/RSS", RSS),
+    ], **settings)
+    
+    application._pyrtL = login.Login(conf=c)
+    application._pyrtINDEX = indexPage.Index(conf=c)
+    application._pyrtAJAX = ajaxPage.Ajax(conf=c)
+    application._pyrtOPTIONS = optionsPage.Options(conf=c)
+    application._pyrtRSS_PAGE = rssPage.Index(conf=c)
+    application._pyrtGLOBALS = {
+        "login" : application._pyrtL,
+        "indexPage" : application._pyrtINDEX,
+        "ajaxPage" : application._pyrtAJAX,
+        "optionsPage" : application._pyrtOPTIONS,
+        "rssPage" : application._pyrtRSS_PAGE,
+        "config" : c,
+    }
+    
+    http_server = httpserver.HTTPServer(application)
+    http_server.listen(global_config["server.socket_port"], global_config["server.socket_host"])
+    
+    ioloop.IOLoop.instance().start()
