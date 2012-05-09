@@ -336,7 +336,7 @@ class Ajax:
     
     def upload_torrent(self, torrent=None, start=None):
         fileName = unicode(torrent["filename"])
-        inFile = torrent.file.read()
+        inFile = torrent["body"]
         try:
             decoded = bencode.bdecode(inFile)
         except:

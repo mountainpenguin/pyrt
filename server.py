@@ -149,7 +149,7 @@ class ajax(web.RequestHandler):
             self.write(self.application._pyrtAJAX.get_file(torrent_id, filepath))
         elif request == "upload_torrent":
             try:
-                torrent = self.request.files["torrent"]
+                torrent = self.request.files["torrent"][0]
                 self.write(self.application._pyrtAJAX.upload_torrent(torrent, start))
             except:
                 raise web.HTTPError(400, log_message="no torrent specified for request upload_torrent")
