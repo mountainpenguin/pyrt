@@ -102,6 +102,9 @@ class ajax(web.RequestHandler):
               delete_batch
     """
     def get(self):
+        
+        print(self.request.arguments)
+        
         request = self.get_argument("request")
         
         client_cookie = self.cookies
@@ -115,7 +118,7 @@ class ajax(web.RequestHandler):
         torrent_id = self.get_argument("torrent_id", None)
         filepath = self.get_argument("filepath", None)
         torrent = self.get_argument("torrent", None)
-        start = self.get_argument("add_torrent_start", None)
+        start = self.get_argument("start", None)
         view = self.get_argument("view", None)
         sortby = self.get_argument("sortby", None)
         reverse = self.get_argument("reverse", None)
@@ -147,8 +150,12 @@ class ajax(web.RequestHandler):
             self.write(self.application._pyrtAJAX.hash_torrent(torrent_id))
         elif request == "get_file" and torrent_id and filepath:
             self.write(self.application._pyrtAJAX.get_file(torrent_id, filepath))
-        elif request == "upload_torrent" and torrent is not None:
-            self.write(self.application._pyrtAJAX.upload_torrent(torrent, start))
+        elif request == "upload_torrent":
+            try:
+                torrent = self.request.files["torrent"]
+                self.write(self.application._pyrtAJAX.upload_torrent(torrent, start))
+            except:
+                raise web.HTTPError(400, log_message="no torrent specified for request upload_torrent")
         elif request == "get_feeds":
             self.write(self.application._pyrtAJAX.get_feeds())
         elif request == "start_batch" and torrentIDs is not None:
@@ -251,7 +258,8 @@ if __name__ == "__main__":
     if os.path.exists(".user.pickle"):
         os.remove(".user.pickle")
     settings = {
-        "static_path" : os.path.join(os.getcwd(), "static")
+        "static_path" : os.path.join(os.getcwd(), "static"),
+        
     }
     application = web.Application([
         (r"/css/(.*)", web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/css/")}),
