@@ -115,7 +115,7 @@ class ajax(web.RequestHandler):
         torrent_id = self.get_argument("torrent_id", None)
         filepath = self.get_argument("filepath", None)
         torrent = self.get_argument("torrent", None)
-        start = self.get_argument("start", None)
+        start = self.get_argument("add_torrent_start", None)
         view = self.get_argument("view", None)
         sortby = self.get_argument("sortby", None)
         reverse = self.get_argument("reverse", None)
