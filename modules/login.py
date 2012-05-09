@@ -84,12 +84,12 @@ class Login:
         
     def sendCookie(self, getSessID=False):
         randstring = "".join([random.choice(string.letters + string.digits) for i in range(20)])
+        #add sess_id to self.USER
+        self.USER.sess_id = randstring
+        #self.USER.testing += [randstring]
+        self._flush()  
         if getSessID:
             return randstring
         new_cookie = Cookie.SimpleCookie()
         new_cookie["sess_id"] = randstring
-        #add sess_id to self.USER
-        self.USER.sess_id = randstring
-        #self.USER.testing += [randstring]
-        self._flush()
         return new_cookie

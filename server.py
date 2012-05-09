@@ -250,8 +250,6 @@ class test(web.RequestHandler):
 if __name__ == "__main__":
     if os.path.exists(".user.pickle"):
         os.remove(".user.pickle")
-    print(os.path.join(os.getcwd(), "static/favicon.ico"))
-    print(os.path.exists(os.path.join(os.getcwd(), "static/favicon.ico")))
     settings = {
         "static_path" : os.path.join(os.getcwd(), "static")
     }
