@@ -102,9 +102,6 @@ class ajax(web.RequestHandler):
               delete_batch
     """
     def get(self):
-        
-        print(self.request.arguments)
-        
         request = self.get_argument("request")
         
         client_cookie = self.cookies
