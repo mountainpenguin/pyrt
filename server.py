@@ -8,7 +8,9 @@ from modules import optionsPage, rssPage             # pages
 import tornado.ioloop as ioloop
 import tornado.web as web
 import tornado.httpserver as httpserver
+import tornado.websocket as websocket
 import os
+import urlparse
 
 c = config.Config()
 c.loadconfig()
@@ -251,6 +253,27 @@ class test(web.RequestHandler):
         self.write(repr(self.application._pyrtGLOBALS["config"].get("port")))
         return
 
+class webSocket(websocket.WebSocketHandler):
+    def open(self):
+        print("WebSocket opened")
+
+    def on_message(self, message):
+        print("Received message: " + message)
+        #parse out get query
+        q = urlparse.parse_qs(message)
+        print("Parsed message: " + repr(q))
+        request = q.get("request", [None])[0]
+        view = q.get("view", [None])[0]
+        sortby = q.get("sortby", [None])[0]
+        reverse = q.get("reverse", [None])[0]
+        drop_down_ids = q.get("drop_down_ids", [None])[0]
+        if request == "get_info_multi" and view:
+            self.write_message(self.application._pyrtAJAX.get_info_multi(view, sortby, reverse, drop_down_ids))
+
+    def on_close(self):
+        print("WebSocket closed")
+
+
 if __name__ == "__main__":
     if os.path.exists(".user.pickle"):
         os.remove(".user.pickle")
@@ -269,6 +292,7 @@ if __name__ == "__main__":
         (r"/ajax", ajax),
         (r"/options", options),
         (r"/RSS", RSS),
+        (r"/websocket", webSocket),
     ], **settings)
     
     application._pyrtL = login.Login(conf=c)

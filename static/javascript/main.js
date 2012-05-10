@@ -4,11 +4,30 @@ var statusArrayInactive = new Array("Stopped","Paused");
 var statusArrayActive = new Array("Seeding (idle)", "Seeding", "Leeching (idle)", "Leeching", "Hashing");
 var DELETING = new Array();
 var DROP_OPEN = new Array();
+var ws = null;
 
 $(document).ready(function () {
      setTimeout(function () {
           refresh_content("yes");
      }, 5000);
+
+     ws = new window.WebSocket("ws://mpengu.in:8080/websocket");
+     ws.onmessage = function(e) {
+        console.log("Received message back", e.data);
+     }
+     ws.onclose = function(e) {
+        console.log("Closed webSocket");
+     }
+     ws.onopen = function(e) {
+        console.log("Opened webSocket");
+     }
+     ws.onerror = function(e) {
+        console.log("WebSocket error", ws, e);
+     }
+    $("#global_stats").click(function() {
+        ws.send("Testing message")
+        console.log("Send message:", "Testing message", ws)
+     });
      $("#add-torrent-button").click(function(){
           $("#add_torrent").dialog("open");
      })
@@ -261,9 +280,9 @@ function loadRClickMenus() {
 function refresh_content(repeat) {
     // get all torrent ids on page
     if (DROP_OPEN.length > 0) {
-     req = "/ajax?request=get_info_multi&view=" + $("#this_view").html() + "&drop_down_ids=" + DROP_OPEN.join(",") 
+     req = "request=get_info_multi&view=" + $("#this_view").html() + "&drop_down_ids=" + DROP_OPEN.join(",") 
     } else {
-     req = "/ajax?request=get_info_multi&view=" + $("#this_view").html()
+     req = "request=get_info_multi&view=" + $("#this_view").html()
     }
     
     if (!($("#this_sort").html() === "none")) {
@@ -272,7 +291,11 @@ function refresh_content(repeat) {
     if (!($("#this_reverse").html() === "none")) {
         req += "&reverse=" + $("#this_reverse").html();
     }
-    $.getJSON(req, function (data) {
+    
+/*    $.getJSON(req, function (data) { */
+    ws.onmessage = function (e) {
+        data = JSON.parse(e.data)
+        console.log(data)
           system = JSON.parse(data.system);
           $("#global_uprate").html(system.uprate + "/s");
           $("#global_uptot").html(system.uptot);
@@ -388,7 +411,8 @@ function refresh_content(repeat) {
                 refresh_content("yes");
             }, 5000);
         }
-    });
+    };
+    ws.send(req);
 }
 
 function remove_torrentrow(torrent_id) {
