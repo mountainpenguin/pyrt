@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import cgi
 import rtorrent
 try:
@@ -26,13 +27,62 @@ import traceback
 
 from modules.Cheetah.Template import Template
 
+class Handle(object):
+    def __init__(self, handler, need_args=[], opt_args=[]):
+        self.run = handler
+        self.need_args = need_args
+        self.opt_args = opt_args
+        
 class Ajax:
     def __init__(self, conf=config.Config()):
         self.Config = conf
         self.RT = rtorrent.rtorrent(self.Config.get("rtorrent_socket"))
         self.Handler = torrentHandler.Handler()
         self.Login = login.Login(conf=self.Config)
+        self.public_commands = {
+            "get_torrent_info" : Handle(self.get_torrent_info, ["torrent_id"], ["html"]),
+            "get_info_multi" : Handle(self.get_info_multi, ["view"], ["sortby", "reverse", "drop_down_ids"]),
+            "get_torrent_row" : Handle(self.get_torrent_row, ["torrent_id"]),
+            "pause_torrent" : Handle(self.pause_torrent, ["torrent_id"]),
+            "stop_torrent" : Handle(self.stop_torrent, ["torrent_id"]),
+            "start_torrent" : Handle(self.start_torrent, ["torrent_id"]),
+            "remove_torrent" : Handle(self.remove_torrent, ["torrent_id"]),
+            "delete_torrent" : Handle(self.delete_torrent, ["torrent_id"]),
+            "hash_torrent" : Handle(self.hash_torrent, ["torrent_id"]),
+            "get_file" : Handle(self.get_file, ["torrent_id", "filepath"]),
+            "upload_torrent" : Handle(self.upload_torrent, [], ["torrent", "start"]),
+            "get_feeds" : Handle(self.get_feeds),
+            "start_batch" : Handle(self.start_batch, ["torrentIDs"]),
+            "pause_batch" : Handle(self.pause_batch, ["torrentIDs"]),
+            "stop_batch" : Handle(self.stop_batch, ["torrentIDs"]),
+            "remove_batch" : Handle(self.remove_batch, ["torrentIDs"]),
+            "delete_batch" : Handle(self.delete_batch, ["torrentIDs"]),
+            "get_tracker_favicon" : Handle(self.get_tracker_favicon, ["torrent_id"]),
+            "verify_conf_value" : Handle(self.verify_conf_value, ["key", "value"]),
+            "set_config_multiple" : Handle(self.set_config_multiple, ["keys","values"]),
+        }
         
+    def has_command(self, commandstr):
+        if commandstr.lower() in self.public_commands:
+            return True
+        else:
+            return False
+        
+    def validate_command(self, commandstr, parsed_queries):
+        req_args = self.public_commands[commandstr.lower()].need_args
+        opt_args = self.public_commands[commandstr.lower()].opt_args
+        for r_a in req_args:
+            if r_a not in parsed_queries or not parsed_queries[r_a]:
+                return False
+        return True
+            
+    def handle(self, commandstr, qs):
+        req_args = self.public_commands[commandstr.lower()].need_args
+        opt_args = self.public_commands[commandstr.lower()].opt_args
+        r_args = [qs.get(x, [None])[0] for x in req_args]
+        o_args = dict([(x, qs.get(x, [None])[0]) for x in opt_args])
+        return self.public_commands[commandstr.lower()].run(*r_args, **o_args)
+    
     def mbtob(self, value):
         """
             Converts MiB to B
@@ -341,7 +391,6 @@ class Ajax:
             decoded = bencode.bdecode(inFile)
         except:
             #Invalid torrent
-            print fileName
             return "ERROR/Invalid torrent file"
         else:
             #save file in /torrents
@@ -355,7 +404,7 @@ class Ajax:
                 self.RT.load_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
             return self.Handler.HTMLredirect("/")
             
-    def get_info_multi(self, view, sortby, reverse, drop_down_ids):
+    def get_info_multi(self, view, sortby=None, reverse=None, drop_down_ids=None):
         drop_downs = {}
         if drop_down_ids:
             for t_id in drop_down_ids.split(","):
@@ -422,8 +471,8 @@ class Ajax:
         for torrent_id in torrentList:
             self.delete_torrent(torrent_id)
             
-    def get_tracker_favicon(self, torrentID):
-        tracker_urls = [urlparse.urlparse(x.url) for x in self.RT.getTrackers(torrentID)]
+    def get_tracker_favicon(self, torrent_id):
+        tracker_urls = [urlparse.urlparse(x.url) for x in self.RT.getTrackers(torrent_id)]
         netloc = re.split(":\d+", tracker_urls[0].netloc)[0]
         scheme = tracker_urls[0].scheme
         try:

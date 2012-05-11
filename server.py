@@ -83,28 +83,13 @@ class detail(web.RequestHandler):
 class ajax(web.RequestHandler):
     """Handler for ajax queries (/ajax)
             
-            Hard-codes in multiple ajax requests and calls the
-            equivalent ajaxPage.Ajax() function:
-              get_torrent_info
-              get_info_multi
-              get_torrent_row
-              pause_torrent
-              stop_torrent
-              start_torrent
-              remove_torrent
-              delete_torrent
-              hash_torrent
-              get_file
-              upload_torrent
-              get_feeds
-              start_batch
-              pause_batch
-              stop_batch
-              remove_batch
-              delete_batch
     """
     def get(self):
-        request = self.get_argument("request")
+        qs = self.request.arguments
+        request = qs.get("request", [None])[0]
+        print(">>> got ajax request %s" % request)
+        if not request:
+            raise web.HTTPError(400, log_message="Error, no request specified")
         
         client_cookie = self.cookies
         Lcheck = self.application._pyrtL.checkLogin(client_cookie)
@@ -114,67 +99,19 @@ class ajax(web.RequestHandler):
         elif not Lcheck:
             return
         
-        torrent_id = self.get_argument("torrent_id", None)
-        filepath = self.get_argument("filepath", None)
-        torrent = self.get_argument("torrent", None)
-        start = self.get_argument("start", None)
-        view = self.get_argument("view", None)
-        sortby = self.get_argument("sortby", None)
-        reverse = self.get_argument("reverse", None)
-        html = self.get_argument("html", None)
-        torrentIDs = self.get_argument("torrentIDs", None)
-        drop_down_ids = self.get_argument("drop_down_ids", None)
-        key = self.get_argument("key", None)
-        value = self.get_argument("value", None)
-        keys = self.get_argument("keys", None)
-        values = self.get_argument("values", None)
-        
-        if request == "get_torrent_info" and torrent_id:
-            self.write(self.application._pyrtAJAX.get_torrent_info(torrent_id, html))
-        elif request == "get_info_multi" and view:
-            self.write(self.application._pyrtAJAX.get_info_multi(view, sortby, reverse, drop_down_ids))
-        elif request == "get_torrent_row" and torrent_id:
-            self.write(self.application._pyrtAJAX.get_torrent_row(torrent_id))
-        elif request == "pause_torrent" and torrent_id:
-            self.write(self.application._pyrtAJAX.pause_torrent(torrent_id))
-        elif request == "stop_torrent" and torrent_id:
-            self.write(self.application._pyrtAJAX.stop_torrent(torrent_id))
-        elif request == "start_torrent" and torrent_id:
-            self.write(self.application._pyrtAJAX.start_torrent(torrent_id))
-        elif request == "remove_torrent" and torrent_id:
-            self.write(self.application._pyrtAJAX.remove_torrent(torrent_id))
-        elif request == "delete_torrent" and torrent_id:
-            self.write(self.application._pyrtAJAX.delete_torrent(torrent_id))
-        elif request == "hash_torrent" and torrent_id:
-            self.write(self.application._pyrtAJAX.hash_torrent(torrent_id))
-        elif request == "get_file" and torrent_id and filepath:
-            self.write(self.application._pyrtAJAX.get_file(torrent_id, filepath))
-        elif request == "upload_torrent":
+        if not self.application._pyrtAJAX.has_command(request):
+            raise web.HTTPError(400, log_message="Error Invalid Method")
+        if not self.application._pyrtAJAX.validate_command(request, qs):
+            raise web.HTTPError(400, log_message="Error need more args")
+        if request == "upload_torrent":
             try:
-                torrent = self.request.files["torrent"][0]
-                self.write(self.application._pyrtAJAX.upload_torrent(torrent, start))
+                qs["torrent"] = self.request.files["torrent"]
             except:
-                raise web.HTTPError(400, log_message="no torrent specified for request upload_torrent")
-        elif request == "get_feeds":
-            self.write(self.application._pyrtAJAX.get_feeds())
-        elif request == "start_batch" and torrentIDs is not None:
-            self.write(self.application._pyrtAJAX.start_batch(torrentIDs))
-        elif request == "pause_batch" and torrentIDs is not None:
-            self.write(self.application._pyrtAJAX.pause_batch(torrentIDs))
-        elif request == "stop_batch" and torrentIDs is not None:
-            self.write(self.application._pyrtAJAX.stop_batch(torrentIDs))
-        elif request == "remove_batch" and torrentIDs is not None:
-            self.write(self.application._pyrtAJAX.remove_batch(torrentIDs))
-        elif request == "delete_batch" and torrentIDs is not None:
-            self.write(self.application._pyrtAJAX.delete_batch(torrentIDs))
-        elif request == "get_tracker_favicon" and torrent_id is not None:
-            self.write(self.application._pyrtAJAX.get_tracker_favicon(torrent_id))
-        elif request == "verify_conf_value" and key is not None and value is not None:
-            self.write(self.application._pyrtAJAX.verify_conf_value(key, value))
-        elif request == "set_config_multiple" and keys is not None and values is not None:
-            self.write(self.application._pyrtAJAX.set_config_multiple(keys, values))
-        else:
-            raise web.HTTPError(400, log_message="Ajax Error Invalid Method")
+                raise web.HTTPError(400, log_message="No torrent specified for upload")
+                
+        resp = self.application._pyrtAJAX.handle(request, qs)
+        if resp:
+            self.write(resp)
         
     post = get
     
@@ -248,31 +185,57 @@ class RSS(web.RequestHandler):
             
         self.write(self.application._pyrtRSS_PAGE.index())
         
-class test(web.RequestHandler):
-    def get(self):
-        self.write(repr(self.application._pyrtGLOBALS["config"].get("port")))
-        return
-
 class webSocket(websocket.WebSocketHandler):
     def open(self):
-        print("WebSocket opened")
+        client_cookie = self.cookies
+        Lcheck = self.application._pyrtL.checkLogin(client_cookie)
+        if not Lcheck:
+            print(">>> webSocket denied?")
+            return
+        print(">>> webSocket opened")
+        
 
     def on_message(self, message):
-        print("Received message: " + message)
         #parse out get query
-        q = urlparse.parse_qs(message)
-        print("Parsed message: " + repr(q))
-        request = q.get("request", [None])[0]
-        view = q.get("view", [None])[0]
-        sortby = q.get("sortby", [None])[0]
-        reverse = q.get("reverse", [None])[0]
-        drop_down_ids = q.get("drop_down_ids", [None])[0]
-        if request == "get_info_multi" and view:
-            self.write_message(self.application._pyrtAJAX.get_info_multi(view, sortby, reverse, drop_down_ids))
+        #q = urlparse.parse_qs(message)
+        #request = q.get("request", [None])[0]
+        #view = q.get("view", [None])[0]
+        #sortby = q.get("sortby", [None])[0]
+        #reverse = q.get("reverse", [None])[0]
+        #drop_down_ids = q.get("drop_down_ids", [None])[0]
+        #if request == "get_info_multi" and view:
+        #    self.write_message(self.application._pyrtAJAX.get_info_multi(view, sortby, reverse, drop_down_ids))
 
+        qs = urlparse.parse_qs(message)
+        request = qs.get("request", [None])[0]
+        print(">>> got webSocket request %s" % request)
+        if not request:
+            self.write_message("ERROR/No request specified")
+            return
+        
+        client_cookie = self.cookies
+        Lcheck = self.application._pyrtL.checkLogin(client_cookie)
+        if not Lcheck:
+            return
+        
+        if not self.application._pyrtAJAX.has_command(request):
+            self.write_message("ERROR/No such command")
+            return
+        if not self.application._pyrtAJAX.validate_command(request, qs):
+            self.write_message("ERROR/need more args")
+            return
+        if request == "upload_torrent":
+            self.write_message("ERROR/you should use POST for file uploads")
+            return
+                
+        resp = self.application._pyrtAJAX.handle(request, qs)
+        if resp:
+            self.write_message(resp)
+        else:
+            self.write_message("ERROR/ajax function returned nothing")
+            
     def on_close(self):
-        print("WebSocket closed")
-
+        print("webSocket closed")
 
 if __name__ == "__main__":
     if os.path.exists(".user.pickle"):

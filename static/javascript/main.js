@@ -11,23 +11,18 @@ $(document).ready(function () {
           refresh_content("yes");
      }, 5000);
 
-     ws = new window.WebSocket("ws://mpengu.in:8080/websocket");
+     ws = new window.WebSocket("ws://" + window.document.location.host
+ + "/websocket");
      ws.onmessage = function(e) {
-        console.log("Received message back", e.data);
      }
      ws.onclose = function(e) {
-        console.log("Closed webSocket");
      }
      ws.onopen = function(e) {
-        console.log("Opened webSocket");
      }
      ws.onerror = function(e) {
         console.log("WebSocket error", ws, e);
      }
-    $("#global_stats").click(function() {
-        ws.send("Testing message")
-        console.log("Send message:", "Testing message", ws)
-     });
+     
      $("#add-torrent-button").click(function(){
           $("#add_torrent").dialog("open");
      })
@@ -96,14 +91,12 @@ $(document).ready(function () {
                SELECTED = new Array();
                destroyBatchActionBox();
           }
-          $.post(
-               "/ajax",
-               {
-                    "request" : action + "_batch",
-                    "torrentIDs" : torrentIDs.join(",")
-               }
-          );
+          sendme = "request=" + action + "_batch";
+          sendme = sendme + "&torrentIDs=" + torrentIDs.join(",");
+          ws.onmessage = function (e) { };
+          ws.send(sendme)
      })
+     
      $("#batch-deselect").live("click", function (e) {
           for (i=0; i<SELECTED.length; i++) {
                torrent = $("#" + SELECTED[i]);
@@ -277,6 +270,127 @@ function loadRClickMenus() {
          }
      );
 }
+
+function parse_content(e, repeat) {
+     ws.onmessage = function () {};
+     data = JSON.parse(e.data);
+       system = JSON.parse(data.system);
+       $("#global_uprate").html(system.uprate + "/s");
+       $("#global_uptot").html(system.uptot);
+       $("#global_diskusage").html(system.diskused + " / " + system.disktotal);
+       $("#global_downrate").html(system.downrate + "/s");
+       $("#global_downtot").html(system.downtot);
+       $("#global_memusage").html(system.memused + " / " + system.memtotal);
+       $("#global_load1").html(system.load1);
+       $("#global_load5").html(system.load5);
+       $("#global_load15").html(system.load15);
+       $("#global_uptime").html(system.uptime);
+       $("#global_cpuusage").html(system.cpuusage + "%");
+       
+     // data has structure:
+         //{
+         //    "torrents" : {},
+         //    "system" : system_html,
+         //    "torrent_index" : [id, id, id] // this is in the order that they are arranged in the page (or should be if this has changed)
+         //}
+     torrent_list = $("#torrent_list").find($("tr.torrent-div"))
+     
+     cur_t_ids = new Array();
+     
+     if ((DROP_OPEN.length > 0) && (data.drop_down_keys.length > 0)) {
+         for (i=0; i<DROP_OPEN.length; i++) {
+            tid = DROP_OPEN[i];
+            if (data.drop_down_keys.indexOf(tid) !== -1) {
+                 htmldata = data.drop_downs[tid];
+                 cur_pane = 1;
+                 $("#drop_down_container_" + tid).find(".slide").each(function(i, elem) {
+                      if ($(elem).find("h2.selected").length !== 0) {
+                           cur_pane = i + 1;
+                      }
+                 });
+                 htmldata = accordionise($(htmldata), cur_pane);
+                 htmldata = filetreeise($(htmldata), tid);
+                 $("#newrow_torrent_id_" + tid + " > td").html(htmldata);
+            }
+         }
+     }
+     
+     for (i=0; i<torrent_list.length; i++) {
+         var torrent_id = $(torrent_list[i]).attr("id").split("torrent_id_")[1];
+         cur_t_ids.push(torrent_id);
+         if (data.torrent_index.indexOf(torrent_id) == -1) {
+            if ($("#torrent_id_" + torrent_id).hasClass("old-torrent-row")) {} else {
+                 if (DEL_INDEX = DELETING.indexOf(torrent_id) != -1) {
+                      DELETING.splice(DEL_INDEX, 1);
+                 }
+                 remove_torrentrow(torrent_id)
+            }
+         } else {
+             // refresh torrent data
+             torrent_data = data.torrents[torrent_id];
+             
+             if (torrent_data.completed) {
+                 $("#t_name_" + torrent_id).removeClass("progress-gradient")
+             } else {
+                 $("#t_name_" + torrent_id).addClass("progress-gradient").css({
+                      "background-size" : torrent_data.percentage + "% 100%, 100% 100%",
+                 })
+             }
+            
+             $("#t_ratio_" + torrent_id).html(torrent_data.ratio).attr("title",torrent_data.up_total + " up / " + torrent_data.down_total + " down");
+             $("#t_uprate_" + torrent_id).html(torrent_data.uprate + "/s");
+             $("#t_downrate_" + torrent_id).html(torrent_data.downrate + "/s");
+             var oldstatuselem = $("#t_status_" + torrent_id);
+             var oldstatus = oldstatuselem.html()
+             if (oldstatus != torrent_data.status) {
+                 oldstatuselem.html(torrent_data.status);
+                 // update buttons
+                 if ( ( $.inArray(oldstatus, statusArrayActive) != -1 ) && ( $.inArray(torrent_data.status, statusArrayInactive) != -1 ) ) {
+                      $("#t_controls_" + torrent_id + " > .control_pause").replaceWith(
+                           $("<span />").addClass("control_start control_button")
+                                        .attr("title", "Start Torrent")
+                                        .append(
+                                           $("<img />").addClass("control_image control_start_me")
+                                            .attr("alt", "Start").attr("src","../images/start.png")
+                                        )
+                      );
+                      $("#torrent_id_" + torrent_id).toggleClass("rcpause rcstart");
+                      loadRClickMenus();
+                 
+                 } else if ( ( $.inArray(oldstatus, statusArrayInactive) != -1 ) && ( $.inArray(torrent_data.status, statusArrayActive) != -1 ) ) {
+                      $("#t_controls_" + torrent_id + " > .control_start").replaceWith(
+                           $("<span />").addClass("control_pause control_button")
+                                        .attr("title", "Pause Torrent")
+                                        .append(
+                                           $("<img />").addClass("control_image control_pause_me")
+                                            .attr("alt", "Pause").attr("src","../images/pause.png")
+                                        )
+                      )
+                      $("#torrent_id_" + torrent_id).toggleClass("rcpause rcstart");
+                 }
+             }
+             
+         }
+     }
+       
+     // check for new torrents and add them
+     for (i=0; i<data.torrent_index.length; i++) {
+         torrent_id = data.torrent_index[i];
+         if ($.inArray(torrent_id, cur_t_ids) === -1) {
+             add_torrentrow(torrent_id, data.torrents[torrent_id], i)
+         }
+     }
+     
+     stripeTable();
+     loadRClickMenus();
+
+     if (repeat === "yes") {
+         setTimeout(function () {
+             refresh_content("yes");
+         }, 5000);
+     }
+}
+
 function refresh_content(repeat) {
     // get all torrent ids on page
     if (DROP_OPEN.length > 0) {
@@ -293,125 +407,7 @@ function refresh_content(repeat) {
     }
     
 /*    $.getJSON(req, function (data) { */
-    ws.onmessage = function (e) {
-        data = JSON.parse(e.data)
-        console.log(data)
-          system = JSON.parse(data.system);
-          $("#global_uprate").html(system.uprate + "/s");
-          $("#global_uptot").html(system.uptot);
-          $("#global_diskusage").html(system.diskused + " / " + system.disktotal);
-          $("#global_downrate").html(system.downrate + "/s");
-          $("#global_downtot").html(system.downtot);
-          $("#global_memusage").html(system.memused + " / " + system.memtotal);
-          $("#global_load1").html(system.load1);
-          $("#global_load5").html(system.load5);
-          $("#global_load15").html(system.load15);
-          $("#global_uptime").html(system.uptime);
-          $("#global_cpuusage").html(system.cpuusage + "%");
-          
-        // data has structure:
-            //{
-            //    "torrents" : {},
-            //    "system" : system_html,
-            //    "torrent_index" : [id, id, id] // this is in the order that they are arranged in the page (or should be if this has changed)
-            //}
-        torrent_list = $("#torrent_list").find($("tr.torrent-div"))
-        
-        cur_t_ids = new Array();
-        
-        if ((DROP_OPEN.length > 0) && (data.drop_down_keys.length > 0)) {
-            for (i=0; i<DROP_OPEN.length; i++) {
-               tid = DROP_OPEN[i];
-               if (data.drop_down_keys.indexOf(tid) !== -1) {
-                    htmldata = data.drop_downs[tid];
-                    cur_pane = 1;
-                    $("#drop_down_container_" + tid).find(".slide").each(function(i, elem) {
-                         if ($(elem).find("h2.selected").length !== 0) {
-                              cur_pane = i + 1;
-                         }
-                    });
-                    htmldata = accordionise($(htmldata), cur_pane);
-                    htmldata = filetreeise($(htmldata), tid);
-                    $("#newrow_torrent_id_" + tid + " > td").html(htmldata);
-               }
-            }
-        }
-        
-        for (i=0; i<torrent_list.length; i++) {
-            var torrent_id = $(torrent_list[i]).attr("id").split("torrent_id_")[1];
-            cur_t_ids.push(torrent_id);
-            if (data.torrent_index.indexOf(torrent_id) == -1) {
-               if ($("#torrent_id_" + torrent_id).hasClass("old-torrent-row")) {} else {
-                    if (DEL_INDEX = DELETING.indexOf(torrent_id) != -1) {
-                         DELETING.splice(DEL_INDEX, 1);
-                    }
-                    remove_torrentrow(torrent_id)
-               }
-            } else {
-                // refresh torrent data
-                torrent_data = data.torrents[torrent_id];
-                
-                if (torrent_data.completed) {
-                    $("#t_name_" + torrent_id).removeClass("progress-gradient")
-                } else {
-                    $("#t_name_" + torrent_id).addClass("progress-gradient").css({
-                         "background-size" : torrent_data.percentage + "% 100%, 100% 100%",
-                    })
-                }
-               
-                $("#t_ratio_" + torrent_id).html(torrent_data.ratio).attr("title",torrent_data.up_total + " up / " + torrent_data.down_total + " down");
-                $("#t_uprate_" + torrent_id).html(torrent_data.uprate + "/s");
-                $("#t_downrate_" + torrent_id).html(torrent_data.downrate + "/s");
-                var oldstatuselem = $("#t_status_" + torrent_id);
-                var oldstatus = oldstatuselem.html()
-                if (oldstatus != torrent_data.status) {
-                    oldstatuselem.html(torrent_data.status);
-                    // update buttons
-                    if ( ( $.inArray(oldstatus, statusArrayActive) != -1 ) && ( $.inArray(torrent_data.status, statusArrayInactive) != -1 ) ) {
-                         $("#t_controls_" + torrent_id + " > .control_pause").replaceWith(
-                              $("<span />").addClass("control_start control_button")
-                                           .attr("title", "Start Torrent")
-                                           .append(
-                                              $("<img />").addClass("control_image control_start_me")
-                                               .attr("alt", "Start").attr("src","../images/start.png")
-                                           )
-                         );
-                         $("#torrent_id_" + torrent_id).toggleClass("rcpause rcstart");
-                         loadRClickMenus();
-                    
-                    } else if ( ( $.inArray(oldstatus, statusArrayInactive) != -1 ) && ( $.inArray(torrent_data.status, statusArrayActive) != -1 ) ) {
-                         $("#t_controls_" + torrent_id + " > .control_start").replaceWith(
-                              $("<span />").addClass("control_pause control_button")
-                                           .attr("title", "Pause Torrent")
-                                           .append(
-                                              $("<img />").addClass("control_image control_pause_me")
-                                               .attr("alt", "Pause").attr("src","../images/pause.png")
-                                           )
-                         )
-                         $("#torrent_id_" + torrent_id).toggleClass("rcpause rcstart");
-                    }
-                }
-                
-            }
-        }
-          
-        // check for new torrents and add them
-        for (i=0; i<data.torrent_index.length; i++) {
-            torrent_id = data.torrent_index[i];
-            if ($.inArray(torrent_id, cur_t_ids) === -1) {
-                add_torrentrow(torrent_id, data.torrents[torrent_id], i)
-            }
-        }
-        
-        stripeTable();
-        loadRClickMenus();
-
-        if (repeat === "yes") {
-            setTimeout(function () {
-                refresh_content("yes");
-            }, 5000);
-        }
-    };
+    ws.onmessage = function(e) { return parse_content(e, repeat) };
     ws.send(req);
 }
 
@@ -431,30 +427,6 @@ function remove_torrentrow(torrent_id) {
 }
 
 function add_torrentrow(torrent_id, torrent_data, torrent_index) {
-    //var req = "/ajax?request=get_torrent_row&torrent_id=" + torrent_id;
-    //var torrent_list = $("#torrent_list");
-    //$.ajax({
-    //    url : req,
-    //    context : torrent_list,
-    //    dataType : "html",
-    //    success : function (newrowhtml) {
-    //        $("#torrent_list > tbody > tr:eq(0)").after($(newrowhtml));
-    //        var newrow = $("#torrent_id_" + torrent_id);
-    //        $(newrow).toggleClass("new-torrent-row");
-    //        $(newrow).slideRow("down", 1000, function () {
-    //            $(newrow).fadeTo(2000, 1.0, function() {
-    //                $(newrow).effect("pulsate", { times : 1 }, "slow", function () {
-    //                    $(newrow).toggleClass("new-torrent-row");
-    //                    stripeTable();
-    //                    loadRClickMenus()
-    //                });
-    //            });
-    //        });
-    //    },
-    //    error : function (jqXHR, textStatus, errorThrown) {
-    //        alert("Error " + jqXHR + " (" + errorThrown + ")");
-    //    }
-    //});
     var newrow = $("<tr />").addClass("torrent-div").attr("id","torrent_id_" + torrent_id);
     if (torrent_data.completed) {
           newrow.append($("<td />")
@@ -608,24 +580,18 @@ function drop_down(elem) {
      newrow.className += "drop_down";
      newcell.innerHTML = "<img src='/images/loading.gif'> <span style='color:red;'>Loading</span>";
      newcell.colSpan = "7";
-     var xmlhttp = new XMLHttpRequest();
-     var url="ajax"
-     xmlhttp.open("POST",url,true);
-     xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-     xmlhttp.onreadystatechange = function () {
-          if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-              var response = xmlhttp.responseText;
-              newcell.className += "drop_down_td";
-              newcellcontents = $(response);
-              newcellcontents = accordionise(newcellcontents, 1);
-              newcellcontents = filetreeise(newcellcontents, torrent_id);
-              newcellcontents.css({"display" : "none"});
-              $(newcell).html(newcellcontents);
-              newcellcontents.slideDown('slow');
-          }
-     }
      var params = "request=get_torrent_info&html=yesplease&torrent_id=" + torrent_id;
-     xmlhttp.send(params);
+     ws.onmessage = function (e) {
+          var response = e.data;
+          newcell.className += "drop_down_td";
+          newcellcontents = $(response);
+          newcellcontents = accordionise(newcellcontents, 1);
+          newcellcontents = filetreeise(newcellcontents, torrent_id);
+          newcellcontents.css({"display" : "none"});
+          $(newcell).html(newcellcontents);
+          newcellcontents.slideDown('slow');
+     }
+     ws.send(params)
 }
 
 function drop_up(t_id) {
@@ -660,41 +626,36 @@ function command(cmd, t_id) {
           return false;
      }
      if (cmd === "pause_torrent" || cmd === "start_torrent" || cmd === "stop_torrent" || cmd == "remove_torrent" || cmd == "delete_torrent" || cmd == "hash_torrent") {
-         var resp;
-         if (cmd === "remove_torrent") {
-             resp = confirm("Are you sure you want to remove this torrent?");
-         } else if (cmd == "delete_torrent") {
-             resp = confirm("Are you sure you want to remove this torrent and *permanently* delete its files?");
-             if (resp) {
-               $("#torrent_id_" + t_id).addClass("deleting-torrent-row").removeClass("blue green");
-               DELETING.push(t_id);
-             }
-         } else if (cmd == "hash_torrent") {
-             resp = confirm("Are you sure you want to rehash this torrent?\n This process can take a long time for large torrents");
-         } else {
-             resp = true;
-         }
-         if (resp) {
-             var xmlhttpc = new XMLHttpRequest();
-             var url="ajax";
-             xmlhttpc.open("POST",url,true);
-             xmlhttpc.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-             xmlhttpc.onreadystatechange = function() {
-                 if (xmlhttpc.readyState == 4 && xmlhttpc.status == 200) {
-                     var resp = xmlhttpc.responseText.trim()
-                     if (resp == "OK") {
+          var resp;
+          if (cmd === "remove_torrent") {
+               resp = confirm("Are you sure you want to remove this torrent?");
+          } else if (cmd == "delete_torrent") {
+               resp = confirm("Are you sure you want to remove this torrent and *permanently* delete its files?");
+               if (resp) {
+                    $("#torrent_id_" + t_id).addClass("deleting-torrent-row").removeClass("blue green");
+                    DELETING.push(t_id);
+               }
+          } else if (cmd == "hash_torrent") {
+               resp = confirm("Are you sure you want to rehash this torrent?\n This process can take a long time for large torrents");
+          } else {
+               resp = true;
+          }
+          if (resp) {
+               ws.onmessage = function (e) {
+                    var resp = e.data.trim()
+                    if (resp == "OK") {
                          refresh_content("no");
-                     } else {
+                    } else {
                          alert("Command Failed with reason: " + resp); 
-                     }
-                 }
-             }
-             var params = "request=" + cmd + "&torrent_id=" + t_id;
-             xmlhttpc.send(params);
-         } else {
-             return false;
-         }
+                    }
+               }
+               var params = "request=" + cmd + "&torrent_id=" + t_id;
+               ws.send(params);
+     
+          } else {
+               return false;
+          }
      } else {
-         alert("invalid command or command not implemented");
+          alert("invalid command or command not implemented");
      }
 }
