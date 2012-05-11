@@ -11,7 +11,12 @@ $(document).ready(function () {
           refresh_content("yes");
      }, 5000);
 
-     ws = new window.WebSocket("ws://" + window.document.location.host
+     if (window.document.location.protocol == "https:") {
+          protocol = "wss"
+     } else {
+          protocol = "ws"
+     }
+     ws = new window.WebSocket(protocol + "://" + window.document.location.host
  + "/websocket");
      ws.onmessage = function(e) {
      }

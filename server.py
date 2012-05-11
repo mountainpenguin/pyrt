@@ -20,6 +20,18 @@ global_config = {
     "server.socket_port" : c.get("port"),
 }
 
+ssl_certificate = c.get("ssl_certificate")
+ssl_keyfile = c.get("ssl_private_key")
+ssl_ca_certs = c.get("ssl_ca_certs")
+if ssl_certificate and ssl_keyfile:
+    ssl_options = {
+        "certfile" : ssl_certificate,
+        "keyfile" : ssl_keyfile,
+        "ca_certs" : ssl_ca_certs,
+    }
+else:
+    ssl_options = None
+
 class index(web.RequestHandler):
     """Default page handler for /
     
@@ -272,7 +284,7 @@ if __name__ == "__main__":
         "config" : c,
     }
     
-    http_server = httpserver.HTTPServer(application)
+    http_server = httpserver.HTTPServer(application, ssl_options=ssl_options)
     http_server.listen(global_config["server.socket_port"], global_config["server.socket_host"])
     
     ioloop.IOLoop.instance().start()

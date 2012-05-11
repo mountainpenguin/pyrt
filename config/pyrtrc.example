@@ -16,13 +16,7 @@
     ## the host that the server should run on
     ## REQUIRED
     "host" : "server.bytesized-hosting.com",
-    
-    ## hashed password that pyrt will use
-    ## currently this uses unrealirc style md5 hashing
-    ## you can use the provided mkpasswd utility to generate a hashed password
-    ## REQUIRED
-    "password" : "$5DFFfrLC$fkPjAF0rOpiL83gHzgIwcQ==" # this corresponds to a plaintext password of 'testing'
-    
+
     ## the *full* path to the SSL certificate that pyrt should use
     ## if this is not defined, pyrt will run a HTTP server
     ## OPTIONAL
@@ -31,5 +25,15 @@
     ## the *full* path to the SSL private key that pyrt should use
     ## if this is not defined, pyrt will run a HTTP server
     ## OPTIONAL
-#    "ssl_private_key" : "/path/to/ssl/private/key"
+#    "ssl_private_key" : "/path/to/ssl/private/key",
+   
+    ## the *full* path to the SSL certiface authority file that pyrt should use
+    ## OPTIONS
+#    "ssl_ca_certs" : "/path/to/ssl/ca/certs",
+
+    ## hashed password that pyrt will use
+    ## currently this uses unrealirc style md5 hashing
+    ## you can use the provided mkpasswd utility to generate a hashed password
+    ## REQUIRED
+    "password" : "$5DFFfrLC$fkPjAF0rOpiL83gHzgIwcQ==" # this corresponds to a plaintext password of 'testing'
 }
