@@ -18,14 +18,17 @@ class ConfigError(Exception):
         return self.__repr__()
         
 class ConfigStore:
-    def __init__(self, sockpath, serverhost, serverport, password, ssl_certificate=None, ssl_private_key=None, refresh=10):
+    def __init__(self, sockpath, serverhost, serverport, password, ssl_certificate=None, ssl_private_key=None, ca_certs = None, root_directory="/", refresh=10):
         self.rtorrent_socket = sockpath
         self.host = serverhost
         self.port = serverport
         self.password = password
         self.ssl_certificate = ssl_certificate
         self.ssl_private_key = ssl_private_key
+        self.ssl_ca_certs = ca_certs
+        self.root_directory = root_directory
         self.refresh = refresh
+        
         
 class Config:
     def __init__(self):
@@ -64,6 +67,17 @@ class Config:
                 pkey = configfile["ssl_private_key"]
             else:
                 cert, pkey = None, None
+                
+            if "ssl_ca_certs" in configfile.keys():
+                ca_certs = configfile["ssl_ca_certs"]
+            else:
+                ca_certs = None
+                
+            if "root_directory" in configfile:
+                root_dir = configfile["root_directory"]
+            else:
+                root_dir = None
+            
             try:
                 refresh = int(configfile["refresh"])
             except:
@@ -75,7 +89,9 @@ class Config:
                         password = configfile["password"],
                         ssl_certificate = cert,
                         ssl_private_key = pkey,
-                        refresh = refresh
+                        ca_certs = ca_certs,
+                        root_directory = root_dir,
+                        refresh = refresh,
                         )
             self._flush()
         except KeyError:

@@ -247,7 +247,7 @@ class webSocket(websocket.WebSocketHandler):
             self.write_message("ERROR/ajax function returned nothing")
             
     def on_close(self):
-        print("webSocket closed")
+        print(">>> webSocket closed")
 
 if __name__ == "__main__":
     if os.path.exists(".user.pickle"):

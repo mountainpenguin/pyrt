@@ -28,8 +28,12 @@
 #    "ssl_private_key" : "/path/to/ssl/private/key",
    
     ## the *full* path to the SSL certiface authority file that pyrt should use
-    ## OPTIONS
+    ## OPTIONAL
 #    "ssl_ca_certs" : "/path/to/ssl/ca/certs",
+
+    ## the *full* path to the root directory that you want to stat for disk usage
+    ## OPTIONAL (defaults to "/")
+#    "root_directory" : "/",
 
     ## hashed password that pyrt will use
     ## currently this uses unrealirc style md5 hashing

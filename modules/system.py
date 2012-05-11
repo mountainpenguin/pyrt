@@ -30,7 +30,7 @@ class Global(object):
         self.throttle_up = kwargs["throttle_up"]
         self.throttle_down = kwargs["throttle_down"]
     
-def hdd(path="/"):
+def hdd(path=None):
     """
         Stats the root filesystem
         Inputs:
@@ -39,6 +39,8 @@ def hdd(path="/"):
             index 0 : the used bytes of the disk,
             index 1 : total bytes of the disk
     """
+    if not path:
+        path = "/"
     usage = os.statvfs(path)
     total = usage[statvfs.F_BLOCKS]
     free = usage[statvfs.F_BFREE]
@@ -98,7 +100,7 @@ def get_global(encode_json=False):
     RT = rtorrent.rtorrent(C.get("rtorrent_socket"))
     handler = torrentHandler.Handler()
     
-    diskused, disktotal = hdd()
+    diskused, disktotal = hdd(C.get("root_directory"))
     memused, memtotal = mem()
     load1, load5, load15 = os.getloadavg()
     
@@ -127,7 +129,7 @@ def generalHTML():
     RT = rtorrent.rtorrent(C.get("rtorrent_socket"))
     handler = torrentHandler.Handler()
     
-    diskused, disktotal = hdd()
+    diskused, disktotal = hdd(C.get("root_directory"))
     memused, memtotal = mem()
     load1, load5, load15 = os.getloadavg()
     return """
