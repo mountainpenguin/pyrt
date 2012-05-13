@@ -89,6 +89,7 @@ $(document).ready(function () {
                     if (filerecord.length == 0) {
                          fs.close();
                          destroyDragOverlay();
+                         refresh_content("no");
                     }
                }
                fs.onclose = function(ev) {
@@ -101,9 +102,10 @@ $(document).ready(function () {
                               var reader = new FileReader();
                               var filename = files[i].name;
                               filerecord.push(randid);
-                              reader.onload = function (eve) {
-                                   fs.send("FILENAME@@@" + filename + ":::ID@@@" + randid + ":::CONTENT@@@" + eve.currentTarget.result);
-                              }
+                              reader.onload = (function(torrent_file, id) { return function(eve) {
+                                   console.log(eve);
+                                   fs.send("FILENAME@@@" + torrent_file.name + ":::ID@@@" + id + ":::CONTENT@@@" + eve.target.result);
+                              }; })(files[i], randid);
                               reader.onerror = function (eve) {
                               }
                               reader.readAsDataURL(files[i]);
@@ -111,7 +113,6 @@ $(document).ready(function () {
                               $("<div />").addClass("dragOverlayDialog-file-bad").html(files[i].name + " ignored").appendTo("#dragOverlayDialog");
                          }
                     }
-                    //fs.close();
                }
                fs.onerror = function(e) {
                   console.log("WebSocket error", ws, e);
@@ -175,6 +176,7 @@ $(document).ready(function () {
           sendme = sendme + "&torrentIDs=" + torrentIDs.join(",");
           ws.onmessage = function (e) { };
           ws.send(sendme)
+          //refresh_content("no");
      })
      
      $("#batch-deselect").live("click", function (e) {
