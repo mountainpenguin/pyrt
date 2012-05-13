@@ -309,6 +309,9 @@ class statSocket(websocket.WebSocketHandler):
         except:
             self.write_message("ERROR/Invalid request")
             return
+        else:
+            resp = self.application._pyrtSTATS.handle_request(request)
+            self.write_message(resp)
         
         
     def on_close(self):

@@ -1,5 +1,18 @@
 var StatSocket = null;
-var Data = new Array();
+var UpData = new Array();
+var DownData = new Array();
+var ctx = null;
+var cHeight = null; // canvas total height (specified in HTML)
+var cWidth = null; // canvas total width (specified in HTML)
+var cOriginX = null; // bottom left of axes
+var cOriginY = null; // bottom left of axes
+var eHeight = null; // effective height (i.e. top of graph to bottom of axes)
+var eWidth = null; // effective width (i.e. y-axis to left-most edge of graph)
+var xoffset = 6; // distance between canvas left edge and y-axis
+var yoffset = 6; // distance between canvas top edge and top of the y-axis
+var nxoffset = 6; // distance between canvas right edge and end of x-axis
+var nyoffset = 6; // distance between canvas bottom edge and x-axis
+var maxValues = null;
 
 if (window.document.location.protocol == "https:") {
      var socket_protocol = "wss"
@@ -16,42 +29,129 @@ $(document).ready(function() {
 });
 
 function mainLoop() {
-     StatSocket.send("request=globalspeed")
+     StatSocket.send("request=globalspeed");
+     setTimeout(mainLoop, 1000);
 }
 
 function initGraph() {
-     var height = parseInt($("#canvas-actual").height());
-     var width = parseInt($("#canvas-actual").width());
+     cHeight = parseInt($("#canvas-actual").height());
+     cWidth = parseInt($("#canvas-actual").width());
+     
+     cOriginX = xoffset;
+     cOriginY = cHeight - nyoffset;
+     eHeight = cOriginY - yoffset;
+     eWidth = cWidth - xoffset - nxoffset;
+     
+     maxValues = Math.floor(eWidth / 2);
+     
      clearCanvas($("#canvas-actual"));
      var canvas = document.getElementById("canvas-actual");
-     var ctx = canvas.getContext("2d");
-     ctx.strokeStyle = "rgb(0,0,0)";
-     
-     drawAxes(ctx, width, height);
-     
+     ctx = canvas.getContext("2d");
+     drawAxes();
 }
 
-function drawAxes(ctx, width, height) {
-     var originX = 30
-     var originY = height - 30;
+function drawAxes() {
+     ctx.strokeStyle = "rgb(0,0,0)";
+     ctx.fillStyle = "rgb(0,0,0)";
      ctx.beginPath();
-     ctx.moveTo(originX, 10);
-     ctx.lineTo(originX, originY);
-     ctx.lineTo(width - 30, originY);
+     ctx.moveTo(cOriginX, yoffset); // y-axis top
+     ctx.lineTo(cOriginX, cOriginY);
+     ctx.lineTo(cWidth - nxoffset, cOriginY); // x-axis end
+     ctx.stroke();
+     ctx.closePath();
+     
+     // y-axis arrow head
+     ctx.beginPath();
+     ctx.moveTo(cOriginX, yoffset); // top of the y-axis
+     ctx.lineTo(cOriginX-5,yoffset);
+     ctx.lineTo(cOriginX,yoffset-5);
+     ctx.lineTo(cOriginX+5,yoffset);
+     ctx.lineTo(cOriginX,yoffset);
+     ctx.fill();
+     ctx.closePath();
+     
+     // x-axis arrow head
+     ctx.beginPath()
+     strtx = cWidth - nxoffset;
+     ctx.moveTo(strtx, cOriginY); // end of the x-axis .
+     ctx.lineTo(strtx, cOriginY-5); // |
+     ctx.lineTo(strtx+5, cOriginY); // |-
+     ctx.lineTo(strtx, cOriginY+5); // |>
+     ctx.lineTo(strtx, cOriginY);
+     ctx.fill();
+     ctx.closePath();
+}
+
+function getScaleFactor() {
+     // scale highest value to be at highest point
+     allData = UpData.concat(DownData);
+     allMax = Math.max.apply(Math, allData);
+     
+     scaleF = allMax / eHeight;
+     return scaleF;
+}
+
+function update_canvas() {
+     ctx.clearRect(0, 0, cWidth, cHeight);
+     drawAxes();
+     scale_factor = getScaleFactor();
+     
+     // uprate data
+     ctx.beginPath();
+     ctx.strokeStyle = "rgb(255,0,0)";
+     startY = eHeight - (UpData[0] / scale_factor) + yoffset + 1;
+     ctx.moveTo(cOriginX + 1, startY);
+     for (i=0;i<UpData.length;i++) {
+          up_y = eHeight - (UpData[i] / scale_factor) + yoffset;
+          ctx.lineTo(cOriginX + i*2 + 1, up_y);
+          // x position = i*2
+          // y position = re-scaled
+          
+          //ctx.moveTo(i*2,)
+     }
+     ctx.stroke();
+     ctx.closePath();
+     
+     // downrate data
+     ctx.beginPath();
+     ctx.strokeStyle = "rgb(0,0,255)";
+     startY = eHeight - (DownData[0] / scale_factor) + yoffset + 1;
+     ctx.moveTo(cOriginX + 1, startY);
+     for (i=0; i<DownData.length; i++) {
+          dn_y = startY = eHeight - (DownData[i] / scale_factor) + yoffset;
+          ctx.lineTo(cOriginX + i*2 + 1, dn_y);
+     }
      ctx.stroke();
      ctx.closePath();
 }
 
-function clearCanvas(ctx) {
+function clearCanvas() {
      $(ctx).attr("width", $(ctx).attr("width"));
 }
 
 function init() {
-     StatSocket.send("request=globalspeed");
+     mainLoop();
 }
 
 function onMessage(e) {
-    console.log("StatSocket message", e, StatSocket);
+     if (e.data.indexOf("ERROR") !== -1) {
+          $("#status-div").removeClass("status-ok status-bad").addClass("status-bad").html(
+               "StatSocket ERROR: " + e.data.split("ERROR/")[1]
+          );
+          return false;
+     } else {
+          data = JSON.parse(e.data);
+          $("#status-uprate").html("Upload rate: " + data.uprate + "B/s");
+          $("#status-downrate").html("Download rate: " + data.downrate + "B/s");
+          if (UpData.push(data.uprate) > maxValues) {
+               UpData.shift();
+          }
+          if (DownData.push(data.downrate) > maxValues) {
+               DownData.shift();
+          }
+          update_canvas();
+     }
+     return false;
 }
 
 function onOpen(e) {

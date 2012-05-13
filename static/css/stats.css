@@ -1,15 +1,17 @@
-.status-div {
+body {
+  font-family: sans-serif; }
+
+#status-div {
   font-family: monospace;
   font-size: 12px; }
-  .status-div.status-ok {
+  #status-div.status-ok {
     color: green; }
-  .status-div.status-bad {
+  #status-div.status-bad {
     color: red; }
 
 .canvas-title {
   font-weight: bold;
-  font-family: sans-serif;
   font-size: 14px; }
 
 #canvas-actual {
-  border: 1px solid black; }
+  /*border : 1px solid black;*/ }
