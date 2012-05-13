@@ -345,10 +345,10 @@ function loadRClickMenus() {
          window.location = "/options";
          }
      );
-     $("#tab_rss").bind(
+     $("#tab_stats").bind(
          "click",
          function () {
-           window.location = "/RSS";
+           window.location = "/stats";
          }
      );
 }
