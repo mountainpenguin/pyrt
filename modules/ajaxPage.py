@@ -50,6 +50,7 @@ class Ajax:
             "delete_torrent" : Handle(self.delete_torrent, ["torrent_id"]),
             "hash_torrent" : Handle(self.hash_torrent, ["torrent_id"]),
             "get_file" : Handle(self.get_file, ["torrent_id", "filepath"]),
+            "upload_torrent_socket" : Handle(self.upload_torrent_socket, ["torrent"], ["start"]),
             "upload_torrent" : Handle(self.upload_torrent, [], ["torrent", "start"]),
             "get_feeds" : Handle(self.get_feeds),
             "start_batch" : Handle(self.start_batch, ["torrentIDs"]),
@@ -384,6 +385,23 @@ class Ajax:
         fileContents = open(filepath).read()
         return fileContents
     
+    def upload_torrent_socket(self, torrent, start=True):
+        fileName = torrent["filename"]
+        inFile = torrent["content"]
+        try:
+            decoded = bencode.bdecode(inFile)
+        except:
+            return "ERROR/Invalid torrent file"
+        else:
+            newFile = open("torrents/%s" % (fileName.encode("utf-8")), "wb")
+            newFile.write(inFile)
+            newFile.close()
+            if start:
+                self.RT.start_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
+            else:
+                self.RT.load_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
+            return "OK"
+        
     def upload_torrent(self, torrent=None, start=None):
         fileName = unicode(torrent["filename"])
         inFile = torrent["body"]

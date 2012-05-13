@@ -129,6 +129,36 @@ body {
     vertical-align : bottom;
 }
 
+.dragOverlay {
+    position : absolute;
+    left : 0;
+    top : 0;
+    height : 100%;
+    width : 100%;
+    background-color : rgba(0,0,0,0.5);
+    z-index : 100;
+    background-image : url(../images/plus.png);
+    background-repeat : no-repeat;
+    background-position : 5% 5%;
+}
+
+#dragOverlayDialog {
+    position : absolute;
+    left : 27%;
+    top : 5%;
+    font-weight: bold;
+}
+.dragOverlayDialog-file-ok {
+    color : #B2ED21;
+}
+.dragOverlayDialog-file-bad {
+    color : #FF0F0F;
+}
+
+.dragOverlayDialog-filename {
+    text-shadow : 1px 1px 5px #B2DD44;
+}
+
 .drop_down {
     /*border-left : 1px dotted;*/ 
     /*border-right : 1px dotted;*/

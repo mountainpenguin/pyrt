@@ -11,6 +11,7 @@ import tornado.httpserver as httpserver
 import tornado.websocket as websocket
 import os
 import urlparse
+import json
 
 c = config.Config()
 c.loadconfig()
@@ -197,14 +198,15 @@ class RSS(web.RequestHandler):
             
         self.write(self.application._pyrtRSS_PAGE.index())
         
-class webSocket(websocket.WebSocketHandler):
+class ajaxSocket(websocket.WebSocketHandler):
     def open(self):
         client_cookie = self.cookies
         Lcheck = self.application._pyrtL.checkLogin(client_cookie)
         if not Lcheck:
-            print(">>> webSocket denied?")
+            print(">>> ajaxSocket denied")
+            self.close()
             return
-        print(">>> webSocket opened")
+        print(">>> ajaxSocket opened")
         
 
     def on_message(self, message):
@@ -220,7 +222,7 @@ class webSocket(websocket.WebSocketHandler):
 
         qs = urlparse.parse_qs(message)
         request = qs.get("request", [None])[0]
-        print(">>> got webSocket request %s" % request)
+        print("<<< got ajaxSocket request %s" % request)
         if not request:
             self.write_message("ERROR/No request specified")
             return
@@ -237,7 +239,7 @@ class webSocket(websocket.WebSocketHandler):
             self.write_message("ERROR/need more args")
             return
         if request == "upload_torrent":
-            self.write_message("ERROR/you should use POST for file uploads")
+            self.write_message("ERROR/you should use POST or fileSocket method for file uploads")
             return
                 
         resp = self.application._pyrtAJAX.handle(request, qs)
@@ -247,8 +249,55 @@ class webSocket(websocket.WebSocketHandler):
             self.write_message("ERROR/ajax function returned nothing")
             
     def on_close(self):
-        print(">>> webSocket closed")
+        print(">>> ajaxSocket closed")
 
+class fileSocket(websocket.WebSocketHandler):
+    def open(self):
+        client_cookie = self.cookies
+        Lcheck = self.application._pyrtL.checkLogin(client_cookie)
+        if not Lcheck:
+            print(">>> fileSocket denied")
+            self.write_message("ERROR/Permission denied")
+            self.close()
+            return
+        print(">>> fileSocket opened")
+        
+    def on_message(self, message):
+        #parse message
+        #FILENAME@@@<filename>:::CONTENT@@@<content>
+        print("<<< fileSocket message %s" % message)
+        try:
+            filename_ = message.split(":::")[0]
+            id__ = message.split(":::")[1]
+            content_ = message.split(":::",2)[2]
+        except:
+            self.write_message("ERROR/invalid message format")
+        else:
+            filename = filename_.split("@@@",1)[1]
+            id_ = id__.split("@@@",1)[1]
+            content = content_.split("@@@",1)[1]
+            print("<<< fileSocket id %s, filename %s, size %i" % (id_, filename, len(content)))
+            obj = {"torrent" : [{"filename" : filename, "content" : content}]}
+            resp = self.application._pyrtAJAX.handle("upload_torrent_socket", obj)
+            response = {
+                "filename" : filename,
+                "id" : id_,
+                "response" : resp,
+            }
+            
+            self.write_message(json.dumps(response))
+        
+    def on_close(self):
+        print(">>> fileSocket closed")
+        
+
+class test(web.RequestHandler):
+    def get(self):
+        with open("htdocs/testing.html.tmpl") as doc:
+            self.write(doc.read())
+    
+    post=get
+    
 if __name__ == "__main__":
     if os.path.exists(".user.pickle"):
         os.remove(".user.pickle")
@@ -267,7 +316,8 @@ if __name__ == "__main__":
         (r"/ajax", ajax),
         (r"/options", options),
         (r"/RSS", RSS),
-        (r"/websocket", webSocket),
+        (r"/ajaxsocket", ajaxSocket),
+        (r"/filesocket", fileSocket),
     ], **settings)
     
     application._pyrtL = login.Login(conf=c)
