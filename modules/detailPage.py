@@ -12,9 +12,12 @@ import login
 import config
 
 class Detail:
-    def __init__(self, torrent_id, conf=config.Config()):
+    def __init__(self, torrent_id, conf=config.Config(), RT=None):
         self.Config = conf
-        self.RT = rtorrent.rtorrent(self.Config.get("rtorrent_socket"))
+        if not RT:
+            self.RT = rtorrent.rtorrent(self.Config.get("rtorrent_socket"))
+        else:
+            self.RT = RT
         self.Handler = torrentHandler.Handler()
 
         self.HTML = """

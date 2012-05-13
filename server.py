@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-from modules import config, login                    #'real' modules
+from modules import config, login, rtorrent          #'real' modules
 from modules import indexPage, detailPage, ajaxPage  # pages
-from modules import optionsPage, rssPage             # pages
+from modules import optionsPage, rssPage  # pages
 
 import tornado.ioloop as ioloop
 import tornado.web as web
@@ -251,7 +251,7 @@ class ajaxSocket(websocket.WebSocketHandler):
             
     def on_close(self):
         print(">>> ajaxSocket closed")
-
+    
 class fileSocket(websocket.WebSocketHandler):
     def open(self):
         client_cookie = self.cookies
@@ -291,14 +291,6 @@ class fileSocket(websocket.WebSocketHandler):
     def on_close(self):
         print(">>> fileSocket closed")
         
-
-class test(web.RequestHandler):
-    def get(self):
-        with open("htdocs/testing.html.tmpl") as doc:
-            self.write(doc.read())
-    
-    post=get
-    
 if __name__ == "__main__":
     if os.path.exists(".user.pickle"):
         os.remove(".user.pickle")
@@ -320,18 +312,21 @@ if __name__ == "__main__":
         (r"/ajaxsocket", ajaxSocket),
         (r"/filesocket", fileSocket),
     ], **settings)
-    
+
+    application._pyrtRT = rtorrent.rtorrent(c.get("rtorrent_socket"))    
     application._pyrtL = login.Login(conf=c)
-    application._pyrtINDEX = indexPage.Index(conf=c)
-    application._pyrtAJAX = ajaxPage.Ajax(conf=c)
-    application._pyrtOPTIONS = optionsPage.Options(conf=c)
-    application._pyrtRSS_PAGE = rssPage.Index(conf=c)
+    application._pyrtINDEX = indexPage.Index(conf=c, RT=application._pyrtRT)
+    application._pyrtAJAX = ajaxPage.Ajax(conf=c, RT=application._pyrtRT)
+    application._pyrtOPTIONS = optionsPage.Options(conf=c, RT=application._pyrtRT)
+    application._pyrtRSS_PAGE = rssPage.Index(conf=c, RT=application._pyrtRT)
+    application._pyrtSTATS = statsPage.Index(conf=c, RT=application._pyrtRT)
     application._pyrtGLOBALS = {
         "login" : application._pyrtL,
         "indexPage" : application._pyrtINDEX,
         "ajaxPage" : application._pyrtAJAX,
         "optionsPage" : application._pyrtOPTIONS,
         "rssPage" : application._pyrtRSS_PAGE,
+        "RT" : application._pyrtRT,
         "config" : c,
     }
     

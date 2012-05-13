@@ -6,7 +6,7 @@ import sys
 import config
 
 class Index:
-    def __init__(self, conf=config.Config()):
+    def __init__(self, conf=config.Config(), RT=None):
         self.CONFIG = conf
         self.TEMPLATE_MAIN = """
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">

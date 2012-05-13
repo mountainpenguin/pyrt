@@ -10,7 +10,11 @@ import system
 import config
 
 class Index:
-    def __init__(self, conf=config.Config()):
+    def __init__(self, conf=config.Config(), RT=None):
+        if not RT:
+            self.RT = rtorrent.rtorrent(self.Config.get("rtorrent_socket"))
+        else:
+            self.RT = RT
         self.Config = conf
         
     def index(self, password=None, view=None, sortby=None, reverse=None):
@@ -19,8 +23,7 @@ class Index:
         if not sortby:
             sortby = "none"
 
-        RT = rtorrent.rtorrent(self.Config.get("rtorrent_socket"))
         handler = torrentHandler.Handler()
 
-        torrentList = RT.getTorrentList2(view)
+        torrentList = self.RT.getTorrentList2(view)
         return handler.torrentHTML(torrentList, sortby, view, reverse)

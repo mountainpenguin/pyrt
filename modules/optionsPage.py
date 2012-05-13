@@ -8,9 +8,12 @@ import os
 import glob
 
 class Options:
-    def __init__(self, conf=config.Config()):
+    def __init__(self, conf=config.Config(), RT=None):
         self.C = conf
-        self.RT = rtorrent.rtorrent(self.C.get("rtorrent_socket"))
+        if not RT:
+            self.RT = rtorrent.rtorrent(self.C.get("rtorrent_socket"))
+        else:
+            self.RT = RT
     
     def index(self):
         #PyRT:

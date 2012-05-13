@@ -34,9 +34,12 @@ class Handle(object):
         self.opt_args = opt_args
         
 class Ajax:
-    def __init__(self, conf=config.Config()):
+    def __init__(self, conf=config.Config(), RT=None):
         self.Config = conf
-        self.RT = rtorrent.rtorrent(self.Config.get("rtorrent_socket"))
+        if not RT:
+            self.RT = rtorrent.rtorrent(self.Config.get("rtorrent_socket"))
+        else:
+            self.RT = RT
         self.Handler = torrentHandler.Handler()
         self.Login = login.Login(conf=self.Config)
         self.public_commands = {
