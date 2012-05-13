@@ -3,7 +3,7 @@
 from __future__ import print_function
 from modules import config, login, rtorrent          #'real' modules
 from modules import indexPage, detailPage, ajaxPage  # pages
-from modules import optionsPage, rssPage  # pages
+from modules import optionsPage, rssPage, statsPage  # pages
 
 import tornado.ioloop as ioloop
 import tornado.web as web
@@ -291,6 +291,35 @@ class fileSocket(websocket.WebSocketHandler):
     def on_close(self):
         print(">>> fileSocket closed")
         
+class statSocket(websocket.WebSocketHandler):
+    def open(self):
+        client_cookie = self.cookies
+        Lcheck = self.application._pyrtL.checkLogin(client_cookie)
+        if not Lcheck:
+            print(">>> statSocket denied")
+            self.write_message("ERROR/Permission denied")
+            self.close()
+            return
+        print(">>> statSocket opened")
+        
+    def on_message(self, message):
+        print("<<< statSocket message %s" % message)
+        try:
+            request = urlparse.parse_qs(message).get("request")[0]
+        except:
+            self.write_message("ERROR/Invalid request")
+            return
+        
+        
+    def on_close(self):
+        print(">>> statSocket closed")
+        
+class stats(web.RequestHandler):
+    def get(self):
+        with open("htdocs/statHTML.tmpl") as doc:
+            self.write(doc.read())
+    post=get
+    
 if __name__ == "__main__":
     if os.path.exists(".user.pickle"):
         os.remove(".user.pickle")
@@ -309,8 +338,10 @@ if __name__ == "__main__":
         (r"/ajax", ajax),
         (r"/options", options),
         (r"/RSS", RSS),
+        (r"/stats", stats),
         (r"/ajaxsocket", ajaxSocket),
         (r"/filesocket", fileSocket),
+        (r"/statsocket", statSocket),
     ], **settings)
 
     application._pyrtRT = rtorrent.rtorrent(c.get("rtorrent_socket"))    
@@ -326,6 +357,7 @@ if __name__ == "__main__":
         "ajaxPage" : application._pyrtAJAX,
         "optionsPage" : application._pyrtOPTIONS,
         "rssPage" : application._pyrtRSS_PAGE,
+        "statsPage" : application._pyrtSTATS,
         "RT" : application._pyrtRT,
         "config" : c,
     }
