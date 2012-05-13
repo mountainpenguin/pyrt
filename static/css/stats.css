@@ -13,5 +13,18 @@ body {
   font-weight: bold;
   font-size: 14px; }
 
-#canvas-actual {
-  /*border : 1px solid black;*/ }
+.status-uprate-value {
+  color: red; }
+
+.status-downrate-value {
+  color: blue; }
+
+.status-downrate-label {
+  float: left;
+  min-width: 7em;
+  display: inline; }
+
+.status-uprate-label {
+  float: left;
+  min-width: 7em;
+  display: inline; }

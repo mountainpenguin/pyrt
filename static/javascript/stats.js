@@ -10,7 +10,7 @@ var eHeight = null; // effective height (i.e. top of graph to bottom of axes)
 var eWidth = null; // effective width (i.e. y-axis to left-most edge of graph)
 var xoffset = 6; // distance between canvas left edge and y-axis
 var yoffset = 6; // distance between canvas top edge and top of the y-axis
-var nxoffset = 6; // distance between canvas right edge and end of x-axis
+var nxoffset = 55; // distance between canvas right edge and end of x-axis
 var nyoffset = 6; // distance between canvas bottom edge and x-axis
 var maxValues = null;
 
@@ -48,6 +48,35 @@ function initGraph() {
      var canvas = document.getElementById("canvas-actual");
      ctx = canvas.getContext("2d");
      drawAxes();
+     drawLegend();
+}
+
+function drawLegend() {
+     
+     ctx.fillStyle = "rgb(255,0,0)";
+     ctx.beginPath();
+     startX = cWidth - (nxoffset - 5);
+     startY = (cHeight / 2) - 20;
+     ctx.moveTo(startX, startY);
+     ctx.lineTo(startX + (nxoffset-5), startY);
+     ctx.lineTo(startX + (nxoffset-5), startY+10);
+     ctx.lineTo(startX, startY+10);
+     ctx.lineTo(startX, startY);
+     ctx.fill();
+     ctx.closePath();
+     ctx.fillText("Upload", startX, startY + 20);
+     
+     ctx.fillStyle = "rgb(0,0,255)";
+     ctx.beginPath();
+     startX = cWidth - (nxoffset - 5);
+     startY = (cHeight / 2) + 20;
+     ctx.lineTo(startX + (nxoffset-5), startY);
+     ctx.lineTo(startX + (nxoffset-5), startY+10);
+     ctx.lineTo(startX, startY+10);
+     ctx.lineTo(startX, startY);
+     ctx.fill();
+     ctx.closePath();
+     ctx.fillText("Download", startX, startY + 20);
 }
 
 function drawAxes() {
@@ -92,7 +121,7 @@ function getScaleFactor() {
 }
 
 function update_canvas() {
-     ctx.clearRect(0, 0, cWidth, cHeight);
+     ctx.clearRect(0, 0, cWidth - nxoffset, cHeight - nyoffset);
      drawAxes();
      scale_factor = getScaleFactor();
      
@@ -141,8 +170,8 @@ function onMessage(e) {
           return false;
      } else {
           data = JSON.parse(e.data);
-          $("#status-uprate").html("Upload rate: " + data.uprate + "B/s");
-          $("#status-downrate").html("Download rate: " + data.downrate + "B/s");
+          $("#status-uprate").html("<div class='status-uprate-label'>Upload rate:</div><div class='status-uprate-value'>" + data.uprate_str + "/s</div>");
+          $("#status-downrate").html("<div class='status-downrate-label'>Download rate:</div><div class='status-downrate-value'>" + data.downrate_str + "/s</div>");
           if (UpData.push(data.uprate) > maxValues) {
                UpData.shift();
           }

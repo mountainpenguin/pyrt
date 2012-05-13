@@ -22,6 +22,8 @@ class Index(object):
             return json.dumps({
                 "uprate" : uprate,
                 "downrate" : downrate,
+                "uprate_str" : self.handler.humanSize(uprate),
+                "downrate_str" : self.handler.humanSize(downrate),
             })
 #uprate = handler.humanSize(RT.getGlobalUpRate())
 #downrate = handler.humanSize(RT.getGlobalDownRate())
