@@ -74,30 +74,39 @@ $(document).ready(function () {
      }).bind("drop", function (e) {
           //destroyDragOverlay();
           var files = e.originalEvent.dataTransfer.files;
+          var filerecord = new Array();
           if (files.length > 0) {
                fs = new window.WebSocket(socket_protocol + "://" + window.document.location.host + "/filesocket");
                fs.onmessage = function(ev) {
                     // format json: filename: <filename>, response: <response>
                     resp = JSON.parse(ev.data);
-                    console.log("fileSocket response parsed", resp)
+                    if (resp.response == "OK") {
+                         $("#dragOverlayDialog-file-" + resp.id).removeClass("dragOverlayDialog-file-pending").addClass("dragOverlayDialog-file-ok");
+                    } else {
+                         $("#dragOverlayDialog-file-" + resp.id).removeClass("dragOverlayDialog-file-pending").addClass("dragOverlayDialog-file-bad").html(resp.filename + " upload failed: " + resp.response);
+                    }
+                    filerecord.splice(filerecord.indexOf(resp.id), 1);
+                    if (filerecord.length == 0) {
+                         fs.close();
+                         destroyDragOverlay();
+                    }
                }
                fs.onclose = function(ev) {
                }
                fs.onopen = function(ev) {
                     for (i=0; i<files.length; i++) {
                          if (files[i].type == "application/x-bittorrent") {
-                              console.log(files[i]);
                               var randid = Math.random().toString(36).substr(2, 5)
-                              $("<div id='dragOverlayDialog-file-" + randid + "'>").addClass("dragOverlayDialog-file-ok").html("<span class='dragOverlayDialog-filename'>" + files[i].name + "</span> uploaded").appendTo("#dragOverlayDialog");
+                              $("<div id='dragOverlayDialog-file-" + randid + "'>").addClass("dragOverlayDialog-file-pending").html("<span class='dragOverlayDialog-filename'>" + files[i].name + "</span> uploaded").appendTo("#dragOverlayDialog");
                               var reader = new FileReader();
                               var filename = files[i].name;
-                              
+                              filerecord.push(randid);
                               reader.onload = function (eve) {
                                    fs.send("FILENAME@@@" + filename + ":::ID@@@" + randid + ":::CONTENT@@@" + eve.currentTarget.result);
                               }
                               reader.onerror = function (eve) {
                               }
-                              reader.readAsBinaryString(files[i]);
+                              reader.readAsDataURL(files[i]);
                          } else {
                               $("<div />").addClass("dragOverlayDialog-file-bad").html(files[i].name + " ignored").appendTo("#dragOverlayDialog");
                          }

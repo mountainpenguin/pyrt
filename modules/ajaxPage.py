@@ -393,7 +393,7 @@ class Ajax:
         except:
             return "ERROR/Invalid torrent file"
         else:
-            newFile = open("torrents/%s" % (fileName.encode("utf-8")), "wb")
+            newFile = open("torrents/%s" % (fileName), "wb")
             newFile.write(inFile)
             newFile.close()
             if start:

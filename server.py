@@ -12,6 +12,7 @@ import tornado.websocket as websocket
 import os
 import urlparse
 import json
+import base64
 
 c = config.Config()
 c.loadconfig()
@@ -265,7 +266,6 @@ class fileSocket(websocket.WebSocketHandler):
     def on_message(self, message):
         #parse message
         #FILENAME@@@<filename>:::CONTENT@@@<content>
-        print("<<< fileSocket message %s" % message)
         try:
             filename_ = message.split(":::")[0]
             id__ = message.split(":::")[1]
@@ -275,7 +275,8 @@ class fileSocket(websocket.WebSocketHandler):
         else:
             filename = filename_.split("@@@",1)[1]
             id_ = id__.split("@@@",1)[1]
-            content = content_.split("@@@",1)[1]
+            content = base64.b64decode(content_.split("@@@",1)[1].split("base64,",1)[1])
+            
             print("<<< fileSocket id %s, filename %s, size %i" % (id_, filename, len(content)))
             obj = {"torrent" : [{"filename" : filename, "content" : content}]}
             resp = self.application._pyrtAJAX.handle("upload_torrent_socket", obj)

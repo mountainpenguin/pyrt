@@ -121,14 +121,14 @@ body {
   top: 5%;
   font-weight: bold; }
 
+.dragOverlayDialog-file-pending {
+  color: #F2F224; }
+
 .dragOverlayDialog-file-ok {
   color: #B2ED21; }
 
 .dragOverlayDialog-file-bad {
   color: #FF0F0F; }
-
-.dragOverlayDialog-filename {
-  text-shadow: 1px 1px 5px #B2DD44; }
 
 .drop_down {
   /*border-left : 1px dotted;*/
