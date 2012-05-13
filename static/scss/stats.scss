@@ -1,0 +1,18 @@
+.status-div {
+    font-family : monospace;
+    font-size : 12px;
+    &.status-ok {
+        color : green;
+    }
+    &.status-bad {
+        color : red;
+    }
+}
+.canvas-title {
+    font-weight : bold;
+    font-family : sans-serif;
+    font-size : 14px;
+}
+#canvas-actual {
+    border : 1px solid black;
+}
