@@ -5,6 +5,9 @@ var LoadData = new Array();
 var MemData = new Array();
 var netctx = null;
 var sysctx = null;
+var iolayer = null;
+var tiplayer = null;
+var iostage = null;
 var cHeight = null; // canvas total height (specified in HTML)
 var cWidth = null; // canvas total width (specified in HTML)
 var cOriginX = null; // bottom left of axes
@@ -17,6 +20,7 @@ var nxoffset = 55; // distance between canvas right edge and end of x-axis
 var nyoffset = 10; // distance between canvas bottom edge and x-axis
 var maxValues = null;
 var trackerData = null;
+var pieSlices = new Object();
 
 if (window.document.location.protocol == "https:") {
      var socket_protocol = "wss"
@@ -39,25 +43,161 @@ function mainLoop() {
 
 function initTGraph() {
     clearCanvas($("#canvas-io"));
-    var iocanvas = document.getElementById("canvas-io");
-    var ioctx = iocanvas.getContext("2d");
-    var stage = new Kinetic.Stage({
+//    var iocanvas = document.getElementById("canvas-io");
+//    var ioctx = iocanvas.getContext("2d");
+    iostage = new Kinetic.Stage({
         container : "canvas-io",
         width : 1000,
         height : 400
     });
-    var layer = new Kinetic.Layer();
+    iolayer = new Kinetic.Layer();
     
-//    createTUp(layer);
-    console.log(trackerData);
-    drawTUp(ioctx);
-    drawTDown(ioctx);
-    drawTRatio(ioctx);
+    createPie(iolayer, 150, 150, "up_total", "upShare");
+    createPie(iolayer, 400, 150, "down_total", "downShare");
+    createPie(iolayer, 650, 160, "ratio", "ratioShare");
+    iostage.add(iolayer);
+//    drawTUp(ioctx);
+//    drawTDown(ioctx);
+//    drawTRatio(ioctx);
 }
 
-function createTUp(layer) {
+function createPie(layer, originX, originY, totalkey, sharekey) {
     var slices = new Array();
+    var oX = originX;
+    var oY = originY;
+    var currX = oX + 100;
+    var currY = oY;
+    var currA = 0;
+    var endA = 0;
+    var radius = 100;
+    var styles = [ "rgb(0,0,0)", "rgb(0,0,255)", "rgb(0,255,0)", "rgb(255,0,0)",
+                   "rgb(0,255,255)", "rgb(255,0,255)", "rgb(255,255,0)", "rgb(150,0,0)",
+                   "rgb(0,150,0)", "rgb(0,0,150)", "rgb(0,150,150)", "rgb(150,0,150)",
+                   "rgb(150,150,0)", "rgb(150,150,150)" ]
+    var styleidx = 0;
+    for (var tracker in trackerData) {
+        if (trackerData.hasOwnProperty(tracker)) {
+            var instruct = new Object();
+            instruct.strokeStyle = styles[styleidx];
+            instruct.fillStyle = styles[styleidx];
+            instruct.startA = currA;
+            instruct.originX = oX;
+            instruct.originY = oY;
+            instruct.radius = radius;
+            data = trackerData[tracker];
+            instruct.tracker = tracker;
+            instruct.favicon = data.favicon;
+            instruct.tot = data[totalkey];
+            upshare = data[sharekey];
+            instruct.share = upshare
+            endA = currA + (upshare * Math.PI * 2);
+            instruct.endA = endA;
+            instruct.startX = currX;
+            instruct.startY = currY;
+            halfPos = calcHalfPos(currA, oX, oY, radius);
+            instruct.startHalfX = halfPos[0];
+            instruct.startHalfY = halfPos[1];
+            endhalfPos = calcHalfPos(endA, oX, oY, radius);
+            instruct.endHalfX = endhalfPos[0];
+            instruct.endHalfY = endhalfPos[1];
+            endPos = calcHalfPos(endA, oX, oY, radius, 1.0);
+            currX = endPos[0];
+            currY = endPos[1];
+            instruct.endX = endPos[0];
+            instruct.endY = endPos[1];
+            currA = endA;
 
+            obj = drawShape(instruct);
+            pieSlices[obj.attrs.fill + "." + oX] = instruct;
+            obj.on("mouseover", function(evt) {
+                if (evt.x >= 50 && evt.x <= 250) {
+                    var append = ".150";
+                } else if (evt.x >= 300 && evt.x <= 500) {
+                    var append = ".400";
+                } else if (evt.x >= 550 && evt.x <= 750) {
+                    var append = ".650";
+                }
+                var d = pieSlices[this.attrs.fill+append];
+                this.setStroke("black");
+                this.attrs.strokeWidth = 3;
+                iolayer.draw();
+            });
+            obj.on("mouseout", function(evt) {
+                this.setStroke(this.attrs.fill); 
+                this.attrs.strokeWidth = 1;
+                iolayer.draw();
+            });
+            obj.on("click", function(evt) {
+                if (evt.x >= 50 && evt.x <= 250) {
+                    var append = ".150";
+                } else if (evt.x >= 300 && evt.x <= 500) {
+                    var append = ".400";
+                } else if (evt.x >= 550 && evt.x <= 750) {
+                    var append = ".650";
+                }
+                pieToolTip(this, pieSlices[this.attrs.fill + append]); 
+            });
+            slices.push(obj);
+            styleidx++;
+            layer.add(obj);
+        }
+    }
+}
+
+function nearestBoundary(x) {
+    var b = [ 25, 275, 525, 775 ]
+    var diffs = new Array();
+    for (i=0; i<b.length; i++) {
+        diffs.push(Math.abs(x-b[i]));
+    }
+    mindiff = Math.min.apply(Math, diffs);
+    idx = diffs.indexOf(mindiff);
+    return b[idx];
+}
+
+function pieToolTip(shape, instruct) {
+    console.log("shape", shape, "instruct", instruct);
+    theta1 = instruct.startA;
+    theta2 = instruct.endA;
+    angle = theta1 + (theta2 - theta1) / 2
+    startPos = calcHalfPos(angle, instruct.originX, instruct.originY, instruct.radius, 1.0);
+    endPos = calcHalfPos(angle, instruct.originX, instruct.originY, instruct.radius, 1.1);
+    xboundary = nearestBoundary(endPos[0]);
+    var line = new Kinetic.Line({
+        points : [startPos[0], startPos[1], endPos[0], endPos[1], xboundary, endPos[1]],
+        stroke : instruct.strokeStyle,
+        strokeWidth : 4,
+        lineCap : "round"
+    });
+    console.log(iostage);
+    if (tiplayer !== null) {
+        iostage.remove(tiplayer);
+    }
+    tiplayer = new Kinetic.Layer();
+    tiplayer.add(line);
+    iostage.add(tiplayer);
+    tiplayer.draw();
+}
+
+function drawShape(instruct) {
+    var shape = new Kinetic.Shape({
+        drawFunc: function() {
+            var ctx = this.getContext("2d");
+            ctx.beginPath();
+            ctx.moveTo(instruct.startHalfX, instruct.startHalfY);
+            ctx.lineTo(instruct.startX, instruct.startY);
+            ctx.arc(instruct.originX, instruct.originY, instruct.radius, instruct.startA, instruct.endA, false);
+            ctx.moveTo(instruct.endX, instruct.endY);
+            ctx.lineTo(instruct.endHalfX, instruct.endHalfY);
+            ctx.arc(instruct.originX, instruct.originY, instruct.radius/2, instruct.endA, instruct.startA, true);
+            ctx.fill();
+            this.applyStyles();
+        },
+        fill: instruct.fillStyle,
+        stroke: instruct.strokeStyle,
+        strokeWidth: 1
+    });
+    return shape;
 }
 
 function calcHalfPos(angle, centreX, centreY, radius, factor) {
@@ -80,142 +220,6 @@ function calcHalfPos(angle, centreX, centreY, radius, factor) {
         halfPosY = centreY - (radius * factor) * Math.cos(angle - 3*Math.PI/2);
     }
     return new Array(halfPosX, halfPosY);
-}
-
-function drawTRatio(ctx) {
-     var currX = 750;
-     var currY = 150;
-     var oX = 650;
-     var oY = 150;
-     var currA = 0;
-     var endA = 0;
-     var radius = 100;
-     var styles = [ "rgb(0,0,0)", "rgb(0,0,255)", "rgb(0,255,0)", "rgb(255,0,0)",
-                    "rgb(0,255,255)", "rgb(255,0,255)", "rgb(255,255,0)", "rgb(150,0,0)",
-                    "rgb(0,150,0)", "rgb(0,0,150)", "rgb(0,150,150)", "rgb(150,0,150)",
-                    "rgb(150,150,0)", "rgb(150,150,150)" ]
-     var styleidx = 0;
-     ctx.fillStyle = "rgb(0,0,0)";
-     ctx.fillText("Ratios", oX, oY-105);
-     for (var tracker in trackerData) {
-        if (trackerData.hasOwnProperty(tracker)) {
-            ctx.strokeStyle = styles[styleidx];
-            ctx.fillStyle = styles[styleidx];
-            ctx.beginPath();
-            data = trackerData[tracker];
-            upshare = data.ratioShare;
-            endA = currA + (upshare * Math.PI * 2);
-            halfPos = calcHalfPos(currA, oX, oY, radius);
-            halfPosX = halfPos[0];
-            halfPosY = halfPos[1];
-            ctx.moveTo(halfPosX, halfPosY);
-            ctx.lineTo(currX, currY);
-            ctx.arc(oX, oY, radius, currA, endA, false);
-            halfPos = calcHalfPos(endA, oX, oY, radius);
-            halfPosX = halfPos[0];
-            halfPosY = halfPos[1];
-            endPos = calcHalfPos(endA, oX, oY, radius, 1.0);
-            currX = endPos[0];
-            currY = endPos[1];
-            ctx.moveTo(currX, currY);
-            ctx.lineTo(halfPosX, halfPosY);
-            ctx.arc(oX,oY, radius/2, endA, currA, true);
-            currA = endA;
-            //ctx.stroke();
-            ctx.fill();
-            styleidx++;
-        }
-     }
-}
-
-function drawTDown(ctx) {
-     var currX = 500;
-     var currY = 150;
-     var oX = 400;
-     var oY = 150;
-     var currA = 0;
-     var endA = 0;
-     var radius = 100;
-     var styles = [ "rgb(0,0,0)", "rgb(0,0,255)", "rgb(0,255,0)", "rgb(255,0,0)",
-                    "rgb(0,255,255)", "rgb(255,0,255)", "rgb(255,255,0)", "rgb(150,0,0)",
-                    "rgb(0,150,0)", "rgb(0,0,150)", "rgb(0,150,150)", "rgb(150,0,150)",
-                    "rgb(150,150,0)", "rgb(150,150,150)" ]
-     var styleidx = 0;
-     for (var tracker in trackerData) {
-        if (trackerData.hasOwnProperty(tracker)) {
-            ctx.strokeStyle = styles[styleidx];
-            ctx.fillStyle = styles[styleidx];
-            ctx.beginPath();
-            data = trackerData[tracker];
-            uptot = data.down_total;
-            upshare = data.downShare;
-            endA = currA + (upshare * Math.PI * 2);
-            halfPos = calcHalfPos(currA, oX, oY, radius);
-            halfPosX = halfPos[0];
-            halfPosY = halfPos[1];
-            ctx.moveTo(halfPosX, halfPosY);
-            ctx.lineTo(currX, currY);
-            ctx.arc(oX, oY, radius, currA, endA, false);
-            halfPos = calcHalfPos(endA, oX, oY, radius);
-            halfPosX = halfPos[0];
-            halfPosY = halfPos[1];
-            endPos = calcHalfPos(endA, oX, oY, radius, 1.0);
-            currX = endPos[0];
-            currY = endPos[1];
-            ctx.moveTo(currX, currY);
-            ctx.lineTo(halfPosX, halfPosY);
-            ctx.arc(oX,oY, radius/2, endA, currA, true);
-            currA = endA;
-            //ctx.stroke();
-            ctx.fill();
-            styleidx++;
-        }
-     }
-}
-
-function drawTUp(ctx) {
-     var currX = 250;
-     var currY = 150;
-     var oX = 150;
-     var oY = 150;
-     var currA = 0;
-     var endA = 0;
-     var radius = 100;
-     var styles = [ "rgb(0,0,0)", "rgb(0,0,255)", "rgb(0,255,0)", "rgb(255,0,0)",
-                    "rgb(0,255,255)", "rgb(255,0,255)", "rgb(255,255,0)", "rgb(150,0,0)",
-                    "rgb(0,150,0)", "rgb(0,0,150)", "rgb(0,150,150)", "rgb(150,0,150)",
-                    "rgb(150,150,0)", "rgb(150,150,150)" ]
-     var styleidx = 0;
-     for (var tracker in trackerData) {
-        if (trackerData.hasOwnProperty(tracker)) {
-            ctx.strokeStyle = styles[styleidx];
-            ctx.fillStyle = styles[styleidx];
-            ctx.beginPath();
-            data = trackerData[tracker];
-            uptot = data.up_total;
-            upshare = data.upShare;
-            endA = currA + (upshare * Math.PI * 2);
-            halfPos = calcHalfPos(currA, oX, oY, radius);
-            halfPosX = halfPos[0];
-            halfPosY = halfPos[1];
-            ctx.moveTo(halfPosX, halfPosY);
-            ctx.lineTo(currX, currY);
-            ctx.arc(oX, oY, radius, currA, endA, false);
-            halfPos = calcHalfPos(endA, oX, oY, radius);
-            halfPosX = halfPos[0];
-            halfPosY = halfPos[1];
-            endPos = calcHalfPos(endA, oX, oY, radius, 1.0);
-            currX = endPos[0];
-            currY = endPos[1];
-            ctx.moveTo(currX, currY);
-            ctx.lineTo(halfPosX, halfPosY);
-            ctx.arc(oX,oY, radius/2, endA, currA, true);
-            currA = endA;
-            //ctx.stroke();
-            ctx.fill();
-            styleidx++;
-        }
-     }
 }
 
 function initGraph() {
