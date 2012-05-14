@@ -16,18 +16,23 @@ body {
     font-weight : bold;
     font-size : 14px;
 }
+.canvas-div {
+    float : left;
+    min-width : 415px;
+}
 .status-uprate-value {
     color : rgb(255,0,0);
 }
 .status-downrate-value {
     color : rgb(0,0,255);
 }
-.status-downrate-label {
-    float : left;
-    min-width : 7em;
-    display : inline;
+.status-loadavg-value {
+    color : rgb(255,0,0);
 }
-.status-uprate-label {
+.status-mem-value {
+    color : rgb(0,0,255);
+}
+.status-label {
     float : left;
     min-width : 7em;
     display : inline;

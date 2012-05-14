@@ -96,7 +96,7 @@ $(document).ready(function () {
                }
                fs.onopen = function(ev) {
                     for (i=0; i<files.length; i++) {
-                         if (files[i].type == "application/x-bittorrent") {
+                         if (files[i].type == "application/x-bittorrent" || files[i].type == "") {
                               var randid = Math.random().toString(36).substr(2, 5)
                               $("<div id='dragOverlayDialog-file-" + randid + "'>").addClass("dragOverlayDialog-file-pending").html("<span class='dragOverlayDialog-filename'>" + files[i].name + "</span> uploaded").appendTo("#dragOverlayDialog");
                               var reader = new FileReader();

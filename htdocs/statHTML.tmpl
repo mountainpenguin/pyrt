@@ -11,13 +11,23 @@
     <body>
         <div id="status-div"></div>
         <div class="canvas-div">
-            <div class="canvas-title">Current network usage stats</div>
-            <canvas id="canvas-actual" width=500 height=200>
+            <div class="canvas-title">Current network usage stats <span id="canvas-title-dynamic"></span></div>
+            <canvas id="canvas-net" width=300 height=200>
             </canvas>
+            <div class="status-current">
+                <div id="status-uprate"></div>
+                <div id="status-downrate"></div>
+            </div>
         </div>
-        <div class="status-current">
-            <div id="status-uprate"></div>
-            <div id="status-downrate"></div>
+
+        <div class="canvas-div">
+            <div class="canvas-title">Current system usage stats</div>
+            <canvas id="canvas-system" width=300 height=200>
+            </canvas>
+            <div class="status-current">
+                <div id="status-loadavg"></div>
+                <div id="status-mem"></div>
+            </div>
         </div>
     </body>
 </html>

@@ -13,18 +13,23 @@ body {
   font-weight: bold;
   font-size: 14px; }
 
+.canvas-div {
+  float: left;
+  min-width: 400px; }
+
 .status-uprate-value {
   color: red; }
 
 .status-downrate-value {
   color: blue; }
 
-.status-downrate-label {
-  float: left;
-  min-width: 7em;
-  display: inline; }
+.status-loadavg-value {
+  color: red; }
 
-.status-uprate-label {
+.status-mem-value {
+  color: blue; }
+
+.status-label {
   float: left;
   min-width: 7em;
   display: inline; }
