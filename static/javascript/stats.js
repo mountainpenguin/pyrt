@@ -39,8 +39,8 @@ function mainLoop() {
 
 function initTGraph() {
     clearCanvas($("#canvas-io"));
-//    var iocanvas = document.getElementById("canvas-io");
-//    var ioctx = iocanvas.getContext("2d");
+    var iocanvas = document.getElementById("canvas-io");
+    var ioctx = iocanvas.getContext("2d");
     var stage = new Kinetic.Stage({
         container : "canvas-io",
         width : 1000,
@@ -48,11 +48,11 @@ function initTGraph() {
     });
     var layer = new Kinetic.Layer();
     
-    createTUp(layer);
+//    createTUp(layer);
     console.log(trackerData);
-//    drawTUp(ioctx);
-//    drawTDown(ioctx);
-//    drawTRatio(ioctx);
+    drawTUp(ioctx);
+    drawTDown(ioctx);
+    drawTRatio(ioctx);
 }
 
 function createTUp(layer) {
@@ -96,7 +96,7 @@ function drawTRatio(ctx) {
                     "rgb(150,150,0)", "rgb(150,150,150)" ]
      var styleidx = 0;
      ctx.fillStyle = "rgb(0,0,0)";
-     ctx.fillText("Ratios", :)
+     ctx.fillText("Ratios", oX, oY-105);
      for (var tracker in trackerData) {
         if (trackerData.hasOwnProperty(tracker)) {
             ctx.strokeStyle = styles[styleidx];
