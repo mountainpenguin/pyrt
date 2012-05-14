@@ -517,7 +517,7 @@ class Peer(object):
         self.peer_total = peer_total
 
 class Torrent(object):
-    def __init__(self, id, name, base_path, size_chunks, chunk_size, completed_bytes, creation_date, down_rate, up_rate, peers_connected, peers_total, seeders_connected, seeders_total, priority, ratio, size, up_total, down_total, status, private, trackers):
+    def __init__(self, id=None, name=None, base_path=None, size_chunks=None, chunk_size=None, completed_bytes=None, creation_date=None, down_rate=None, up_rate=None, peers_connected=None, peers_total=None, seeders_connected=None, seeders_total=None, priority=None, ratio=None, size=None, up_total=None, down_total=None, status=None, private=None, trackers=None):
         self.torrent_id = id
         self.name = name
         self.base_path = base_path
@@ -533,7 +533,10 @@ class Torrent(object):
         self.seeds_connected = seeders_connected
         self.seeds_total = seeders_total
         self.priority = priority
-        self.priority_str = {-1 : None, 0:"off", 1:"low", 2:"normal", 3:"high"}[priority]
+        if self.priority:
+            self.priority_str = {-1 : None, 0:"off", 1:"low", 2:"normal", 3:"high"}[priority]
+        else:
+            self.priority_str = None
         self.ratio = ratio
         self.size = size
         self.size_chunks = size_chunks
@@ -569,6 +572,34 @@ class rtorrent:
             torrentdict[i] = name
         return torrentdict
     
+    def getTorrentStats(self,view="main"):
+        """Returns information required for making /stats infographic pie charts
+
+            returns a list of Torrent objects with attributes:
+                hash, name, up_total, down_total, ratio, trackers
+        """
+        torrentlist = self.conn.d.multicall(
+            view,
+            "d.get_hash=",
+            "d.get_name=",
+            "d.get_up_total=",
+            "d.get_down_total=",
+            "d.get_ratio=",
+        )
+        torrentL = []
+        for t in torrentlist:
+            trackers = self.getTrackers(t[0])
+            torrentL += [
+                Torrent(
+                    name = t[1],
+                    up_total = t[2],
+                    down_total = t[3],
+                    ratio = t[4],
+                    trackers = trackers,
+                )
+            ]
+        return torrentL
+
     def getTorrentList2(self,view="main"):
         """
             More developed version of getTorrentList

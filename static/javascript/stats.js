@@ -16,6 +16,7 @@ var yoffset = 6; // distance between canvas top edge and top of the y-axis
 var nxoffset = 55; // distance between canvas right edge and end of x-axis
 var nyoffset = 10; // distance between canvas bottom edge and x-axis
 var maxValues = null;
+var trackerData = null;
 
 if (window.document.location.protocol == "https:") {
      var socket_protocol = "wss"
@@ -34,6 +35,187 @@ $(document).ready(function() {
 function mainLoop() {
      StatSocket.send("request=global");
      setTimeout(mainLoop, 1000);
+}
+
+function initTGraph() {
+    clearCanvas($("#canvas-io"));
+//    var iocanvas = document.getElementById("canvas-io");
+//    var ioctx = iocanvas.getContext("2d");
+    var stage = new Kinetic.Stage({
+        container : "canvas-io",
+        width : 1000,
+        height : 400
+    });
+    var layer = new Kinetic.Layer();
+    
+    createTUp(layer);
+    console.log(trackerData);
+//    drawTUp(ioctx);
+//    drawTDown(ioctx);
+//    drawTRatio(ioctx);
+}
+
+function createTUp(layer) {
+    var slices = new Array();
+
+}
+
+function calcHalfPos(angle, centreX, centreY, radius, factor) {
+    if ( factor == undefined) {
+        factor = 0.5;
+    }
+    halfPosX = null;
+    halfPosY = null;
+    if (angle <= Math.PI/2) {
+        halfPosX = centreX + (radius * factor) * Math.cos(angle);
+        halfPosY = centreY + (radius * factor) * Math.sin(angle);
+    } else if (angle > Math.PI/2 && angle <= Math.PI) {
+        halfPosX = centreX - (radius * factor) * Math.sin(angle - Math.PI/2);
+        halfPosY = centreY + (radius * factor) * Math.cos(angle - Math.PI/2);
+    } else if (angle > Math.PI && angle <= 3*Math.PI/2) {
+        halfPosX = centreX - (radius * factor) * Math.cos(angle - Math.PI);
+        halfPosY = centreY - (radius * factor) * Math.sin(angle - Math.PI);
+    } else if (angle > 3*Math.PI/2) {
+        halfPosX = centreX + (radius * factor) * Math.sin(angle - 3*Math.PI/2);
+        halfPosY = centreY - (radius * factor) * Math.cos(angle - 3*Math.PI/2);
+    }
+    return new Array(halfPosX, halfPosY);
+}
+
+function drawTRatio(ctx) {
+     var currX = 750;
+     var currY = 150;
+     var oX = 650;
+     var oY = 150;
+     var currA = 0;
+     var endA = 0;
+     var radius = 100;
+     var styles = [ "rgb(0,0,0)", "rgb(0,0,255)", "rgb(0,255,0)", "rgb(255,0,0)",
+                    "rgb(0,255,255)", "rgb(255,0,255)", "rgb(255,255,0)", "rgb(150,0,0)",
+                    "rgb(0,150,0)", "rgb(0,0,150)", "rgb(0,150,150)", "rgb(150,0,150)",
+                    "rgb(150,150,0)", "rgb(150,150,150)" ]
+     var styleidx = 0;
+     ctx.fillStyle = "rgb(0,0,0)";
+     ctx.fillText("Ratios", :)
+     for (var tracker in trackerData) {
+        if (trackerData.hasOwnProperty(tracker)) {
+            ctx.strokeStyle = styles[styleidx];
+            ctx.fillStyle = styles[styleidx];
+            ctx.beginPath();
+            data = trackerData[tracker];
+            upshare = data.ratioShare;
+            endA = currA + (upshare * Math.PI * 2);
+            halfPos = calcHalfPos(currA, oX, oY, radius);
+            halfPosX = halfPos[0];
+            halfPosY = halfPos[1];
+            ctx.moveTo(halfPosX, halfPosY);
+            ctx.lineTo(currX, currY);
+            ctx.arc(oX, oY, radius, currA, endA, false);
+            halfPos = calcHalfPos(endA, oX, oY, radius);
+            halfPosX = halfPos[0];
+            halfPosY = halfPos[1];
+            endPos = calcHalfPos(endA, oX, oY, radius, 1.0);
+            currX = endPos[0];
+            currY = endPos[1];
+            ctx.moveTo(currX, currY);
+            ctx.lineTo(halfPosX, halfPosY);
+            ctx.arc(oX,oY, radius/2, endA, currA, true);
+            currA = endA;
+            //ctx.stroke();
+            ctx.fill();
+            styleidx++;
+        }
+     }
+}
+
+function drawTDown(ctx) {
+     var currX = 500;
+     var currY = 150;
+     var oX = 400;
+     var oY = 150;
+     var currA = 0;
+     var endA = 0;
+     var radius = 100;
+     var styles = [ "rgb(0,0,0)", "rgb(0,0,255)", "rgb(0,255,0)", "rgb(255,0,0)",
+                    "rgb(0,255,255)", "rgb(255,0,255)", "rgb(255,255,0)", "rgb(150,0,0)",
+                    "rgb(0,150,0)", "rgb(0,0,150)", "rgb(0,150,150)", "rgb(150,0,150)",
+                    "rgb(150,150,0)", "rgb(150,150,150)" ]
+     var styleidx = 0;
+     for (var tracker in trackerData) {
+        if (trackerData.hasOwnProperty(tracker)) {
+            ctx.strokeStyle = styles[styleidx];
+            ctx.fillStyle = styles[styleidx];
+            ctx.beginPath();
+            data = trackerData[tracker];
+            uptot = data.down_total;
+            upshare = data.downShare;
+            endA = currA + (upshare * Math.PI * 2);
+            halfPos = calcHalfPos(currA, oX, oY, radius);
+            halfPosX = halfPos[0];
+            halfPosY = halfPos[1];
+            ctx.moveTo(halfPosX, halfPosY);
+            ctx.lineTo(currX, currY);
+            ctx.arc(oX, oY, radius, currA, endA, false);
+            halfPos = calcHalfPos(endA, oX, oY, radius);
+            halfPosX = halfPos[0];
+            halfPosY = halfPos[1];
+            endPos = calcHalfPos(endA, oX, oY, radius, 1.0);
+            currX = endPos[0];
+            currY = endPos[1];
+            ctx.moveTo(currX, currY);
+            ctx.lineTo(halfPosX, halfPosY);
+            ctx.arc(oX,oY, radius/2, endA, currA, true);
+            currA = endA;
+            //ctx.stroke();
+            ctx.fill();
+            styleidx++;
+        }
+     }
+}
+
+function drawTUp(ctx) {
+     var currX = 250;
+     var currY = 150;
+     var oX = 150;
+     var oY = 150;
+     var currA = 0;
+     var endA = 0;
+     var radius = 100;
+     var styles = [ "rgb(0,0,0)", "rgb(0,0,255)", "rgb(0,255,0)", "rgb(255,0,0)",
+                    "rgb(0,255,255)", "rgb(255,0,255)", "rgb(255,255,0)", "rgb(150,0,0)",
+                    "rgb(0,150,0)", "rgb(0,0,150)", "rgb(0,150,150)", "rgb(150,0,150)",
+                    "rgb(150,150,0)", "rgb(150,150,150)" ]
+     var styleidx = 0;
+     for (var tracker in trackerData) {
+        if (trackerData.hasOwnProperty(tracker)) {
+            ctx.strokeStyle = styles[styleidx];
+            ctx.fillStyle = styles[styleidx];
+            ctx.beginPath();
+            data = trackerData[tracker];
+            uptot = data.up_total;
+            upshare = data.upShare;
+            endA = currA + (upshare * Math.PI * 2);
+            halfPos = calcHalfPos(currA, oX, oY, radius);
+            halfPosX = halfPos[0];
+            halfPosY = halfPos[1];
+            ctx.moveTo(halfPosX, halfPosY);
+            ctx.lineTo(currX, currY);
+            ctx.arc(oX, oY, radius, currA, endA, false);
+            halfPos = calcHalfPos(endA, oX, oY, radius);
+            halfPosX = halfPos[0];
+            halfPosY = halfPos[1];
+            endPos = calcHalfPos(endA, oX, oY, radius, 1.0);
+            currX = endPos[0];
+            currY = endPos[1];
+            ctx.moveTo(currX, currY);
+            ctx.lineTo(halfPosX, halfPosY);
+            ctx.arc(oX,oY, radius/2, endA, currA, true);
+            currA = endA;
+            //ctx.stroke();
+            ctx.fill();
+            styleidx++;
+        }
+     }
 }
 
 function initGraph() {
@@ -210,6 +392,7 @@ function clearCanvas() {
 }
 
 function init() {
+     StatSocket.send("request=trackers");
      mainLoop();
 }
 
@@ -221,43 +404,48 @@ function onMessage(e) {
           return false;
      } else {
           data = JSON.parse(e.data);
-          $("#status-uprate").html("<div class='status-label'>Upload rate:</div><div class='status-uprate-value status-value'>" + data.uprate_str + "/s</div>");
-          $("#status-downrate").html("<div class='status-label'>Download rate:</div><div class='status-downrate-value status-value'>" + data.downrate_str + "/s</div>");
-          $("#status-loadavg").html("<div class='status-label'>Load average:</div><div class='status-loadavg-value status-value'>" + data.loadavg + "</div>");
-//          $("#status-mem").html("<div class='status-label'>Memory usage:</div><div class='status-mem-value status-value'>" + data.memusage + "%</div>");
-          if (UpData.push(data.uprate) > maxValues) {
-               UpData.shift();
-          }
-          if (DownData.push(data.downrate) > maxValues) {
-               DownData.shift();
-          }
-          if (LoadData.push(data.loadavg) > maxValues) {
-               LoadData.shift();
-          }
-          if (MemData.push(data.memusage) > maxValues) {
-               MemData.shift();
-          }
+          if (data.type == "trackers") {
+              trackerData = data.data;
+              initTGraph();
+          } else if (data.type == "global") {
+              $("#status-uprate").html("<div class='status-label'>Upload rate:</div><div class='status-uprate-value status-value'>" + data.uprate_str + "/s</div>");
+              $("#status-downrate").html("<div class='status-label'>Download rate:</div><div class='status-downrate-value status-value'>" + data.downrate_str + "/s</div>");
+              $("#status-loadavg").html("<div class='status-label'>Load average:</div><div class='status-loadavg-value status-value'>" + data.loadavg + "</div>");
+//              $("#status-mem").html("<div class='status-label'>Memory usage:</div><div class='status-mem-value status-value'>" + data.memusage + "%</div>");
+              if (UpData.push(data.uprate) > maxValues) {
+                   UpData.shift();
+              }
+              if (DownData.push(data.downrate) > maxValues) {
+                   DownData.shift();
+              }
+              if (LoadData.push(data.loadavg) > maxValues) {
+                   LoadData.shift();
+              }
+              if (MemData.push(data.memusage) > maxValues) {
+                   MemData.shift();
+              }
 
-          if (UpData.length < 60) {
-              $("#canvas-title-dynamic").html("(Last " + UpData.length + " seconds)");
-          } else {
-              mins = Math.floor(UpData.length/60);
-              secs = UpData.length%60;
-              if (mins == 1) {  
-                  mins = "Last minute";
+              if (UpData.length < 60) {
+                  $("#canvas-title-dynamic").html("(Last " + UpData.length + " seconds)");
               } else {
-                  mins = "Last " + mins + " minutes";
+                  mins = Math.floor(UpData.length/60);
+                  secs = UpData.length%60;
+                  if (mins == 1) {  
+                      mins = "Last minute";
+                  } else {
+                      mins = "Last " + mins + " minutes";
+                  }
+                  if (secs == 0) {
+                      secs = "";
+                  } else {
+                      secs = " and " + secs + " seconds";
+                  }
+                  $("#canvas-title-dynamic").html("(" + mins + secs + ")");
               }
-              if (secs == 0) {
-                  secs = "";
-              } else {
-                  secs = " and " + secs + " seconds";
-              }
-              $("#canvas-title-dynamic").html("(" + mins + secs + ")");
-          }
-          update_canvas();
-     }
+              update_canvas();
+         }
      return false;
+     }
 }
 
 function onOpen(e) {

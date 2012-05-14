@@ -6,6 +6,7 @@
         <link rel="stylesheet" type="text/css" href="/css/stats.css">
         <script src="/javascript/jquery-1.7.min.js" type="text/javascript"></script>
         <script src="/javascript/jquery-ui-1.8.17.custom.min.js" type="text/javascript"></script>
+        <script src="/javascript/kinetic-v3.9.5.min.js" type="text/javascript"></script>
         <script src="/javascript/stats.js" type="text/javascript"></script>
     </head>
     <body>
@@ -28,6 +29,13 @@
                 <div id="status-loadavg"></div>
                 <div id="status-mem"></div>
             </div>
+        </div>
+        
+        <div class="canvas-div">
+            <div class="canvas-title">I/O per tracker</div>
+            <!-- <canvas id="canvas-io" width=1000 height=400>
+            </canvas> -->
+            <div id="canvas-io"></div>
         </div>
     </body>
 </html>
