@@ -20,6 +20,9 @@ body {
     float : left;
     min-width : 415px;
 }
+#canvas-network {
+    margin-left: 3em;
+}
 .status-uprate-value {
     color : rgb(255,0,0);
 }
@@ -36,4 +39,7 @@ body {
     float : left;
     min-width : 7em;
     display : inline;
+}
+#io-detail {
+    border: 1px solid red;
 }

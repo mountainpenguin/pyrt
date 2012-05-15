@@ -4,38 +4,48 @@
         <title>pyRT Statistics</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link rel="stylesheet" type="text/css" href="/css/stats.css">
+        <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <link rel="stylesheet" type="text/css" href="/css/smoothness/jquery-ui-1.8.13.custom.css">
         <script src="/javascript/jquery-1.7.min.js" type="text/javascript"></script>
         <script src="/javascript/jquery-ui-1.8.17.custom.min.js" type="text/javascript"></script>
         <script src="/javascript/kinetic-v3.9.5.min.js" type="text/javascript"></script>
         <script src="/javascript/stats.js" type="text/javascript"></script>
+        <script src="/javascript/rss.js" type="text/javascript"></script>
     </head>
     <body>
-        <div id="status-div"></div>
-        <div class="canvas-div">
-            <div class="canvas-title">Current network usage stats <span id="canvas-title-dynamic"></span></div>
-            <canvas id="canvas-net" width=300 height=200>
-            </canvas>
-            <div class="status-current">
-                <div id="status-uprate"></div>
-                <div id="status-downrate"></div>
+        <div id="header">
+            <div id="topbar">
+                <div class="topbar-tab" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_tab_fromRSS(this);" title="main" id="tab_main">Main</div>
+                <div class="topbar-tab_options selected" onmouseove="select_tab(this);" onmouseout="deselect_tab(this);" title="Stats" id="tab_stats">Stats</div>
             </div>
         </div>
-
-        <div class="canvas-div">
-            <div class="canvas-title">Current system usage stats</div>
-            <canvas id="canvas-system" width=300 height=200>
-            </canvas>
-            <div class="status-current">
-                <div id="status-loadavg"></div>
-                <div id="status-mem"></div>
+        <div id="main_body">
+            <div id="wrapper">
+                <div id="stats_wrapper">
+                    <div id="status-div"></div>
+                    <div class="canvas-div" id="canvas-network">
+                        <div class="canvas-title">Current network usage stats <span id="canvas-title-dynamic"></span></div>
+                        <canvas id="canvas-net" width=300 height=200>
+                        </canvas>
+                        <div class="status-current">
+                            <div id="status-uprate"></div>
+                            <div id="status-downrate"></div>
+                        </div>
+                    </div>
+            
+                    <div class="canvas-div">
+                        <div class="canvas-title">Current system usage stats</div>
+                        <canvas id="canvas-system" width=300 height=200>
+                        </canvas>
+                        <div class="status-current">
+                            <div id="status-loadavg"></div>
+                            <div id="status-mem"></div>
+                        </div>
+                    </div>
+                    
+                    <div id="canvas-io"></div>
+                </div>
             </div>
-        </div>
-        
-        <div class="canvas-div">
-            <div class="canvas-title">I/O per tracker</div>
-            <!-- <canvas id="canvas-io" width=1000 height=400>
-            </canvas> -->
-            <div id="canvas-io"></div>
         </div>
     </body>
 </html>

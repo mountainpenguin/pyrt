@@ -67,6 +67,8 @@ class Index(object):
                 tDict[t]["downShare"] = float(tDict[t]["down_total"]) / downTotal
             for t in tDict:
                 tDict[t]["ratioShare"] = tDict[t]["ratio"] / ratioTotal
+                tDict[t]["up_total"] = self.handler.humanSize(tDict[t]["up_total"])
+                tDict[t]["down_total"] = self.handler.humanSize(tDict[t]["down_total"])
             return json.dumps({
                 "type" : "trackers",
                 "data" : tDict,

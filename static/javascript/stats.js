@@ -47,21 +47,21 @@ function initTGraph() {
 //    var ioctx = iocanvas.getContext("2d");
     iostage = new Kinetic.Stage({
         container : "canvas-io",
-        width : 1000,
-        height : 400
+        width :  800,
+        height : 420,
     });
     iolayer = new Kinetic.Layer();
     
-    createPie(iolayer, 150, 150, "up_total", "upShare");
-    createPie(iolayer, 400, 150, "down_total", "downShare");
-    createPie(iolayer, 650, 160, "ratio", "ratioShare");
+    createPie(iolayer, 150, 150, "up_total", "upShare", "Upload");
+    createPie(iolayer, 400, 150, "down_total", "downShare", "Download");
+    createPie(iolayer, 650, 160, "ratio", "ratioShare", "Ratio");
     iostage.add(iolayer);
 //    drawTUp(ioctx);
 //    drawTDown(ioctx);
 //    drawTRatio(ioctx);
 }
 
-function createPie(layer, originX, originY, totalkey, sharekey) {
+function createPie(layer, originX, originY, totalkey, sharekey, title) {
     var slices = new Array();
     var oX = originX;
     var oY = originY;
@@ -78,6 +78,7 @@ function createPie(layer, originX, originY, totalkey, sharekey) {
     for (var tracker in trackerData) {
         if (trackerData.hasOwnProperty(tracker)) {
             var instruct = new Object();
+            instruct.title = title;
             instruct.strokeStyle = styles[styleidx];
             instruct.fillStyle = styles[styleidx];
             instruct.startA = currA;
@@ -110,36 +111,39 @@ function createPie(layer, originX, originY, totalkey, sharekey) {
             obj = drawShape(instruct);
             pieSlices[obj.attrs.fill + "." + oX] = instruct;
             obj.on("mouseover", function(evt) {
-                if (evt.x >= 50 && evt.x <= 250) {
+                if (evt.layerX >= 50 && evt.layerX <= 250) {
                     var append = ".150";
-                } else if (evt.x >= 300 && evt.x <= 500) {
+                } else if (evt.layerX >= 300 && evt.layerX <= 500) {
                     var append = ".400";
-                } else if (evt.x >= 550 && evt.x <= 750) {
+                } else if (evt.layerX >= 550 && evt.layerX <= 750) {
                     var append = ".650";
                 }
-                var d = pieSlices[this.attrs.fill+append];
                 this.setStroke("black");
                 this.attrs.strokeWidth = 3;
                 iolayer.draw();
+                pieToolTip(this, pieSlices[this.attrs.fill+append]);
             });
             obj.on("mouseout", function(evt) {
                 this.setStroke(this.attrs.fill); 
                 this.attrs.strokeWidth = 1;
                 iolayer.draw();
             });
-            obj.on("click", function(evt) {
-                if (evt.x >= 50 && evt.x <= 250) {
+            /* obj.on("click", function(evt) {
+                if (evt.layerX >= 50 && evt.layerX <= 250) {
                     var append = ".150";
-                } else if (evt.x >= 300 && evt.x <= 500) {
+                } else if (evt.layerX >= 300 && evt.layerX <= 500) {
                     var append = ".400";
-                } else if (evt.x >= 550 && evt.x <= 750) {
+                } else if (evt.layerX >= 550 && evt.layerX <= 750) {
                     var append = ".650";
                 }
                 pieToolTip(this, pieSlices[this.attrs.fill + append]); 
             });
+            */
             slices.push(obj);
             styleidx++;
             layer.add(obj);
+            tex = labelShape(instruct);
+            layer.add(tex);
         }
     }
 }
@@ -155,28 +159,182 @@ function nearestBoundary(x) {
     return b[idx];
 }
 
+function tagText(x, y, text) {
+    var Tag = new Kinetic.Text({
+        text: text,
+        x: x,
+        y: y,
+        fontSize: 12,
+        fontFamily: "Trebuchet MS",
+        textFill: "black",
+        fontStyle: "bold",
+        align: "left"
+    });
+    return Tag;
+}
+
+function labelText(x, y, text) {
+    var Label = new Kinetic.Text({
+        text: text,
+        x: x,
+        y: y,
+        fontSize: 12,
+        fontFamily: "Trebuchet MS",
+        textFill: "black",
+        align: "left"
+    });
+    return Label;
+}
+
+function destroyPieTool(evt) {
+    if (tiplayer !== null) {
+        iostage.remove(tiplayer);
+        tiplayer = null;
+    }
+}
+
 function pieToolTip(shape, instruct) {
-    console.log("shape", shape, "instruct", instruct);
     theta1 = instruct.startA;
     theta2 = instruct.endA;
     angle = theta1 + (theta2 - theta1) / 2
     startPos = calcHalfPos(angle, instruct.originX, instruct.originY, instruct.radius, 1.0);
     endPos = calcHalfPos(angle, instruct.originX, instruct.originY, instruct.radius, 1.1);
     xboundary = nearestBoundary(endPos[0]);
+    if (xboundary == 25) {
+          xlb = 10;
+          xrb = 360;
+    } else if (xboundary == 775) {
+          xlb = 440;
+          xrb = 790;
+    } else {
+          xlb = xboundary - 175;
+          xrb = xboundary + 175;
+    }
     var line = new Kinetic.Line({
-        points : [startPos[0], startPos[1], endPos[0], endPos[1], xboundary, endPos[1]],
+        points : [startPos[0], startPos[1], endPos[0], endPos[1], xboundary, endPos[1], xboundary, 300,
+                  xlb, 300, xlb, 410, xrb, 410, xrb, 300, xboundary, 300],
         stroke : instruct.strokeStyle,
         strokeWidth : 4,
         lineCap : "round"
     });
-    console.log(iostage);
+
     if (tiplayer !== null) {
         iostage.remove(tiplayer);
     }
     tiplayer = new Kinetic.Layer();
+
+    // create close button
+    var close = new Image();
+    close.onload = function() {
+        var image = new Kinetic.Image({
+            x: xrb-10,
+            y: 292,
+            image: close,
+            width: 20,
+            height: 20
+        });
+        image.on("click", destroyPieTool);
+        tiplayer.add(image);
+        tiplayer.draw();
+    }
+    close.src = "/images/remove.png";
+
+    // populate rectangle
+    // corners:
+    //    xlb, 300
+    //    xlb, 410
+    //    xrb, 410
+    //    xrb, 300
+    var img = new Image();
+    img.onload = function() {
+     var image = new Kinetic.Image({
+          x: xlb+10,
+          y: 310,
+          image: img,
+          width: 16,
+          height: 16,
+     });
+     tiplayer.add(image);
+    }
+    img.src = instruct.favicon
+
+    var upImg = new Image();
+    upImg.onload = function() {
+        var image = new Kinetic.Image({
+            x: xlb+10,
+            y: 335,
+            image: upImg,
+            width: 16,
+            height: 16
+        });
+        tiplayer.add(image);
+        tiplayer.draw();
+    }
+    upImg.src = "/images/up_icon.gif";
+
+    var downImg = new Image();
+    downImg.onload = function() {
+        var image = new Kinetic.Image({
+            x: xlb+10,
+            y: 360,
+            image: downImg,
+            width: 16,
+            height: 16
+        });
+        tiplayer.add(image);
+        tiplayer.draw();
+    }
+    downImg.src = "/images/down_icon.gif";
+
+    var ratioImg = new Image();
+    ratioImg.onload = function() {
+        var image = new Kinetic.Image({
+            x: xlb+10,
+            y: 385,
+            image: ratioImg,
+            width: 16,
+            height: 16,
+        });
+        tiplayer.add(image);
+        tiplayer.draw();
+    }
+    ratioImg.src = "/images/ratio.jpg";
+
+    var titleText = new Kinetic.Text({
+        text: "Stats for " + instruct.tracker,
+        x: xlb+36,
+        y: 311,
+        fontSize: 13,
+        fontFamily: "Trebuchet MS",
+        textFill: "black",
+        fontStyle: "bold",
+        align: "left"
+    });
+
+    tiplayer.add(tagText(xlb+36,336,"Upload: "));
+    tiplayer.add(labelText(xlb+130,336,trackerData[instruct.tracker].up_total + " (" + Math.round(trackerData[instruct.tracker].upShare*100) +"%)"));
+    tiplayer.add(tagText(xlb+36,361,"Download: "));
+    tiplayer.add(labelText(xlb+130,361,trackerData[instruct.tracker].down_total + " (" + Math.round(trackerData[instruct.tracker].downShare*100) + "%)"));
+    tiplayer.add(tagText(xlb+36,386,"Ratio: "));
+    tiplayer.add(labelText(xlb+130,386, Math.round(trackerData[instruct.tracker].ratio*100)/100 + " (" + Math.round(trackerData[instruct.tracker].ratioShare*100) + "%)"));
+
     tiplayer.add(line);
+    tiplayer.add(titleText);
     iostage.add(tiplayer);
     tiplayer.draw();
+}
+
+function labelShape(instruct) {
+     var shape = new Kinetic.Text({
+          x: instruct.originX,
+          y: instruct.originY-7,
+          text: instruct.title,
+          fontSize: 14,
+          fontFamily: "Trebuchet MS",
+          textFill: "black",
+          align: "center"
+     });
+     return shape;
 }
 
 function drawShape(instruct) {
