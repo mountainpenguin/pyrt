@@ -2,8 +2,9 @@
 
 from __future__ import print_function
 from modules import config, login, rtorrent          #'real' modules
+from modules import weblog
 from modules import indexPage, detailPage, ajaxPage  # pages
-from modules import optionsPage, rssPage, statsPage  # pages
+from modules import optionsPage, rssPage, statsPage
 
 import tornado.ioloop as ioloop
 import tornado.web as web
@@ -182,7 +183,29 @@ class options(web.RequestHandler):
             self.write(self.application._pyrtOPTIONS.index())
 
     post = get
-    
+   
+class logHandler(web.RequestHandler):
+    def get(self):
+        password = self.get_argument("password", None)
+        client_cookie = self.cookies
+        Lcheck = self.application._pyrtL.checkLogin(client_cookie)
+        if not Lcheck and not password:
+            self.write(self.application._pyrtL.loginHTML())
+            return
+        elif not Lcheck and password:
+            Pcheck = self.application._pyrtL.checkPassword(password)
+            if Pcheck:
+                self.set_cookie("sess_id", self.application._pyrtL.sendCookie(True))
+            else:
+                self.write(self.application._pyrtL.loginHTML("Incorrect Password"))
+                return
+        
+        logHTML = self.application._pyrtLog.html()
+        with open("htdocs/logHTML.tmpl") as template:
+            self.write(template.read() % {"logHTML":logHTML})
+
+    post = get
+
 class RSS(web.RequestHandler):
     def get(self):
         password = self.get_argument("password", None)
@@ -388,18 +411,21 @@ if __name__ == "__main__":
         (r"/options", options),
         (r"/RSS", RSS),
         (r"/stats", stats),
+        (r"/log", logHandler),
         (r"/ajaxsocket", ajaxSocket),
         (r"/filesocket", fileSocket),
         (r"/statsocket", statSocket),
     ], **settings)
 
+    logger = weblog.Logger()
     application._pyrtRT = rtorrent.rtorrent(c.get("rtorrent_socket"))    
     application._pyrtL = login.Login(conf=c)
     application._pyrtINDEX = indexPage.Index(conf=c, RT=application._pyrtRT)
-    application._pyrtAJAX = ajaxPage.Ajax(conf=c, RT=application._pyrtRT)
+    application._pyrtAJAX = ajaxPage.Ajax(conf=c, RT=application._pyrtRT, Log=logger)
     application._pyrtOPTIONS = optionsPage.Options(conf=c, RT=application._pyrtRT)
     application._pyrtRSS_PAGE = rssPage.Index(conf=c, RT=application._pyrtRT)
     application._pyrtSTATS = statsPage.Index(conf=c, RT=application._pyrtRT)
+    application._pyrtLog = logger
     application._pyrtGLOBALS = {
         "login" : application._pyrtL,
         "indexPage" : application._pyrtINDEX,
@@ -407,6 +433,7 @@ if __name__ == "__main__":
         "optionsPage" : application._pyrtOPTIONS,
         "rssPage" : application._pyrtRSS_PAGE,
         "statsPage" : application._pyrtSTATS,
+        "log" : application._pyrtLog,
         "RT" : application._pyrtRT,
         "config" : c,
     }

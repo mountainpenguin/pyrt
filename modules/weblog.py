@@ -21,7 +21,7 @@ class Logger(object):
     ERROR = 1
     DEBUG = 4
     def __init__(self):
-        self.RECORDS = [] # contains id tags sorted by time
+        self.RECORDS = [] # contains id tags sorted by time (most recent first)
         self.RECORD = {} # log information with key `id`
 
     def id_gen(self):
@@ -38,7 +38,7 @@ class Logger(object):
             msg_ = msg
         message = self.fmt(Message(msg_))
 
-        self.RECORDS += _id
+        self.RECORDS += [_id]
         self.RECORD[_id] = message
 
     def error(self, msg, *args, **kwargs):
@@ -49,7 +49,7 @@ class Logger(object):
         else:
             msg_ = msg
         message = self.fmt(Message(msg_, level=self.ERROR, level_name="ERROR"))
-        self.RECORDS += _id
+        self.RECORDS += [_id]
         self.RECORD[_id] = message
 
     def warning(self, msg, *args, **kwargs):
@@ -60,7 +60,7 @@ class Logger(object):
         else:
             msg_ = msg
         message = self.fmt(Message(msg_, level=self.WARNING, level_name="ERROR"))
-        self.RECORDS += _id
+        self.RECORDS += [_id]
         self.RECORD[_id] = message
 
     def debug(self, msg, *args, **kwargs):
@@ -71,7 +71,7 @@ class Logger(object):
         else:
             msg_ = msg
         message = self.fmt(Message(msg_, level=self.DEBUG, level_name="DEBUG"))
-        self.RECORDS += _id
+        self.RECORDS += [_id]
         self.RECORD[_id] = message
 
     def fmt(self, msg):
@@ -90,11 +90,15 @@ class Logger(object):
         return msg
 
     def html_format(self, msg):
-        return "<div class='log_message level_%(level)s'>%(level_name)s: %(fmt)s</div>" % msg.__dict__
+        return """
+                <tr class='log_row log_message level_%(level)s'>
+                    <td class='log_level level_%(level)s'>%(level_name)s</td>
+                    <td class='log_message'>%(fmt)s</td>
+                </tr>""" % msg.__dict__
 
     def html(self):
         construct = ""
-        for _id in self.RECORDS:
+        for _id in reversed(self.RECORDS):
             construct += self.html_format(self.RECORD[_id])
         return construct
 

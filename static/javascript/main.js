@@ -351,6 +351,12 @@ function loadRClickMenus() {
            window.location = "/stats";
          }
      );
+     $("#tab_log").bind(
+        "click",
+        function () {
+            window.location = "/log";
+        }
+     );
 }
 
 function parse_content(e, repeat) {

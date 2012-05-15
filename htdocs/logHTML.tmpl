@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>pyRT Log</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <link rel="stylesheet" type="text/css" href="/css/log.css">
+        <link rel="stylesheet" type="text/css" href="/css/main.css">
+        <script src="/javascript/jquery-1.7.min.js" type="text/javascript"></script>
+        <script src="/javascript/log.js"></script>
+    </head>
+    <body>
+        <div id="header">
+            <div id="topbar">
+                <div class="topbar-tab" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_tab_toHome(this);" title="main" id="tab_main">Main</div>
+                <div class="topbar-tab_options selected" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" title="log" id="tab_log">Log</div>
+            </div>
+        </div>
+        <div id="main_body">
+            <div id="wrapper">
+                <div id="log_wrapper">
+                    <table id="log_table">
+                    <!-- Start Log Content -->
+                    %(logHTML)s
+                    <!-- End Log Content -->
+                    </table>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,42 @@
+.log_message {
+    font-family: monospace;
+    font-size: 8pt;
+}
+
+.log_level {
+   font-size: 10pt;
+   text-align: center;
+}
+
+.log_message {
+}
+
+tr.level_1 {
+    // error
+    color: #FF0000;
+    font-weight:bold;
+}
+td.level_1 {
+    background-color: #FFC0CB;
+}
+tr.level_2 {
+    // info
+    color: green;
+}
+td.level_2 {
+    background-color: #B2BEB5;
+}
+tr.level_3 {
+    // warning
+    color: #0000CC;
+}
+td.level_3 {
+    background-color: #ADD8E6;
+}
+tr.level_4 {
+    // debug
+    color: #585858;
+}
+td.level_4 {
+    background-color: white;
+}

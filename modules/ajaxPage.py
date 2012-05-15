@@ -3,20 +3,15 @@
 
 from __future__ import print_function
 import cgi
-import rtorrent
 try:
     import simplejson as json
 except ImportError:
     import json
 import time
-import torrentHandler
-import login
 import os
 import sys
-import config
 import shutil
 import bencode
-import system
 import base64
 import urlparse
 import re
@@ -24,8 +19,11 @@ import urllib
 import urllib2
 import socket
 import traceback
+import logging
 
 from modules.Cheetah.Template import Template
+from modules import rtorrent, torrentHandler, login
+from modules import config, system, weblog
 
 class Handle(object):
     def __init__(self, handler, need_args=[], opt_args=[]):
@@ -34,7 +32,7 @@ class Handle(object):
         self.opt_args = opt_args
         
 class Ajax:
-    def __init__(self, conf=config.Config(), RT=None):
+    def __init__(self, conf=config.Config(), RT=None, Log=None):
         self.Config = conf
         if not RT:
             self.RT = rtorrent.rtorrent(self.Config.get("rtorrent_socket"))
@@ -42,6 +40,7 @@ class Ajax:
             self.RT = RT
         self.Handler = torrentHandler.Handler()
         self.Login = login.Login(conf=self.Config)
+        self.Log = Log
         self.public_commands = {
             "get_torrent_info" : Handle(self.get_torrent_info, ["torrent_id"], ["html"]),
             "get_info_multi" : Handle(self.get_info_multi, ["view"], ["sortby", "reverse", "drop_down_ids"]),
@@ -70,6 +69,7 @@ class Ajax:
         if commandstr.lower() in self.public_commands:
             return True
         else:
+            self.Log.error("AJAX: unknown command '%s'", commandstr)
             return False
         
     def validate_command(self, commandstr, parsed_queries):
@@ -77,6 +77,7 @@ class Ajax:
         opt_args = self.public_commands[commandstr.lower()].opt_args
         for r_a in req_args:
             if r_a not in parsed_queries or not parsed_queries[r_a]:
+                self.Log.error("AJAX: too few arguments for request '%s'", commandstr)
                 return False
         return True
             
@@ -100,24 +101,31 @@ class Ajax:
         return int(value)*1024
         
     def throttleUp(self, value):
+        self.Log.info("AJAX: global upload throttle set to %s", value)
         return self.RT.setGlobalUpThrottle(self.kbtob(value))
         
     def throttleDown(self, value):
+        self.Log.info("AJAX: global download throttle set to %s", value)
         return self.RT.setGlobalDownThrottle(self.kbtob(value))
         
     def maxFileSize(self, value):
+        self.Log.info("AJAX: global max file size set to %s", value)
         return self.RT.setGlobalMaxFileSize(self.mbtob(value))
         
     def mem(self, value):
+        self.Log.info("AJAX: global max memory usage set to %s", value)
         return self.RT.setGlobalMaxMemoryUsage(self.mbtob(value))
         
     def rBuffer(self, value):
+        self.Log.info("AJAX: global receive buffer size set to %sB (%sKiB)", self.kbtob(value), value)
         return self.RT.setGlobalReceiveBufferSize(self.kbtob(value))
         
     def sBuffer(self, value):
+        self.Log.info("AJAX: global send buffer size set to %sB (%sKiB)", self.kbtob(value), value)
         return self.RT.setGlobalSendBufferSize(self.kbtob(value))
         
     def readahead(self, value):
+        self.Log.info("AJAX: global hash readahead size set to %sB (%sMiB)", self.mbtob(value), value)
         return self.RT.setGlobalHashReadAhead(self.mbtob(value))
         
     def set_config_multiple(self, keys, values):
@@ -307,40 +315,55 @@ class Ajax:
         try:
             self.RT.pause(torrent_id)
         except:
+            self.Log.error("AJAX: torrent pause error (ID: %s)", torrent_id)
+            logging.error("%s %s","AJAX error - torrent could not be paused", traceback.format_exc())
             return "ERROR"
         else:
+            self.Log.info("AJAX: torrent paused (ID: %s)", torrent_id)
             return "OK"
     
     def stop_torrent(self, torrent_id):
         try:
             self.RT.stop(torrent_id)
         except:
+            self.Log.error("AJAX: torrent stop error (ID: %s)", torrent_id)
+            logging.error("%s %s", "AJAX error - torrent could not be stopped", traceback.format_exc())
             return "ERROR"
         else:
+            self.Log.info("AJAX: torrent stopped (ID: %s)", torrent_id)
             return "OK"
         
     def start_torrent(self, torrent_id):
         try:
             self.RT.resume(torrent_id)
         except:
+            self.Log.error("AJAX: torrent resume error (ID: %s)", torrent_id)
+            logging.error("%s %s", "AJAX error - torrent could not be resumed", traceback.format_exc())
             return "ERROR"
         else:
+            self.Log.info("AJAX: torrent resumed (ID: %s)", torrent_id)
             return "OK"
         
     def remove_torrent(self, torrent_id):
         try:
             self.RT.remove(torrent_id)
         except:
+            self.Log.error("AJAX: torrent remove error (ID: %s)", torrent_id)
+            logging.error("%s %s", "AJAX error - torrent could not be removed", traceback.format_exc())
             return "ERROR"
         else:
+            self.Log.info("AJAX: torrent removed (ID: %s)", torrent_id)
             return "OK"
 
     def hash_torrent(self, torrent_id):
         try:
             self.RT.rehash(torrent_id)
         except:
+            self.Log.error("AJAX: torrent rehash error (ID: %s)", torrent_id)
+            logging.error("%s %s", "AJAX error - torrent could not be rehashed", traceback.format_exc())
             return "ERROR"
         else:
+            self.Log.info("AJAX: torrent rehash started (ID: %s)", torrent_id)
             return "OK"
             
     def delete_torrent(self, torrent_id):
@@ -357,6 +380,7 @@ class Ajax:
                 delete = files[0].base_path
             
             if not os.path.exists(delete):
+                self.Log.error("AJAX: torrent delete error - no such file '%s' (ID: %s)", delete, torrent_id)
                 return "ERROR/no such file"
             else:
                 try:
@@ -364,6 +388,7 @@ class Ajax:
                         os.remove(delete)
                     else:
                         shutil.rmtree(delete)
+                    self.Log.info("AJAX: torrent deleted (ID: %s)", torrent_id)
                     self.remove_torrent(torrent_id)
                     return "OK"
                 except:
@@ -394,6 +419,7 @@ class Ajax:
         try:
             decoded = bencode.bdecode(inFile)
         except:
+            self.Log.error("AJAX: '%s' (uploaded through fileSocket) is not a valid torrent file", fileName)
             return "ERROR/Invalid torrent file"
         else:
             newFile = open("torrents/%s" % (fileName), "wb")
@@ -403,6 +429,7 @@ class Ajax:
                 self.RT.start_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
             else:
                 self.RT.load_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
+            self.Log.info("AJAX: '%s' (uploaded through fileSocket) loaded%s successfully", fileName, (start and " and started" or ""))
             return "OK"
         
     def upload_torrent(self, torrent=None, start=None):
@@ -412,6 +439,7 @@ class Ajax:
             decoded = bencode.bdecode(inFile)
         except:
             #Invalid torrent
+            self.Log.error("AJAX: '%s' (uploaded via /ajax) is not a valid torrent file", fileName)
             return "ERROR/Invalid torrent file"
         else:
             #save file in /torrents
@@ -423,6 +451,7 @@ class Ajax:
                 self.RT.start_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
             else:
                 self.RT.load_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
+            self.Log.info("AJAX: '%s' (uploaded via /ajax) loaded%s successfully", fileName, (start and " and started" or ""))
             return self.Handler.HTMLredirect("/")
             
     def get_info_multi(self, view, sortby=None, reverse=None, drop_down_ids=None):
