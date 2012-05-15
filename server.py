@@ -237,7 +237,8 @@ class ajaxSocket(websocket.WebSocketHandler):
 
         qs = urlparse.parse_qs(message)
         request = qs.get("request", [None])[0]
-        logging.info("%d %s (%s)", self.get_status(), "ajaxSocket request %s" % request, self.request.remote_ip)
+        if request != "get_info_multi":
+            logging.info("%d %s (%s)", self.get_status(), "ajaxSocket request %s" % request, self.request.remote_ip)
         if not request:
             logging.error("%d %s (%s)", self.get_status(), "ajaxSocket error - no request specified", self.request.remote_ip)
             self.write_message("ERROR/No request specified")
@@ -411,6 +412,7 @@ if __name__ == "__main__":
     }
     
     http_server = httpserver.HTTPServer(application, ssl_options=ssl_options)
+    logging.info("Starting webserver on http%s://%s:%i" % ((ssl_options and "s" or ""), global_config["server.socket_host"], global_config["server.socket_port"]))
     http_server.listen(global_config["server.socket_port"], global_config["server.socket_host"])
     
     ioloop.IOLoop.instance().start()
