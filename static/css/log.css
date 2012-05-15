@@ -30,3 +30,8 @@ tr.level_4 {
 
 td.level_4 {
   background-color: white; }
+
+tr.new_message {
+  background-color: rgba(255, 255, 0, 0.3); }
+  tr.new_message > td.log_level {
+    background-color: rgba(255, 255, 0, 0.3); }

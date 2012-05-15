@@ -294,7 +294,53 @@ class ajaxSocket(websocket.WebSocketHandler):
             
     def on_close(self):
         logging.info("%d %s (%s)", self.get_status(), "ajaxSocket closed", self.request.remote_ip)
+   
+class logSocket(websocket.WebSocketHandler):
+    def _check(self):
+        client_cookie = self.cookies
+        Lcheck = self.application._pyrtL.checkLogin(client_cookie)
+        if not Lcheck:
+            return False
+        else:
+            return True
+
+    def open(self):
+        if not self._check():
+            logging.error("%d %s (%s)", self.get_status(), "logSocket denied", self.request.remote_ip)
+            self.write_message("ERROR/Permission denied")
+            self.close()
+            return
+        logging.info("%d %s (%s)", self.get_status(), "logSocket opened", self.request.remote_ip)
+
+    def on_message(self, message):
+        if not self._check():
+            logging.error("%d %s (%s)", self.get_status(), "logSocket message denied", self.request.remote_ip)
+            self.write_message("ERROR/Permission denied")
+            self.close()
+            return
     
+        logging.info("%d logSocket message %s (%s)", self.get_status(), message, self.request.remote_ip)
+        try:
+            args = urlparse.parse_qs(message)
+            request = args["request"][0]
+        except:
+            logging.error("%d %s (%s)", self.get_status(), "logSocket error - no request specified", self.request.remote_ip)
+            self.write_message("ERROR/No request specified")
+            return
+        else:
+            if request == "checknew":
+                lastID = args.get("lastID", [None])[0]
+                new = self.application._pyrtLog.returnNew(lastID)
+                if new:
+                    self.write_message(new)
+            else:
+                logging.error("%d %s (%s)", self.get_status(), "logSocket error - unknown request '%s'" % (request), self.request.remote_ip)
+                self.write_message("ERROR/Unknown request")
+                return
+
+    def on_close(self):
+        logging.info("%d %s (%s)", self.get_status(), "logSocket closed", self.request.remote_ip)
+
 class fileSocket(websocket.WebSocketHandler):
     def _check(self):
         client_cookie = self.cookies
@@ -415,6 +461,7 @@ if __name__ == "__main__":
         (r"/ajaxsocket", ajaxSocket),
         (r"/filesocket", fileSocket),
         (r"/statsocket", statSocket),
+        (r"/logsocket", logSocket),
     ], **settings)
 
     logger = weblog.Logger()

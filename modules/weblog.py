@@ -3,10 +3,12 @@
 import time
 import random
 import string
+import logging
 
 class Message(object):
     """Class to contain a message"""
-    def __init__(self, text, level=2, level_name="INFO"):
+    def __init__(self, msg_id, text, level=2, level_name="INFO"):
+        self.msg_id = msg_id
         self.text = text
         self.level = level
         self.level_name = level_name
@@ -36,7 +38,7 @@ class Logger(object):
             msg_ = msg % tuple(args)
         else:
             msg_ = msg
-        message = self.fmt(Message(msg_))
+        message = self.fmt(Message(_id, msg_))
 
         self.RECORDS += [_id]
         self.RECORD[_id] = message
@@ -48,7 +50,7 @@ class Logger(object):
             msg_ = msg % args
         else:
             msg_ = msg
-        message = self.fmt(Message(msg_, level=self.ERROR, level_name="ERROR"))
+        message = self.fmt(Message(_id, msg_, level=self.ERROR, level_name="ERROR"))
         self.RECORDS += [_id]
         self.RECORD[_id] = message
 
@@ -59,7 +61,7 @@ class Logger(object):
             msg_ = msg % args
         else:
             msg_ = msg
-        message = self.fmt(Message(msg_, level=self.WARNING, level_name="WARNING"))
+        message = self.fmt(Message(_id, msg_, level=self.WARNING, level_name="WARNING"))
         self.RECORDS += [_id]
         self.RECORD[_id] = message
 
@@ -70,7 +72,7 @@ class Logger(object):
             msg_ = msg % args
         else:
             msg_ = msg
-        message = self.fmt(Message(msg_, level=self.DEBUG, level_name="DEBUG"))
+        message = self.fmt(Message(_id, msg_, level=self.DEBUG, level_name="DEBUG"))
         self.RECORDS += [_id]
         self.RECORD[_id] = message
 
@@ -89,12 +91,16 @@ class Logger(object):
         msg.fmt = fmt
         return msg
 
-    def html_format(self, msg):
+    def html_format(self, msg, addnewflag=False):
+        if addnewflag:
+            msg.new = " new_message"
+        else:
+            msg.new = ""
         return """
-                <tr class='log_row log_message level_%(level)s'>
-                    <td class='log_level level_%(level)s'>%(level_name)s</td>
-                    <td class='log_message'>%(fmt)s</td>
-                </tr>""" % msg.__dict__
+                        <tr class='log_row log_message level_%(level)s%(new)s' id='%(msg_id)s'>
+                            <td class='log_level level_%(level)s'>%(level_name)s</td>
+                            <td class='log_message'>%(fmt)s</td>
+                        </tr>""" % msg.__dict__
 
     def html(self):
         construct = ""
@@ -103,6 +109,12 @@ class Logger(object):
         return construct
 
     def returnNew(self, lastID):
-        pass 
-
-
+        try:
+            idx = self.RECORDS.index(lastID)
+        except ValueError:
+            idx = 0
+        new = self.RECORDS[idx+1:]
+        construct = ""
+        for _id in reversed(new):
+            construct += self.html_format(self.RECORD[_id], addnewflag=True)
+        return construct
