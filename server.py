@@ -9,10 +9,12 @@ import tornado.ioloop as ioloop
 import tornado.web as web
 import tornado.httpserver as httpserver
 import tornado.websocket as websocket
+import tornado.options
 import os
 import urlparse
 import json
 import base64
+import logging
 
 c = config.Config()
 c.loadconfig()
@@ -33,6 +35,8 @@ if ssl_certificate and ssl_keyfile:
     }
 else:
     ssl_options = None
+
+tornado.options.parse_command_line(["--logging=debug"])
 
 class index(web.RequestHandler):
     """Default page handler for /
@@ -200,17 +204,27 @@ class RSS(web.RequestHandler):
         self.write(self.application._pyrtRSS_PAGE.index())
         
 class ajaxSocket(websocket.WebSocketHandler):
-    def open(self):
+    def _check(self):
         client_cookie = self.cookies
         Lcheck = self.application._pyrtL.checkLogin(client_cookie)
         if not Lcheck:
-            print(">>> ajaxSocket denied")
+            return False
+        else:
+            return True
+
+    def open(self):
+        if not self._check():
+            logging.error("%d %s %.2fms", self.get_status(), "ajaxSocket denied", 1000*self.request.request_time())
             self.close()
             return
-        print(">>> ajaxSocket opened")
-        
+        logging.info("%d %s (%s)", self.get_status(), "ajaxSocket opened", self.request.remote_ip)
 
     def on_message(self, message):
+        if not self._check():
+            logging.error("%d %s %.2fms", self.get_status(), "ajaxSocket message denied", 1000*self.request.request_time())
+            self.close()
+            return
+
         #parse out get query
         #q = urlparse.parse_qs(message)
         #request = q.get("request", [None])[0]
@@ -223,8 +237,9 @@ class ajaxSocket(websocket.WebSocketHandler):
 
         qs = urlparse.parse_qs(message)
         request = qs.get("request", [None])[0]
-        print("<<< got ajaxSocket request %s" % request)
+        logging.info("%d %s (%s)", self.get_status(), "ajaxSocket request %s" % request, self.request.remote_ip)
         if not request:
+            logging.error("%d %s (%s)", self.get_status(), "ajaxSocket error - no request specified", self.request.remote_ip)
             self.write_message("ERROR/No request specified")
             return
         
@@ -234,12 +249,15 @@ class ajaxSocket(websocket.WebSocketHandler):
             return
         
         if not self.application._pyrtAJAX.has_command(request):
+            logging.error("%d %s (%s)", self.get_status(), "ajaxSocket error - no such command `%s`" % request, self.request.remote_ip)
             self.write_message("ERROR/No such command")
             return
         if not self.application._pyrtAJAX.validate_command(request, qs):
+            logging.error("%d %s (%s)", self.get_status(), "ajaxSocket error - not enough args", self.request.remote_ip)
             self.write_message("ERROR/need more args")
             return
         if request == "upload_torrent":
+            logging.warning("%d %s (%s)", self.get_status(), "ajaxSocket upload_torrent not supported, use POST of fileSocket method instead", self.request.remote_ip)
             self.write_message("ERROR/you should use POST or fileSocket method for file uploads")
             return
                 
@@ -247,23 +265,36 @@ class ajaxSocket(websocket.WebSocketHandler):
         if resp:
             self.write_message(resp)
         else:
+            logging.error("%d %s (%s)", self.get_status(), "ajaxSocket error - function returned nothing", self.request.remote_ip)
             self.write_message("ERROR/ajax function returned nothing")
             
     def on_close(self):
-        print(">>> ajaxSocket closed")
+        logging.info("%d %s (%s)", self.get_status(), "ajaxSocket closed", self.request.remote_ip)
     
 class fileSocket(websocket.WebSocketHandler):
-    def open(self):
+    def _check(self):
         client_cookie = self.cookies
         Lcheck = self.application._pyrtL.checkLogin(client_cookie)
         if not Lcheck:
-            print(">>> fileSocket denied")
+            return False
+        else:
+            return True
+
+    def open(self):
+        if not self._check():
+            logging.error("%d %s (%s)", self.get_status(), "fileSocket denied", self.request.remote_ip)
             self.write_message("ERROR/Permission denied")
             self.close()
             return
-        print(">>> fileSocket opened")
+        logging.info("%d %s (%s)", self.get_status(), "fileSocket opened", self.request.remote_ip)
         
     def on_message(self, message):
+        if not self._check():
+            logging.error("%d %s (%s)", self.get_status(), "fileSocket message denied", self.request.remote_ip)
+            self.write_message("ERROR/Permission denied")
+            self.close()
+            return
+
         #parse message
         #FILENAME@@@<filename>:::CONTENT@@@<content>
         try:
@@ -271,13 +302,14 @@ class fileSocket(websocket.WebSocketHandler):
             id__ = message.split(":::")[1]
             content_ = message.split(":::",2)[2]
         except:
+            logging.error("%d %s (%s)", self.get_status(), "fileSocket error - invalid message format", self.request.remote_ip)
             self.write_message("ERROR/invalid message format")
         else:
             filename = filename_.split("@@@",1)[1]
             id_ = id__.split("@@@",1)[1]
             content = base64.b64decode(content_.split("@@@",1)[1].split("base64,",1)[1])
             
-            print("<<< fileSocket id %s, filename %s, size %i" % (id_, filename, len(content)))
+            logging.info("%d %s (%s)", self.get_status(), "fileSocket message - id: %s, filename: %s, size: %i" % (id_, filename, len(content)), self.request.remote_ip)
             obj = {"torrent" : [{"filename" : filename, "content" : content}]}
             resp = self.application._pyrtAJAX.handle("upload_torrent_socket", obj)
             response = {
@@ -289,24 +321,37 @@ class fileSocket(websocket.WebSocketHandler):
             self.write_message(json.dumps(response))
         
     def on_close(self):
-        print(">>> fileSocket closed")
-        
+        logging.info("%d %s (%s)", self.get_status(), "fileSocket closed", self.request.remote_ip)
+
 class statSocket(websocket.WebSocketHandler):
-    def open(self):
+    def _check(self):
         client_cookie = self.cookies
         Lcheck = self.application._pyrtL.checkLogin(client_cookie)
         if not Lcheck:
-            print(">>> statSocket denied")
+            return False
+        else:
+            return True
+
+    def open(self):
+        if not self._check():
+            logging.error("%d %s (%s)", self.get_status(), "statSocket denied", self.request.remote_ip)
             self.write_message("ERROR/Permission denied")
             self.close()
             return
-        print(">>> statSocket opened")
-        
+        logging.info("%d %s (%s)", self.get_status(), "statSocket opened", self.request.remote_ip) 
+
     def on_message(self, message):
-        print("<<< statSocket message %s" % message)
+        if not self._check():
+            logging.error("%d %s (%s)", self.get_status(), "statSocket message denied", self.request.remote_ip)
+
+            self.write_message("ERROR/Permission denied")
+            self.close()
+            return
+
         try:
             request = urlparse.parse_qs(message).get("request")[0]
         except:
+            logging.error("%d %s (%s)", self.get_status(), "statSocket error - invalid request", self.request.remote_ip)
             self.write_message("ERROR/Invalid request")
             return
         else:
@@ -315,8 +360,8 @@ class statSocket(websocket.WebSocketHandler):
         
         
     def on_close(self):
-        print(">>> statSocket closed")
-        
+        logging.info("%d %s (%s)", self.get_status(), "statSocket closed", self.request.remote_ip) 
+
 class stats(web.RequestHandler):
     def get(self):
         with open("htdocs/statHTML.tmpl") as doc:
