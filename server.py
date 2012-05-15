@@ -443,7 +443,6 @@ if __name__ == "__main__":
         os.remove(".user.pickle")
     settings = {
         "static_path" : os.path.join(os.getcwd(), "static"),
-        "debug" : True,
     }
     application = web.Application([
         (r"/css/(.*)", web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/css/")}),
