@@ -36,17 +36,17 @@ class Login:
         salt = base64.b64decode(hash.split("$")[1])
         result = self.hashPassword(pw, salt=salt)
         if result == self.USER.password:
-            self.Log.info("LOGIN: User successfully logged in from %s.*.*.*", ip.split(".")[0])
+            self.Log.info("LOGIN: User successfully logged in from %s", ip)
             return True
         else:
-            self.Log.warning("LOGIN: Attempted login from %s.*.*.* failed (invalid password)", ip.split(".")[0])
+            self.Log.warning("LOGIN: Attempted login from %s failed (invalid password)", ip)
             return False
                 
     def checkLogin(self, cookies):
         try:
             session_id = cookies.get("sess_id").value
-            #if session_id == self.USER.sess_id:
-            if session_id in self.USER.testing:
+            if session_id == self.USER.sess_id:
+            #if session_id in self.USER.testing:
                 return True
             else:
                 return False
@@ -88,8 +88,8 @@ class Login:
     def sendCookie(self, getSessID=False):
         randstring = "".join([random.choice(string.letters + string.digits) for i in range(20)])
         #add sess_id to self.USER
-        #self.USER.sess_id = randstring
-        self.USER.testing += [randstring]
+        self.USER.sess_id = randstring
+        #self.USER.testing += [randstring]
         self._flush()  
         if getSessID:
             return randstring
