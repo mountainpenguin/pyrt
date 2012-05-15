@@ -72,7 +72,7 @@ class detail(web.RequestHandler):
     """
     def get(self):
         view = self.get_argument("view", None)
-        torrent_id = self.get_argument("torrend_id", None)
+        torrent_id = self.get_argument("torrent_id", None)
         password = self.get_argument("password", None)
         
         client_cookie = self.cookies
