@@ -59,7 +59,7 @@ class Logger(object):
             msg_ = msg % args
         else:
             msg_ = msg
-        message = self.fmt(Message(msg_, level=self.WARNING, level_name="ERROR"))
+        message = self.fmt(Message(msg_, level=self.WARNING, level_name="WARNING"))
         self.RECORDS += [_id]
         self.RECORD[_id] = message
 
@@ -102,6 +102,7 @@ class Logger(object):
             construct += self.html_format(self.RECORD[_id])
         return construct
 
-        
+    def returnNew(self, lastID):
+        pass 
 
 
