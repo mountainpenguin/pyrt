@@ -63,10 +63,19 @@ class Index(object):
                 else:
                     tDict[t]["ratio"] = 0
 
-                tDict[t]["upShare"] = float(tDict[t]["up_total"]) / upTotal
-                tDict[t]["downShare"] = float(tDict[t]["down_total"]) / downTotal
+                if upTotal > 0:
+                    tDict[t]["upShare"] = float(tDict[t]["up_total"]) / upTotal
+                else:
+                    tDict[t]["upShare"] = 0
+                if downTotal > 0:
+                    tDict[t]["downShare"] = float(tDict[t]["down_total"]) / downTotal
+                else:
+                    tDict[t]["downShare"] = 0
             for t in tDict:
-                tDict[t]["ratioShare"] = tDict[t]["ratio"] / ratioTotal
+                if ratioTotal > 0:
+                    tDict[t]["ratioShare"] = tDict[t]["ratio"] / ratioTotal
+                else:
+                    tDict[t]["ratioShare"] = 0
                 tDict[t]["up_total"] = self.handler.humanSize(tDict[t]["up_total"])
                 tDict[t]["down_total"] = self.handler.humanSize(tDict[t]["down_total"])
             return json.dumps({

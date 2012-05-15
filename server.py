@@ -57,7 +57,7 @@ class index(web.RequestHandler):
             self.write(self.application._pyrtL.loginHTML())
             return
         elif not Lcheck and password:
-            Pcheck = self.application._pyrtL.checkPassword(password)
+            Pcheck = self.application._pyrtL.checkPassword(password, self.request.remote_ip)
             if Pcheck:
                 #set cookie
                 self.set_cookie("sess_id", self.application._pyrtL.sendCookie(True))
@@ -86,7 +86,7 @@ class detail(web.RequestHandler):
             self.write(self.application._pyrtL.loginHTML())
             return
         elif not Lcheck and password:
-            Pcheck = self.application._pyrtL.checkPassword(password)
+            Pcheck = self.application._pyrtL.checkPassword(password, self.request.remote_ip)
             if Pcheck:
                 #set cookie
                 self.set_cookie("sess_id", self.application._pyrtL.sendCookie(True))
@@ -151,7 +151,7 @@ class options(web.RequestHandler):
             self.write(self.application._pyrtL.loginHTML())
             return
         elif not Lcheck and password:
-            Pcheck = self.application._pyrtL.checkPassword(password)
+            Pcheck = self.application._pyrtL.checkPassword(password, self.request.remote_ip)
             if Pcheck:
                 #set cookie
                 self.set_cookie("sess_id", self.application._pyrtL.sendCookie(True))
@@ -193,7 +193,7 @@ class logHandler(web.RequestHandler):
             self.write(self.application._pyrtL.loginHTML())
             return
         elif not Lcheck and password:
-            Pcheck = self.application._pyrtL.checkPassword(password)
+            Pcheck = self.application._pyrtL.checkPassword(password, self.request.remote_ip)
             if Pcheck:
                 self.set_cookie("sess_id", self.application._pyrtL.sendCookie(True))
             else:
@@ -216,7 +216,7 @@ class RSS(web.RequestHandler):
             self.write(self.application._pyrtL.loginHTML())
             return
         elif not Lcheck and password:
-            Pcheck = self.application._pyrtL.checkPassword(password)
+            Pcheck = self.application._pyrtL.checkPassword(password, self.request.remote_ip)
             if Pcheck:
                 #set cookie
                 self.set_cookie("sess_id", self.application._pyrtL.sendCookie(True))
@@ -419,7 +419,7 @@ if __name__ == "__main__":
 
     logger = weblog.Logger()
     application._pyrtRT = rtorrent.rtorrent(c.get("rtorrent_socket"))    
-    application._pyrtL = login.Login(conf=c)
+    application._pyrtL = login.Login(conf=c, log=logger)
     application._pyrtINDEX = indexPage.Index(conf=c, RT=application._pyrtRT)
     application._pyrtAJAX = ajaxPage.Ajax(conf=c, RT=application._pyrtRT, Log=logger)
     application._pyrtOPTIONS = optionsPage.Options(conf=c, RT=application._pyrtRT)

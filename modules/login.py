@@ -17,8 +17,9 @@ class User:
         self.testing = testing
         
 class Login:
-    def __init__(self, conf=config.Config()):
+    def __init__(self, conf=config.Config(), log=None):
         self.C = conf
+        self.Log = log
         #get this from a pickled object
         #get pyrt root dir
         try:
@@ -30,20 +31,22 @@ class Login:
     def _flush(self):
         pickle.dump(self.USER, open(".user.pickle", "w"))
         
-    def checkPassword(self, pw):
+    def checkPassword(self, pw, ip):
         hash = self.USER.password
         salt = base64.b64decode(hash.split("$")[1])
         result = self.hashPassword(pw, salt=salt)
         if result == self.USER.password:
+            self.Log.info("LOGIN: User successfully logged in from %s.*.*.*", ip.split(".")[0])
             return True
         else:
+            self.Log.warning("LOGIN: Attempted login from %s.*.*.* failed (invalid password)", ip.split(".")[0])
             return False
                 
     def checkLogin(self, cookies):
         try:
             session_id = cookies.get("sess_id").value
-            if session_id == self.USER.sess_id:
-            #if session_id in self.USER.testing:
+            #if session_id == self.USER.sess_id:
+            if session_id in self.USER.testing:
                 return True
             else:
                 return False
@@ -85,8 +88,8 @@ class Login:
     def sendCookie(self, getSessID=False):
         randstring = "".join([random.choice(string.letters + string.digits) for i in range(20)])
         #add sess_id to self.USER
-        self.USER.sess_id = randstring
-        #self.USER.testing += [randstring]
+        #self.USER.sess_id = randstring
+        self.USER.testing += [randstring]
         self._flush()  
         if getSessID:
             return randstring
