@@ -20,24 +20,24 @@
     ## the *full* path to the SSL certificate that pyrt should use
     ## if this is not defined, pyrt will run a HTTP server
     ## OPTIONAL
-#    "ssl_certificate" : "/path/to/ssl/certificate",
+    #"ssl_certificate" : "/path/to/ssl/certificate",
 
     ## the *full* path to the SSL private key that pyrt should use
     ## if this is not defined, pyrt will run a HTTP server
     ## OPTIONAL
-#    "ssl_private_key" : "/path/to/ssl/private/key",
+    #"ssl_private_key" : "/path/to/ssl/private/key",
    
     ## the *full* path to the SSL certiface authority file that pyrt should use
     ## OPTIONAL
-#    "ssl_ca_certs" : "/path/to/ssl/ca/certs",
+    #"ssl_ca_certs" : "/path/to/ssl/ca/certs",
 
     ## the *full* path to the root directory that you want to stat for disk usage
     ## OPTIONAL (defaults to "/")
-#    "root_directory" : "/",
+    #"root_directory" : "/",
 
     ## relative or full path to the log file that pyrt should use
     ## this will default to pyrt.log if not defined here
-#    "logfile" : "pyrt.log",
+    #"logfile" : "pyrt.log",
 
     ## hashed password that pyrt will use
     ## currently this uses unrealirc style md5 hashing
