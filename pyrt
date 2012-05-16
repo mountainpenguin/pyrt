@@ -2,8 +2,7 @@
 
 from __future__ import print_function
 from modules import config, login, rtorrent          #'real' modules
-from modules import weblog, daemon
-import mkpasswd
+from modules import weblog, daemon, mkpasswd
 from modules import indexPage, detailPage, ajaxPage  # pages
 from modules import optionsPage, rssPage, statsPage
 
