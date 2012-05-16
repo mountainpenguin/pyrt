@@ -9,3 +9,4 @@ static/css/*.backup
 .sass-cache
 config/*.crt
 config/*.key
+*.log

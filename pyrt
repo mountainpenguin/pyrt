@@ -2,7 +2,8 @@
 
 from __future__ import print_function
 from modules import config, login, rtorrent          #'real' modules
-from modules import weblog
+from modules import weblog, daemon
+import mkpasswd
 from modules import indexPage, detailPage, ajaxPage  # pages
 from modules import optionsPage, rssPage, statsPage
 
@@ -16,28 +17,15 @@ import urlparse
 import json
 import base64
 import logging
+import sys
+import signal
+import traceback
 
-c = config.Config()
-c.loadconfig()
+__AUTHOR__ = "mountainpenguin (pinguino.de.montana@googlemail.com)"
+__SITE__ = "http://github.com/mountainpenguin/pyrt"
+__VERSION__ = "1.0.0"
+__LICENSE__ = ""
 
-global_config = {
-    "server.socket_host" : str(c.get("host")),
-    "server.socket_port" : c.get("port"),
-}
-
-ssl_certificate = c.get("ssl_certificate")
-ssl_keyfile = c.get("ssl_private_key")
-ssl_ca_certs = c.get("ssl_ca_certs")
-if ssl_certificate and ssl_keyfile:
-    ssl_options = {
-        "certfile" : ssl_certificate,
-        "keyfile" : ssl_keyfile,
-        "ca_certs" : ssl_ca_certs,
-    }
-else:
-    ssl_options = None
-
-tornado.options.parse_command_line(["--logging=debug"])
 
 class index(web.RequestHandler):
     """Default page handler for /
@@ -437,56 +425,153 @@ class stats(web.RequestHandler):
         with open("htdocs/statHTML.tmpl") as doc:
             self.write(doc.read())
     post=get
-    
-if __name__ == "__main__":
-    if os.path.exists(".user.pickle"):
-        os.remove(".user.pickle")
-    settings = {
-        "static_path" : os.path.join(os.getcwd(), "static"),
-        "debug" : True,
-    }
-    application = web.Application([
-        (r"/css/(.*)", web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/css/")}),
-        (r"/javascript/(.*)", web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/javascript/")}),
-        (r"/images/(.*)", web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/images/") }),
-        (r"/favicons/(.*)", web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/favicons/") }),
-        (r"/", index),
-        (r"/index", index),
-        (r"/detail", detail),
-        (r"/ajax", ajax),
-        (r"/options", options),
-        (r"/RSS", RSS),
-        (r"/stats", stats),
-        (r"/log", logHandler),
-        (r"/ajaxsocket", ajaxSocket),
-        (r"/filesocket", fileSocket),
-        (r"/statsocket", statSocket),
-        (r"/logsocket", logSocket),
-    ], **settings)
 
-    logger = weblog.Logger()
-    application._pyrtRT = rtorrent.rtorrent(c.get("rtorrent_socket"))    
-    application._pyrtL = login.Login(conf=c, log=logger)
-    application._pyrtINDEX = indexPage.Index(conf=c, RT=application._pyrtRT)
-    application._pyrtAJAX = ajaxPage.Ajax(conf=c, RT=application._pyrtRT, Log=logger)
-    application._pyrtOPTIONS = optionsPage.Options(conf=c, RT=application._pyrtRT)
-    application._pyrtRSS_PAGE = rssPage.Index(conf=c, RT=application._pyrtRT)
-    application._pyrtSTATS = statsPage.Index(conf=c, RT=application._pyrtRT)
-    application._pyrtLog = logger
-    application._pyrtGLOBALS = {
-        "login" : application._pyrtL,
-        "indexPage" : application._pyrtINDEX,
-        "ajaxPage" : application._pyrtAJAX,
-        "optionsPage" : application._pyrtOPTIONS,
-        "rssPage" : application._pyrtRSS_PAGE,
-        "statsPage" : application._pyrtSTATS,
-        "log" : application._pyrtLog,
-        "RT" : application._pyrtRT,
-        "config" : c,
-    }
+class Main(object):
+    def __init__(self):
+        pass
     
-    http_server = httpserver.HTTPServer(application, ssl_options=ssl_options)
-    logging.info("Starting webserver on http%s://%s:%i" % ((ssl_options and "s" or ""), global_config["server.socket_host"], global_config["server.socket_port"]))
-    http_server.listen(global_config["server.socket_port"], global_config["server.socket_host"])
+    def shutdown(self, *args, **kwargs):
+        logging.info("SIGTERM received, shutting down")
+        self.instance.stop()
+        
+    def main(self, c):
+        signal.signal(signal.SIGTERM, self.shutdown)
+        
+        global_config = {
+            "server.socket_host" : str(c.get("host")),
+            "server.socket_port" : c.get("port"),
+        }
+        
+        ssl_certificate = c.get("ssl_certificate")
+        ssl_keyfile = c.get("ssl_private_key")
+        ssl_ca_certs = c.get("ssl_ca_certs")
+        if ssl_certificate and ssl_keyfile:
+            ssl_options = {
+                "certfile" : ssl_certificate,
+                "keyfile" : ssl_keyfile,
+                "ca_certs" : ssl_ca_certs,
+            }
+        else:
+            ssl_options = None
+        
+        tornado.options.parse_command_line(["--logging=debug"])
     
-    ioloop.IOLoop.instance().start()
+        if os.path.exists(".user.pickle"):
+            os.remove(".user.pickle")
+        settings = {
+            "static_path" : os.path.join(os.getcwd(), "static"),
+        }
+        application = web.Application([
+            (r"/css/(.*)", web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/css/")}),
+            (r"/javascript/(.*)", web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/javascript/")}),
+            (r"/images/(.*)", web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/images/") }),
+            (r"/favicons/(.*)", web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/favicons/") }),
+            (r"/", index),
+            (r"/index", index),
+            (r"/detail", detail),
+            (r"/ajax", ajax),
+            (r"/options", options),
+            (r"/RSS", RSS),
+            (r"/stats", stats),
+            (r"/log", logHandler),
+            (r"/ajaxsocket", ajaxSocket),
+            (r"/filesocket", fileSocket),
+            (r"/statsocket", statSocket),
+            (r"/logsocket", logSocket),
+        ], **settings)
+    
+        logger = weblog.Logger()
+        application._pyrtRT = rtorrent.rtorrent(c.get("rtorrent_socket"))    
+        application._pyrtL = login.Login(conf=c, log=logger)
+        application._pyrtINDEX = indexPage.Index(conf=c, RT=application._pyrtRT)
+        application._pyrtAJAX = ajaxPage.Ajax(conf=c, RT=application._pyrtRT, Log=logger)
+        application._pyrtOPTIONS = optionsPage.Options(conf=c, RT=application._pyrtRT)
+        application._pyrtRSS_PAGE = rssPage.Index(conf=c, RT=application._pyrtRT)
+        application._pyrtSTATS = statsPage.Index(conf=c, RT=application._pyrtRT)
+        application._pyrtLog = logger
+        application._pyrtGLOBALS = {
+            "login" : application._pyrtL,
+            "indexPage" : application._pyrtINDEX,
+            "ajaxPage" : application._pyrtAJAX,
+            "optionsPage" : application._pyrtOPTIONS,
+            "rssPage" : application._pyrtRSS_PAGE,
+            "statsPage" : application._pyrtSTATS,
+            "log" : application._pyrtLog,
+            "RT" : application._pyrtRT,
+            "config" : c,
+        }
+        
+        http_server = httpserver.HTTPServer(application, ssl_options=ssl_options)
+        logging.info("Starting webserver on http%s://%s:%i" % ((ssl_options and "s" or ""), global_config["server.socket_host"], global_config["server.socket_port"]))
+        http_server.listen(global_config["server.socket_port"], global_config["server.socket_host"])
+        
+        self.instance = ioloop.IOLoop.instance()
+        self.instance.start()
+
+    
+def _searchPID():
+    if os.path.exists(".pyrt.pid"):
+        return int(open(".pyrt.pid").read().strip())
+    
+def start():
+    if _searchPID():
+        print("pyRT has already been started")
+        return
+    
+    print("Loading pyRT configuration from %s" % os.path.join(os.getcwd(), "config/.pyrtrc"))
+    c = config.Config()
+    c.loadconfig()
+    
+    print("Starting daemon with log file %s" % c.get("logfile"))
+    STDOUT=open(c.get("logfile"), "a")
+    with daemon.DaemonContext(stdout=STDOUT, stderr=STDOUT, working_directory=os.getcwd()):
+        serv = Main()
+        PID = os.getpid()
+        open(".pyrt.pid","w").write(str(PID))
+        serv.main(c)
+
+def stop():
+    if not _searchPID():
+        print("pyRT is not running")
+        return
+    
+    PID = _searchPID()
+    print("Sending SIGTERM to process PID %d" % PID)
+    try:
+        os.kill(PID, 15)
+    except OSError:
+        print("Something went horribly wrong, there is no process with PID %d" % PID)
+        print("To allow restarting, delete the file .pyrt.pid")
+    except:
+        traceback.print_exc()
+    else:
+        os.remove(".pyrt.pid")
+    
+
+def status():
+    if _searchPID():
+        print("pyRT is running with PID: %i" % _searchPID())
+    else:
+        print("pyRT is not running")
+
+if __name__ == "__main__":
+    # cmd line syntax
+    # ./pyrt start | stop | restart | status | mkpasswd
+    try:
+        arg = sys.argv[1]
+    except:
+        arg = ""
+    if arg == "start":
+        start()
+    elif arg == "stop":
+        stop()
+    elif arg == "restart":
+        stop()
+        start()
+    elif arg == "status":
+        status()
+    elif arg == "mkpasswd":
+        mkpasswd.main()
+    else:
+        print("pyRT rtorrent webUI v%s by %s" % (__VERSION__, __AUTHOR__))
+        print("Syntax: pyrt start|stop|restart|status|mkpasswd")

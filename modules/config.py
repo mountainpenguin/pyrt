@@ -18,7 +18,7 @@ class ConfigError(Exception):
         return self.__repr__()
         
 class ConfigStore:
-    def __init__(self, sockpath, serverhost, serverport, password, ssl_certificate=None, ssl_private_key=None, ca_certs = None, root_directory="/", refresh=10):
+    def __init__(self, sockpath, serverhost, serverport, password, ssl_certificate=None, ssl_private_key=None, ca_certs = None, root_directory="/", logfile="pyrt.log", refresh=10):
         self.rtorrent_socket = sockpath
         self.host = serverhost
         self.port = serverport
@@ -27,6 +27,7 @@ class ConfigStore:
         self.ssl_private_key = ssl_private_key
         self.ssl_ca_certs = ca_certs
         self.root_directory = root_directory
+        self.logfile = logfile
         self.refresh = refresh
         
         
@@ -76,7 +77,12 @@ class Config:
             if "root_directory" in configfile:
                 root_dir = configfile["root_directory"]
             else:
-                root_dir = None
+                root_dir = "/"
+                
+            if "logfile" in configfile:
+                logfile = configfile["logfile"]
+            else:
+                logfile = "pyrt.log"
             
             try:
                 refresh = int(configfile["refresh"])
@@ -91,6 +97,7 @@ class Config:
                         ssl_private_key = pkey,
                         ca_certs = ca_certs,
                         root_directory = root_dir,
+                        logfile = logfile,
                         refresh = refresh,
                         )
             self._flush()

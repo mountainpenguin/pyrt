@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import hashlib
 import os
 import base64
@@ -13,13 +14,16 @@ def hashPassword(pw):
     md5_encoded = base64.b64encode(md5_2)
     return "$%s$%s" % (salt_encoded, md5_encoded)
     
-if __name__ == "__main__":
-    print "mkpasswd utility for pyrt"
+def main():
+    print("mkpasswd utility for pyrt")
     while True:
         password1 = getpass.getpass("Password: ")
         password2 = getpass.getpass("Again: ")
         if password1 != password2:
-            print "ERROR: passwords don't match"
+            print("ERROR: passwords don't match")
         else:
             break
-    print hashPassword(password1)
+    print(hashPassword(password1))
+    
+if __name__ == "__main__":
+    main()

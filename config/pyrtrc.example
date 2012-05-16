@@ -35,6 +35,10 @@
     ## OPTIONAL (defaults to "/")
 #    "root_directory" : "/",
 
+    ## relative or full path to the log file that pyrt should use
+    ## this will default to pyrt.log if not defined here
+#    "logfile" : "pyrt.log",
+
     ## hashed password that pyrt will use
     ## currently this uses unrealirc style md5 hashing
     ## you can use the provided mkpasswd utility to generate a hashed password
