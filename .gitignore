@@ -10,3 +10,4 @@ static/css/*.backup
 config/*.crt
 config/*.key
 *.log
+*.pid
