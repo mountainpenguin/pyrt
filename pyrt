@@ -1,5 +1,24 @@
 #!/usr/bin/env python
 
+""" Copyright (C) 2012 mountainpenguin (pinguino.de.montana@googlemail.com)
+    <http://github.com/mountainpenguin/pyrt>
+    
+    This file is part of pyRT.
+
+    pyRT is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    pyRT is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with pyRT.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
 from __future__ import print_function
 from modules import config, login, rtorrent          #'real' modules
 from modules import weblog, daemon, mkpasswd
@@ -23,7 +42,7 @@ import traceback
 __AUTHOR__ = "mountainpenguin (pinguino.de.montana@googlemail.com)"
 __SITE__ = "http://github.com/mountainpenguin/pyrt"
 __VERSION__ = "1.0.0"
-__LICENSE__ = ""
+__LICENSE__ = "GPLv3"
 
 
 class index(web.RequestHandler):
@@ -529,6 +548,7 @@ def start():
         serv.main(c)
 
 def stop():
+    
     if not _searchPID():
         print("pyRT is not running")
         return
@@ -555,6 +575,11 @@ def status():
 if __name__ == "__main__":
     # cmd line syntax
     # ./pyrt start | stop | restart | status | mkpasswd
+    print("pyRT rtorrent webUI v%s" % (__VERSION__))
+    print("Copyright (C) 2012 mountainpenguin")
+    print("This program comes with ABSOLUTELY NO WARRANTY")
+    print("This is free software, and you are welcome to redistribute it under certain conditions")
+    print("See LICENCE for details", end="\n\n")
     try:
         arg = sys.argv[1]
     except:
@@ -571,5 +596,4 @@ if __name__ == "__main__":
     elif arg == "mkpasswd":
         mkpasswd.main()
     else:
-        print("pyRT rtorrent webUI v%s by %s" % (__VERSION__, __AUTHOR__))
         print("Syntax: pyrt start|stop|restart|status|mkpasswd")
