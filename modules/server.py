@@ -39,6 +39,31 @@ import logging
 import signal
 import traceback
 
+class _check(object):
+    @staticmethod
+    def web(obj):
+        passw = obj.get_argument("password", None)
+        cookie = obj.cookies
+        cCheck = obj.application._pyrtL.checkLogin(cookie)
+        if not cCheck and not passw:
+            return (False, "")
+        elif not cCheck and passw:
+            pCheck = obj.application._pyrtL.checkPassword(passw, obj.request.remote_ip)
+            if pCheck:
+                return (True, True) # set cookie
+            else:
+                return (False, "Incorrect Password")
+        else:
+            return (True, False)
+
+    @staticmethod
+    def socket(obj):
+        cookie = obj.cookies
+        cCheck = obj.application._pyrtL.checkLogin(cookie)
+        if not cCheck:
+            return False
+        else:
+            return True
 
 class index(web.RequestHandler):
     """Default page handler for /
@@ -47,33 +72,25 @@ class index(web.RequestHandler):
         else writes login page
     """
     def get(self):
-        password = self.get_argument("password", None)
+        chk = _check.web(self)
+        if not chk[0]:
+            self.write(self.application._pyrtL.loginHTML(chk[1]))
+            return
+        elif chk[0] and chk[1]:
+            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(True))
+
         view = self.get_argument("view", None)
         sortby = self.get_argument("sortby", None)
         reverse = self.get_argument("reverse", None)
 
-        client_cookie = self.cookies
-        Lcheck = self.application._pyrtL.checkLogin(client_cookie)
-        if not Lcheck and not password:
-            self.write(self.application._pyrtL.loginHTML())
-            return
-        elif not Lcheck and password:
-            Pcheck = self.application._pyrtL.checkPassword(password, self.request.remote_ip)
-            if Pcheck:
-                #set cookie
-                self.set_cookie("sess_id", self.application._pyrtL.sendCookie(True))
-            else:
-                self.write(self.application._pyrtL.loginHTML("Incorrect Password"))
-                return
-            
-        self.write(self.application._pyrtINDEX.index(password, view, sortby, reverse))
+        self.write(self.application._pyrtINDEX.index(view, sortby, reverse))
 
         
     post = get
     
 class detail(web.RequestHandler):
-    """Detailed page view handler (/detail)
-            
+    """ *** DEPRECATED DO NOT USE *** Detailed page view handler (/detail)
+        
         Retrieves detailPage.Detail() passing the torrent_id argument.
         This has attribute HTML, which is written.
     """
@@ -108,18 +125,15 @@ class ajax(web.RequestHandler):
     def get(self):
         qs = self.request.arguments
         request = qs.get("request", [None])[0]
-        print(">>> got ajax request %s" % request)
         if not request:
             raise web.HTTPError(400, log_message="Error, no request specified")
-        
-        client_cookie = self.cookies
-        Lcheck = self.application._pyrtL.checkLogin(client_cookie)
-        if not Lcheck and request == "verify_conf_value":
+
+        chk = _check.web(self)
+        if not chk[0]:
             self.write("Session Ended")
             return
-        elif not Lcheck:
-            return
-        
+
+                
         if not self.application._pyrtAJAX.has_command(request):
             raise web.HTTPError(400, log_message="Error Invalid Method")
         if not self.application._pyrtAJAX.validate_command(request, qs):
@@ -144,23 +158,14 @@ class options(web.RequestHandler):
             If it is, writes optionsPage.Options.index()
     """
     def get(self):
-        test = self.get_argument("test", False)
-        password = self.get_argument("password", None)
-    
-        client_cookie = self.cookies
-        Lcheck = self.application._pyrtL.checkLogin(client_cookie)
-        if not Lcheck and not password:
-            self.write(self.application._pyrtL.loginHTML())
+        chk = _check.web(self)
+        if not chk[0]:
+            self.write(self.application._pyrtL.loginHTML(chk[1]))
             return
-        elif not Lcheck and password:
-            Pcheck = self.application._pyrtL.checkPassword(password, self.request.remote_ip)
-            if Pcheck:
-                #set cookie
-                self.set_cookie("sess_id", self.application._pyrtL.sendCookie(True))
-            else:
-                self.write(self.application._pyrtL.loginHTML("Incorrect Password"))
-                return
-            
+        elif chk[0] and chk[1]:
+            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(True))
+
+        test = self.get_argument("test", False)
         if not test:
             try:
                 link = self.request.headers["Referer"]
@@ -188,20 +193,13 @@ class options(web.RequestHandler):
    
 class logHandler(web.RequestHandler):
     def get(self):
-        password = self.get_argument("password", None)
-        client_cookie = self.cookies
-        Lcheck = self.application._pyrtL.checkLogin(client_cookie)
-        if not Lcheck and not password:
-            self.write(self.application._pyrtL.loginHTML())
+        chk = _check.web(self)
+        if not chk[0]:
+            self.write(self.application._pyrtL.loginHTML(chk[1]))
             return
-        elif not Lcheck and password:
-            Pcheck = self.application._pyrtL.checkPassword(password, self.request.remote_ip)
-            if Pcheck:
-                self.set_cookie("sess_id", self.application._pyrtL.sendCookie(True))
-            else:
-                self.write(self.application._pyrtL.loginHTML("Incorrect Password"))
-                return
-        
+        elif chk[0] and chk[1]:
+            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(True))
+
         logHTML = self.application._pyrtLog.html()
         with open("htdocs/logHTML.tmpl") as template:
             self.write(template.read() % {"logHTML":logHTML})
@@ -210,42 +208,25 @@ class logHandler(web.RequestHandler):
 
 class RSS(web.RequestHandler):
     def get(self):
-        password = self.get_argument("password", None)
-    
-        client_cookie = self.cookies
-        Lcheck = self.application._pyrtL.checkLogin(client_cookie)
-        if not Lcheck and not password:
-            self.write(self.application._pyrtL.loginHTML())
+        chk = _check.web(self)
+        if not chk[0]:
+            self.write(self.application._pyrtL.loginHTML(chk[1]))
             return
-        elif not Lcheck and password:
-            Pcheck = self.application._pyrtL.checkPassword(password, self.request.remote_ip)
-            if Pcheck:
-                #set cookie
-                self.set_cookie("sess_id", self.application._pyrtL.sendCookie(True))
-            else:
-                self.write(self.application._pyrtL.loginHTML("Incorrect Password"))
-                return
-            
+        elif chk[0] and chk[1]:
+            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(True))
+
         self.write(self.application._pyrtRSS_PAGE.index())
         
 class ajaxSocket(websocket.WebSocketHandler):
-    def _check(self):
-        client_cookie = self.cookies
-        Lcheck = self.application._pyrtL.checkLogin(client_cookie)
-        if not Lcheck:
-            return False
-        else:
-            return True
-
     def open(self):
-        if not self._check():
+        if not _check.socket(self):
             logging.error("%d %s %.2fms", self.get_status(), "ajaxSocket denied", 1000*self.request.request_time())
             self.close()
             return
         logging.info("%d %s (%s)", self.get_status(), "ajaxSocket opened", self.request.remote_ip)
 
     def on_message(self, message):
-        if not self._check():
+        if not _check.socket(self):
             logging.error("%d %s %.2fms", self.get_status(), "ajaxSocket message denied", 1000*self.request.request_time())
             self.close()
             return
@@ -267,11 +248,6 @@ class ajaxSocket(websocket.WebSocketHandler):
         if not request:
             logging.error("%d %s (%s)", self.get_status(), "ajaxSocket error - no request specified", self.request.remote_ip)
             self.write_message("ERROR/No request specified")
-            return
-        
-        client_cookie = self.cookies
-        Lcheck = self.application._pyrtL.checkLogin(client_cookie)
-        if not Lcheck:
             return
         
         if not self.application._pyrtAJAX.has_command(request):
@@ -298,16 +274,8 @@ class ajaxSocket(websocket.WebSocketHandler):
         logging.info("%d %s (%s)", self.get_status(), "ajaxSocket closed", self.request.remote_ip)
    
 class logSocket(websocket.WebSocketHandler):
-    def _check(self):
-        client_cookie = self.cookies
-        Lcheck = self.application._pyrtL.checkLogin(client_cookie)
-        if not Lcheck:
-            return False
-        else:
-            return True
-
     def open(self):
-        if not self._check():
+        if not _check.socket(self):
             logging.error("%d %s (%s)", self.get_status(), "logSocket denied", self.request.remote_ip)
             self.write_message("ERROR/Permission denied")
             self.close()
@@ -315,7 +283,7 @@ class logSocket(websocket.WebSocketHandler):
         logging.info("%d %s (%s)", self.get_status(), "logSocket opened", self.request.remote_ip)
 
     def on_message(self, message):
-        if not self._check():
+        if not _check.socket(self):
             logging.error("%d %s (%s)", self.get_status(), "logSocket message denied", self.request.remote_ip)
             self.write_message("ERROR/Permission denied")
             self.close()
@@ -343,16 +311,8 @@ class logSocket(websocket.WebSocketHandler):
         logging.info("%d %s (%s)", self.get_status(), "logSocket closed", self.request.remote_ip)
 
 class fileSocket(websocket.WebSocketHandler):
-    def _check(self):
-        client_cookie = self.cookies
-        Lcheck = self.application._pyrtL.checkLogin(client_cookie)
-        if not Lcheck:
-            return False
-        else:
-            return True
-
     def open(self):
-        if not self._check():
+        if not _check.socket(self):
             logging.error("%d %s (%s)", self.get_status(), "fileSocket denied", self.request.remote_ip)
             self.write_message("ERROR/Permission denied")
             self.close()
@@ -360,7 +320,7 @@ class fileSocket(websocket.WebSocketHandler):
         logging.info("%d %s (%s)", self.get_status(), "fileSocket opened", self.request.remote_ip)
         
     def on_message(self, message):
-        if not self._check():
+        if not _check.socket(self):
             logging.error("%d %s (%s)", self.get_status(), "fileSocket message denied", self.request.remote_ip)
             self.write_message("ERROR/Permission denied")
             self.close()
@@ -395,16 +355,8 @@ class fileSocket(websocket.WebSocketHandler):
         logging.info("%d %s (%s)", self.get_status(), "fileSocket closed", self.request.remote_ip)
 
 class statSocket(websocket.WebSocketHandler):
-    def _check(self):
-        client_cookie = self.cookies
-        Lcheck = self.application._pyrtL.checkLogin(client_cookie)
-        if not Lcheck:
-            return False
-        else:
-            return True
-
     def open(self):
-        if not self._check():
+        if not _check.socket(self):
             logging.error("%d %s (%s)", self.get_status(), "statSocket denied", self.request.remote_ip)
             self.write_message("ERROR/Permission denied")
             self.close()
@@ -412,7 +364,7 @@ class statSocket(websocket.WebSocketHandler):
         logging.info("%d %s (%s)", self.get_status(), "statSocket opened", self.request.remote_ip) 
 
     def on_message(self, message):
-        if not self._check():
+        if not _check.socket(self):
             logging.error("%d %s (%s)", self.get_status(), "statSocket message denied", self.request.remote_ip)
 
             self.write_message("ERROR/Permission denied")
