@@ -4,10 +4,10 @@ $(document).ready(function () {
         var newinput = $("<input />").attr("type", "hidden").attr("name","password").val(hashed);
         $("#login_form").append(newinput);
         // set up persistent session
-        computeSession($("#password_input").val());
-        sess = getSession();
-        var sessinput = $("<input />").attr("type", "hidden").attr("name", "persistentSession").val(sess);
-        $("#login_form").append(sessinput);
+//        computeSession($("#password_input").val());
+//        sess = getSession();
+//        var sessinput = $("<input />").attr("type", "hidden").attr("name", "persistentSession").val(sess);
+//        $("#login_form").append(sessinput);
     });
 });
 

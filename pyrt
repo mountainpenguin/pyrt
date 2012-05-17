@@ -53,7 +53,6 @@ class index(web.RequestHandler):
     """
     def get(self):
         password = self.get_argument("password", None)
-        persistentSession = self.get_argument("persistentSession", None)
         view = self.get_argument("view", None)
         sortby = self.get_argument("sortby", None)
         reverse = self.get_argument("reverse", None)
@@ -72,11 +71,6 @@ class index(web.RequestHandler):
                 self.write(self.application._pyrtL.loginHTML("Incorrect Password"))
                 return
             
-        if persistentSession:
-            self.application._pyrtL.validatePSession(persistentSession)
-        else:
-            logging.info("No persistentSession defined")
-            print(self.request.arguments)
         self.write(self.application._pyrtINDEX.index(password, view, sortby, reverse))
 
         
