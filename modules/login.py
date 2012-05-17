@@ -31,6 +31,7 @@ import config
 import time
 import math
 import logging
+import traceback
 
 class User:
     def __init__(self, pass_hash, sess_id=None, testing=[]):
@@ -83,7 +84,7 @@ class Login:
             self.Log.warning("LOGIN: Attempted login from %s failed (invalid password)", ip)
             return False
                 
-    def checkLogin(self, cookies, ipaddr, useragent):
+    def checkLogin(self, cookies, ipaddr):
         try:
             session_id = cookies.get("sess_id").value
             salt = session_id.split("$")[1]
@@ -98,12 +99,12 @@ class Login:
 
             #for sess_id in self.USER.testing:
             #    h1 = hashlib.sha256(sess_id).hexdigest()
-            #    h2 = hashlib.sha256(h1 + ipaddr + useragent).hexdigest()
+            #    h2 = hashlib.sha256(h1 + ipaddr).hexdigest()
             #    h3 = hashlib.sha256(h2 + salt).hexdigest()
             #    if "$%s$%s" % (salt, h3) == session_id:
             #        return True
-            #    else:
-            #        return False
+            #self.Log.debug("Session for %s.*.*.* has expired" % ipaddr.split(".")[0])
+            #return False
         except:
             return False
         
@@ -142,7 +143,7 @@ class Login:
         </html>
         """ % { "PERM_SALT" : self.PERM_SALT, "msg" : msg }
         
-    def sendCookie(self, ipaddr, useragent):
+    def sendCookie(self, ipaddr):
         randstring = "".join([random.choice(string.letters + string.digits) for i in range(20)])
         #add sess_id to self.USER
         self.USER.sess_id = randstring
@@ -151,7 +152,7 @@ class Login:
 
         #hash sess_id
         h1 = hashlib.sha256(randstring).hexdigest()
-        h2 = hashlib.sha256(h1 + ipaddr + useragent).hexdigest()
+        h2 = hashlib.sha256(h1 + ipaddr).hexdigest()
         rand_salt = base64.b64encode(os.urandom(10))
         h3 = hashlib.sha256(h2 + rand_salt).hexdigest()
         return "$%s$%s" % (rand_salt, h3)
