@@ -49,7 +49,7 @@ class Login:
         except:
             #self.USER = User("mountainpenguin", self.hashPassword("testing"))
             self.USER = User(self.C.CONFIG.password)
-        self.PERM_HASH = self.USER.password.split("$")[1]
+        self.PERM_SALT = self.USER.password.split("$")[1]
         
     def _flush(self):
         pickle.dump(self.USER, open(".user.pickle", "w"))
@@ -58,39 +58,24 @@ class Login:
         return "%i" % math.floor( time.time() / 10 )
         
     def checkPassword(self, pw, ip):
-        logging.info("checkPassword request: %s", pw)
         #pw = TOTP hash
         try:
             TOTP_salt = pw.split("$")[1]
-            logging.info("TOTP_salt: %s", TOTP_salt)
         except IndexError:
             self.Log.info("LOGIN: Invalid syntax in login attempt from %s.*.*.*", ip.split(".")[0])
             logging.error("Invalid syntax in login attempt from %s", ip)
             return False
         except:
-            logging.error("Unhandled error in logging, traceback: %s", traceback.format_exc())
+            logging.error("Unhandled error in login, traceback: %s", traceback.format_exc())
             return False
         
         hashed = self.USER.password
-        logging.info("hashed: %s", hashed)
-        
         perm_salt = hashed.split("$")[1]
-        logging.info("perm_salt: %s", perm_salt)
         pwhash = hashed.split("$")[2]
-        logging.info("pwhash: %s", pwhash)
-        
         currToken = self._getTimeToken()
-        logging.info("currToken: %s", currToken)
-        
         token_salt = hashlib.sha256(currToken + TOTP_salt).hexdigest()
-        logging.info("token_salt: %s", token_salt)
-        
         cmp_hash = hashlib.sha256(pwhash + token_salt).hexdigest()
-        logging.info("cmp_hash: %s", cmp_hash)
-        
         cmpval = "$%s$%s" % (TOTP_salt, cmp_hash)
-        logging.info("cmpval: %s", cmpval)
-        
         if pw == cmpval:
             self.Log.info("LOGIN: User successfully logged in from %s.*.*.*", ip.split(".")[0])
             return True
@@ -109,6 +94,22 @@ class Login:
         except:
             return False
         
+    def validatePSession(self, sess):
+        salt = sess.split("$")[1]
+        sessOTP = sess.split("$")[2]
+        hp = self.USER.password.split("$")[2]
+        saltedhp = hashlib.sha256(hp + salt).hexdigest()
+
+        token = self._getTimeToken()
+        token_salt = hashlib.sha256(token + salt).hexdigest()
+        otp_hp = hashlib.sha256(saltedhp + token_salt).hexdigest()
+
+        if otp_hp == sessOTP:
+            return True
+        else:
+            return False
+
+
     def hashPassword(self, pw, salt=None):
         if not salt:
             salt = os.urandom(6)
@@ -131,7 +132,7 @@ class Login:
                 <script type="text/javascript" src="/javascript/login.js"></script>
             </head>
             <body>
-                <input type="hidden" id="permanent_salt" value="%(PERM_HASH)s">
+                <input type="hidden" id="permanent_salt" value="%(PERM_SALT)s">
                 <div id="login_div">
                     <div class="notice">%(msg)s</div>
                     <h1>Login to your rTorrent webUI</h1>
@@ -142,7 +143,7 @@ class Login:
                 </div>
             </body>
         </html>
-        """ % { "PERM_HASH" : self.PERM_HASH, "msg" : msg }
+        """ % { "PERM_SALT" : self.PERM_SALT, "msg" : msg }
         
     def sendCookie(self, getSessID=False):
         randstring = "".join([random.choice(string.letters + string.digits) for i in range(20)])

@@ -1,9 +1,13 @@
 $(document).ready(function () {
     $("#login_form").submit( function (e) {
-        //e.preventDefault();
         var hashed = hashPassword($("#password_input").val());
         var newinput = $("<input />").attr("type", "hidden").attr("name","password").val(hashed);
         $("#login_form").append(newinput);
+        // set up persistent session
+        computeSession($("#password_input").val());
+        sess = getSession();
+        var sessinput = $("<input />").attr("type", "hidden").attr("name", "persistentSession").val(sess);
+        $("#login_form").append(sessinput);
     });
 });
 
@@ -26,19 +30,36 @@ function genSalt() {
 
 function hashPassword(pw) {
     var new_salt = genSalt();
-    console.log("new_salt", new_salt);
     var token = getToken();
-    console.log("token", token);
     var token_salt = CryptoJS.SHA256(token + new_salt);
-    console.log("token_salt", token_salt);
-    
     var hashed1 = CryptoJS.SHA256(pw);
-    console.log("hashed1", hashed1);
     var hashed2 = CryptoJS.SHA256(hashed1 + getPermSalt());
-    console.log("hashed2", hashed2);
     var hashed3 = CryptoJS.SHA256(hashed2 + token_salt);
-    console.log("hashed3", hashed3);
-    
-    console.log("final: $" + new_salt + "$" + hashed3);
     return "$" + new_salt + "$" + hashed3;
+}
+
+function computeHP(pw) {
+    var new_salt = genSalt();
+    var hashed1 = CryptoJS.SHA256(pw);
+    var hashed2 = CryptoJS.SHA256(hashed1 + getPermSalt());
+    var hashed3 = CryptoJS.SHA256(hashed2 + new_salt);
+    return new Array(new_salt, hashed3);
+}
+
+function computeSession(pw) {
+    var pSess = computeHP(pw);
+    // save session
+    sessionStorage.persistentSession = "$" + pSess[0] + "$" + pSess[1];
+}
+
+function getSession() {
+    if (sessionStorage.persistentSession) {
+        var pSess = sessionStorage.persistentSession.split("$").slice(1);
+    } else {
+        var pSess = new Array("", "");
+    }
+    var token = getToken();
+    var token_salt = CryptoJS.SHA256(token + pSess[0]);
+    var pSess_OTP = CryptoJS.SHA256(pSess[1] + token_salt);
+    return "$" + pSess[0] + "$" + pSess_OTP;
 }
