@@ -20,10 +20,8 @@
 """
 
 from __future__ import print_function
-from modules import daemon
 from modules import mkpasswd
-from modules import server
-from modules import config
+#move imports to start() to speed up other functions
 import os
 import traceback
 import sys
@@ -43,6 +41,10 @@ def start():
         print("pyRT has already been started")
         return
     
+    from modules import server
+    from modules import config
+    from modules import daemon
+
     print("Loading pyRT configuration from %s" % os.path.join(os.getcwd(), "config/.pyrtrc"))
     c = config.Config()
     c.loadconfig()
