@@ -36,7 +36,7 @@ class Index:
             self.RT = RT
         self.Config = conf
         
-    def index(self, password=None, view=None, sortby=None, reverse=None):
+    def index(self, view=None, sortby=None, reverse=None):
         if not view or view not in ["main","started","stopped","complete","incomplete","hashing","seeding","active"]:
             view = "main"
         if not sortby:
