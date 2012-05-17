@@ -90,7 +90,7 @@ class Login:
             salt = session_id.split("$")[1]
 
             h1 = hashlib.sha256(self.USER.sess_id).hexdigest()
-            h2 = hashlib.sha256(h1 + ipaddr + useragent).hexdigest()
+            h2 = hashlib.sha256(h1 + ipaddr).hexdigest()
             h3 = hashlib.sha256(h2 + salt).hexdigest()
             if "$%s$%s" % (salt, h3) == session_id:
                return True
