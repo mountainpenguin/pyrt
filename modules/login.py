@@ -28,6 +28,9 @@ import base64
 import random
 import string
 import config
+import time
+import math
+import logging
 
 class User:
     def __init__(self, pass_hash, sess_id=None, testing=[]):
@@ -46,15 +49,49 @@ class Login:
         except:
             #self.USER = User("mountainpenguin", self.hashPassword("testing"))
             self.USER = User(self.C.CONFIG.password)
+        self.PERM_HASH = self.USER.password.split("$")[1]
         
     def _flush(self):
         pickle.dump(self.USER, open(".user.pickle", "w"))
         
+    def _getTimeToken(self):
+        return "%i" % math.floor( time.time() / 10 )
+        
     def checkPassword(self, pw, ip):
-        hash = self.USER.password
-        salt = base64.b64decode(hash.split("$")[1])
-        result = self.hashPassword(pw, salt=salt)
-        if result == self.USER.password:
+        logging.info("checkPassword request: %s", pw)
+        #pw = TOTP hash
+        try:
+            TOTP_salt = pw.split("$")[1]
+            logging.info("TOTP_salt: %s", TOTP_salt)
+        except IndexError:
+            self.Log.info("LOGIN: Invalid syntax in login attempt from %s.*.*.*", ip.split(".")[0])
+            logging.error("Invalid syntax in login attempt from %s", ip)
+            return False
+        except:
+            logging.error("Unhandled error in logging, traceback: %s", traceback.format_exc())
+            return False
+        
+        hashed = self.USER.password
+        logging.info("hashed: %s", hashed)
+        
+        perm_salt = hashed.split("$")[1]
+        logging.info("perm_salt: %s", perm_salt)
+        pwhash = hashed.split("$")[2]
+        logging.info("pwhash: %s", pwhash)
+        
+        currToken = self._getTimeToken()
+        logging.info("currToken: %s", currToken)
+        
+        token_salt = hashlib.sha256(currToken + TOTP_salt).hexdigest()
+        logging.info("token_salt: %s", token_salt)
+        
+        cmp_hash = hashlib.sha256(pwhash + token_salt).hexdigest()
+        logging.info("cmp_hash: %s", cmp_hash)
+        
+        cmpval = "$%s$%s" % (TOTP_salt, cmp_hash)
+        logging.info("cmpval: %s", cmpval)
+        
+        if pw == cmpval:
             self.Log.info("LOGIN: User successfully logged in from %s.*.*.*", ip.split(".")[0])
             return True
         else:
@@ -76,10 +113,9 @@ class Login:
         if not salt:
             salt = os.urandom(6)
         salt_encoded = base64.b64encode(salt)
-        md5_1 = hashlib.md5(pw).digest()
-        md5_2 = hashlib.md5(md5_1 + salt).digest()
-        md5_encoded = base64.b64encode(md5_2)
-        return "$%s$%s" % (salt_encoded, md5_encoded)
+        hash_1 = hashlib.sha256(pw).hexdigest()
+        hash_2 = hashlib.sha256(hash_1 + salt_encoded).hexdigest()
+        return "$%s$%s" % (salt_encoded, hash_2)
         
     def loginHTML(self, msg=""):
         return """
@@ -89,20 +125,24 @@ class Login:
                 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
                 <title>rTorrent - webUI Login</title>
                 <link rel="stylesheet" href="/css/main.css">
-                <!-- <script type="text/javascript" src="/javascript/login.js"></script> -->
+                <script type="text/javascript" src="/javascript/jquery-1.7.min.js"></script>
+                <script type="text/javascript" src="/javascript/CryptoJS/sha256.js"></script>
+                <script type="text/javascript" src="/javascript/CryptoJS/enc-base64-min.js"></script>
+                <script type="text/javascript" src="/javascript/login.js"></script>
             </head>
             <body>
+                <input type="hidden" id="permanent_salt" value="%(PERM_HASH)s">
                 <div id="login_div">
-                    <div class="notice">%s</div>
+                    <div class="notice">%(msg)s</div>
                     <h1>Login to your rTorrent webUI</h1>
-                    <form method="POST" action="">
+                    <form method="POST" action="" id="login_form">
                         <label>Enter Password: </label>
-                        <input type="password" name="password">
+                        <input type="password" id="password_input">
                     </form>
                 </div>
             </body>
         </html>
-        """ % msg
+        """ % { "PERM_HASH" : self.PERM_HASH, "msg" : msg }
         
     def sendCookie(self, getSessID=False):
         randstring = "".join([random.choice(string.letters + string.digits) for i in range(20)])

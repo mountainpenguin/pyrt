@@ -28,10 +28,9 @@ import getpass
 def hashPassword(pw):
     salt = os.urandom(6)
     salt_encoded = base64.b64encode(salt)
-    md5_1 = hashlib.md5(pw).digest()
-    md5_2 = hashlib.md5(md5_1 + salt).digest()
-    md5_encoded = base64.b64encode(md5_2)
-    return "$%s$%s" % (salt_encoded, md5_encoded)
+    hash_1 = hashlib.sha256(pw).hexdigest()
+    hash_2 = hashlib.sha256(hash_1 + salt_encoded).hexdigest()
+    return "$%s$%s" % (salt_encoded, hash_2)
     
 def main():
     print("mkpasswd utility for pyrt")

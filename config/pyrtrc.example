@@ -40,8 +40,9 @@
     #"logfile" : "pyrt.log",
 
     ## hashed password that pyrt will use
-    ## currently this uses unrealirc style md5 hashing
+    ## plaintext is hashed twice, the second iteration with a random salt 
     ## you can use the provided mkpasswd utility to generate a hashed password
+    ## ./pyrt mkpasswd
     ## REQUIRED
-    "password" : "$5DFFfrLC$fkPjAF0rOpiL83gHzgIwcQ==" # this corresponds to a plaintext password of 'testing'
+    "password" : "$Iijgf0WV$71238227050bfcf31f5f8b30daebf414e345a090cef8bdeca032258d76eb946c" # this corresponds to a plaintext password of 'testing'
 }
