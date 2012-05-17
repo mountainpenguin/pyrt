@@ -44,7 +44,7 @@ class _check(object):
     def web(obj):
         passw = obj.get_argument("password", None)
         cookie = obj.cookies
-        cCheck = obj.application._pyrtL.checkLogin(cookie, obj.request.remote_ip, obj.request.headers.get("User-Agent"))
+        cCheck = obj.application._pyrtL.checkLogin(cookie, obj.request.remote_ip)
         if not cCheck and not passw:
             return (False, "")
         elif not cCheck and passw:
@@ -59,7 +59,7 @@ class _check(object):
     @staticmethod
     def socket(obj):
         cookie = obj.cookies
-        cCheck = obj.application._pyrtL.checkLogin(cookie, obj.request.remote_ip, obj.request.headers.get("User-Agent"))
+        cCheck = obj.application._pyrtL.checkLogin(cookie, obj.request.remote_ip)
         if not cCheck:
             return False
         else:
@@ -77,7 +77,7 @@ class index(web.RequestHandler):
             self.write(self.application._pyrtL.loginHTML(chk[1]))
             return
         elif chk[0] and chk[1]:
-            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip, self.request.headers.get("User-Agent")))
+            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
 
         view = self.get_argument("view", None)
         sortby = self.get_argument("sortby", None)
@@ -108,7 +108,7 @@ class detail(web.RequestHandler):
             Pcheck = self.application._pyrtL.checkPassword(password, self.request.remote_ip)
             if Pcheck:
                 #set cookie
-                self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip, self.request.headers.get("User-Agent")))
+                self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
             else:
                 self.write(self.application._pyrtL.loginHTML("Incorrect Password"))
                 return
@@ -163,7 +163,7 @@ class options(web.RequestHandler):
             self.write(self.application._pyrtL.loginHTML(chk[1]))
             return
         elif chk[0] and chk[1]:
-            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip, self.request.headers.get("User-Agent")))
+            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
 
         test = self.get_argument("test", False)
         if not test:
@@ -198,7 +198,7 @@ class logHandler(web.RequestHandler):
             self.write(self.application._pyrtL.loginHTML(chk[1]))
             return
         elif chk[0] and chk[1]:
-            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip, self.request.headers.get("User-Agent")))
+            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
 
         logHTML = self.application._pyrtLog.html()
         with open("htdocs/logHTML.tmpl") as template:
@@ -213,7 +213,7 @@ class RSS(web.RequestHandler):
             self.write(self.application._pyrtL.loginHTML(chk[1]))
             return
         elif chk[0] and chk[1]:
-            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip, self.request.headers.get("User-Agent")))
+            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
 
         self.write(self.application._pyrtRSS_PAGE.index())
         
