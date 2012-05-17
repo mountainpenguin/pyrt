@@ -91,8 +91,12 @@ $(document).ready(function () {
           e.stopPropagation();
           return false
      
-     }).bind("drop", function (e) {
+     }).bind("dragover", function (e) { e.preventDefault(); }).bind("drop", function (e) {
           //destroyDragOverlay();
+          e.preventDefault();
+          console.log("drop handler called");
+          e.stopPropagation();
+ 
           var files = e.originalEvent.dataTransfer.files;
           var filerecord = new Array();
           if (files.length > 0) {
@@ -141,11 +145,7 @@ $(document).ready(function () {
                destroyDragOverlay();
           }
           
-          e.originalEvent.preventDefault();
-          e.originalEvent.stopPropagation();
-          e.preventDefault();
-          e.stopPropagation();
-          return false;
+         return false;
      });
      
      $(document).keydown(function (e) {
@@ -754,7 +754,7 @@ function command(cmd, t_id) {
                     if (resp == "OK") {
                          refresh_content("no");
                     } else {
-                         alert("Command Failed with reason: " + resp); 
+                         console.log("Command Failed with reason: " + resp); 
                     }
                }
                var params = "request=" + cmd + "&torrent_id=" + t_id;
@@ -764,7 +764,7 @@ function command(cmd, t_id) {
                return false;
           }
      } else {
-          alert("invalid command or command not implemented");
+          console.log("invalid command or command not implemented");
      }
 }
 

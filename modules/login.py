@@ -105,11 +105,9 @@ class Login:
                 h3 = hashlib.sha256(h2 + salt).hexdigest()
                 if "$%s$%s" % (salt, h3) == session_id:
                     return True
-                else:
-                    self.Log.debug("Session for %s has expired" % ipaddr.split(".")[0])
-                    return False
+            self.Log.debug("Session for %s.*.*.* has expired" % ipaddr.split(".")[0])
+            return False
         except:
-            traceback.print_exc()
             return False
         
     def hashPassword(self, pw, salt=None):
