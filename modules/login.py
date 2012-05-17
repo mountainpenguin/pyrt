@@ -83,14 +83,28 @@ class Login:
             self.Log.warning("LOGIN: Attempted login from %s.*.*.* failed (invalid password)", ip.split(".")[0])
             return False
                 
-    def checkLogin(self, cookies):
+    def checkLogin(self, cookies, ipaddr, useragent):
         try:
             session_id = cookies.get("sess_id").value
+            salt = session_id.split("$")[1]
+
             #if session_id == self.USER.sess_id:
-            if session_id in self.USER.testing:
-                return True
-            else:
-                return False
+            #h1 = hashlib.sha256(self.USER.sess_id).hexdigest()
+            #h2 = hashlib.sha256(h1 + ipaddr + useragent).hexdigest()
+            #h3 = hashlib.sha256(h2 + salt).hexdigest()
+            #if "$%s$%s" % (salt, h3) == session_id:
+            #   return True
+            #else:
+            #   return False
+
+            for sess_id in self.USER.testing:
+                h1 = hashlib.sha256(sess_id).hexdigest()
+                h2 = hashlib.sha256(h1 + ipaddr + useragent).hexdigest()
+                h3 = hashlib.sha256(h2 + salt).hexdigest()
+                if "$%s$%s" % (salt, h3) == session_id:
+                    return True
+                else:
+                    return False
         except:
             return False
         
@@ -145,14 +159,16 @@ class Login:
         </html>
         """ % { "PERM_SALT" : self.PERM_SALT, "msg" : msg }
         
-    def sendCookie(self, getSessID=False):
+    def sendCookie(self, ipaddr, useragent):
         randstring = "".join([random.choice(string.letters + string.digits) for i in range(20)])
         #add sess_id to self.USER
         #self.USER.sess_id = randstring
         self.USER.testing += [randstring]
         self._flush()  
-        if getSessID:
-            return randstring
-        new_cookie = Cookie.SimpleCookie()
-        new_cookie["sess_id"] = randstring
-        return new_cookie
+
+        #hash sess_id
+        h1 = hashlib.sha256(randstring).hexdigest()
+        h2 = hashlib.sha256(h1 + ipaddr + useragent).hexdigest()
+        rand_salt = base64.b64encode(os.urandom(10))
+        h3 = hashlib.sha256(h2 + rand_salt).hexdigest()
+        return "$%s$%s" % (rand_salt, h3)
