@@ -387,6 +387,13 @@ class statSocket(websocket.WebSocketHandler):
 
 class stats(web.RequestHandler):
     def get(self):
+        chk = _check.web(self)
+        if not chk[0]:
+            self.write(self.application._pyrtL.loginHTML(chk[1]))
+            return
+        elif chk[0] and chk[1]:
+            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
+            
         with open("htdocs/statHTML.tmpl") as doc:
             self.write(doc.read())
     post=get
