@@ -39,6 +39,11 @@ import logging
 import signal
 import traceback
 
+class null(object):
+    @staticmethod
+    def func(*args, **kwargs):
+        return None
+    
 class _check(object):
     @staticmethod
     def web(obj):
@@ -64,6 +69,40 @@ class _check(object):
             return False
         else:
             return True
+
+class Socket(object):
+    def __init__(self, socketID, socketType, socketObject, session, callback):
+        self.socketID = socketID
+        self.socketType = socketType
+        self.socketObject = socketObject
+        self.session = session
+        self.callback = callback
+    
+class SocketStorage(object):
+    def __init__(self):
+        self.LOG = {}
+        self.AJAX = {}
+        self.FILE = {}
+        self.STAT = {}
+    
+    def add(self, socketID, socketType, socketObject, session, callback=null.func):
+        if socketType == "logSocket":
+            self.LOG[socketID] = Socket(socketID, socketType, socketObject, session, callback)
+            
+    def remove(self, socketID):
+        if socketType == "logSocket" and socketID in self.LOG:
+            del self.LOG[socketID]
+            
+    def get_type(self, socketType, session=None):
+        if session:
+            if socketType == "logSocket":
+                return filter(lambda x: x.session==session, self.LOG.values())
+        else:
+            if socketType == "logSocket":
+                return self.LOG.values()
+                
+    def get_session(self, session):
+        return filter(lambda x: x.session==session, self.LOG.values() + self.AJAX.values() + self.FILE.values() + self.STAT.values())
 
 class index(web.RequestHandler):
     """Default page handler for /
