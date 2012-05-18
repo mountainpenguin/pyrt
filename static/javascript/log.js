@@ -25,6 +25,7 @@ if (window.document.location.protocol == "https:") {
      var socket_protocol = "ws"
 }
 
+var hiddenclasstypes = new Array();
 
 function select_tab(elem) {
    elem.style.backgroundColor = "#bbbbbb"; 
@@ -50,11 +51,45 @@ $(document).ready(function () {
     }
     ls.onopen = function (evt) {
         console.log("logSocket opened", evt, ls);
-        mainLoop();
     }
     ls.onclose = function (evt) {
         console.log("logSocket closed", evt, ls);
     }
+
+    // bind to changes in "selection" buttons
+    $(".log_control").bind("click", function(e) {
+        if ($(this).hasClass("selected")) {
+            if ( $(this).attr("id") == "log_control_1" ) {
+                $(".log_message.level_1").addClass("hidden_message");
+                hiddenclasstypes.push("level_1");
+            } else if ($(this).attr("id") == "log_control_2") {
+                $(".log_message.level_2").addClass("hidden_message");;
+                hiddenclasstypes.push("level_2");
+            } else if ($(this).attr("id") == "log_control_3") {
+                $(".log_message.level_3").addClass("hidden_message");
+                hiddenclasstypes.push("level_3");
+            } else if ($(this).attr("id") == "log_control_4") {
+                $(".log_message.level_4").addClass("hidden_message");
+                hiddenclasstypes.push("level_4");
+            }
+            $(this).removeClass("selected");
+        } else {
+            if ( $(this).attr("id") == "log_control_1" ) {
+                $(".log_message.level_1").removeClass("hidden_message");
+                hiddenclasstypes.splice(hiddenclasstypes.indexOf("level_1"), 1);
+            } else if ($(this).attr("id") == "log_control_2") {
+                $(".log_message.level_2").removeClass("hidden_message");
+                hiddenclasstypes.splice(hiddenclasstypes.indexOf("level_2"), 1);
+            } else if ($(this).attr("id") == "log_control_3") {
+                $(".log_message.level_3").removeClass("hidden_message");
+                hiddenclasstypes.splice(hiddenclasstypes.indexOf("level_3"), 1);
+            } else if ($(this).attr("id") == "log_control_4") {
+                $(".log_message.level_4").removeClass("hidden_message");
+                hiddenclasstypes.splice(hiddenclasstypes.indexOf("level_4"), 1);
+            }
+            $(this).addClass("selected");
+        }
+    })
 });
 
 function getLatestID() {
@@ -66,13 +101,14 @@ function getLatestID() {
     }
 
 }
-function mainLoop() {
-    ls.send("request=checknew" + getLatestID());
-//    setTimeout(mainLoop, 10000); 
-}
 
 function onMessage(evt) {
     var newrows = $(evt.data);
+    for (i=0; i<hiddenclasstypes.length; i++) {
+        if (newrows.hasClass(hiddenclasstypes[i])) {
+            newrows.addClass("hidden_message");
+        }
+    }
     var table = $("#log_table");
     table.prepend(newrows);
     setTimeout(removeNew, 2000);

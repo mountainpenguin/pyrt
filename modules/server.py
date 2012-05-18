@@ -254,8 +254,12 @@ class logHandler(web.RequestHandler):
             self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
 
         logHTML = self.application._pyrtLog.html()
+        selected_1 = " selected"
+        selected_2 = " selected"
+        selected_3 = " selected"
+        selected_4 = " selected"
         with open("htdocs/logHTML.tmpl") as template:
-            self.write(template.read() % {"logHTML":logHTML})
+            self.write(template.read() % locals())
 
     post = get
 

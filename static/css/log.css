@@ -1,37 +1,99 @@
+.log_control, .log_message {
+  font-family: monospace; }
+
 .log_message {
-  font-family: monospace;
   font-size: 8pt; }
+
+.log_control {
+  font-size: 12pt; }
 
 .log_level {
   font-size: 10pt;
   text-align: center; }
 
+.hidden_message {
+  display: none;
+  visibility: hidden; }
+
 tr.level_1 {
-  color: #FF0000;
+  color: red;
   font-weight: bold; }
 
 td.level_1 {
-  background-color: #FFC0CB; }
+  background-color: #ffc0cb;
+  color: red; }
+
+div.level_1.selected:not(:hover), div.level_1:not(.selected):hover {
+  background-color: #ffc0cb;
+  color: red; }
+div.level_1.selected:hover, div.level_1:not(.selected):not(:hover) {
+  background-color: none;
+  color: rgba(0, 0, 0, 0.3); }
 
 tr.level_2 {
   color: green; }
 
 td.level_2 {
-  background-color: #B2BEB5; }
+  background-color: #b2beb5;
+  color: green; }
+
+div.level_2.selected:not(:hover), div.level_2:not(.selected):hover {
+  background-color: #b2beb5;
+  color: green; }
+div.level_2.selected:hover, div.level_2:not(.selected):not(:hover) {
+  background-color: none;
+  color: rgba(0, 0, 0, 0.3); }
 
 tr.level_3 {
-  color: #0000CC; }
+  color: #0000cc; }
 
 td.level_3 {
-  background-color: #ADD8E6; }
+  background-color: #add8e6;
+  color: #0000cc; }
+
+div.level_3.selected:not(:hover), div.level_3:not(.selected):hover {
+  background-color: #add8e6;
+  color: #0000cc; }
+div.level_3.selected:hover, div.level_3:not(.selected):not(:hover) {
+  background-color: none;
+  color: rgba(0, 0, 0, 0.3); }
 
 tr.level_4 {
   color: #585858; }
 
 td.level_4 {
-  background-color: white; }
+  background-color: rgba(128, 128, 128, 0.1);
+  color: #585858; }
+
+div.level_4.selected:not(:hover), div.level_4:not(.selected):hover {
+  background-color: rgba(128, 128, 128, 0.1);
+  color: #585858; }
+div.level_4.selected:hover, div.level_4:not(.selected):not(:hover) {
+  background-color: none;
+  color: rgba(0, 0, 0, 0.3); }
 
 tr.new_message {
   background-color: rgba(255, 255, 0, 0.3); }
   tr.new_message > td.log_level {
     background-color: rgba(255, 255, 0, 0.3); }
+
+div.log_control {
+  float: left;
+  margin-right: 20px;
+  padding: 4px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  -mox-box-shadow: 0px 0px 5px #ccc;
+  -webkit-box-shadow: 0px 0px 5px #ccc;
+  box-shadow: 0px 0px 5px #ccc;
+  cursor: pointer; }
+
+#log_control_wrapper {
+  float: left;
+  clear: both;
+  margin-bottom: 1em; }
+
+table {
+  float: left;
+  clear: both; }
