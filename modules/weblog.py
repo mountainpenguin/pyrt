@@ -41,59 +41,42 @@ class Logger(object):
     WARNING = 3
     ERROR = 1
     DEBUG = 4
-    def __init__(self):
+    def __init__(self, sockets):
         self.RECORDS = [] # contains id tags sorted by time (most recent first)
         self.RECORD = {} # log information with key `id`
+        self.SOCKETS = sockets # instance of SocketStorage class (defined in modules/server.py)
 
     def id_gen(self):
         return "".join([random.choice(string.letters+string.digits) for x in range(20)])
 
-    def info(self, msg, *args, **kwargs):
-        """Log an "info" level message"""
+    def _process(self, text, level, level_name, *args, **kwargs):
         _id = self.id_gen()
 
-        #create message
-        if "%" in msg:
-            msg_ = msg % tuple(args)
+        if "%" in text:
+            msg = text % tuple(args)
         else:
-            msg_ = msg
-        message = self.fmt(Message(_id, msg_))
-
+            msg = text
+        message = self.fmt(Message(_id, msg, level=level, level_name=level_name))
         self.RECORDS += [_id]
         self.RECORD[_id] = message
+        for s in self.SOCKETS.getType("logSocket"):
+            s.socketObject.write_message(self.html_format(message, True))
+        
+    def info(self, msg, *args, **kwargs):
+        """Log an "info" level message"""
+        self._process(msg, self.INFO, "INFO", *args, **kwargs)
 
     def error(self, msg, *args, **kwargs):
         """Log an "error" level message"""
-        _id = self.id_gen()
-        if "%" in msg:
-            msg_ = msg % args
-        else:
-            msg_ = msg
-        message = self.fmt(Message(_id, msg_, level=self.ERROR, level_name="ERROR"))
-        self.RECORDS += [_id]
-        self.RECORD[_id] = message
+        self._process(msg, self.ERROR, "ERROR", *args, **kwargs)
 
     def warning(self, msg, *args, **kwargs):
         """Log a "warning" level message"""
-        _id = self.id_gen()
-        if "%" in msg:
-            msg_ = msg % args
-        else:
-            msg_ = msg
-        message = self.fmt(Message(_id, msg_, level=self.WARNING, level_name="WARNING"))
-        self.RECORDS += [_id]
-        self.RECORD[_id] = message
+        self._process(msg, self.WARNING, "WARNING", *args, **kwargs)
 
     def debug(self, msg, *args, **kwargs):
         """Log a "debug" level message"""
-        _id = self.id_gen()
-        if "%" in msg:
-            msg_ = msg % args
-        else:
-            msg_ = msg
-        message = self.fmt(Message(_id, msg_, level=self.DEBUG, level_name="DEBUG"))
-        self.RECORDS += [_id]
-        self.RECORD[_id] = message
+        self._process(msg, self.DEBUG, "DEBUG", *args, **kwargs)
 
     def fmt(self, msg):
         if msg.level == self.ERROR:

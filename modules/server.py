@@ -38,7 +38,14 @@ import base64
 import logging
 import signal
 import traceback
+import random
+import string
 
+class null(object):
+    @staticmethod
+    def func(*args, **kwargs):
+        return None
+    
 class _check(object):
     @staticmethod
     def web(obj):
@@ -64,6 +71,52 @@ class _check(object):
             return False
         else:
             return True
+
+class Socket(object):
+    def __init__(self, socketID, socketType, socketObject, session, callback):
+        self.socketID = socketID
+        self.socketType = socketType
+        self.socketObject = socketObject
+        self.session = session
+        self.callback = callback
+    
+class SocketStorage(object):
+    def __init__(self):
+        self.LOG = {}
+        self.AJAX = {}
+        self.FILE = {}
+        self.STAT = {}
+        self.lookup = {
+            "logSocket" : self.LOG,
+            "ajaxSocket" : self.AJAX,
+            "fileSocket" : self.FILE,
+            "statSocket" : self.STAT,
+        }
+
+    
+    def add(self, socketType, socketObject, session, callback=null.func):
+        if socketType in self.lookup:
+            socketID = "".join([random.choice(string.letters) for x in range(10)])
+            self.lookup[socketType][socketID] = Socket(socketID, socketType, socketObject, session, callback)
+            return socketID
+            
+    def remove(self, socketType, socketID):
+        if socketType in self.lookup and socketID in self.lookup[socketType]:
+            del self.lookup[socketType][socketID]
+            
+    def getType(self, socketType, session=None):
+        if session:
+            if socketType in self.lookup:
+                return filter(lambda x: x.session==session, self.lookup[socketType].values())
+        else:
+            if socketType in self.lookup:
+                return self.lookup[socketType].values()
+                
+    def getSession(self, session):
+        allSocks = []
+        for x in self.lookup.values():
+            allSocks.extend(x.values())
+        return filter(lambda x: x.session==session, allSocks)
 
 class index(web.RequestHandler):
     """Default page handler for /
@@ -201,8 +254,12 @@ class logHandler(web.RequestHandler):
             self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
 
         logHTML = self.application._pyrtLog.html()
+        selected_1 = " selected"
+        selected_2 = " selected"
+        selected_3 = " selected"
+        selected_4 = " selected"
         with open("htdocs/logHTML.tmpl") as template:
-            self.write(template.read() % {"logHTML":logHTML})
+            self.write(template.read() % locals())
 
     post = get
 
@@ -218,11 +275,14 @@ class RSS(web.RequestHandler):
         self.write(self.application._pyrtRSS_PAGE.index())
         
 class ajaxSocket(websocket.WebSocketHandler):
+    socketID = None
     def open(self):
         if not _check.socket(self):
             logging.error("%d %s %.2fms", self.get_status(), "ajaxSocket denied", 1000*self.request.request_time())
             self.close()
             return
+
+        self.socketID = self.application._pyrtSockets.add("ajaxSocket", self, self.cookies.get("sess_id").value)
         logging.info("%d %s (%s)", self.get_status(), "ajaxSocket opened", self.request.remote_ip)
 
     def on_message(self, message):
@@ -271,16 +331,23 @@ class ajaxSocket(websocket.WebSocketHandler):
             self.write_message("ERROR/ajax function returned nothing")
             
     def on_close(self):
+        self.application._pyrtSockets.remove("ajaxSocket", self.socketID)
         logging.info("%d %s (%s)", self.get_status(), "ajaxSocket closed", self.request.remote_ip)
    
 class logSocket(websocket.WebSocketHandler):
+    socketID = None
     def open(self):
         if not _check.socket(self):
             logging.error("%d %s (%s)", self.get_status(), "logSocket denied", self.request.remote_ip)
             self.write_message("ERROR/Permission denied")
             self.close()
             return
+        self.socketID = self.application._pyrtSockets.add("logSocket", self, 
+                                                          self.cookies.get("sess_id").value
+                                                         )
         logging.info("%d %s (%s)", self.get_status(), "logSocket opened", self.request.remote_ip)
+        
+
 
     def on_message(self, message):
         if not _check.socket(self):
@@ -308,15 +375,19 @@ class logSocket(websocket.WebSocketHandler):
                 return
 
     def on_close(self):
+        self.application._pyrtSockets.remove("logSocket", self.socketID)
         logging.info("%d %s (%s)", self.get_status(), "logSocket closed", self.request.remote_ip)
 
 class fileSocket(websocket.WebSocketHandler):
+    socketID = None
     def open(self):
         if not _check.socket(self):
             logging.error("%d %s (%s)", self.get_status(), "fileSocket denied", self.request.remote_ip)
             self.write_message("ERROR/Permission denied")
             self.close()
             return
+
+        self.socketID = self.application._pyrtSockets.add("fileSocket", self, self.cookies.get("sess_id").value)
         logging.info("%d %s (%s)", self.get_status(), "fileSocket opened", self.request.remote_ip)
         
     def on_message(self, message):
@@ -352,15 +423,18 @@ class fileSocket(websocket.WebSocketHandler):
             self.write_message(json.dumps(response))
         
     def on_close(self):
+        self.application._pyrtSockets.remove("fileSocket", self.socketID) 
         logging.info("%d %s (%s)", self.get_status(), "fileSocket closed", self.request.remote_ip)
 
 class statSocket(websocket.WebSocketHandler):
+    socketID = None
     def open(self):
         if not _check.socket(self):
             logging.error("%d %s (%s)", self.get_status(), "statSocket denied", self.request.remote_ip)
             self.write_message("ERROR/Permission denied")
             self.close()
             return
+        self.socketID = self.application._pyrtSockets.add("statSocket", self, self.cookies.get("sess_id").value)
         logging.info("%d %s (%s)", self.get_status(), "statSocket opened", self.request.remote_ip) 
 
     def on_message(self, message):
@@ -383,6 +457,7 @@ class statSocket(websocket.WebSocketHandler):
         
         
     def on_close(self):
+        self.application._pyrtSockets.remove("statSocket", self.socketID)
         logging.info("%d %s (%s)", self.get_status(), "statSocket closed", self.request.remote_ip) 
 
 class stats(web.RequestHandler):
@@ -452,15 +527,15 @@ class Main(object):
             (r"/logsocket", logSocket),
         ], **settings)
     
-        logger = weblog.Logger()
+        application._pyrtSockets = SocketStorage()
+        application._pyrtLog = weblog.Logger(sockets=application._pyrtSockets)
         application._pyrtRT = rtorrent.rtorrent(c.get("rtorrent_socket"))    
-        application._pyrtL = login.Login(conf=c, log=logger)
+        application._pyrtL = login.Login(conf=c, log=application._pyrtLog)
         application._pyrtINDEX = indexPage.Index(conf=c, RT=application._pyrtRT)
-        application._pyrtAJAX = ajaxPage.Ajax(conf=c, RT=application._pyrtRT, Log=logger)
+        application._pyrtAJAX = ajaxPage.Ajax(conf=c, RT=application._pyrtRT, Log=application._pyrtLog)
         application._pyrtOPTIONS = optionsPage.Options(conf=c, RT=application._pyrtRT)
         application._pyrtRSS_PAGE = rssPage.Index(conf=c, RT=application._pyrtRT)
         application._pyrtSTATS = statsPage.Index(conf=c, RT=application._pyrtRT)
-        application._pyrtLog = logger
         application._pyrtGLOBALS = {
             "login" : application._pyrtL,
             "indexPage" : application._pyrtINDEX,
@@ -471,6 +546,7 @@ class Main(object):
             "log" : application._pyrtLog,
             "RT" : application._pyrtRT,
             "config" : c,
+            "sockets" : application._pyrtSockets,
         }
         
         http_server = httpserver.HTTPServer(application, ssl_options=ssl_options)

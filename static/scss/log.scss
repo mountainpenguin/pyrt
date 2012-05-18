@@ -1,51 +1,149 @@
-.log_message {
+$L1_f: #FF0000;
+$L1_b: #FFC0CB;
+
+$L2_f: green;
+$L2_b: #B2BEB5;
+
+$L3_f: #0000CC;
+$L3_b: #ADD8E6;
+
+$L4_f: #585858;
+$L4_b: rgba(128,128,128,0.1);
+
+.log_control, .log_message {
     font-family: monospace;
+}
+.log_message {
     font-size: 8pt;
+}
+.log_control {
+    font-size: 12pt;
 }
 
 .log_level {
    font-size: 10pt;
    text-align: center;
 }
+.hidden_message {
+    display: none;
+    visibility: hidden;
+}
 
-.log_message {
+@mixin level_1 {
+    background-color: $L1_b;
+    color: $L1_f;
+}
+@mixin level_2 {
+    background-color: $L2_b;
+    color: $L2_f;
+}
+@mixin level_3 {
+    background-color: $L3_b;
+    color: $L3_f;
+}
+@mixin level_4 {
+    background-color: $L4_b;
+    color: $L4_f;
 }
 
 tr.level_1 {
     // error
-    color: #FF0000;
+    color: $L1_f;
     font-weight:bold;
 }
 td.level_1 {
-    background-color: #FFC0CB;
+    @include level_1;
 }
+div.level_1 {
+    &.selected:not(:hover), &:not(.selected):hover {
+        @include level_1;
+    }
+    &.selected:hover, &:not(.selected):not(:hover) {
+        background-color: none;
+        color: rgba(0,0,0,0.3);
+    }
+}
+
+
 tr.level_2 {
     // info
-    color: green;
+    color: $L2_f;
 }
 td.level_2 {
-    background-color: #B2BEB5;
+    @include level_2;
 }
+div.level_2 {
+    &.selected:not(:hover), &:not(.selected):hover {
+        @include level_2;
+    }
+    &.selected:hover, &:not(.selected):not(:hover) {
+        background-color: none;
+        color: rgba(0,0,0,0.3);
+    }
+}
+
+
 tr.level_3 {
     // warning
-    color: #0000CC;
+    color: $L3_f;
 }
 td.level_3 {
-    background-color: #ADD8E6;
+    @include level_3;
 }
+div.level_3 {
+    &.selected:not(:hover), &:not(.selected):hover {
+        @include level_3;
+    }
+    &.selected:hover, &:not(.selected):not(:hover) {
+        background-color: none;
+        color: rgba(0,0,0,0.3);
+    }
+}
+
+
 tr.level_4 {
     // debug
-    color: #585858;
+    color: $L4_f;
 }
 td.level_4 {
-    background-color: white;
+    @include level_4;
 }
+div.level_4 {
+    &.selected:not(:hover), &:not(.selected):hover {
+        @include level_4;
+    }
+    &.selected:hover, &:not(.selected):not(:hover) {
+        background-color: none;
+        color: rgba(0,0,0,0.3);
+    }
+}
+
 tr.new_message {
     background-color: rgba(255,255,0,0.3);
     &>td.log_level {
         background-color: rgba(255,255,0,0.3);
     }
 }
-.old_message {
-
+div.log_control {
+    float: left;
+    margin: {
+        right: 20px;
+    }
+    padding: 4px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    -mox-box-shadow: 0px 0px 5px #ccc;
+    -webkit-box-shadow: 0px 0px 5px #ccc;
+    box-shadow: 0px 0px 5px #ccc;
+    cursor: pointer;
+}
+#log_control_wrapper {
+    float: left;
+    clear: both;
+    margin-bottom: 1em;
+}
+table {
+    float: left;
+    clear: both;
 }
