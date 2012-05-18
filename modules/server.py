@@ -38,6 +38,8 @@ import base64
 import logging
 import signal
 import traceback
+import random
+import string
 
 class null(object):
     @staticmethod
@@ -85,15 +87,17 @@ class SocketStorage(object):
         self.FILE = {}
         self.STAT = {}
     
-    def add(self, socketID, socketType, socketObject, session, callback=null.func):
+    def add(self, socketType, socketObject, session, callback=null.func):
+        socketID = "".join([random.choice(string.letters) for x in range(10)])
         if socketType == "logSocket":
             self.LOG[socketID] = Socket(socketID, socketType, socketObject, session, callback)
+            return socketID
             
-    def remove(self, socketID):
+    def remove(self, socketType, socketID):
         if socketType == "logSocket" and socketID in self.LOG:
             del self.LOG[socketID]
             
-    def get_type(self, socketType, session=None):
+    def getType(self, socketType, session=None):
         if session:
             if socketType == "logSocket":
                 return filter(lambda x: x.session==session, self.LOG.values())
@@ -101,7 +105,7 @@ class SocketStorage(object):
             if socketType == "logSocket":
                 return self.LOG.values()
                 
-    def get_session(self, session):
+    def getSession(self, session):
         return filter(lambda x: x.session==session, self.LOG.values() + self.AJAX.values() + self.FILE.values() + self.STAT.values())
 
 class index(web.RequestHandler):
@@ -313,13 +317,19 @@ class ajaxSocket(websocket.WebSocketHandler):
         logging.info("%d %s (%s)", self.get_status(), "ajaxSocket closed", self.request.remote_ip)
    
 class logSocket(websocket.WebSocketHandler):
+    socketID = None
     def open(self):
         if not _check.socket(self):
             logging.error("%d %s (%s)", self.get_status(), "logSocket denied", self.request.remote_ip)
             self.write_message("ERROR/Permission denied")
             self.close()
             return
+        self.socketID = self.application._pyrtSockets.add("logSocket", self, 
+                                                          self.cookies.get("sess_id").value
+                                                         )
         logging.info("%d %s (%s)", self.get_status(), "logSocket opened", self.request.remote_ip)
+        
+
 
     def on_message(self, message):
         if not _check.socket(self):
@@ -347,6 +357,7 @@ class logSocket(websocket.WebSocketHandler):
                 return
 
     def on_close(self):
+        self.application._pyrtSockets.remove("logSocket", self.socketID)
         logging.info("%d %s (%s)", self.get_status(), "logSocket closed", self.request.remote_ip)
 
 class fileSocket(websocket.WebSocketHandler):
@@ -491,15 +502,15 @@ class Main(object):
             (r"/logsocket", logSocket),
         ], **settings)
     
-        logger = weblog.Logger()
+        application._pyrtSockets = SocketStorage()
+        application._pyrtLog = weblog.Logger(sockets=application._pyrtSockets)
         application._pyrtRT = rtorrent.rtorrent(c.get("rtorrent_socket"))    
-        application._pyrtL = login.Login(conf=c, log=logger)
+        application._pyrtL = login.Login(conf=c, log=application._pyrtLog)
         application._pyrtINDEX = indexPage.Index(conf=c, RT=application._pyrtRT)
-        application._pyrtAJAX = ajaxPage.Ajax(conf=c, RT=application._pyrtRT, Log=logger)
+        application._pyrtAJAX = ajaxPage.Ajax(conf=c, RT=application._pyrtRT, Log=application._pyrtLog)
         application._pyrtOPTIONS = optionsPage.Options(conf=c, RT=application._pyrtRT)
         application._pyrtRSS_PAGE = rssPage.Index(conf=c, RT=application._pyrtRT)
         application._pyrtSTATS = statsPage.Index(conf=c, RT=application._pyrtRT)
-        application._pyrtLog = logger
         application._pyrtGLOBALS = {
             "login" : application._pyrtL,
             "indexPage" : application._pyrtINDEX,
@@ -510,6 +521,7 @@ class Main(object):
             "log" : application._pyrtLog,
             "RT" : application._pyrtRT,
             "config" : c,
+            "sockets" : application._pyrtSockets,
         }
         
         http_server = httpserver.HTTPServer(application, ssl_options=ssl_options)

@@ -68,7 +68,7 @@ function getLatestID() {
 }
 function mainLoop() {
     ls.send("request=checknew" + getLatestID());
-    setTimeout(mainLoop, 10000); 
+//    setTimeout(mainLoop, 10000); 
 }
 
 function onMessage(evt) {
