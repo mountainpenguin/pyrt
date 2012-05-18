@@ -23,6 +23,7 @@ from __future__ import print_function
 from modules import login
 from modules import rtorrent
 from modules import weblog 
+from modules import irc
 from modules import indexPage, detailPage, ajaxPage  # pages
 from modules import optionsPage, rssPage, statsPage
 
@@ -86,11 +87,13 @@ class SocketStorage(object):
         self.AJAX = {}
         self.FILE = {}
         self.STAT = {}
+        self.IRC = {}
         self.lookup = {
             "logSocket" : self.LOG,
             "ajaxSocket" : self.AJAX,
             "fileSocket" : self.FILE,
             "statSocket" : self.STAT,
+            "ircSocket" : self.IRC,
         }
 
     
@@ -473,6 +476,46 @@ class stats(web.RequestHandler):
             self.write(doc.read())
     post=get
 
+class ircSocket(websocket.WebSocketHandler):
+    socketID = None
+    def open(self):
+        if not _check.socket(self):
+            logging.error("%d %s (%s)", self.get_status(), "ircSocket denied", self.request.remote_ip)
+            self.write_message("ERROR/Permission denied")
+            self.close()
+            return
+        self.socketID = self.application._pyrtSockets.add("ircSocket", self, self.cookies.get("sess_id").value)
+        logging.info("%d ircSocket opened (%s)", self.get_status(), self.request.remote_ip)
+
+    def on_message(self, message):
+        if not _check.socket(self):
+            logging.error("%d ircSocket message denied (%s)", self.get_status(), self.request.remote_ip)
+            self.write_message("ERROR/Permission denied")
+            self.close()
+            return
+        logging.info("ircSocket message: %s", message)
+        ircobj = irc.Irc(self.application._pyrtLog)
+        ircobj.start()
+
+
+    def on_close(self):
+        self.application._pyrtSockets.remove("ircSocket", self.socketID)
+        logging.info("%d ircSocket closed (%s)", self.get_status(), self.request.remote_ip)
+
+
+class IRC(web.RequestHandler):
+    def get(self):
+        chk = _check.web(self)
+        if not chk[0]:
+            self.write(self.application._pyrtL.loginHTML(chk[1]))
+            return
+        elif chk[0] and chk[1]:
+            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
+
+        with open("htdocs/ircHTML.tmpl") as doc:
+            self.write(doc.read())
+    post = get
+
 class Main(object):
     def __init__(self):
         pass
@@ -525,6 +568,8 @@ class Main(object):
             (r"/filesocket", fileSocket),
             (r"/statsocket", statSocket),
             (r"/logsocket", logSocket),
+            (r"/IRC", IRC),
+            (r"/ircsocket", ircSocket),
         ], **settings)
     
         application._pyrtSockets = SocketStorage()
