@@ -78,6 +78,14 @@ class _check(object):
         else:
             return True
 
+    @staticmethod
+    def rpc(obj, auth):
+        check = obj.application._pyrtL.checkRPCAuth(auth)
+        if not check:
+            return False
+        else:
+            return True
+
 class Socket(object):
     def __init__(self, socketID, socketType, socketObject, session, callback):
         self.socketID = socketID
@@ -502,10 +510,9 @@ class autoSocket(websocket.WebSocketHandler):
             return
         logging.info("autoSocket message: %s", message)
         if message == "test":
-            ircobj = irc.Irc(self.application._pyrtLog, websocketURI=".sockets/rpc.interface")
+            auth = self.application._pyrtL.getRPCAuth()
+            ircobj = irc.Irc(self.application._pyrtLog, websocketURI=".sockets/rpc.interface", auth=auth)
             ircobj.start()
-            ircobj2 = irc.Irc(self.application._pyrtLog, nick="pyrtBot2", websocketURI=".sockets/rpc.interface")
-            ircobj2.start()
 
 
     def on_close(self):
@@ -533,6 +540,11 @@ class RPCSocket(websocket.WebSocketHandler):
         self._RPChandler = rpchandler.RPCHandler(self.application._pyrtLog)
     
     def on_message(self, message):
+        auth = self._RPChandler.get_auth(message)
+        if not _check.rpc(self, auth):
+            logging.error("rpcSocket message denied - invalid auth key")
+            self.write_message(json.dumps({"response":None,"error":"Invalid Auth"}))
+            return
         resp = self._RPChandler.handle_message(message)
         self.write_message(resp, binary=True)
     

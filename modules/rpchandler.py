@@ -77,9 +77,28 @@ class RPCHandler(object):
         return json.dumps(respDict)
         # return respDict
 
+    def get_auth(self, msg):
+        try:
+            jsonified = json.loads(msg)
+        except ValueError:
+            self.log("error", "RPC: Non JSON call to RPC interface")
+            return None
+        else:
+            if "auth" not in jsonified:
+                self.log("error", "No authentication specified")
+                return None
+            else:
+                return jsonified["auth"]
+
     def handle_message(self, msg):
         error = None
         response = None
+        # structure must be:
+        # {
+        #   "command" : <string>,
+        #   "arguments": <list>,
+        #   "keywords": <dict>
+        # }
         try:
             jsonified = json.loads(msg)
         except ValueError:
@@ -87,18 +106,12 @@ class RPCHandler(object):
             error = "001 - requests must be JSON-encoded"
             return self._respond(response, error)
 
-        # structure must be:
-        # {
-        #   "command" : <string>,
-        #   "arguments": <list>,
-        #   "keywords": <dict>
-        # }
         if not isinstance(jsonified, dict):
             self.log("error", "RPC: call has invalid syntax")
             error = "002 - invalid syntax, dict required"
             return self._respond(response, error)
 
-        req = ["command", "arguments", "keywords"]
+        req = ["command", "arguments", "keywords", "auth"]
         for r in req:
             if not jsonified.has_key(r):
                 self.log("error", "RPC: call has invalid syntax, missing key %r", r)

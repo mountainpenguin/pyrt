@@ -10,6 +10,10 @@ import signal
 import json
 import select
 import socket
+import time
+import hashlib
+import base64
+import math
 
 class _Config(object):
     def __init__(self, **args):
@@ -26,11 +30,21 @@ class _ModularBot(ircbot.SingleServerIRCBot):
             os.remove("proc/bots/%d.pid" % self.PID)
         sys.exit(0)
 
+    def _OTPAuth(self):
+        random_salt = base64.b64encode(os.urandom(10))
+        token = "%i" % math.floor( time.time() / 10 )
+        hashed_token = hashlib.sha256(token + random_salt).hexdigest()
+        h1 = hashlib.sha256(self.config.auth).hexdigest()
+        h2 = hashlib.sha256(h1 + hashed_token).hexdigest()
+        return "$%s$%s" % (random_salt, h2)
+
     def RPCCommand(self, command, *args, **kwargs):
+        OTPAuth = self._OTPAuth() 
         obj = {
             "command" : command,
             "arguments" : args,
-            "keywords" : kwargs
+            "keywords" : kwargs,
+            "auth" : OTPAuth,
         }
         return self._ssend(json.dumps(obj))
 
