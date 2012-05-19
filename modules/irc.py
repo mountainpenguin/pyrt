@@ -32,7 +32,7 @@ class _ModularBot(ircbot.SingleServerIRCBot):
             "arguments" : args,
             "keywords" : kwargs
         }
-        self._ssend(json.dumps(obj))
+        return self._ssend(json.dumps(obj))
 
     def _ssend(self, thing, json_encoded=False):
         if not json_encoded:
@@ -59,6 +59,9 @@ class _ModularBot(ircbot.SingleServerIRCBot):
 
     def __init__(self, net, nick, name, *args, **kwargs):
         signal.signal(signal.SIGTERM, self.shutdown)
+        self.network = net
+        self.nick = nick
+        self.name = name
         self.config = _Config(**kwargs)
         self.socket = websocket.create_connection(self.config.websocketURI)  
         self.PID = os.getpid()
@@ -70,7 +73,7 @@ class _ModularBot(ircbot.SingleServerIRCBot):
         self.RPCCommand("log", "debug", "IRCbot #%d: connected to IRC successfully", self.PID)
 
     def on_pubmsg(self, connection, event):
-        self.RPCCommand("publicLog", "debug", "IRCbot #%d: %s said %r in %s", self.PID, event.source().split("!")[0], event.arguments()[0], event.target())
+        self.RPCCommand("log", "debug", "IRCbot #%d: %s said '%r' in %s", self.PID, event.source().split("!")[0], event.arguments()[0], event.target())
 
     def on_ctcp(self, connection, event):
         pass

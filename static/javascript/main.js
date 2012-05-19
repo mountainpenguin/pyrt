@@ -377,6 +377,12 @@ function loadRClickMenus() {
             window.location = "/log";
         }
      );
+     $("#tab_auto").bind(
+        "click",
+        function () {
+            window.location = "/auto";
+        }
+    );
 }
 
 function parse_content(e, repeat) {

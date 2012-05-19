@@ -92,17 +92,19 @@ class SocketStorage(object):
         self.AJAX = {}
         self.FILE = {}
         self.STAT = {}
-        self.IRC = {}
+        self.AUTO = {}
+        self.RPC = {}
         self.lookup = {
             "logSocket" : self.LOG,
             "ajaxSocket" : self.AJAX,
             "fileSocket" : self.FILE,
             "statSocket" : self.STAT,
-            "ircSocket" : self.IRC,
+            "autoSocket" : self.AUTO,
+            "rpcSocket" : self.RPC,
         }
 
     
-    def add(self, socketType, socketObject, session, callback=null.func):
+    def add(self, socketType, socketObject, session=None, callback=null.func):
         if socketType in self.lookup:
             socketID = "".join([random.choice(string.letters) for x in range(10)])
             self.lookup[socketType][socketID] = Socket(socketID, socketType, socketObject, session, callback)
@@ -481,33 +483,36 @@ class stats(web.RequestHandler):
             self.write(doc.read())
     post=get
 
-class ircSocket(websocket.WebSocketHandler):
+class autoSocket(websocket.WebSocketHandler):
     socketID = None
     def open(self):
         if not _check.socket(self):
-            logging.error("%d %s (%s)", self.get_status(), "ircSocket denied", self.request.remote_ip)
+            logging.error("%d %s (%s)", self.get_status(), "autoSocket denied", self.request.remote_ip)
             self.write_message("ERROR/Permission denied")
             self.close()
             return
-        self.socketID = self.application._pyrtSockets.add("ircSocket", self, self.cookies.get("sess_id").value)
-        logging.info("%d ircSocket opened (%s)", self.get_status(), self.request.remote_ip)
+        self.socketID = self.application._pyrtSockets.add("autoSocket", self, self.cookies.get("sess_id").value)
+        logging.info("%d autoSocket opened (%s)", self.get_status(), self.request.remote_ip)
 
     def on_message(self, message):
         if not _check.socket(self):
-            logging.error("%d ircSocket message denied (%s)", self.get_status(), self.request.remote_ip)
+            logging.error("%d autoSocket message denied (%s)", self.get_status(), self.request.remote_ip)
             self.write_message("ERROR/Permission denied")
             self.close()
             return
-        logging.info("ircSocket message: %s", message)
-        ircobj = irc.Irc(self.application._pyrtLog, websocketURI=".sockets/rpc.interface")
-        ircobj.start()
+        logging.info("autoSocket message: %s", message)
+        if message == "test":
+            ircobj = irc.Irc(self.application._pyrtLog, websocketURI=".sockets/rpc.interface")
+            ircobj.start()
+            ircobj2 = irc.Irc(self.application._pyrtLog, nick="pyrtBot2", websocketURI=".sockets/rpc.interface")
+            ircobj2.start()
 
 
     def on_close(self):
-        self.application._pyrtSockets.remove("ircSocket", self.socketID)
-        logging.info("%d ircSocket closed (%s)", self.get_status(), self.request.remote_ip)
+        self.application._pyrtSockets.remove("autoSocket", self.socketID)
+        logging.info("%d autoSocket closed (%s)", self.get_status(), self.request.remote_ip)
 
-class IRC(web.RequestHandler):
+class autoHandler(web.RequestHandler):
     def get(self):
         chk = _check.web(self)
         if not chk[0]:
@@ -516,21 +521,23 @@ class IRC(web.RequestHandler):
         elif chk[0] and chk[1]:
             self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
 
-        with open("htdocs/ircHTML.tmpl") as doc:
+        with open("htdocs/autoHTML.tmpl") as doc:
             self.write(doc.read())
     post = get
     
 class RPCSocket(websocket.WebSocketHandler):
+    socketID = None
     def open(self):
         logging.info("RPCsocket successfully opened")
+        self.socketID = self.application._pyrtSockets.add("rpcSocket", self)
         self._RPChandler = rpchandler.RPCHandler(self.application._pyrtLog)
     
     def on_message(self, message):
-        logging.info("RPCsocket message: %s", message)
         resp = self._RPChandler.handle_message(message)
         self.write_message(resp, binary=True)
     
     def on_close(self):
+        self.application._pyrtSockets.remove("rpcSocket", self.socketID)
         logging.info("RPCsocket closed")
         
 
@@ -586,8 +593,8 @@ class Main(object):
             (r"/filesocket", fileSocket),
             (r"/statsocket", statSocket),
             (r"/logsocket", logSocket),
-            (r"/IRC", IRC),
-            (r"/ircsocket", ircSocket),
+            (r"/auto", autoHandler),
+            (r"/autosocket", autoSocket),
             (r"/RPCSocket", RPCSocket),
         ], **settings)
     
