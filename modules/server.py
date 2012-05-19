@@ -24,6 +24,7 @@ from modules import login
 from modules import rtorrent
 from modules import weblog 
 from modules import irc
+from modules import rpchandler
 from modules import indexPage, detailPage, ajaxPage  # pages
 from modules import optionsPage, rssPage, statsPage
 
@@ -498,7 +499,7 @@ class ircSocket(websocket.WebSocketHandler):
             self.close()
             return
         logging.info("ircSocket message: %s", message)
-        ircobj = irc.Irc(self.application._pyrtLog)
+        ircobj = irc.Irc(self.application._pyrtLog, websocketURI=".sockets/rpc.interface")
         ircobj.start()
 
 
@@ -522,10 +523,12 @@ class IRC(web.RequestHandler):
 class RPCSocket(websocket.WebSocketHandler):
     def open(self):
         logging.info("RPCsocket successfully opened")
+        self._RPChandler = rpchandler.RPCHandler(self.application._pyrtLog)
     
     def on_message(self, message):
         logging.info("RPCsocket message: %s", message)
-        print(self.request.__dict__)
+        resp = self._RPChandler.handle_message(message)
+        self.write_message(resp, binary=True)
     
     def on_close(self):
         logging.info("RPCsocket closed")
