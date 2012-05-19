@@ -525,6 +525,7 @@ class RPCSocket(websocket.WebSocketHandler):
     
     def on_message(self, message):
         logging.info("RPCsocket message: %s", message)
+        print(self.request.__dict__)
     
     def on_close(self):
         logging.info("RPCsocket closed")
@@ -584,6 +585,7 @@ class Main(object):
             (r"/logsocket", logSocket),
             (r"/IRC", IRC),
             (r"/ircsocket", ircSocket),
+            (r"/RPCSocket", RPCSocket),
         ], **settings)
     
         application._pyrtSockets = SocketStorage()
@@ -608,26 +610,15 @@ class Main(object):
             "sockets" : application._pyrtSockets,
         }
         
-#        sockets = tornado.netutil.bind_sockets(global_config["server.socket_port"], global_config["server.socket_host"])
-#        file_socket = tornado.netutil.bind_unix_socket(".sockets/bot.socket")
-        #tornado.process.fork_processes(0)
-        
-        logging.info("Starting RPCserver on file .sockets/rpc.interface")
-        rpcsocket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        rpcsocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        rpcsocket.setblocking(0)
-        rpcsocket.bind(".sockets/rpc.interface")
-        rpcsocket.listen(128)
-        
+       
         http_server = httpserver.HTTPServer(application, ssl_options=ssl_options)
         logging.info("Starting webserver on http%s://%s:%i" % ((ssl_options and "s" or ""), global_config["server.socket_host"], global_config["server.socket_port"]))
-#        http_server.add_sockets(sockets)
-#        http_server.add_sockets([file_socket])
+        logging.info("Starting UNIX websocket on .sockets/rpc.interface")
+        sockets = tornado.netutil.bind_unix_socket(".sockets/rpc.interface")
+        http_server.add_socket(sockets)
         http_server.listen(global_config["server.socket_port"], global_config["server.socket_host"])
         
         self.instance = ioloop.IOLoop.instance()
-        
-        self.instance.add_handler(rpcsocket.fileno(), RPCSocket, self.instance.READ)
         self.instance.start()
 
 
