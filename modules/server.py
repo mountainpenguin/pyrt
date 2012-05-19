@@ -32,6 +32,9 @@ import tornado.web as web
 import tornado.httpserver as httpserver
 import tornado.websocket as websocket
 import tornado.options
+import tornado.netutil
+import tornado.process
+
 import os
 import urlparse
 import json
@@ -41,6 +44,7 @@ import signal
 import traceback
 import random
 import string
+import socket
 
 class null(object):
     @staticmethod
@@ -502,7 +506,6 @@ class ircSocket(websocket.WebSocketHandler):
         self.application._pyrtSockets.remove("ircSocket", self.socketID)
         logging.info("%d ircSocket closed (%s)", self.get_status(), self.request.remote_ip)
 
-
 class IRC(web.RequestHandler):
     def get(self):
         chk = _check.web(self)
@@ -515,6 +518,17 @@ class IRC(web.RequestHandler):
         with open("htdocs/ircHTML.tmpl") as doc:
             self.write(doc.read())
     post = get
+    
+class RPCSocket(websocket.WebSocketHandler):
+    def open(self):
+        logging.info("RPCsocket successfully opened")
+    
+    def on_message(self, message):
+        logging.info("RPCsocket message: %s", message)
+    
+    def on_close(self):
+        logging.info("RPCsocket closed")
+        
 
 class Main(object):
     def __init__(self):
@@ -594,11 +608,26 @@ class Main(object):
             "sockets" : application._pyrtSockets,
         }
         
+#        sockets = tornado.netutil.bind_sockets(global_config["server.socket_port"], global_config["server.socket_host"])
+#        file_socket = tornado.netutil.bind_unix_socket(".sockets/bot.socket")
+        #tornado.process.fork_processes(0)
+        
+        logging.info("Starting RPCserver on file .sockets/rpc.interface")
+        rpcsocket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        rpcsocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        rpcsocket.setblocking(0)
+        rpcsocket.bind(".sockets/rpc.interface")
+        rpcsocket.listen(128)
+        
         http_server = httpserver.HTTPServer(application, ssl_options=ssl_options)
         logging.info("Starting webserver on http%s://%s:%i" % ((ssl_options and "s" or ""), global_config["server.socket_host"], global_config["server.socket_port"]))
+#        http_server.add_sockets(sockets)
+#        http_server.add_sockets([file_socket])
         http_server.listen(global_config["server.socket_port"], global_config["server.socket_host"])
         
         self.instance = ioloop.IOLoop.instance()
+        
+        self.instance.add_handler(rpcsocket.fileno(), RPCSocket, self.instance.READ)
         self.instance.start()
 
 

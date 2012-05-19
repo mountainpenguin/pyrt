@@ -15,18 +15,14 @@ class _ModularBot(ircbot.SingleServerIRCBot):
     def __init__(self, net, nick, name, *args, **kwargs):
         self.config = _Config(**kwargs)
         #create unix socket for communication with tornado server
-        self.PID = os.getpid()
-        self._socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        self._socket.bind(".bots/%d.socket" % self.PID)
 
         ircbot.SingleServerIRCBot.__init__(self, net, nick, name)
 
     def on_welcome(self, connection, event):
         connection.join(self.config.channel)
-        self._socket.send("Bot connected\n")
 
     def on_pubmsg(self, connection, event):
-        self._socket.send("PUBMSG: %r\n" % event.arguments()[0])
+        pass
 
 class Irc(object):
     def __init__(self, log, network="127.0.0.1", channel="#mp-dev", nick="pyrtBot", port=6667):
@@ -42,7 +38,6 @@ class Irc(object):
         bot.start()
 
     def start(self):
-        bot = _ModularBot([(self.network, self.port)], self.nick, self.name, channel=self.channel, log=self.log)
         p = multiprocessing.Process(target=self.startbot)
         p.daemon = True
         p.start()
