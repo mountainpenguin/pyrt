@@ -341,12 +341,19 @@ class ajaxSocket(websocket.WebSocketHandler):
             self.write_message("ERROR/you should use POST or fileSocket method for file uploads")
             return
                 
-        resp = self.application._pyrtAJAX.handle(request, qs)
-        if resp:
-            self.write_message(resp)
-        else:
-            logging.error("%d %s (%s)", self.get_status(), "ajaxSocket error - function returned nothing", self.request.remote_ip)
+        try:
+            resp = self.application._pyrtAJAX.handle(request, qs)
+        except:
+            tb = traceback.format_exc()
+            logging.error(tb)
+            self.application._pyrtLog.error("AJAX: error in command %s - %s", request, tb.strip().split("\n")[-1])
             self.write_message("ERROR/ajax function returned nothing")
+        else:
+            if resp:
+                self.write_message(resp)
+            else:
+                logging.error("%d %s (%s)", self.get_status(), "ajaxSocket error - function returned nothing", self.request.remote_ip)
+                self.write_message("ERROR/ajax function returned nothing")
             
     def on_close(self):
         self.application._pyrtSockets.remove("ajaxSocket", self.socketID)
@@ -478,6 +485,36 @@ class statSocket(websocket.WebSocketHandler):
         self.application._pyrtSockets.remove("statSocket", self.socketID)
         logging.info("%d %s (%s)", self.get_status(), "statSocket closed", self.request.remote_ip) 
 
+class testing(web.RequestHandler):
+    def get(self):
+        chk = _check.web(self)
+        if not chk[0]:
+            self.write(self.application._pyrtL.loginHTML(chk[1]))
+            return
+        elif chk[0] and chk[1]:
+            self.set_cookie("sess_d", self.application._pyrtL.sendCookie(self.request.remote_ip))
+
+        from modules.sites import ptp
+        self.application._pyrtLog.debug("modules.sites.ptp imported")
+        authkey = self.get_argument("authkey")
+        torrent_pass = self.get_argument("torrent_pass")
+        torrentid = self.get_argument("torrentid")
+
+        if not authkey or not torrent_pass or not torrentid:
+            raise web.HTTPError(400)
+        p = ptp.PTP(self.application._pyrtLog, self.application._pyrtAJAX, authkey=authkey, torrent_pass=torrent_pass)
+        self.application._pyrtLog.debug("PTP object initalised")
+
+        resp = p.fetch(torrentid)
+        filename = resp[0]
+        content_length = len(resp[1])
+        self.application._pyrtLog.debug("Got filename %s with length %d", filename, content_length)
+        p.process(filename, resp[1])
+        self.write("<!DOCTYPE html><html><body>Test Completed</body></html>")
+
+    post = get
+
+
 class stats(web.RequestHandler):
     def get(self):
         chk = _check.web(self)
@@ -608,6 +645,7 @@ class Main(object):
             (r"/auto", autoHandler),
             (r"/autosocket", autoSocket),
             (r"/RPCSocket", RPCSocket),
+            (r"/test", testing),
         ], **settings)
     
         application._pyrtSockets = SocketStorage()

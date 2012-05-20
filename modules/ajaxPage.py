@@ -437,6 +437,17 @@ class Ajax:
         fileContents = open(filepath).read()
         return fileContents
     
+    def load_from_remote(self, filename, remotename, start=True):
+        """Loads a torrent from a file that has been fetched by a remote method"""
+        self.Log.debug("File load request from remote handler %s (filename %s)", remotename, filename)
+        if start:
+            self.RT.start_from_file(os.path.join(os.getcwd(), "torrents/%s" % filename))
+        else:
+            self.RT.load_from_file(os.path.join(os.getcwd(), "torrents/%s" % filename))
+        self.Log.info("AJAX: '%s' (downloaded via remote '%s') loaded%s successfully", filename, remotename, (start and " and started" or ""))
+        return "OK"
+        
+
     def upload_torrent_socket(self, torrent, start=True):
         fileName = torrent["filename"]
         inFile = torrent["content"]
@@ -481,8 +492,11 @@ class Ajax:
     def get_info_multi(self, view, sortby=None, reverse=None, drop_down_ids=None):
         drop_downs = {}
         if drop_down_ids:
-            for t_id in drop_down_ids.split(","):
+            if not isinstance(drop_down_ids, list):
+                drop_down_ids = drop_down_ids.split(",")
+            for t_id in drop_down_ids:
                 drop_downs[t_id] = self.get_torrent_info(t_id, html="yes please")
+            
         #wanted:
         #   system info
         #   ratio, dl speed, ul speed, status
