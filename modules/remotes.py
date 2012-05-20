@@ -26,6 +26,10 @@ import re
 import os
 import logging
 import traceback
+import cPickle as pickle
+import random
+import string
+import hashlib
 
 from modules import bencode
 
@@ -273,10 +277,61 @@ class Base(object):
             Returns a urllib2 file-like object"""
         return urllib2.urlopen(req_url, urllib.urlencode(params))
 
-class RemotesStorage(object):
-    def __init__(self):
-        self._checkDB()
+class RemoteStorage(object):
+    """Class for storing remote 'source' settings
+    
+        There are no plans to make this secure
+        (if it is even possible)
+    """
 
-    def addRemote(self, name, base_url, authkey=None, passkey=None):
-        pass
+    def __init__(self):
+        try:
+            self.STORE = pickle.load(open(".remotes.pickle"))
+        except:
+            self.STORE = {}
+
+    def addRemote(self, name, base_url, **kwargs):
+        """Add a 'source'
+
+            Requires arguments `name` and `base_url`
+            Any other arguments must be passed as keywords
+        """
+
+        randomid = hashlib.sha256(os.urandom(30))
+        r = Settings(name=name, base_url=base_url, remoteid=randomid, **kwargs)
+        self.STORE[randomid] = r 
+        self._flush()
+        return randomid
+
+    def getRemoteByName(self, name):
+        """Returns entries that have attribute name `name`
+
+            Returns a list or None
+        """
+        ret = []
+        for remoteid, val in self.STORE:
+            if val.has_attr("name"):
+                ret.append(val)
+        return ret or None
+
+    def getRemoteById(self, remoteid):
+        """Returns an entry with id `remoteid`
+
+            Returns a Settings instance, or None
+        """
+        if remoteid in self.STORE:
+            return self.STORE[remoteid]
+
+    def removeRemote(self, remoteid):
+        """Deletes an entry with id `remoteid`
+
+            Returns True if successful, or None
+        """
+        if remoteid in self.STORE:
+            del self.STORE[remoteid]
+            self._flush()
+            return True
+        
+    def _flush(self):
+        pickle.dump(self.STORE, open(".remotes.pickle","w"))
 
