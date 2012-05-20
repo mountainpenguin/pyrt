@@ -25,13 +25,19 @@ from modules import rtorrent
 from modules import weblog 
 from modules import irc
 from modules import rpchandler
-from modules import indexPage, detailPage, ajaxPage  # pages
-from modules import optionsPage, rssPage, statsPage
+from modules import autohandler
 
-import tornado.ioloop as ioloop
-import tornado.web as web
-import tornado.httpserver as httpserver
-import tornado.websocket as websocket
+from modules import indexPage
+from modules import detailPage
+from modules import ajaxPage
+from modules import optionsPage
+from modules import rssPage
+from modules import statsPage
+
+import tornado.ioloop
+import tornado.web
+import tornado.httpserver
+import tornado.websocket
 import tornado.options
 import tornado.netutil
 import tornado.process
@@ -136,7 +142,7 @@ class SocketStorage(object):
             allSocks.extend(x.values())
         return filter(lambda x: x.session==session, allSocks)
 
-class index(web.RequestHandler):
+class index(tornado.web.RequestHandler):
     """Default page handler for /
     
         Writes indexPage.Index.index() if user is logged in
@@ -159,7 +165,7 @@ class index(web.RequestHandler):
         
     post = get
     
-class detail(web.RequestHandler):
+class detail(tornado.web.RequestHandler):
     """ *** DEPRECATED DO NOT USE *** Detailed page view handler (/detail)
         
         Retrieves detailPage.Detail() passing the torrent_id argument.
@@ -189,7 +195,7 @@ class detail(web.RequestHandler):
         
     post = get
     
-class ajax(web.RequestHandler):
+class ajax(tornado.web.RequestHandler):
     """Handler for ajax queries (/ajax)
             
     """
@@ -197,7 +203,7 @@ class ajax(web.RequestHandler):
         qs = self.request.arguments
         request = qs.get("request", [None])[0]
         if not request:
-            raise web.HTTPError(400, log_message="Error, no request specified")
+            raise tornado.web.HTTPError(400, log_message="Error, no request specified")
 
         chk = _check.web(self)
         if not chk[0]:
@@ -206,14 +212,14 @@ class ajax(web.RequestHandler):
 
                 
         if not self.application._pyrtAJAX.has_command(request):
-            raise web.HTTPError(400, log_message="Error Invalid Method")
+            raise tornado.web.HTTPError(400, log_message="Error Invalid Method")
         if not self.application._pyrtAJAX.validate_command(request, qs):
-            raise web.HTTPError(400, log_message="Error need more args")
+            raise tornado.web.HTTPError(400, log_message="Error need more args")
         if request == "upload_torrent":
             try:
                 qs["torrent"] = self.request.files["torrent"]
             except:
-                raise web.HTTPError(400, log_message="No torrent specified for upload")
+                raise tornado.web.HTTPError(400, log_message="No torrent specified for upload")
                 
         resp = self.application._pyrtAJAX.handle(request, qs)
         if resp:
@@ -221,7 +227,7 @@ class ajax(web.RequestHandler):
         
     post = get
     
-class options(web.RequestHandler):
+class options(tornado.web.RequestHandler):
     """Handler for options page view (/options)
             
             *** Currently a work in progress ***
@@ -262,7 +268,7 @@ class options(web.RequestHandler):
 
     post = get
    
-class logHandler(web.RequestHandler):
+class logHandler(tornado.web.RequestHandler):
     def get(self):
         chk = _check.web(self)
         if not chk[0]:
@@ -281,7 +287,7 @@ class logHandler(web.RequestHandler):
 
     post = get
 
-class RSS(web.RequestHandler):
+class RSS(tornado.web.RequestHandler):
     def get(self):
         chk = _check.web(self)
         if not chk[0]:
@@ -292,7 +298,7 @@ class RSS(web.RequestHandler):
 
         self.write(self.application._pyrtRSS_PAGE.index())
         
-class ajaxSocket(websocket.WebSocketHandler):
+class ajaxSocket(tornado.websocket.WebSocketHandler):
     socketID = None
     def open(self):
         if not _check.socket(self):
@@ -359,7 +365,7 @@ class ajaxSocket(websocket.WebSocketHandler):
         self.application._pyrtSockets.remove("ajaxSocket", self.socketID)
         logging.info("%d %s (%s)", self.get_status(), "ajaxSocket closed", self.request.remote_ip)
    
-class logSocket(websocket.WebSocketHandler):
+class logSocket(tornado.websocket.WebSocketHandler):
     socketID = None
     def open(self):
         if not _check.socket(self):
@@ -403,7 +409,7 @@ class logSocket(websocket.WebSocketHandler):
         self.application._pyrtSockets.remove("logSocket", self.socketID)
         logging.info("%d %s (%s)", self.get_status(), "logSocket closed", self.request.remote_ip)
 
-class fileSocket(websocket.WebSocketHandler):
+class fileSocket(tornado.websocket.WebSocketHandler):
     socketID = None
     def open(self):
         if not _check.socket(self):
@@ -451,7 +457,7 @@ class fileSocket(websocket.WebSocketHandler):
         self.application._pyrtSockets.remove("fileSocket", self.socketID) 
         logging.info("%d %s (%s)", self.get_status(), "fileSocket closed", self.request.remote_ip)
 
-class statSocket(websocket.WebSocketHandler):
+class statSocket(tornado.websocket.WebSocketHandler):
     socketID = None
     def open(self):
         if not _check.socket(self):
@@ -485,7 +491,7 @@ class statSocket(websocket.WebSocketHandler):
         self.application._pyrtSockets.remove("statSocket", self.socketID)
         logging.info("%d %s (%s)", self.get_status(), "statSocket closed", self.request.remote_ip) 
 
-class testing(web.RequestHandler):
+class testing(tornado.web.RequestHandler):
     def get(self):
         chk = _check.web(self)
         if not chk[0]:
@@ -501,7 +507,7 @@ class testing(web.RequestHandler):
         torrentid = self.get_argument("torrentid")
 
         if not authkey or not torrent_pass or not torrentid:
-            raise web.HTTPError(400)
+            raise tornado.web.HTTPError(400)
         p = ptp.PTP(self.application._pyrtLog, self.application._pyrtAJAX, authkey=authkey, torrent_pass=torrent_pass)
         self.application._pyrtLog.debug("PTP object initalised")
 
@@ -515,7 +521,7 @@ class testing(web.RequestHandler):
     post = get
 
 
-class stats(web.RequestHandler):
+class stats(tornado.web.RequestHandler):
     def get(self):
         chk = _check.web(self)
         if not chk[0]:
@@ -528,7 +534,7 @@ class stats(web.RequestHandler):
             self.write(doc.read())
     post=get
 
-class autoSocket(websocket.WebSocketHandler):
+class autoSocket(tornado.websocket.WebSocketHandler):
     socketID = None
     def open(self):
         if not _check.socket(self):
@@ -537,6 +543,7 @@ class autoSocket(websocket.WebSocketHandler):
             self.close()
             return
         self.socketID = self.application._pyrtSockets.add("autoSocket", self, self.cookies.get("sess_id").value)
+        self._autoHandler = autohandler.AutoHandler(self.application._pyrtLog)
         logging.info("%d autoSocket opened (%s)", self.get_status(), self.request.remote_ip)
 
     def on_message(self, message):
@@ -546,6 +553,7 @@ class autoSocket(websocket.WebSocketHandler):
             self.close()
             return
         logging.info("autoSocket message: %s", message)
+        #self._autoHandler.handle_message(message)
         if message == "test":
             auth = self.application._pyrtL.getRPCAuth()
             ircobj = irc.Irc(self.application._pyrtLog, websocketURI=".sockets/rpc.interface", auth=auth)
@@ -556,7 +564,7 @@ class autoSocket(websocket.WebSocketHandler):
         self.application._pyrtSockets.remove("autoSocket", self.socketID)
         logging.info("%d autoSocket closed (%s)", self.get_status(), self.request.remote_ip)
 
-class autoHandler(web.RequestHandler):
+class autoHandler(tornado.web.RequestHandler):
     def get(self):
         chk = _check.web(self)
         if not chk[0]:
@@ -569,7 +577,7 @@ class autoHandler(web.RequestHandler):
             self.write(doc.read())
     post = get
     
-class RPCSocket(websocket.WebSocketHandler):
+class RPCSocket(tornado.websocket.WebSocketHandler):
     socketID = None
     def open(self):
         logging.info("RPCsocket successfully opened")
@@ -625,11 +633,11 @@ class Main(object):
         settings = {
             "static_path" : os.path.join(os.getcwd(), "static"),
         }
-        application = web.Application([
-            (r"/css/(.*)", web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/css/")}),
-            (r"/javascript/(.*)", web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/javascript/")}),
-            (r"/images/(.*)", web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/images/") }),
-            (r"/favicons/(.*)", web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/favicons/") }),
+        application = tornado.web.Application([
+            (r"/css/(.*)", tornado.web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/css/")}),
+            (r"/javascript/(.*)", tornado.web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/javascript/")}),
+            (r"/images/(.*)", tornado.web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/images/") }),
+            (r"/favicons/(.*)", tornado.web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/favicons/") }),
             (r"/", index),
             (r"/index", index),
             (r"/detail", detail),
@@ -645,7 +653,6 @@ class Main(object):
             (r"/auto", autoHandler),
             (r"/autosocket", autoSocket),
             (r"/RPCSocket", RPCSocket),
-            (r"/test", testing),
         ], **settings)
     
         application._pyrtSockets = SocketStorage()
@@ -671,14 +678,12 @@ class Main(object):
         }
         
        
-        http_server = httpserver.HTTPServer(application, ssl_options=ssl_options)
+        http_server = tornado.httpserver.HTTPServer(application, ssl_options=ssl_options)
         logging.info("Starting webserver on http%s://%s:%i" % ((ssl_options and "s" or ""), global_config["server.socket_host"], global_config["server.socket_port"]))
         logging.info("Starting UNIX websocket on .sockets/rpc.interface")
         sockets = tornado.netutil.bind_unix_socket(".sockets/rpc.interface")
         http_server.add_socket(sockets)
         http_server.listen(global_config["server.socket_port"], global_config["server.socket_host"])
         
-        self.instance = ioloop.IOLoop.instance()
+        self.instance = tornado.ioloop.IOLoop.instance()
         self.instance.start()
-
-
