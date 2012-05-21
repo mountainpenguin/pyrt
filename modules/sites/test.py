@@ -4,7 +4,7 @@ from modules import remotes
 import urlparse
 
 # DESCRIPTION should always be set
-DESCRIPTION = "Pass the Popcorn"
+DESCRIPTION = "Example Handler"
 
 # REQUIRED_KEYS should always be set
 REQUIRED_KEYS = ["authkey","torrent_pass"]
@@ -12,9 +12,9 @@ REQUIRED_KEYS = ["authkey","torrent_pass"]
 # 'source' classes should always be named 'Main'
 class Main(remotes.Base):
     def initialise(self, *args, **kwargs):
-        self.settings.name = "PTP"
-        self.settings.long_name = "passthepopcorn"
-        self.settings.base_url = "http://passthepopcorn.me"
+        self.settings.name = "example"
+        self.settings.long_name = "Example Handler"
+        self.settings.base_url = "http://example.tld"
 
     def post_init(self):
         # note that this implementation doesn't really need to

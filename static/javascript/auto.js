@@ -18,7 +18,9 @@
  *
  */
 
+var args = null;
 var socket = null;
+
 if (window.document.location.protocol == "https:") {
      var socket_protocol = "wss"
 } else {
@@ -33,41 +35,116 @@ $(document).ready( function () {
     }
     socket.onopen = function (evt) {
         console.log("autoSocket opened", evt, socket);
+        runSocketInit();
     }
     socket.onclose = function (evt) {
         console.log("autoSocket closed", evt, socket);
     }
-   
-    $("#clicktest").bind("click", function () {
-        socket.send("test");
+    $("#tab_irc").click( function () {
+        socket.send("request=start_bot&arguments=ptp");
+    } );
+    console.log($("#dialog_form"));
+    $("#dialog_form").dialog({
+        autoOpen: false,
+        height: 300,
+        width: 350,
+        modal: true,
+        buttons: {
+            "Submit": function () {
+                var pw=$("#password").val();
+                // encrypt password by normal method (secure from MITM attacks
+                // due to the time-based OTP nature [?] )
+                var hashed = hashPassword(pw);
+
+//                args.salt = salt;
+//                var hash = hashed.split("$")[2];
+                // use hash to encrypt message using AES encryption
+//                for (i=0; i<args.tocrypt.length; i++) {
+//                    var encrypted = CryptoJS.AES.encrypt(args.tocrypt[i][1], hash, {iv: salt, mode: CryptoJS.mode.CFB});
+//                    console.log("iv: " + salt + " " + encrypted.iv);
+//                    console.log("key: " + hash + " " + encrypted.key);
+//                    console.log("encrypted: " + encrypted.ciphertext);
+                
+                // decrypting with PyCrypto is too complicated to sort out, so
+                // send plaintext for now
+                
+                args.auth = hashed;
+                var q_ = []
+                $.each(args, function(key, value) {
+                    q_.push(key + "=" + encodeURIComponent(value));
+                });
+                var query = q_.join("&");
+                socket.send(query);
+                $(this).dialog("close");
+            },
+            "Cancel": function() { 
+                $(this).dialog("close");
+            }
+        },
+        close: function () {
+            $("#password").val("");
+            args = null;
+        }
     });
 
-    $(".topbar-tab_suboption").bind("click", function () {
-        $(".sub_wrapper:not(.is_hidden)").addClass("is_hidden");
-        if (this.id == "subtab_IRC") {
-            $(this).addClass("selected");
-            runIRCInit();
-        } else if (this.id == "subtab_RSS") {
-            $(this).addClass("selected");
-            runRSSInit();
-        } else if (this.id == "subtab_web") {
-            $(this).addClass("selected");
-            runWEBInit();
+    $(".remote_row").live("click", function (evt) {
+        var next_row = $(this).next();
+        if (next_row.hasClass("is_hidden")) {
+            next_row.removeClass("is_hidden");
+        } else {
+            next_row.addClass("is_hidden");
+        }
+    });
+    $("input").live("keydown", function (evt) {
+        $(this).prev().css({color:"", "font-weight":"", "font-style":""});
+    });
+    $(".submit_button").live("click", function (evt) {
+        // get arguments
+        var inputs = $("input", $(this).parent());
+        args = new Object();
+        args.tocrypt = [];
+        var exit = false;
+        inputs.each( function (elem) {
+            var key = $(this).attr("name");
+            var value = $(this).attr("value");
+            if (!value) {
+                $(this).prev().css({color: "red", "font-weight": "bold", "font-style": "italic"});
+                exit = true;
+            } else {
+//                args.tocrypt.push( new Array(key, value) );
+                args[key] = value
+            }
+        });
+        if (exit) {
+            return false;
+        } else {
+            args.request = "set_source";
+            // set args name value for assignment on other side
+            args.name = $(this).attr("id").split("submit_")[1];
+            $("#dialog_form").dialog("open");
         }
     });
 });
 
-function runIRCInit() {
-    $("#irc_wrapper").removeClass("is_hidden");
+function runSocketInit() {
+    socket.send("request=get_sources")
 }
-function runRSSInit() {
-    $("#rss_wrapper").removeClass("is_hidden");
-}
-function runWEBInit() {
-    $("#web_wrapper").removeClass("is_hidden");
-}
+
 function OnMessage (evt) {
-    console.log("ircSocket message", evt.data);
+     if (evt.data.indexOf("ERROR") === 0) {
+     } else {
+          var response = JSON.parse(evt.data);
+          if (response.request == "get_sources") {
+               var load = $("div#available").remove();
+               var tab = $("table#available > tbody");
+               for (i=0; i<response.response.length; i++) {
+                    tab.append($(response.response[i].row));
+                    tab.append($(response.response[i].req_row));
+               }
+          } else {
+            console.log("socket message:", evt.data)
+          }
+     }
 }
 
 function select_tab(elem) {
@@ -79,7 +156,7 @@ function deselect_tab(elem) {
 }
 
 function navigate_tab(elem) {
-    window.location = "?view=" + elem.id.split("tab_")[1];
+    window.location = window.location;
 }
 
 function navigate_tab_toHome(elem) {

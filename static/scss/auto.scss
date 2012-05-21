@@ -1,3 +1,123 @@
+.rss_img {
+    margin-bottom: 9px;
+}
+
+table {
+    &#available {
+        border-collapse: collapse;
+        width: 98%;
+    }
+}
+
+tbody > tr {
+    height: 2em;
+    &.remote_row:hover {
+        cursor: pointer;
+        background-color: #3A4040;
+        color: #FEA;
+    }
+    &.remote_row > td {
+        text-align: center;
+        &.name {
+            text-transform: uppercase;
+            min-width: 6em;
+        }
+        &.desc {
+            min-width: 10em;
+        }
+        &.status {
+            min-width: 6em;
+            font-weight: bold;
+            text-transform: uppercase;
+            &.status-on {
+                color: green;
+            }
+            &.status-off {
+                color: red;
+            }
+        }
+    }
+    &.remote_row:nth-child(n+1):not(:hover) {
+        background-color: #ECE9D8;    
+    }
+    &.remote_row:nth-child(n+2):not(:hover) {
+        background-color: #CCCCCC;
+    }
+    &.remote_setting {
+        &>td {
+            box-shadow: inset 0 2px 8px #888888;
+            padding: {
+                left: 2em;
+                right: 2em;
+                bottom: 2em;
+            }
+            div.settings {
+                margin-left: 2em;
+                label {
+                    font-family: monospace;  
+                    min-width: 150px;
+                    float: left;
+                    clear: left;
+                }
+                input[type=text] {
+                    font-family: monospace;
+                    border: none;
+                    float: left;
+                    clear: right;
+                    color: blue;
+                    min-width: 70%;
+                }
+                button.submit_button {
+                    float: left;
+                    clear: left;
+                    border-radius: 5px;
+                    box-shadow: 0 2px 8px #888888;
+                    width: 120px;
+                    height: 30px;
+                    margin-top: 1em;
+                    &>img, &>span {
+                        float: left;
+                    }
+                    &>span {
+                        padding-left: 1em;
+                        font-size: 15px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+thead, tfoot {
+    &>tr {
+        height: 1.5em;
+        background-color: #3A3737;
+        &>td {
+            &:first-child {
+                padding-left: 2em;
+            }
+            &:last-child {
+                padding-right: 2em;
+            }
+        }
+        &>th {
+            color: white;
+        }
+    }
+}
+
+thead {
+    &>tr {
+        height: 3em;
+        &>td:first-child {
+            border-top-left-radius: 10px;
+        }
+        &>td:last-child {
+            border-top-right-radius: 10px;
+        }
+    }
+}
+
 #clicktest {
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;

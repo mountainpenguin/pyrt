@@ -23,9 +23,9 @@ from __future__ import print_function
 from modules import login
 from modules import rtorrent
 from modules import weblog 
-from modules import irc
 from modules import rpchandler
 from modules import autohandler
+from modules import remotes
 
 from modules import indexPage
 from modules import detailPage
@@ -543,7 +543,7 @@ class autoSocket(tornado.websocket.WebSocketHandler):
             self.close()
             return
         self.socketID = self.application._pyrtSockets.add("autoSocket", self, self.cookies.get("sess_id").value)
-        self._autoHandler = autohandler.AutoHandler(self.application._pyrtLog)
+        self._autoHandler = autohandler.AutoHandler(login=self.application._pyrtL, log=self.application._pyrtLog, remoteStorage=self.application._pyrtRemoteStorage)
         logging.info("%d autoSocket opened (%s)", self.get_status(), self.request.remote_ip)
 
     def on_message(self, message):
@@ -553,12 +553,11 @@ class autoSocket(tornado.websocket.WebSocketHandler):
             self.close()
             return
         logging.info("autoSocket message: %s", message)
-        #self._autoHandler.handle_message(message)
-        if message == "test":
-            auth = self.application._pyrtL.getRPCAuth()
-            ircobj = irc.Irc(self.application._pyrtLog, websocketURI=".sockets/rpc.interface", auth=auth)
-            ircobj.start()
-
+        resp = self._autoHandler.handle_message(message)
+        if resp:
+            self.write_message(resp)
+        else:
+            self.write_message("ERROR/No Response")
 
     def on_close(self):
         self.application._pyrtSockets.remove("autoSocket", self.socketID)
@@ -574,7 +573,7 @@ class autoHandler(tornado.web.RequestHandler):
             self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
 
         with open("htdocs/autoHTML.tmpl") as doc:
-            self.write(doc.read())
+            self.write(doc.read() % { "PERM_SALT" : self.application._pyrtL.getPermSalt() })
     post = get
     
 class RPCSocket(tornado.websocket.WebSocketHandler):
@@ -582,7 +581,7 @@ class RPCSocket(tornado.websocket.WebSocketHandler):
     def open(self):
         logging.info("RPCsocket successfully opened")
         self.socketID = self.application._pyrtSockets.add("rpcSocket", self)
-        self._RPChandler = rpchandler.RPCHandler(self.application._pyrtLog)
+        self._RPChandler = rpchandler.RPCHandler(self.application._pyrtLog, self.application._pyrtAJAX, self.application._pyrtRemoteStorage)
     
     def on_message(self, message):
         auth = self._RPChandler.get_auth(message)
@@ -664,6 +663,7 @@ class Main(object):
         application._pyrtOPTIONS = optionsPage.Options(conf=c, RT=application._pyrtRT)
         application._pyrtRSS_PAGE = rssPage.Index(conf=c, RT=application._pyrtRT)
         application._pyrtSTATS = statsPage.Index(conf=c, RT=application._pyrtRT)
+        application._pyrtRemoteStorage = remotes.RemoteStorage()
         application._pyrtGLOBALS = {
             "login" : application._pyrtL,
             "indexPage" : application._pyrtINDEX,
@@ -675,6 +675,7 @@ class Main(object):
             "RT" : application._pyrtRT,
             "config" : c,
             "sockets" : application._pyrtSockets,
+            "remoteStorage" : application._pyrtRemoteStorage,
         }
         
        

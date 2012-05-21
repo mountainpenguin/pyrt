@@ -22,17 +22,21 @@
 import json
 import logging
 import traceback
+from modules import remotes
 
 class RPCHandler(object):
-    def __init__(self, publog):
+    def __init__(self, publog, ajax, storage):
         self.METHODS = {
             "listMethods" : self.listMethods,
             "privateLog" : self.privateLog,
             "publicLog" : self.publicLog,
             "log" : self.log,
             "test" : self.test,
+            "fetchTorrent" : self.fetchTorrent,
         }
         self.publog = publog
+        self.ajax = ajax
+        self.storage = storage
 
     def listMethods(self):
         return json.dumps(self.METHODS.keys())
@@ -76,6 +80,16 @@ class RPCHandler(object):
         }
         return json.dumps(respDict)
         # return respDict
+
+    def fetchTorrent(self, name, **kwargs):
+        site = remotes.getSiteMod(name)
+        if site:
+            s = site.Main(self.publog, self.ajax, self.storage)
+            filename, torrent = s.fetch(kwargs["torrentid"]) 
+            s.process(filename, torrent)
+            return self._respond("OK", None)
+        else:
+            return self._response("No such handler", "No such handler")
 
     def get_auth(self, msg):
         try:

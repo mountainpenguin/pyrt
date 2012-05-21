@@ -23,6 +23,7 @@ import time
 import random
 import string
 import logging
+import cgi
 
 class Message(object):
     """Class to contain a message"""
@@ -90,7 +91,7 @@ class Logger(object):
         timestamp = time.strftime("%d %b %Y %H:%M:%S")
         fmt = "(%s) %s" % (timestamp, msg.text)
         msg.colour = colour
-        msg.fmt = fmt
+        msg.fmt = cgi.escape(fmt)
         return msg
 
     def html_format(self, msg, addnewflag=False):

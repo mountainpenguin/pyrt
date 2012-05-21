@@ -1,3 +1,85 @@
+.rss_img {
+  margin-bottom: 9px; }
+
+table#available {
+  border-collapse: collapse;
+  width: 98%; }
+
+tbody > tr {
+  height: 2em; }
+  tbody > tr.remote_row:hover {
+    cursor: pointer;
+    background-color: #3A4040;
+    color: #FEA; }
+  tbody > tr.remote_row > td {
+    text-align: center; }
+    tbody > tr.remote_row > td.name {
+      text-transform: uppercase;
+      min-width: 6em; }
+    tbody > tr.remote_row > td.desc {
+      min-width: 10em; }
+    tbody > tr.remote_row > td.status {
+      min-width: 6em;
+      font-weight: bold;
+      text-transform: uppercase; }
+      tbody > tr.remote_row > td.status.status-on {
+        color: green; }
+      tbody > tr.remote_row > td.status.status-off {
+        color: red; }
+  tbody > tr.remote_row:nth-child(n+1):not(:hover) {
+    background-color: #ECE9D8; }
+  tbody > tr.remote_row:nth-child(n+2):not(:hover) {
+    background-color: #CCCCCC; }
+  tbody > tr.remote_setting > td {
+    box-shadow: inset 0 2px 8px #888888;
+    padding-left: 2em;
+    padding-right: 2em;
+    padding-bottom: 2em; }
+    tbody > tr.remote_setting > td div.settings {
+      margin-left: 2em; }
+      tbody > tr.remote_setting > td div.settings label {
+        font-family: monospace;
+        min-width: 150px;
+        float: left;
+        clear: left; }
+      tbody > tr.remote_setting > td div.settings input[type=text] {
+        font-family: monospace;
+        border: none;
+        float: left;
+        clear: right;
+        color: blue;
+        min-width: 70%; }
+      tbody > tr.remote_setting > td div.settings button.submit_button {
+        float: left;
+        clear: left;
+        border-radius: 5px;
+        box-shadow: 0 2px 8px #888888;
+        width: 120px;
+        height: 30px;
+        margin-top: 1em; }
+        tbody > tr.remote_setting > td div.settings button.submit_button > img, tbody > tr.remote_setting > td div.settings button.submit_button > span {
+          float: left; }
+        tbody > tr.remote_setting > td div.settings button.submit_button > span {
+          padding-left: 1em;
+          font-size: 15px; }
+
+thead > tr, tfoot > tr {
+  height: 1.5em;
+  background-color: #3A3737; }
+  thead > tr > td:first-child, tfoot > tr > td:first-child {
+    padding-left: 2em; }
+  thead > tr > td:last-child, tfoot > tr > td:last-child {
+    padding-right: 2em; }
+  thead > tr > th, tfoot > tr > th {
+    color: white; }
+
+thead > tr {
+  height: 3em; }
+  thead > tr > td:first-child {
+    border-top-left-radius: 10px; }
+  thead > tr > td:last-child {
+    border-top-right-radius: 10px; }
+
 #clicktest {
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;

@@ -3,6 +3,7 @@
 from modules.irclib import irclib
 from modules.irclib import ircbot
 from modules import websocket
+from modules import remotes
 import logging
 import multiprocessing
 import os
@@ -14,10 +15,6 @@ import time
 import hashlib
 import base64
 import math
-
-class _Config(object):
-    def __init__(self, **args):
-        self.__dict__.update(args)
 
 class RPCResponse(object):
     def __init__(self, **args):
@@ -76,7 +73,7 @@ class _ModularBot(ircbot.SingleServerIRCBot):
         self.network = net
         self.nick = nick
         self.name = name
-        self.config = _Config(**kwargs)
+        self.config = remotes.Settings(**kwargs)
         self.socket = websocket.create_connection(self.config.websocketURI)  
         self.PID = os.getpid()
         open("proc/bots/%d.pid" % self.PID, "w").write(str(self.PID))
@@ -88,6 +85,12 @@ class _ModularBot(ircbot.SingleServerIRCBot):
 
     def on_pubmsg(self, connection, event):
         self.RPCCommand("log", "debug", "IRCbot #%d: %s said '%r' in %s", self.PID, event.source().split("!")[0], event.arguments()[0], event.target())
+        try:
+            torrentid = int(event.arguments()[0])
+        except:
+            pass
+        else:
+            self.RPCCommand("fetchTorrent", name="ptp", torrentid=torrentid)
 
     def on_ctcp(self, connection, event):
         pass

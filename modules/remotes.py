@@ -30,8 +30,41 @@ import cPickle as pickle
 import random
 import string
 import hashlib
+import imp
 
 from modules import bencode
+
+
+def searchSites():
+    import modules.sites
+    def _filter(name):
+        if name[-3:] != ".py":
+            return False
+        elif name[0] == "_":
+            return False
+        else:
+            return True
+    files = filter(_filter, os.listdir("modules/sites/"))
+    logging.info("files in modules/sites/: %r", files)
+    srcs = []
+    for f in files:
+        try:
+            d = imp.find_module(f.split(".py")[0],["modules/sites"])
+            logging.info("found module %s", f.split(".py")[0])
+            c = imp.load_module("modules.sites.%s" % f.split(".py")[0], d[0], d[1], d[2])
+            logging.info("got module %s", f.split(".py")[0])
+            srcs.append( (f.split(".py")[0], c.DESCRIPTION, c.REQUIRED_KEYS) )
+        except:
+            logging.error(traceback.format_exc())
+            pass
+    return srcs
+
+def getSiteMod(name):
+    import modules.sites
+    d = imp.find_module(name.lower(), ["modules/sites"])
+    if d:
+        c = imp.load_module("modules.sites.%s" % name.lower(), d[0], d[1], d[2])
+        return c
 
 class UndefinedError(Exception):
     def __init__(self, value):
@@ -149,14 +182,27 @@ class Settings(dict):
 
 
 class Base(object):
-    def __init__(self, log, ajax, *args, **kwargs):
+    def __init__(self, log, ajax, storage, *args, **kwargs):
         self._log = log
         self._ajax = ajax
+        self._storage = storage
         self.settings = Settings()
         self.initialise(*args, **kwargs)
         for val in ["name", "base_url"]:
             if not hasattr(self.settings, val) or self.settings[val] is None:
                 raise UndefinedError("%s is not defined" % val)
+        result = self._fetch_keywords()
+        if not result:
+            raise UndefinedError("No records in RemoteStorage for this class")
+        self.post_init()
+
+    def _fetch_keywords(self):
+        resp = self._storage.getRemoteByName(self.settings.name.upper())
+        if not resp:
+            return None
+        #should only ever be one entry defined
+        self.settings._required_keys = resp
+        return True
 
     def initialise(self, name, base_url, **kwargs):
         """Function for overriding in a subclass
@@ -164,14 +210,23 @@ class Base(object):
         Note: 'settings' attributes `name` and  `base_url` *must* be set in this function
         
         `settings` is both a dictionary and a class (see remotes.Settings class)
-        Probably appropriate to set settings.authkey and settings.passkey here (if applicable)
-
-        If you need cookies for downloading torrents, then you should acquire / set them in this
-        function and define how they are used in the fetch method
         """
         self.settings.name = None
         self.settings.long_name = None
         self.settings.base_url = None
+        return
+
+    def post_init(self):
+        """Function for post initialisation - for overriding (if required)
+        
+        Keywords settings that are specified in `required_keys` have already been fetched by the 
+        time this function is executed.
+        They are stored within self.settings._required_keys, you may wish to store them 
+        elsewhere.
+
+        If you need cookies for downloading torrents, then you should acquire / set them in this
+        function and define how they are used in the fetch method.
+        """
         return
 
     def fetch(self):
@@ -237,7 +292,6 @@ class Base(object):
         self._ajax.load_from_remote(filename, self.settings.name, start=False)
 
             
-            
 
     def getFilename(self, info):
         """Parses a urllib2 response info dict for a filename
@@ -290,45 +344,31 @@ class RemoteStorage(object):
         except:
             self.STORE = {}
 
-    def addRemote(self, name, base_url, **kwargs):
+    def addRemote(self, name, **kwargs):
         """Add a 'source'
 
-            Requires arguments `name` and `base_url`
+            Requires argument `name`
             Any other arguments must be passed as keywords
         """
 
         randomid = hashlib.sha256(os.urandom(30))
-        r = Settings(name=name, base_url=base_url, remoteid=randomid, **kwargs)
-        self.STORE[randomid] = r 
+        r = Settings(name=name, **kwargs)
+        self.STORE[name.upper()] = r 
         self._flush()
-        return randomid
+        return name
 
     def getRemoteByName(self, name):
-        """Returns entries that have attribute name `name`
+        """Returns entries `name`, or None"""
+        if name in self.STORE:
+            return self.STORE[name]
 
-            Returns a list or None
-        """
-        ret = []
-        for remoteid, val in self.STORE:
-            if val.has_attr("name"):
-                ret.append(val)
-        return ret or None
-
-    def getRemoteById(self, remoteid):
-        """Returns an entry with id `remoteid`
-
-            Returns a Settings instance, or None
-        """
-        if remoteid in self.STORE:
-            return self.STORE[remoteid]
-
-    def removeRemote(self, remoteid):
+    def removeRemote(self, name):
         """Deletes an entry with id `remoteid`
 
             Returns True if successful, or None
         """
-        if remoteid in self.STORE:
-            del self.STORE[remoteid]
+        if name in self.STORE:
+            del self.STORE[name]
             self._flush()
             return True
         

@@ -85,6 +85,9 @@ class Login:
         else:
             return False
 
+    def getPermSalt(self):
+        return self.USER.password.split("$")[1]
+
     def checkPassword(self, pw, ip):
         #pw = TOTP hash
         try:
