@@ -35,31 +35,60 @@ tbody > tr {
     padding-left: 2em;
     padding-right: 2em;
     padding-bottom: 2em; }
-    tbody > tr.remote_setting > td div.settings {
+    tbody > tr.remote_setting > td div.filters {
+      margin-top: 2em; }
+      tbody > tr.remote_setting > td div.filters h4 {
+        float: left;
+        clear: left; }
+      tbody > tr.remote_setting > td div.filters button.add_filter_button {
+        border-radius: 5px;
+        box-shadow: 0 2px 8px #888888;
+        width: 120px;
+        height: 20px;
+        vertical-align: center;
+        border-bottom: 3px; }
+      tbody > tr.remote_setting > td div.filters div.filter {
+        float: left;
+        clear: right;
+        color: #4183C4;
+        font-family: monospace;
+        border: 1px solid #EAEAEA;
+        padding: 0 5px;
+        border-radius: 3px; }
+        tbody > tr.remote_setting > td div.filters div.filter:not(:hover) {
+          background-color: #F8F8F8; }
+        tbody > tr.remote_setting > td div.filters div.filter:hover {
+          background-color: red;
+          cursor: pointer; }
+      tbody > tr.remote_setting > td div.filters div.add_filter_div {
+        float: left;
+        clear: left;
+        margin-top: 1em;
+        width: 80%; }
+    tbody > tr.remote_setting > td div.settings, tbody > tr.remote_setting > td div.filters {
       margin-left: 2em; }
-      tbody > tr.remote_setting > td div.settings label {
+      tbody > tr.remote_setting > td div.settings label, tbody > tr.remote_setting > td div.filters label {
         font-family: monospace;
         min-width: 150px;
         float: left;
         clear: left; }
-      tbody > tr.remote_setting > td div.settings input[type=text] {
+      tbody > tr.remote_setting > td div.settings input[type=text], tbody > tr.remote_setting > td div.filters input[type=text] {
         font-family: monospace;
         border: none;
         float: left;
         clear: right;
         color: blue;
-        min-width: 70%; }
-      tbody > tr.remote_setting > td div.settings button.submit_button {
-        float: left;
-        clear: left;
+        min-width: 70%;
+        background-color: #F8F8F8; }
+      tbody > tr.remote_setting > td div.settings button.submit_button, tbody > tr.remote_setting > td div.settings button.bot_button, tbody > tr.remote_setting > td div.filters button.submit_button, tbody > tr.remote_setting > td div.filters button.bot_button {
         border-radius: 5px;
         box-shadow: 0 2px 8px #888888;
         width: 120px;
         height: 30px;
         margin-top: 1em; }
-        tbody > tr.remote_setting > td div.settings button.submit_button > img, tbody > tr.remote_setting > td div.settings button.submit_button > span {
+        tbody > tr.remote_setting > td div.settings button.submit_button > img, tbody > tr.remote_setting > td div.settings button.submit_button > span, tbody > tr.remote_setting > td div.settings button.bot_button > img, tbody > tr.remote_setting > td div.settings button.bot_button > span, tbody > tr.remote_setting > td div.filters button.submit_button > img, tbody > tr.remote_setting > td div.filters button.submit_button > span, tbody > tr.remote_setting > td div.filters button.bot_button > img, tbody > tr.remote_setting > td div.filters button.bot_button > span {
           float: left; }
-        tbody > tr.remote_setting > td div.settings button.submit_button > span {
+        tbody > tr.remote_setting > td div.settings button.submit_button > span, tbody > tr.remote_setting > td div.settings button.bot_button > span, tbody > tr.remote_setting > td div.filters button.submit_button > span, tbody > tr.remote_setting > td div.filters button.bot_button > span {
           padding-left: 1em;
           font-size: 15px; }
 

@@ -7,7 +7,15 @@ import urlparse
 DESCRIPTION = "Example Handler"
 
 # REQUIRED_KEYS should always be set
-REQUIRED_KEYS = ["authkey","torrent_pass"]
+REQUIRED_KEYS = [
+    ("nick", "IRC bot nick"),
+]
+
+METHODS = ["IRC"]
+
+IRC_NETWORK = "irc.mpengu.in"
+IRC_PORT = 6667
+IRC_CHANNEL = "#mp-dev"
 
 # 'source' classes should always be named 'Main'
 class Main(remotes.Base):
@@ -15,13 +23,6 @@ class Main(remotes.Base):
         self.settings.name = "example"
         self.settings.long_name = "Example Handler"
         self.settings.base_url = "http://example.tld"
-
-    def post_init(self):
-        # note that this implementation doesn't really need to
-        # override `post_init`, can easily access authkey and torrent_pass
-        # in `fetch` without reassigning
-        self.settings.authkey = self.settings._required_keys.authkey
-        self.settings.torrent_pass = self.settings._required_keys.torrent_pass
 
     def fetch(self, torrentid):
         url = urlparse.urljoin(self.settings.base_url, "torrents.php")

@@ -18,7 +18,7 @@
             <div id="topbar">
                 <div class="topbar-tab" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_tab_toHome(this);" title="main" id="tab_main">Main</div>
                 <div class="topbar-tab_options selected" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_tab(this);" title="auto" id="tab_auto">Auto</div>
-                <div class="topbar-tab_suboption" id="tab_irc">IRC</div>
+                <!-- <div class="topbar-tab_suboption" id="tab_irc">IRC</div> -->
             </div>
         </div>
         <div id="main_body">
@@ -44,10 +44,8 @@
         </div>
         <div id="dialog_form" title="Enter Password">
             <p class="tip">Enter your application password</p>
-            <form>
-                <label for="password">Password</label>
-                <input type="password" name="password" id="password" class="text ui-widget-content ui-corner-all">
-            </form>
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" class="text ui-widget-content ui-corner-all">
         </div>
         <input type="hidden" id="permanent_salt" value="%(PERM_SALT)s">
     </body>

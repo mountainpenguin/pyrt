@@ -33,10 +33,24 @@ class RPCHandler(object):
             "log" : self.log,
             "test" : self.test,
             "fetchTorrent" : self.fetchTorrent,
+            "register": self.register,
+            "deregister" : self.deregister,
+            "get_filters" : self.get_filters,
         }
         self.publog = publog
         self.ajax = ajax
         self.storage = storage
+
+    def get_filters(self, name):
+        s = self.storage.getRemoteByName(name)
+        if s:
+            try:
+                f = s.filters
+            except AttributeError:
+                f = []
+
+            return json.dumps([x.pattern for x in f])
+
 
     def listMethods(self):
         return json.dumps(self.METHODS.keys())
@@ -73,6 +87,18 @@ class RPCHandler(object):
         self.publicLog(level, *args, **kwargs)
         self.privateLog(level, *args, **kwargs)
 
+    def deregister(self, name, pid):
+        resp = self.storage.deregisterBot(name, pid)
+        if not resp:
+            self.log("error", "%s bot tried to deregister, but no record", name)
+
+    def register(self, pid, name):
+        resp = self.storage.registerBot(pid, name)
+        if resp:
+            return self._respond("OK", None)
+        else:
+            return self._respond(None, "Bot already running")
+
     def _respond(self, response, error):
         respDict = {
             "response": response,
@@ -89,7 +115,7 @@ class RPCHandler(object):
             s.process(filename, torrent)
             return self._respond("OK", None)
         else:
-            return self._response("No such handler", "No such handler")
+            return self._respond("No such handler", "No such handler")
 
     def get_auth(self, msg):
         try:

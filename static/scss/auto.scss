@@ -51,36 +51,74 @@ tbody > tr {
                 right: 2em;
                 bottom: 2em;
             }
-            div.settings {
-                margin-left: 2em;
-                label {
-                    font-family: monospace;  
-                    min-width: 150px;
-                    float: left;
-                    clear: left;
-                }
-                input[type=text] {
-                    font-family: monospace;
-                    border: none;
-                    float: left;
-                    clear: right;
-                    color: blue;
-                    min-width: 70%;
-                }
-                button.submit_button {
-                    float: left;
-                    clear: left;
-                    border-radius: 5px;
-                    box-shadow: 0 2px 8px #888888;
-                    width: 120px;
-                    height: 30px;
-                    margin-top: 1em;
-                    &>img, &>span {
+            div {
+                &.filters {
+                    margin-top: 2em;
+                    h4 {
                         float: left;
+                        clear: left;
                     }
-                    &>span {
-                        padding-left: 1em;
-                        font-size: 15px;
+                    button.add_filter_button {
+                        border-radius: 5px;
+                        box-shadow: 0 2px 8px #888888;
+                        width: 120px;
+                        height: 20px;
+                        vertical-align: center;
+                        border-bottom: 3px;
+                    }
+                    div.filter {
+                        float: left;
+                        clear: right;
+                        color: #4183C4;
+                        font-family: monospace;
+                        border: 1px solid #EAEAEA;
+                        &:not(:hover) {
+                            background-color: #F8F8F8;
+                        }
+                        padding: 0 5px;
+                        border-radius: 3px;
+                        &:hover {
+                            background-color: red;
+                            cursor: pointer;
+                        }
+                    }
+                    div.add_filter_div {
+                        float:left;
+                        clear:left;
+                        margin-top: 1em;
+                        width:80%;
+                    }
+                }
+                &.settings, &.filters {
+                    margin-left: 2em;
+                    label {
+                        font-family: monospace;  
+                        min-width: 150px;
+                        float: left;
+                        clear: left;
+                    }
+                    input[type=text] {
+                        font-family: monospace;
+                        border: none;
+                        float: left;
+                         clear: right;
+                        color: blue;
+                        min-width: 70%;
+                        background-color: #F8F8F8;
+                    }
+                    button.submit_button, button.bot_button {
+                        border-radius: 5px;
+                        box-shadow: 0 2px 8px #888888;
+                        width: 120px;
+                        height: 30px;
+                        margin-top: 1em;
+                        &>img, &>span {
+                            float: left;
+                        }
+                        &>span {
+                            padding-left: 1em;
+                            font-size: 15px;
+                        }
                     }
                 }
             }

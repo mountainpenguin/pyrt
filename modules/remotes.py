@@ -45,14 +45,11 @@ def searchSites():
         else:
             return True
     files = filter(_filter, os.listdir("modules/sites/"))
-    logging.info("files in modules/sites/: %r", files)
     srcs = []
     for f in files:
         try:
             d = imp.find_module(f.split(".py")[0],["modules/sites"])
-            logging.info("found module %s", f.split(".py")[0])
             c = imp.load_module("modules.sites.%s" % f.split(".py")[0], d[0], d[1], d[2])
-            logging.info("got module %s", f.split(".py")[0])
             srcs.append( (f.split(".py")[0], c.DESCRIPTION, c.REQUIRED_KEYS) )
         except:
             logging.error(traceback.format_exc())
@@ -343,6 +340,7 @@ class RemoteStorage(object):
             self.STORE = pickle.load(open(".remotes.pickle"))
         except:
             self.STORE = {}
+        self.BOTS = {}
 
     def addRemote(self, name, **kwargs):
         """Add a 'source'
@@ -352,26 +350,75 @@ class RemoteStorage(object):
         """
 
         randomid = hashlib.sha256(os.urandom(30))
-        r = Settings(name=name, **kwargs)
+        r = Settings(name=name.upper(), **kwargs)
         self.STORE[name.upper()] = r 
         self._flush()
         return name
 
     def getRemoteByName(self, name):
         """Returns entries `name`, or None"""
-        if name in self.STORE:
-            return self.STORE[name]
+        if name.upper() in self.STORE:
+            return self.STORE[name.upper()]
 
     def removeRemote(self, name):
         """Deletes an entry with id `remoteid`
 
             Returns True if successful, or None
         """
-        if name in self.STORE:
-            del self.STORE[name]
+        if name.upper() in self.STORE:
+            del self.STORE[name.upper()]
             self._flush()
             return True
         
+    def removeFilter(self, name, index):
+        if name.upper() in self.STORE:
+            s = self.STORE[name.upper()]
+            if "filters" in s:
+                filters = s.filters
+                if index < len(filters):
+                    filters.pop(index)
+                    return True
+
+    def addFilter(self, name, f):
+        """Adds a regex filter to a 'source' setting
+
+            input argument 'f' should be a compiled regular expression
+            These must be checked as valid regular expressions before submission
+        """
+        if name.upper() in self.STORE:
+            s = self.STORE[name.upper()]
+            if "filters" in s:
+                filters = s.filters
+            else:
+                filters = []
+
+            filters += [f]
+            #make sure everything is written back
+            s.filters = filters
+            self.STORE[name.upper()] = s
+            self._flush()
+            return True
+
+    def deregisterBot(self, name, pid):
+        if name.upper() in self.BOTS and self.BOTS[name.upper()] == int(pid):
+            del self.BOTS[name.upper()]
+            return True
+        else:
+            return False
+
+    def registerBot(self, pid, name):
+        if name.upper() in self.BOTS:
+            return False
+
+        self.BOTS[name.upper()] = int(pid)
+        return int(pid)
+
+    def isBotActive(self, name):
+        if name.upper() in self.BOTS:
+            return self.BOTS[name.upper()]
+        else:
+            return False
+
     def _flush(self):
         pickle.dump(self.STORE, open(".remotes.pickle","w"))
 

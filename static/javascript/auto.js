@@ -40,9 +40,30 @@ $(document).ready( function () {
     socket.onclose = function (evt) {
         console.log("autoSocket closed", evt, socket);
     }
-    $("#tab_irc").click( function () {
-        socket.send("request=start_bot&arguments=ptp");
-    } );
+    $(".bot_button").live("click", function () {
+        if ($(this).attr("id").indexOf("start_") !== -1) {
+            var name = $(this).attr("id").split("start_")[1];
+            socket.send("request=start_bot&arguments=" + name);
+        } else {
+            var name = $(this).attr("id").split("stop_")[1];
+            socket.send("request=stop_bot&arguments=" + name);
+        }
+    });
+    $(".add_filter_button").live("click", function () {
+        var inputval = $(this).parent().next().val();
+        var name = $(this).closest(".remote_setting").attr("id").split("remote_settings_")[1];
+        if (inputval) {
+            socket.send("request=add_filter&name=" + name + "&restring=" + inputval);
+        }
+    });
+    $(".filter").live("click", function () {
+        var name = $(this).closest(".remote_setting").attr("id").split("remote_settings_")[1];
+        var index = $(".filter", $(this).parent()).index($(this));
+        var c = confirm("Are you sure you want to remove this filter?");
+        if (c) {
+            socket.send("request=remove_filter&name=" + name + "&index=" + index);
+        }
+    });
     console.log($("#dialog_form"));
     $("#dialog_form").dialog({
         autoOpen: false,
@@ -132,6 +153,7 @@ function runSocketInit() {
 
 function OnMessage (evt) {
      if (evt.data.indexOf("ERROR") === 0) {
+        console.log(evt.data);
      } else {
           var response = JSON.parse(evt.data);
           if (response.request == "get_sources") {
@@ -141,6 +163,16 @@ function OnMessage (evt) {
                     tab.append($(response.response[i].row));
                     tab.append($(response.response[i].req_row));
                }
+          } else if (response.request == "get_source_single") {
+            refresh_drop_down_respond(response.response);
+          } else if (response.request == "add_filter") {
+            refresh_drop_down(response.response);
+          } else if (response.request == "start_bot") {
+            refresh_drop_down(response.response);
+          } else if (response.request == "stop_bot") {
+            refresh_drop_down(response.response);
+          } else if (response.request == "remove_filter") {
+            refresh_drop_down(response.response);
           } else {
             console.log("socket message:", evt.data)
           }
@@ -156,9 +188,27 @@ function deselect_tab(elem) {
 }
 
 function navigate_tab(elem) {
-    window.location = window.location;
+    window.location.replace(window.location);
 }
 
 function navigate_tab_toHome(elem) {
     window.location = "/?view=" + elem.id.split("tab_")[1];
+}
+
+function refresh_drop_down(name) {
+    // get drop down
+    socket.send("request=get_source_single&arguments=" + name);
+}
+function refresh_drop_down_respond(data) {
+    var row = $(data.req_row);
+    var name = row.attr("id").split("remote_settings_")[1];
+    var started = $(".bot_button", row).attr("id");
+    if (started.indexOf("start_") == 0) {
+        $(".status-" + name).html("off").removeClass("status-on").addClass("status-off");
+    } else {
+        $(".status-" + name).html("on").removeClass("status-off").addClass("status-on");
+    }
+    $("#remote_settings_" + name).html(
+        row.html()
+    );
 }

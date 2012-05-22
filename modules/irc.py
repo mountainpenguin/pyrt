@@ -15,6 +15,16 @@ import time
 import hashlib
 import base64
 import math
+import re
+import traceback
+
+class SettingsError(Exception):
+    def __init__(self, value):
+        self.val = value
+    def __str__(self):
+        return repr(self.val)
+    def __repr__(self):
+        return "SettingsError: %s" % self.val
 
 class RPCResponse(object):
     def __init__(self, **args):
@@ -22,10 +32,27 @@ class RPCResponse(object):
 
 class _ModularBot(ircbot.SingleServerIRCBot):
     def shutdown(self, signalnum, stackframe):
-        self.die("Received SIGTERM")
-        if os.path.exists("proc/bots/%d.pid" % self.PID):
+        self.RPCCommand("log", "info", "IRCbot #%d: shutting down", self.PID)
+        if self.IS_REGISTERED:
+            self.RPCCommand("deregister", self.config.name, self.PID)
+
+        try:
             os.remove("proc/bots/%d.pid" % self.PID)
+        except:
+            pass
+
+        self.die("Received SIGTERM")
         sys.exit(0)
+
+    def update(self):
+        #refresh filters
+        response = self.RPCCommand("get_filters", self.config.name)
+        if response:
+            unjsoned = json.loads(response.response)
+            newf = []
+            for f in unjsoned:
+                newf.append(re.compile(f))
+            self.config.filters = newf
 
     def _OTPAuth(self):
         random_salt = base64.b64encode(os.urandom(10))
@@ -63,50 +90,102 @@ class _ModularBot(ircbot.SingleServerIRCBot):
         except socket.timeout:
             return None
         else:
-            if resp != "None" and resp != "null":
-                return RPCResponse(**json.loads(resp))
-            else:
-                return None
+            return RPCResponse(**json.loads(resp))
 
-    def __init__(self, net, nick, name, *args, **kwargs):
+    def __init__(self, net, nick, name, config, **kwargs):
         signal.signal(signal.SIGTERM, self.shutdown)
+        self.IS_REGISTERED = False
         self.network = net
         self.nick = nick
         self.name = name
-        self.config = remotes.Settings(**kwargs)
+        self.config = config
+        self.config.channel = kwargs["channel"]
         self.socket = websocket.create_connection(self.config.websocketURI)  
         self.PID = os.getpid()
         open("proc/bots/%d.pid" % self.PID, "w").write(str(self.PID))
         ircbot.SingleServerIRCBot.__init__(self, net, nick, name)
 
+    def on_nicknameinuse(self, connection, event):
+        self.RPCCommand("log", "error", "IRCbot #%d: started up, but nick '%s' is in use!", self.PID, self.nick)
+        self.shutdown(None, None)
+
+    def on_erroneusnickname(self, connection, event):
+        self.RPCCommand("log", "error", "IRCbot #%d: started up, but nick '%s' is invalid", self.PID, self.nick)
+        self.shutdown(None, None)
+
     def on_welcome(self, connection, event):
+        r = self.RPCCommand("register", self.PID, self.config.name)
+        if not r.response:
+            self.RPCCommand("log", "warning", "IRCbot #%d: started up, but another bot is already registered!", self.PID)
+            self.shutdown(None, None)
+        self.IS_REGISTERED = True
         connection.join(self.config.channel)
-        self.RPCCommand("log", "debug", "IRCbot #%d: connected to IRC successfully", self.PID)
+        self.RPCCommand("log", "info", "IRCbot #%d: connected to IRC successfully", self.PID)
+        if "startup" in self.config:
+            for cmd in self.config.startup:
+                try:
+                    if "%(settings." in cmd:
+                        replacements = re.findall("\%\(settings\.(.*?)\)s", cmd)
+                        fmt = {}
+                        for repl in replacements:
+                            fmt["settings.%s" % (repl)] = self.config[repl]
+                        cmd = cmd % fmt
+                    connection.send_raw(cmd)
+                except:
+                    self.RPCCommand("publicLog", "warning", "IRCbot #%d: command failed", self.PID)
+                    self.RPCCommand("privateLog", "warning", "IRCbot #%d: command '%s' failed\n%s", self.PID, cmd, traceback.format_exc())
 
     def on_pubmsg(self, connection, event):
-        self.RPCCommand("log", "debug", "IRCbot #%d: %s said '%r' in %s", self.PID, event.source().split("!")[0], event.arguments()[0], event.target())
-        try:
-            torrentid = int(event.arguments()[0])
-        except:
-            pass
-        else:
-            self.RPCCommand("fetchTorrent", name="ptp", torrentid=torrentid)
+        self.update()
+        self.RPCCommand("publicLog", "debug", "IRCBot #%d: message %r", self.PID, event.arguments()[0])
+        for regex in self.config.filters:
+            if regex.search(event.arguments()[0]):
+                idmatch = self.config.matcher.search(event.arguments()[0])
+                if idmatch:
+                    torrentid = idmatch.group(1)
+                    self.RPCCommand("log", "info", "IRCbot #%d: got filter match in source handler '%s' for torrentid '%s'", self.PID, self.config.name, torrentid)
+                    self.RPCCommand("fetchTorrent", name=self.config.name, torrentid=torrentid)
+                    return
 
     def on_ctcp(self, connection, event):
         pass
 
 class Irc(object):
-    def __init__(self, log, network="127.0.0.1", channel="#mp-dev", nick="pyrtBot", port=6667, **kwargs):
-        self.network = network
-        self.port = port
-        self.channel = channel
-        self.nick = nick
+    def __init__(self, name, log, storage, websocketURI, auth):
+        #search for storage settings
+        store = storage.getRemoteByName(name)
+        siteMod = remotes.getSiteMod(name)
+        if not store or not siteMod:
+            raise SettingsError("Nothing is stored for name '%s'" % name)
+
+        #network, channel, and port should be stored in 'siteMod'
+        #nick should be stored in 'store'
+
+        try:
+            self.network = siteMod.IRC_NETWORK
+            self.port = siteMod.IRC_PORT
+            self.channel = siteMod.IRC_CHANNEL
+            matcher = siteMod.IRC_MATCH
+        except AttributeError:
+            raise SettingsError("IRC methods are not defined for name '%s'" % name)
+
+        if "nick" not in store:
+            self.nick = "pyrtBot"
+        else:
+            self.nick = store.nick
+
+        if hasattr(siteMod, "IRC_COMMANDS"):
+            startup = siteMod.IRC_COMMANDS
         self.name = "pyrt"
         self.log = log
-        self.options = kwargs
+        self.options = store
+        self.options.startup = startup
+        self.options.websocketURI = websocketURI
+        self.options.auth = auth
+        self.options.matcher = matcher
 
     def startbot(self):
-        bot = _ModularBot([(self.network, self.port)], self.nick, self.name, channel=self.channel, **self.options)
+        bot = _ModularBot([(self.network, self.port)], self.nick, self.name, channel=self.channel, config=self.options)
         bot.start()
 
     def start(self):

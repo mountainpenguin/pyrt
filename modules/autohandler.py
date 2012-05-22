@@ -26,6 +26,12 @@ from modules import remotes
 import urlparse
 import logging
 import json
+import re
+import cgi
+import traceback
+import os
+import signal
+
 
 class AutoHandler(object):
     def __init__(self, login, log, remoteStorage):
@@ -34,8 +40,13 @@ class AutoHandler(object):
         self.STORE = remoteStorage
         self.METHODS = {
             "get_sources" : self.get_sources,
+            "get_source_single" : self.get_source_single,
             "set_source" : self.set_source,
             "start_bot" : self.start_bot,
+            "stop_bot" : self.stop_bot,
+            "get_filters" : self.get_filters,
+            "add_filter" : self.add_filter,
+            "remove_filter" : self.remove_filter,
         }
 
     def _fmt_source(self, name, desc, status):
@@ -44,54 +55,166 @@ class AutoHandler(object):
             "desc" : desc,
             "status" : status,
         }
-        row_templ = "<tr class='remote_row' id='remote_name_%(name)s'><td class='name'>%(name)s</td><td class='desc'>%(desc)s</td><td class='status status-%(status)s'>%(status)s</td></tr>"
+        row_templ = "<tr class='remote_row' id='remote_name_%(name)s'><td class='name'>%(name)s</td><td class='desc'>%(desc)s</td><td class='status status-%(status)s status-%(name)s'>%(status)s</td></tr>"
         return row_templ % fmt
 
-    def _fmt_keys(self, name, keys):
-        input_templ = "<label for='%(key)s'>%(key)s:</label><input type='text' name='%(key)s' placeholder='%(key)s'>"
+    def _fmt_keys(self, name, keys, filters, botcontrol):
+        input_templ = "<label for='%(key)s'>%(key)s:</label><input type='text' name='%(key)s' placeholder='%(desc)s'>"
         fmt = {
             "name" : name,
-            "form" : "".join([ input_templ % { "key": x } for x in keys])
+            "form" : "".join([ input_templ % { "key": x[0], "desc" : x[1] } for x in keys]),
+            "filters" : filters,
+            "botbutton" : botcontrol,
         }
         row_templ = """
             <tr class='is_hidden remote_setting' id='remote_settings_%(name)s'>
                 <td colspan=10>
-                    <!-- 
-                    <h4>Controls</h4>
-                        <div class="controls">
-                            <img title="Start" src="/images/start.png" class="control_image">
-                            <img title="Stop" src="/images/stop.png" class="control_image">
-                        </div>
-                    -->
-                    <h4>Settings</h4>
                     <div class="settings">
+                        <h4>Settings</h4>
                             %(form)s
                         <button type="submit" class="submit_button" id="submit_%(name)s">
                             <img src="/images/submit.png" width=20 height=20>
                             <span>Submit</span>
                         </button>
+                        %(botbutton)s
                     </div>
+                    %(filters)s
                 </td>
             </tr>
         """
         return row_templ % fmt
-            
+
+    def _fmt_filters(self, filters):
+        filter_templ = """
+            <label for='filter%(count)d'>Filter:</label><div name='filter%(count)d' class='filter'><code>%(filter)s</code></div>
+        """
+        fmt = {
+            "filters" : "".join([ filter_templ % { "filter" : cgi.escape(x.pattern), "count": filters.index(x) + 1 } for x in filters]),
+        }
+        templ = """
+            <div class="filters">
+                <h4>Filters</h4>
+                %(filters)s
+                <div class="add_filter_div">
+                    <label for="add_filter">
+                        <button class="add_filter_button">Add Filter</button>
+                    </label>
+                    <input name="add_filter" id="add_filter" type="text" placeholder="Filter">
+                </div>
+            </div>
+        """
+        return templ % fmt
+
+    def stop_bot(self, name):
+        botpid = self.STORE.isBotActive(name)
+        if botpid:
+            os.kill(botpid, signal.SIGTERM)
+            return json.dumps({
+                "request" : "stop_bot",
+                "error" : None,
+                "response" : name,
+            })
+        else:
+            return "ERROR/Bot not active"
 
     def start_bot(self, name):
         auth = self.LOGIN.getRPCAuth() 
-        ircobj = irc.Irc(self.LOG, websocketURI=".sockets/rpc.interface", auth=auth)
-        ircobj.start()
+        try:
+           ircobj = irc.Irc(name, self.LOG, self.STORE, websocketURI=".sockets/rpc.interface", auth=auth)
+           ircobj.start()
+        except:
+            tb = traceback.format_exc()
+            self.LOG.error("AUTO: error starting IRC bot for handler '%s' - %s", name, tb.strip().split("\n")[-1])
+            return "ERROR/Faulty configuration for handler"
+        return json.dumps({
+            "request" : "start_bot",
+            "error" : None,
+            "response" : name,
+        })
+
+    def get_source_single(self, select):
+        sources = remotes.searchSites()
+        if sources:
+            for name, desc, req in sources:
+                if name.upper() != select.upper():
+                    continue
+                #determine if bot is running
+                status = self._get_status(name)
+                if status == "off":
+                    statusimage = "on.png"
+                    startstopmsg = "Start IRC"
+                    startstop = "start"
+                else:
+                    statusimage = "off.png"
+                    startstopmsg = "Stop IRC"
+                    startstop = "stop"
+
+                if self.STORE.getRemoteByName(name):
+                    filters = self.get_filters(name, internal=True)
+                    filters = self._fmt_filters(filters)
+                    botcontrol = """
+                        <button class="bot_button" id="%(startstop)s_%(name)s">
+                            <img src="/images/%(statusimage)s" width=20 height=20>
+                            <span>%(startstopmsg)s</span>
+                        </button>
+                    """ % { "statusimage" : statusimage, "startstop" : startstop, "startstopmsg" : startstopmsg, "name" : name }
+                else:
+                    filters = ""
+                    botcontrol = ""
+
+                return json.dumps({
+                    "request" : "get_source_single",
+                    "error" : None,
+                    "response" : {
+                        "row" : self._fmt_source(name, desc, status),
+                        "requirements" : req,
+                        "req_row" : self._fmt_keys(name, req, filters, botcontrol),
+                    }
+                })
+
+    def _get_status(self, name):
+        botpid = self.STORE.isBotActive(name)
+        if botpid:
+            return "on"
+        else:
+            return "off"
+        
 
     def get_sources(self):
         sources = remotes.searchSites() 
-        logging.info("Found sites: %r" % sources)
         sites = []
         if sources:
             for name, desc, req in sources:
+                #determine if bot is running
+                status = self._get_status(name)
+                if status == "off":
+                    statusimage = "on.png"
+                    startstopmsg = "Start IRC"
+                    startstop = "start"
+
+                else:
+                    statusimage = "off.png"
+                    startstopmsg = "Stop IRC"
+                    startstop = "stop"
+
+                #fetch filters
+                if self.STORE.getRemoteByName(name):
+                    filters = self.get_filters(name, internal=True)
+                    filters = self._fmt_filters(filters)
+                    botcontrol = """
+                        <button class="bot_button" id="%(startstop)s_%(name)s">
+                            <img src="/images/%(statusimage)s" width=20 height=20>
+                            <span>%(startstopmsg)s</span>
+                        </button>
+                    """ % { "statusimage" : statusimage, "startstop" : startstop, "startstopmsg" : startstopmsg, "name" : name }
+                else:
+                    filters = ""
+                    botcontrol = ""
+
                 sites.append({
-                    "row" : self._fmt_source(name, desc, "off"),
+                    "row" : self._fmt_source(name, desc, status),
                     "requirements" : req,
-                    "req_row" : self._fmt_keys(name, req),
+                    "req_row" : self._fmt_keys(name, req, filters, botcontrol),
                 })
         resp = {
             "request" : "get_sources",
@@ -100,6 +223,67 @@ class AutoHandler(object):
         }
         return json.dumps(resp)
                 
+    def get_filters(self, name, internal=False):
+        s = self.STORE.getRemoteByName(name)
+        if not s and not internal:
+            return "ERROR/no store for name '%s'" % name
+        elif not s and internal:
+            return []
+
+        try:
+            f = s.filters
+        except AttributeError:
+            f = []
+
+        if not internal:
+            return json.dumps({
+                "request" : "get_filters",
+                "error" : None,
+                "response" : [x.pattern for x in f],
+            })
+        else:
+            return f 
+
+    def add_filter(self, name, restring):
+        name = name[0]
+        restring = restring[0]
+        s = self.STORE.getRemoteByName(name)
+        if not s:
+            return "ERROR/no store for name '%s'" % name
+
+        #attempt to compile the re string
+        try:
+            regex = re.compile(restring)
+        except:
+            return "ERROR/invalid regex"
+
+        if self.STORE.addFilter(name, regex):
+            #send sigurg
+            return json.dumps({
+                "request" : "add_filter",
+                "error" : None,
+                "response" : name,
+            })
+        else:
+            return "ERROR/Unknown"
+        
+    def remove_filter(self, name, index):
+        name = name[0]
+        try:
+            index = int(index[0])
+        except ValueError:
+            return "ERROR/Not an integer"
+
+        r = self.STORE.removeFilter(name, index)
+        if r:
+            return json.dumps({
+                "request" : "remove_filter",
+                "error" : None,
+                "response" : name,
+            })
+        else:
+            return "ERROR/No such filter index"
+
     def set_source(self, **kwargs):
         settings = {
         }
