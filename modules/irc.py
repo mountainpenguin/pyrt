@@ -45,7 +45,6 @@ class _ModularBot(ircbot.SingleServerIRCBot):
         sys.exit(0)
 
     def update(self):
-        #refresh filters
         response = self.RPCCommand("get_filters", self.config.name)
         if response:
             unjsoned = json.loads(response.response)
@@ -138,14 +137,17 @@ class _ModularBot(ircbot.SingleServerIRCBot):
     def on_pubmsg(self, connection, event):
         self.update()
         self.RPCCommand("publicLog", "debug", "IRCBot #%d: message %r", self.PID, event.arguments()[0])
-        for regex in self.config.filters:
-            if regex.search(event.arguments()[0]):
-                idmatch = self.config.matcher.search(event.arguments()[0])
-                if idmatch:
-                    torrentid = idmatch.group(1)
-                    self.RPCCommand("log", "info", "IRCbot #%d: got filter match in source handler '%s' for torrentid '%s'", self.PID, self.config.name, torrentid)
-                    self.RPCCommand("fetchTorrent", name=self.config.name, torrentid=torrentid)
-                    return
+        try:
+            for regex in self.config.filters:
+                if regex.search(event.arguments()[0]):
+                    idmatch = self.config.matcher.search(event.arguments()[0])
+                    if idmatch:
+                        torrentid = idmatch.group(1)
+                        self.RPCCommand("log", "info", "IRCbot #%d: got filter match in source handler '%s' for torrentid '%s'", self.PID, self.config.name, torrentid)
+                        self.RPCCommand("fetchTorrent", name=self.config.name, torrentid=torrentid)
+                        return
+        except:
+            pass
 
     def on_ctcp(self, connection, event):
         pass

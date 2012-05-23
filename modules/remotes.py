@@ -388,9 +388,9 @@ class RemoteStorage(object):
         """
         if name.upper() in self.STORE:
             s = self.STORE[name.upper()]
-            if "filters" in s:
+            try:
                 filters = s.filters
-            else:
+            except AttributeError:
                 filters = []
 
             filters += [f]
