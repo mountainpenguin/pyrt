@@ -1,5 +1,5 @@
 # pyRT
-pyRT is an open source standalone front-end for the linux bittorrent client `rTorrent` written in python
+pyRT is an open source standalone front-end for the linux bittorrent client `rTorrent` written in python (current in alpha testing stages)
 
 pyRT is licensed under the GNU General Public License, Version 3
 (http://www.gnu.org/licenses/gpl.txt)
