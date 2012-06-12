@@ -348,7 +348,6 @@ class RemoteStorage(object):
             Requires argument `name`
             Any other arguments must be passed as keywords
         """
-
         randomid = hashlib.sha256(os.urandom(30))
         r = Settings(name=name.upper(), **kwargs)
         self.STORE[name.upper()] = r 

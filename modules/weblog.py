@@ -29,7 +29,10 @@ class Message(object):
     """Class to contain a message"""
     def __init__(self, msg_id, text, level=2, level_name="INFO"):
         self.msg_id = msg_id
-        self.text = text
+        if type(text) == unicode:
+            self.text = text
+        else:
+            self.text = unicode(text, errors="replace")
         self.level = level
         self.level_name = level_name
 

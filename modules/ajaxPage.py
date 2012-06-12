@@ -494,6 +494,8 @@ class Ajax:
         if drop_down_ids:
             if not isinstance(drop_down_ids, list):
                 drop_down_ids = drop_down_ids.split(",")
+            elif "," in drop_down_ids[0]:
+                drop_down_ids = drop_down_ids[0].split(",")
             for t_id in drop_down_ids:
                 drop_downs[t_id] = self.get_torrent_info(t_id, html="yes please")
             
