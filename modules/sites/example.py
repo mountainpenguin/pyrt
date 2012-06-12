@@ -25,7 +25,7 @@ IRC_MATCH = re.compile("pyrtBot: (.*?)\!", re.I)
 # 'source' classes should always be named 'Main'
 class Main(remotes.Base):
     def initialise(self, *args, **kwargs):
-        self.settings.name = "TEST" #name must always be the capitalised filename of this file
+        self.settings.name = "EXAMPLE" #name must always be the capitalised filename of this file
         self.settings.long_name = "Example Handler"
         self.settings.base_url = "http://example.tld"
 
