@@ -47,11 +47,14 @@ class _ModularBot(ircbot.SingleServerIRCBot):
     def update(self):
         response = self.RPCCommand("get_filters", self.config.name)
         if response:
-            unjsoned = json.loads(response.response)
-            newf = []
-            for f in unjsoned:
-                newf.append(re.compile(f))
-            self.config.filters = newf
+            try:
+                unjsoned = json.loads(response.response)
+                newf = []
+                for f in unjsoned:
+                    newf.append(re.compile(f))
+                self.config.filters = newf
+            except:
+                self.RPCCommand("log", "error", "IRCBot #%d: recieved filter list but not JSON-encoded")
 
     def _OTPAuth(self):
         random_salt = base64.b64encode(os.urandom(10))
@@ -120,7 +123,7 @@ class _ModularBot(ircbot.SingleServerIRCBot):
         self.IS_REGISTERED = True
         connection.join(self.config.channel)
         self.RPCCommand("log", "info", "IRCbot #%d: connected to IRC successfully", self.PID)
-        if "startup" in self.config:
+        if hasattr(self.config, "startup"):
             for cmd in self.config.startup:
                 try:
                     if "%(settings." in cmd:
@@ -178,6 +181,8 @@ class Irc(object):
 
         if hasattr(siteMod, "IRC_COMMANDS"):
             startup = siteMod.IRC_COMMANDS
+        else:
+            startup = []
         self.name = "pyrt"
         self.log = log
         self.options = store

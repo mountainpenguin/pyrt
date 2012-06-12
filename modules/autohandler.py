@@ -125,6 +125,7 @@ class AutoHandler(object):
         except:
             tb = traceback.format_exc()
             self.LOG.error("AUTO: error starting IRC bot for handler '%s' - %s", name, tb.strip().split("\n")[-1])
+            logging.error(tb)
             return "ERROR/Faulty configuration for handler"
         return json.dumps({
             "request" : "start_bot",
@@ -296,12 +297,22 @@ class AutoHandler(object):
             return "ERROR/name must be set"
 
         name = self.STORE.addRemote(**settings)
-        resp = {
-            "request" : "set_source",
-            "error" : None,
-            "response" : "OK",
-        }
-        return json.dumps(resp)
+        if name:
+            self.LOG.info("New remote added: '%s'" % name)
+            resp = {
+                "request" : "set_source",
+                "error" : None,
+                "response" : "OK",
+            }
+            return json.dumps(resp)
+        else:
+            self.LOG.error("Error in adding remote: '%s'" % name)
+            resp = {
+                "request" : "set_source",
+                "error" : True,
+                "response" : "ERROR",
+            }
+            return json.dumps(resp)
 
     def handle_message(self, message):
         urlparams =  urlparse.parse_qs(message)
