@@ -18,6 +18,13 @@ import math
 import re
 import traceback
 
+class IRCError(Exception):
+    def __init__(self, value):
+        self.val = value
+    def __str__(self):
+        return repr(self.val)
+    def __repr__(self):
+        return "IRCError: %s" % self.val
 class SettingsError(Exception):
     def __init__(self, value):
         self.val = value
@@ -190,12 +197,23 @@ class Irc(object):
         self.options.websocketURI = websocketURI
         self.options.auth = auth
         self.options.matcher = matcher
+        
+        self.PROC = None
 
     def startbot(self):
         bot = _ModularBot([(self.network, self.port)], self.nick, self.name, channel=self.channel, config=self.options)
         bot.start()
 
     def start(self):
-        p = multiprocessing.Process(target=self.startbot)
-        p.daemon = True
-        p.start()
+        if not self.PROC:
+            p = multiprocessing.Process(target=self.startbot)
+            p.daemon = True
+            p.start()
+            self.PROC = p
+            signal.signal(signal.SIGCHLD, self.report)
+        else:
+            raise IRCError("A bot has already been started!")
+        
+    def report(self, signalnum, stackframe):
+        self.log.debug("SIGCHLD intercepted in PID #%d, target bot pid: %d", os.getpid(), self.PROC.pid)
+        self.PROC.join(timeout=10)
