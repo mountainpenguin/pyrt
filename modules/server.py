@@ -165,6 +165,19 @@ class index(tornado.web.RequestHandler):
         
     post = get
     
+class create(tornado.web.RequestHandler):
+    """Page handler for creating torrents"""
+    def get(self):
+        chk = _check.web(self)
+        if not chk[0]:
+            self.write(self.application._pyrtL.loginHTML(chk[1]))
+            return
+        elif chk[0] and chk[1]:
+            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
+            
+        self.write(open("htdocs/createHTML.tmpl").read())
+        
+    post = get
 class detail(tornado.web.RequestHandler):
     """ *** DEPRECATED DO NOT USE *** Detailed page view handler (/detail)
         
@@ -652,6 +665,7 @@ class Main(object):
             (r"/auto", autoHandler),
             (r"/autosocket", autoSocket),
             (r"/RPCSocket", RPCSocket),
+            (r"/create", create),
         ], **settings)
     
         application._pyrtSockets = SocketStorage()
