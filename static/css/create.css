@@ -1,0 +1,43 @@
+fieldset {
+  border-radius: 5px;
+  margin-bottom: 2em;
+  float: left;
+  clear: both;
+  width: 80%; }
+
+legend {
+  font-weight: bold; }
+
+div.fake_form {
+  padding: 2px;
+  margin-bottom: 10px; }
+  div.fake_form > input[type="text"] {
+    font-family: monospace;
+    border: none;
+    background-color: #F8F8F8;
+    min-width: 70%; }
+    div.fake_form > input[type="text"]:focus {
+      color: blue; }
+  div.fake_form > label {
+    font-family: "Helvetica";
+    float: left;
+    clear: left;
+    min-width: 10em; }
+  div.fake_form > input[type="text"], div.fake_form select {
+    float: left;
+    /*clear: right;*/ }
+  div.fake_form > button {
+    float: left;
+    clear: right;
+    height: 20px;
+    margin-left: 1em; }
+
+button#create {
+  float: left;
+  clear: left;
+  border-radius: 5px;
+  box-shadow: 0 2px 8px #888888;
+  width: 80px;
+  height: 20px;
+  vertical-align: center;
+  border-bottom: 3px; }
