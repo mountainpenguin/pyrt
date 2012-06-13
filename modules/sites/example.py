@@ -14,9 +14,9 @@ REQUIRED_KEYS = [
 
 METHODS = ["IRC"]
 
-IRC_NETWORK = "irc.mpengu.in"
+IRC_NETWORK = "irc.bytesized-hosting.com"
 IRC_PORT = 6667
-IRC_CHANNEL = "#mp-dev"
+IRC_CHANNEL = "#pyrt-dev"
 
 IRC_MATCH = re.compile("pyrtBot: (.*?)\!", re.I)
 

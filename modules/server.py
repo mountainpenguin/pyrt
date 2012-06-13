@@ -26,6 +26,8 @@ from modules import weblog
 from modules import rpchandler
 from modules import autohandler
 from modules import remotes
+from modules import create
+from modules.Cheetah.Template import Template
 
 from modules import indexPage
 from modules import detailPage
@@ -108,6 +110,7 @@ class SocketStorage(object):
         self.STAT = {}
         self.AUTO = {}
         self.RPC = {}
+        self.CREATE = {}
         self.lookup = {
             "logSocket" : self.LOG,
             "ajaxSocket" : self.AJAX,
@@ -115,6 +118,7 @@ class SocketStorage(object):
             "statSocket" : self.STAT,
             "autoSocket" : self.AUTO,
             "rpcSocket" : self.RPC,
+            "createSocket" : self.CREATE,
         }
 
     
@@ -165,7 +169,7 @@ class index(tornado.web.RequestHandler):
         
     post = get
     
-class create(tornado.web.RequestHandler):
+class createHandler(tornado.web.RequestHandler):
     """Page handler for creating torrents"""
     def get(self):
         chk = _check.web(self)
@@ -175,9 +179,14 @@ class create(tornado.web.RequestHandler):
         elif chk[0] and chk[1]:
             self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
             
-        self.write(open("htdocs/createHTML.tmpl").read())
+        searchList = [{
+            "ROOT_DIR" : self.application._pyrtRT.getGlobalRootPath()
+        }]
+        HTML = Template(file="htdocs/createHTML.tmpl", searchList=searchList).respond()
+        self.write(HTML)
         
     post = get
+    
 class detail(tornado.web.RequestHandler):
     """ *** DEPRECATED DO NOT USE *** Detailed page view handler (/detail)
         
@@ -547,6 +556,38 @@ class stats(tornado.web.RequestHandler):
             self.write(doc.read())
     post=get
 
+class createSocket(tornado.websocket.WebSocketHandler):
+    socketID = None
+    def open(self):
+        if not _check.socket(self):
+            logging.error("%d %s (%s)", self.get_status(), "createSocket denied", self.request.remote_ip)
+            self.write_message("ERROR/Permission denied")
+            self.close()
+            return
+        self.socketID = self.application._pyrtSockets.add("createSocket", self, self.cookies.get("sess_id").value)
+        
+    def on_message(self, message):
+        if not _check.socket(self):
+            logging.error("%d createSocket message denied (%s)", self.get_status(), self.request.remote_ip)
+            self.write_message("ERROR/Permission denied")
+            self.close()
+            return
+        logging.info("createSocket message: %s", message)
+        resp = create.handle_message(message)
+        if resp:
+            jsonResp = {
+                "request" : resp[0],
+                "response" : resp[1],
+            }
+            self.write_message(json.dumps(jsonResp))
+        else:
+            self.write_message("ERROR/No Response")
+            
+    def on_close(self):
+        self.application._pyrtSockets.remove("createSocket", self.socketID)
+        logging.info("%d createSocket closed (%s)", self.get_status(), self.request.remote_ip)
+        
+            
 class autoSocket(tornado.websocket.WebSocketHandler):
     socketID = None
     def open(self):
@@ -665,7 +706,8 @@ class Main(object):
             (r"/auto", autoHandler),
             (r"/autosocket", autoSocket),
             (r"/RPCSocket", RPCSocket),
-            (r"/create", create),
+            (r"/create", createHandler),
+            (r"/createsocket", createSocket),
         ], **settings)
     
         application._pyrtSockets = SocketStorage()

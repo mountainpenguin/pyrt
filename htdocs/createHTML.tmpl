@@ -4,8 +4,10 @@
         <title>PyRT :: Create Torrent</title>
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
         <link rel="stylesheet" type="text/css" href="css/main.css">
+        <link rel="stylesheet" type="text/css" href="/css/jquery.treeview.css">
         <link rel="stylesheet" type="text/css" href="css/create.css">
         <script src="/javascript/jquery-1.7.min.js" type="text/javascript"></script>
+        <script src="/javascript/jquery.treeview.js" type="text/javascript"></script>
         <script src="/javascript/create.js" type="text/javascript"></script>
     </head>
     <body>
@@ -19,16 +21,17 @@
                 <div class="sub_wrapper" id="default_wrapper">
                     <h2>Create a new torrent</h2>
                     <fieldset id="creationbox">
-                        <div class="fake_form">
+                        <div class="fake_form" id="path_">
                             <label>Path: </label>
-                            <input type="text" id="path" name="path" placeholder="File Path">
-                            <button id="path_browse">Choose</button>
+                            <input type="text" id="path" name="path" value="$ROOT_DIR">
+                            <button id="path_browse" disabled=1>Browse</button>
+                            <div class="hidden" id="path_browse_div"></div>
                         </div>
-                        <div class="fake_form">
+                        <div class="fake_form" id="announce_">
                             <label>Announce: </label>
                             <input type="text" id="announce" name="announce" placeholder="Announce URL">
                         </div>
-                        <div class="fake_form">
+                        <div class="fake_form" id="piece_">
                             <label>Piece Length:</label>
                             <select id="piece" name="piece">
                                 <option value=16>16 KiB</option>
@@ -43,18 +46,18 @@
                                 <option value=8192>8 MiB</option>
                             </select>
                         </div>
-                        <div class="fake_form">
+                        <div class="fake_form" id="private_">
                             <label>Private</label>
                             <select name="private" id="private">
                                 <option value=1 selected=1>Yes</option>
                                 <option value=0>No</option>
                             </select>
                         </div>
-                        <div class="fake_form">
+                        <div class="fake_form" id="comment_">
                             <label>Comment</label>
                             <input type="text" name="comment" id="comment" placeholder="Created by PyRT">
                         </div>
-                        <div class="fake_form">
+                        <div class="fake_form" id="output_">
                             <label>Output name</label>
                             <input type="text" name="output" id="output" placeholder=".torrent">
                         </div>
@@ -63,22 +66,8 @@
                 </div>
             </div>
         </div>
+        <!-- RANDOM STATIC DATA -->
+        <div class="hidden" id="root_dir">$ROOT_DIR</div>
+        <!-- END RANDOM DATA -->
     </body>
 </html>
-
-<!---a, --announce=<url>[,<url>]* : specify the full announce URLs-->
-<!--                                at least one is required-->
-<!--                                additional -a adds backup trackers-->
-<!---c, --comment=<comment>       : add a comment to the metainfo-->
-<!---d, --no-date                 : don't write the creation date-->
-<!---h, --help                    : show this help screen-->
-<!---l, --piece-length=<n>        : set the piece length to 2^n bytes,-->
-<!--                                default is 18, that is 2^18 = 256kb-->
-<!---n, --name=<name>             : set the name of the torrent-->
-<!--                                default is the basename of the target-->
-<!---o, --output=<filename>       : set the path and filename of the created file-->
-<!--                                default is <name>.torrent-->
-<!---p, --private                 : set the private flag-->
-<!---v, --verbose                 : be verbose-->
-<!---w, --web-seed=<url>[,<url>]* : add web seed URLs-->
-<!--                                additional -w adds more URLs-->

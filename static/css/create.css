@@ -8,6 +8,21 @@ fieldset {
 legend {
   font-weight: bold; }
 
+div#path_browse_div {
+  border: 1px solid black;
+  width: 440px;
+  background-color: white;
+  min-height: 10em;
+  position: relative;
+  left: 135px;
+  top: 20px;
+  margin-bottom: 1em; }
+
+ul.filetree {
+  /*overflow: hidden;*/
+  height: 100%;
+  width: 100%; }
+
 div.fake_form {
   padding: 2px;
   margin-bottom: 10px; }
@@ -15,7 +30,7 @@ div.fake_form {
     font-family: monospace;
     border: none;
     background-color: #F8F8F8;
-    min-width: 70%; }
+    min-width: 60%; }
     div.fake_form > input[type="text"]:focus {
       color: blue; }
   div.fake_form > label {
@@ -41,3 +56,7 @@ button#create {
   height: 20px;
   vertical-align: center;
   border-bottom: 3px; }
+
+.error {
+  color: red;
+  border: 1px solid red; }
