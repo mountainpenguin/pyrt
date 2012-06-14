@@ -23,6 +23,10 @@ import os
 import stat
 import re
 import urlparse
+import time
+import hashlib
+
+from modules import bencode
 
 class Directory(object):
     def __init__(self, fullpath, basename, contents):
@@ -126,3 +130,77 @@ def _getFileStruct(dire):
             contents += [File(path, file_, _getFileType(file_))]
     return contents
 
+def createTorrent(path, announce, length, private, comment, output):
+    if not os.path.exists(path):
+        return
+    
+    if not os.path.isdir(path):
+        size = os.stat(path).st_size
+        pieces = ""
+        #break file into pieces of length 'length' and obtain the sha1 hash
+        with open(path) as src:
+            read = 0
+            while read <= size:
+                chunk = src.read(length)
+                sha1 = hashlib.sha1(chunk).digest()
+                pieces += sha1
+                read += length
+        infoDict = {
+            "name" : os.path.basename(path),
+            "piece length" : length,
+            "length" : size,
+            "pieces" : pieces,
+        }
+        if private:
+            infoDict["private"] = 1
+    else:
+        size = 0
+        
+        files = []
+        base = os.path.basename(path)
+        pre = path.split(base)[0]
+        print base
+        print pre
+        for dirpath, dirnames, dirfiles in os.walk(path):
+            rel = dirpath.split(pre)[1].split("/")
+            for f in dirfiles:
+                s = os.stat(os.path.join(dirpath, f)).st_size
+                size += s
+                files += [{
+                    "path" : rel + [f],
+                    "length" : s,
+                }]
+        
+        infoDict = {
+            "name" : base,
+            "piece length" : length,
+            "files" : files,
+            "pieces" : pieces,
+        }
+        if private:
+            infoDict["private"] = 1
+    
+    torrent = {
+        "announce": announce,
+        "comment" : comment,
+        "created by": "PyRT (c) 2012 mountainpenguin",
+        "creation date" : str(time.time()),
+        "info" : infoDict,
+    }
+    return bencode.bencode(torrent)
+
+
+#{
+#    'announce': 'http://tracker.site1.com/announce',
+#    'info:
+#    {
+#        'name': 'directoryName',
+#        'piece length': 262144,
+#        'files':
+#        [
+#            {'path': '111.txt', 'length': 111},
+#            {'path': '222.txt', 'length': 222}
+#        ],
+#        'pieces': '6a8af7eda90ba9f851831073c48ea6b7b7e9feeb...8a43d9d965a47f75488d3fb47d2c586337a20b9f'
+#    }
+#}
