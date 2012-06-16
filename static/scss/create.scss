@@ -12,7 +12,7 @@ legend {
 
 div#path_browse_div {
     border: 1px solid black;
-    width: 440px;
+    width: 60%;
     background-color: white;
     min-height: 10em;
     position: relative;
@@ -71,4 +71,14 @@ button#create {
 .error {
     color: red;
     border: 1px solid red;
+}
+
+span.filetree_item {
+    &:hover {
+        cursor: pointer;
+        color: green;
+    }
+    &.selected {
+        font-weight: bold;
+    }
 }

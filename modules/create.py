@@ -25,7 +25,7 @@ import re
 import urlparse
 import time
 import hashlib
-import math
+from xml.etree.ElementTree import ElementTree
 
 from modules import bencode
 
@@ -89,47 +89,57 @@ def _getFileType(fileName):
         fileType = "file_music"
     return fileType
         
-def getFileStruct(root):
-    data = _getFileStruct(root)
-    HTML = """<ul class='filetree'>
-    <li><span class="folder">%s</span><span class="fullpath">%s</span>
-        <ul>
-    """ % (root, root)
-    for item in data:
-        if isinstance(item, Directory):
-            HTML += DIRECTORY % {
-                "label" : item.label,
-                "name" : item.name,
-                "contents" : _htmlify(item),
-            }
-        elif isinstance(item, File):
-            HTML += FILE % item.__dict__
-    HTML += "</ul></li></ul>"
-    return HTML
-            
-
-def _htmlify(folder):
-    HTML = ""
-    for item in folder.contents:
-        if isinstance(item, Directory):
-            HTML += _htmlify(item)
-        elif isinstance(item, File):
-            HTML += FILE % item.__dict__
-    return HTML
+def getFileStruct(path):
+    HTML = """<ul class="filetree">"""
+    FILE = """
+        <li><span class="filetree_item file %(filetype)s">%(name)s</span><span class="fullpath">%(fullpath)s</span></li>
+    """
+    OPENDIR = """
+        <li><span class="filetree_item folder">%(name)s</span><span class="fullpath">%(fullpath)s</span><ul>
+    """
+    CLOSEDIR = """</ul></li>"""
     
-def _getFileStruct(dire):
-    contents = []
-    for file_ in sorted(os.listdir(dire)):
-        path = os.path.join(dire, file_)
-        if os.path.isdir(path):
-            contents += [Directory(path, file_, _getFileStruct(path))]
-        elif os.path.islink(path):
-            pass
-        elif stat.S_ISSOCK(os.stat(path).st_mode):
-            pass
-        else:
-            contents += [File(path, file_, _getFileType(file_))]
-    return contents
+    current_dir = None
+    current_parents = None
+    
+    for dirpath, dirnames, dirfiles in os.walk(path, followlinks=True):
+        currDir = dirpath.split(path)[1]
+        if currDir == "":
+            currDir = path
+        parents = dirpath.split("/")[:-1]
+        if parents[0] == '':
+            parents = parents[1:]
+        if current_dir != currDir:
+            #have we moved up?
+            if not current_parents or parents[-2] == current_parents[-1]:
+                #no we've moved down
+                HTML += OPENDIR % {"name" : os.path.basename(currDir), "fullpath" : dirpath}
+            else:
+                #ok we've moved up, how many levels?
+                prev_levels_down = len(current_parents)
+                cur_levels_down = len(parents)
+                shared_down = 0
+                for i in range(len(current_parents)):
+                    if i == len(parents):
+                        break
+                    if current_parents[i] == parents[i]:
+                        shared_down += 1
+                    else:
+                        break
+                moved_up = len(current_parents) - shared_down
+                HTML += (CLOSEDIR * (moved_up+1))
+                HTML += OPENDIR % {"name" : os.path.basename(currDir), "fullpath" : dirpath}
+        current_dir = currDir
+        current_parents = parents
+        for name in sorted(dirfiles):
+            fullpath = os.path.join(dirpath, name)
+            filetype = _getFileType(name)
+            HTML += FILE % {"filetype":filetype, "name":name, "fullpath":fullpath}
+    HTML += "</ul></li></ul>"
+    
+    return HTML
+        
+            
 
 def createTorrent(path, announce, length, private, comment, output):
     if not os.path.isabs(path):
@@ -222,6 +232,7 @@ def createTorrent(path, announce, length, private, comment, output):
             chunks += 1
             sha1 = hashlib.sha1(buff).digest()
             pieces += sha1
+            
         infoDict = {
             "name" : base,
             "piece length" : length,

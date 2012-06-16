@@ -40,19 +40,28 @@ $(document).ready( function () {
     $("#path").keyup( function (e) {
         sock.send("request=exists&path=" + $(this).val());
     });
-    //$("#path_browse").click( function (e) {
-    //    // open a dialog window
-    //    if ($("#path_browse_div").hasClass("hidden")) {
-    //        $("#path_browse_div").removeClass("hidden");
-    //        initTree();
-    //    } else {
-    //        $("#path_browse_div").addClass("hidden");
-    //        $("#path_browse_div").empty();
-    //        return false;
-    //    }
-    //});
+    $("#path_browse").click( function (e) {
+        // open a dialog window
+        if ($("#path_browse_div").hasClass("hidden")) {
+            $("#path_browse_div").removeClass("hidden");
+            initTree();
+        } else {
+            $("#path_browse_div").addClass("hidden");
+            $("#path_browse_div").empty();
+            return false;
+        }
+    });
     $("#create").click( function (e) {
        submitForm(); 
+    });
+    $(".filetree_item").live("click", function () {
+        var fullpath = $(this).next().html();
+        $(".filetree_item").each( function () {
+            $(this).removeClass("selected");
+        });
+        $(this).addClass("selected");
+        $("#path").val(fullpath);
+        
     });
 });
 
