@@ -25,7 +25,6 @@ import re
 import urlparse
 import time
 import hashlib
-from xml.etree.ElementTree import ElementTree
 
 from modules import bencode
 
