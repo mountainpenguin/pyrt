@@ -57,7 +57,10 @@ class Logger(object):
         _id = self.id_gen()
 
         if "%" in text:
-            msg = text % tuple(args)
+            try:
+                msg = text % tuple(args)
+            except TypeError:
+                self.error("TypeError: not enough arguments for format string, text: %r, arguments: %r", text.replace("%","&37;"), args)
         else:
             msg = text
         message = self.fmt(Message(_id, msg, level=level, level_name=level_name))
