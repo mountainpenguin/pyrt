@@ -25,6 +25,7 @@ import re
 import urlparse
 import time
 import hashlib
+import json
 
 from modules import bencode
 
@@ -57,19 +58,39 @@ FILE = """
 </li>
 """
 
-def handle_message(req):
+def _getarg(urlparams, arg):
+    return urlparams.get(arg) and urlparams.get(arg)[0] or None
+    
+def handle_message(req, writeback=None):
     urlparams =  urlparse.parse_qs(req)
-    request = urlparams.get("request") and urlparams.get("request")[0] or None
+    request = _getarg(urlparams, "request")
     if request == "filetree":
-        rootDir = urlparams.get("rootDir") and urlparams.get("rootDir")[0] or None
+        rootDir = _getarg(urlparams, "rootDir")
         if rootDir and os.path.exists(rootDir):
             return request, getFileStruct(rootDir)
     elif request == "exists":
-        path = urlparams.get("path") and urlparams.get("path")[0] or None
+        path = _getarg(urlparams, "path")
         if path and os.path.exists(path):
             return request, True
         elif path and not os.path.exists(path):
             return request, False
+    elif request == "create":
+        try:
+            path = str(_getarg(urlparams, "path"))
+            announce = str(_getarg(urlparams, "announce"))
+            piece = int(_getarg(urlparams, "piece"))
+            private = int(_getarg(urlparams, "private"))
+            comment = str(_getarg(urlparams, "comment"))
+            output = str(_getarg(urlparams, "output"))
+        except:
+            return request, False
+        
+        torrentFile = createTorrent(path, announce, piece, private, comment, writeback)
+        if not torrentFile:
+            return request, False
+        
+        open(os.path.join("tmp", output), "w").write(torrentFile)
+        return request, True, output
     return request, None
     
 def _getFileType(fileName):
@@ -140,7 +161,14 @@ def getFileStruct(path):
         
             
 
-def createTorrent(path, announce, length, private, comment, output):
+def _send(message, writeback):
+    msg = {
+        "request": "create",
+        "response" : message,
+    }
+    writeback.write_message(json.dumps(msg))
+    
+def createTorrent(path, announce, length, private, comment, wb):
     if not os.path.isabs(path):
         path = os.path.abspath(path)
     if not os.path.exists(path):
@@ -150,13 +178,20 @@ def createTorrent(path, announce, length, private, comment, output):
         size = os.stat(path).st_size
         pieces = ""
         #break file into pieces of length 'length' and obtain the sha1 hash
+        perc_done = 0
+        perc_done_lastsent = -1
         with open(path) as src:
             read = 0
+            _send(perc_done, wb)
             while read <= size:
                 chunk = src.read(length)
                 sha1 = hashlib.sha1(chunk).digest()
                 pieces += sha1
                 read += length
+                perc_done = (float(read) / size)*100
+                if perc_done - perc_done_lastsent >= 1:
+                    perc_done_lastsent = perc_done
+                    _send(perc_done, wb)
         infoDict = {
             "name" : os.path.basename(path),
             "piece length" : length,
@@ -167,7 +202,14 @@ def createTorrent(path, announce, length, private, comment, output):
             infoDict["private"] = 1
     else:
         size = 0
+        #get total size
+        for dp, dn, df in os.walk(path, followlinks=True):
+            for dff in df:
+                size += os.path.getsize(os.path.join(dp, dff))
+        
         totalread = 0
+        perc_done = 0
+        perc_done_lastsent = -1
         
         files = []
         base = os.path.basename(path)
@@ -180,10 +222,12 @@ def createTorrent(path, announce, length, private, comment, output):
             for f in sorted(dirfiles):
                 fp = os.path.join(dirpath, f)
                 filesize = os.path.getsize(fp)
-                size += filesize
                 with open(fp) as src:
                     remaining = filesize
                     while remaining > 0:
+                        if perc_done - perc_done_lastsent >= 1:
+                            perc_done_lastsent = perc_done
+                            _send(perc_done, wb)
                         done = 0
                         if len(buff) > 0:
                             req = length - len(buff)
@@ -220,8 +264,7 @@ def createTorrent(path, announce, length, private, comment, output):
                                 sha1 = hashlib.sha1(chunk).digest()
                                 pieces += sha1
                                 done = 4
-                        
-                    
+                        perc_done = (float(totalread) / size)*100
                 files += [{
                     "path" : rel + [f],
                     "length" : filesize,

@@ -43,6 +43,7 @@ import tornado.websocket
 import tornado.options
 import tornado.netutil
 import tornado.process
+import tornado.httputil
 
 import os
 import urlparse
@@ -184,6 +185,30 @@ class createHandler(tornado.web.RequestHandler):
         }]
         HTML = Template(file="htdocs/createHTML.tmpl", searchList=searchList).respond()
         self.write(HTML)
+        
+    post = get
+    
+class downloadCreation(tornado.web.RequestHandler):
+    """Page handler for downloading temp torrents"""
+    def get(self):
+        chk = _check.web(self)
+        if not chk[0]:
+            self.write(self.application._pyrtL.loginHTML(chk[1]))
+            return
+        elif chk[0] and chk[1]:
+            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
+            
+        filename = self.get_argument("filename", None)
+        if not filename:
+            raise tornado.web.HTTPError(400, log_message="Error, no filename specified")
+        elif not os.path.exists(os.path.join("tmp", os.path.basename(filename))):
+            raise tornado.web.HTTPError(400, log_message="Error, no such file")
+        else:
+            filename = os.path.basename(filename)
+            contents = open(os.path.join("tmp", filename)).read()
+            self.set_header("Content-Type", "application/x-bittorrent")
+            self.set_header("Content-Disposition", "attachment; filename=%s" % filename)
+            self.write(contents)
         
     post = get
     
@@ -573,12 +598,14 @@ class createSocket(tornado.websocket.WebSocketHandler):
             self.close()
             return
         logging.info("createSocket message: %s", message)
-        resp = create.handle_message(message)
+        resp = create.handle_message(message, writeback=self)
         if resp:
             jsonResp = {
                 "request" : resp[0],
                 "response" : resp[1],
             }
+            if len(resp) > 2:
+                jsonResp["output"] = resp[2]
             self.write_message(json.dumps(jsonResp))
         else:
             self.write_message("ERROR/No Response")
@@ -708,6 +735,7 @@ class Main(object):
             (r"/RPCSocket", RPCSocket),
             (r"/create", createHandler),
             (r"/createsocket", createSocket),
+            (r"/downloadcreation", downloadCreation),
         ], **settings)
     
         application._pyrtSockets = SocketStorage()

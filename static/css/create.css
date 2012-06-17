@@ -66,3 +66,23 @@ span.filetree_item:hover {
   color: green; }
 span.filetree_item.selected {
   font-weight: bold; }
+
+#progressbar {
+  float: left;
+  clear: left;
+  margin-top: 1em;
+  border-radius: 4px;
+  border: 1px solid #AAAAAA;
+  height: 2em;
+  width: 50%; }
+  #progressbar > div {
+    margin: -1px;
+    height: 100%;
+    background-color: black; }
+
+.downloadme {
+  float: left;
+  clear: left;
+  margin-top: 1em;
+  border: none;
+  cursor: pointer; }

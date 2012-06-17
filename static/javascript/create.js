@@ -101,10 +101,22 @@ function submitForm() {
         output += ".torrent"
         $("#output").val(output);
     }
+    //$("#progressbar").progressbar({value:22})
     if (ERROR) {
         return false;
     } else {
-        console.log(path, announce, piece, _private, comment, output);
+        // construct progress bar
+        $("#progressbar").removeClass("hidden");
+        $("#progressval").removeClass("hidden");
+        $("#progressbar").progressbar({value:0});
+        var req = "request=create";
+        req += "&path=" + path;
+        req += "&announce=" + announce;
+        req += "&piece=" + piece;
+        req += "&private=" + _private;
+        req += "&comment=" + comment;
+        req += "&output=" + output;
+        sock.send(req)
     }
     
 }
@@ -114,8 +126,8 @@ function handleMessage(evt) {
         console.log("socket error:", evt.data);
     } else {
         var data = JSON.parse(evt.data);
-        req = data.request;
-        resp = data.response;
+        var req = data.request;
+        var resp = data.response;
         if (req == "filetree") {
             var filetree = $(resp);
             filetree.treeview({
@@ -128,8 +140,28 @@ function handleMessage(evt) {
             } else {
                 $("#path").css("color", "red");
             }
+        } else if (req == "create") {
+            if (resp === true) {
+                $("#progressbar").addClass("hidden");
+                var output = data.output;
+                constructTorrent(output);
+            } else if (!isNaN(resp)) {
+                $("#progressbar").progressbar("option", "value", resp);
+            } else {
+                console.log(resp)
+            }
+        } else {
+            console.log("request:", req, "response:", resp);
         }
     }
+}
+
+function constructTorrent(output) {
+    var newdiv = $("<div />").addClass("downloadme");
+    var newimage = $("<img />").attr("src", "/images/document.png").attr("title", "Download torrent");
+    var newlink = $("<a href='/downloadcreation?filename=" + output + "' />").append(newimage);
+    newdiv.append(newlink)
+    $("#progressbar").parent().append(newdiv)
 }
 
 function navigate_tab(elem) {

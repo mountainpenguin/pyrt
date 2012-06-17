@@ -12,3 +12,4 @@ config/*.crt
 config/*.key
 *.log
 *.pid
+tmp/*.torrent
