@@ -46,6 +46,7 @@ import tornado.process
 import tornado.httputil
 
 import os
+import sys
 import urlparse
 import json
 import base64
@@ -665,10 +666,23 @@ class RPCSocket(tornado.websocket.WebSocketHandler):
         self._RPChandler = rpchandler.RPCHandler(self.application._pyrtLog, self.application._pyrtAJAX, self.application._pyrtRemoteStorage)
     
     def on_message(self, message):
+        logging.info("RPCsocket message: %s", message)
         auth = self._RPChandler.get_auth(message)
         if not _check.rpc(self, auth):
+            self.application._pyrtLog.error("RPC: message denied - invalid auth key")
             logging.error("rpcSocket message denied - invalid auth key")
             self.write_message(json.dumps({"response":None,"error":"Invalid Auth"}))
+            try:
+                msg = json.loads(message)
+                _pid = msg["PID"]
+                _name = msg["name"]
+                _autohandler = autohandler.AutoHandler(login=self.application._pyrtL, log=self.application._pyrtLog, remoteStorage=self.application._pyrtRemoteStorage)
+                self.application._pyrtLog.debug("RPC: got pid %d and name %s", _pid, _name)
+                _autohandler.stop_bot(_name)
+                self.application._pyrtLog.debug("RPC: stopping bot")
+            except:
+                pass
+            
             return
         resp = self._RPChandler.handle_message(message)
         self.write_message(resp, binary=True)
@@ -768,7 +782,17 @@ class Main(object):
         logging.info("Starting UNIX websocket on .sockets/rpc.interface")
         sockets = tornado.netutil.bind_unix_socket(".sockets/rpc.interface")
         http_server.add_socket(sockets)
-        http_server.listen(global_config["server.socket_port"], global_config["server.socket_host"])
+        try:
+            http_server.listen(global_config["server.socket_port"], global_config["server.socket_host"])
+        except socket.error:
+            logging.error("Address already in use, aborting")
+            if os.path.exists("proc/pyrt.pid"):
+                os.remove("proc/pyrt.pid")
+
+            if os.path.exists(".sockets/rpc.interface"):
+                os.remove(".sockets/rpc.interface")
+                
+            sys.exit(0)
         
         self.instance = tornado.ioloop.IOLoop.instance()
         self.instance.start()

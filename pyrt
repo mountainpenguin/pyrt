@@ -84,7 +84,8 @@ def stop():
         except:
             traceback.print_exc()
         else:
-            os.remove("proc/bots/%d.pid" % p)
+            if os.path.exists("proc/bots/%d.pid" % p):
+                os.remove("proc/bots/%d.pid" % p)
 
     PID = _searchPID()
     print("Sending SIGTERM to process PID %d" % PID)

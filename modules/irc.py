@@ -40,9 +40,8 @@ class RPCResponse(object):
 class _ModularBot(ircbot.SingleServerIRCBot):
     def shutdown(self, signalnum, stackframe):
         self.RPCCommand("log", "info", "IRCbot #%d: shutting down", self.PID)
-        if self.IS_REGISTERED:
-            self.RPCCommand("deregister", self.config.name, self.PID)
-
+        #if self.IS_REGISTERED:
+        #    self.RPCCommand("deregister", self.config.name, self.PID)
         try:
             os.remove("proc/bots/%d.pid" % self.PID)
         except:
@@ -56,12 +55,16 @@ class _ModularBot(ircbot.SingleServerIRCBot):
         if response:
             try:
                 unjsoned = json.loads(response.response)
+                if type(unjsoned) is dict:
+                    self.config.filters = []
+                    return
                 newf = []
                 for f in unjsoned:
                     newf.append(re.compile(f))
                 self.config.filters = newf
             except:
                 self.RPCCommand("log", "error", "IRCBot #%d: recieved filter list but not JSON-encoded", self.PID)
+                self.config.filters = []
 
     def _OTPAuth(self):
         random_salt = base64.b64encode(os.urandom(10))
@@ -77,6 +80,8 @@ class _ModularBot(ircbot.SingleServerIRCBot):
             "command" : command,
             "arguments" : args,
             "keywords" : kwargs,
+            "PID" : self.PID,
+            "name" : self.config.name,
             "auth" : OTPAuth,
         }
         return self._ssend(json.dumps(obj))
@@ -164,6 +169,8 @@ class _ModularBot(ircbot.SingleServerIRCBot):
 
 class Irc(object):
     def __init__(self, name, log, storage, websocketURI, auth):
+        self.STORAGE = storage
+        self.NAME = name
         #search for storage settings
         store = storage.getRemoteByName(name)
         siteMod = remotes.getSiteMod(name)
@@ -205,7 +212,7 @@ class Irc(object):
         bot.start()
 
     def start(self):
-        if not self.PROC:
+        if not self.PROC and not self.STORAGE.isBotActive(self.NAME):
             p = multiprocessing.Process(target=self.startbot)
             p.daemon = True
             p.start()

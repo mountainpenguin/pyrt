@@ -50,6 +50,10 @@ class RPCHandler(object):
                 f = []
 
             return json.dumps([x.pattern for x in f])
+        else:
+            return json.dumps({
+                "error" : "Not registered"
+            })
 
 
     def listMethods(self):
@@ -151,7 +155,7 @@ class RPCHandler(object):
             error = "002 - invalid syntax, dict required"
             return self._respond(response, error)
 
-        req = ["command", "arguments", "keywords", "auth"]
+        req = ["command", "arguments", "keywords", "auth", "PID", "name"]
         for r in req:
             if not jsonified.has_key(r):
                 self.log("error", "RPC: call has invalid syntax, missing key %r", r)

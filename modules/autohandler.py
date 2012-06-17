@@ -109,13 +109,19 @@ class AutoHandler(object):
         botpid = self.STORE.isBotActive(name)
         if botpid:
             os.kill(botpid, signal.SIGTERM)
+            #deregister bot
+            self.STORE.deregisterBot(name, botpid)
             return json.dumps({
                 "request" : "stop_bot",
                 "error" : None,
                 "response" : name,
             })
         else:
-            return "ERROR/Bot not active"
+            return json.dumps({
+                "request" : "stop_bot",
+                "error": "Bot not active",
+                "response" : None,
+            })
 
     def start_bot(self, name):
         auth = self.LOGIN.getRPCAuth() 
