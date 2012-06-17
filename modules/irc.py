@@ -61,7 +61,7 @@ class _ModularBot(ircbot.SingleServerIRCBot):
                     newf.append(re.compile(f))
                 self.config.filters = newf
             except:
-                self.RPCCommand("log", "error", "IRCBot #%d: recieved filter list but not JSON-encoded")
+                self.RPCCommand("log", "error", "IRCBot #%d: recieved filter list but not JSON-encoded", self.PID)
 
     def _OTPAuth(self):
         random_salt = base64.b64encode(os.urandom(10))
