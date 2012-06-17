@@ -37,10 +37,10 @@ tbody > tr {
             }
         }
     }
-    &.remote_row:nth-child(n+1):not(:hover) {
+    &.remote_row:nth-child(4n+1):not(:hover) {
         background-color: #ECE9D8;    
     }
-    &.remote_row:nth-child(n+2):not(:hover) {
+    &.remote_row:nth-child(4n+3):not(:hover) {
         background-color: #CCCCCC;
     }
     &.remote_setting {

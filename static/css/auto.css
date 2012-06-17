@@ -26,9 +26,9 @@ tbody > tr {
         color: green; }
       tbody > tr.remote_row > td.status.status-off {
         color: red; }
-  tbody > tr.remote_row:nth-child(n+1):not(:hover) {
+  tbody > tr.remote_row:nth-child(4n+1):not(:hover) {
     background-color: #ECE9D8; }
-  tbody > tr.remote_row:nth-child(n+2):not(:hover) {
+  tbody > tr.remote_row:nth-child(4n+3):not(:hover) {
     background-color: #CCCCCC; }
   tbody > tr.remote_setting > td {
     box-shadow: inset 0 2px 8px #888888;
