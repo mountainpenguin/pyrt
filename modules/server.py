@@ -357,6 +357,14 @@ class ajaxSocket(tornado.websocket.WebSocketHandler):
         self.socketID = self.application._pyrtSockets.add("ajaxSocket", self, self.cookies.get("sess_id").value)
         logging.info("%d %s (%s)", self.get_status(), "ajaxSocket opened", self.request.remote_ip)
 
+    def _respond(self, request, response, error=None):
+        resp = json.dumps({
+            "request" : request,
+            "response" : response,
+            "error" : error,
+        })
+        self.write_message(resp)
+        
     def on_message(self, message):
         if not _check.socket(self):
             logging.error("%d %s %.2fms", self.get_status(), "ajaxSocket message denied", 1000*self.request.request_time())
@@ -379,20 +387,21 @@ class ajaxSocket(tornado.websocket.WebSocketHandler):
             logging.info("%d %s (%s)", self.get_status(), "ajaxSocket request %s" % request, self.request.remote_ip)
         if not request:
             logging.error("%d %s (%s)", self.get_status(), "ajaxSocket error - no request specified", self.request.remote_ip)
-            self.write_message("ERROR/No request specified")
+            #self.write_message("ERROR/No request specified")
+            self._respond(None, "ERROR", "No request specified")
             return
         
         if not self.application._pyrtAJAX.has_command(request):
             logging.error("%d %s (%s)", self.get_status(), "ajaxSocket error - no such command `%s`" % request, self.request.remote_ip)
-            self.write_message("ERROR/No such command")
+            self._respond(request, "ERROR", "No such command")
             return
         if not self.application._pyrtAJAX.validate_command(request, qs):
             logging.error("%d %s (%s)", self.get_status(), "ajaxSocket error - not enough args", self.request.remote_ip)
-            self.write_message("ERROR/need more args")
+            self._respond(request, "ERROR", "Need more arguments")
             return
         if request == "upload_torrent":
-            logging.warning("%d %s (%s)", self.get_status(), "ajaxSocket upload_torrent not supported, use POST of fileSocket method instead", self.request.remote_ip)
-            self.write_message("ERROR/you should use POST or fileSocket method for file uploads")
+            logging.warning("%d %s (%s)", self.get_status(), "ajaxSocket upload_torrent not supported, use POST or fileSocket method instead", self.request.remote_ip)
+            self._respond(request, "ERROR", "You should use POST or fileSocket methods for file uploads")
             return
                 
         try:
@@ -401,13 +410,13 @@ class ajaxSocket(tornado.websocket.WebSocketHandler):
             tb = traceback.format_exc()
             logging.error(tb)
             self.application._pyrtLog.error("AJAX: error in command %s - %s", request, tb.strip().split("\n")[-1])
-            self.write_message("ERROR/ajax function returned nothing")
+            self._respond(request, "ERROR", "AJAX function returned nothing")
         else:
             if resp:
-                self.write_message(resp)
+                self._respond(request, resp)
             else:
                 logging.error("%d %s (%s)", self.get_status(), "ajaxSocket error - function returned nothing", self.request.remote_ip)
-                self.write_message("ERROR/ajax function returned nothing")
+                self._respond(request, "ERROR", "AJAX function returned nothing")
             
     def on_close(self):
         self.application._pyrtSockets.remove("ajaxSocket", self.socketID)
