@@ -205,22 +205,27 @@ class Irc(object):
         self.options.auth = auth
         self.options.matcher = matcher
         
-        self.PROC = None
-
     def startbot(self):
         bot = _ModularBot([(self.network, self.port)], self.nick, self.name, channel=self.channel, config=self.options)
         bot.start()
 
     def start(self):
-        if not self.PROC and not self.STORAGE.isBotActive(self.NAME):
+        if not self.STORAGE.isBotActive(self.NAME):
             p = multiprocessing.Process(target=self.startbot)
             p.daemon = True
             p.start()
-            self.PROC = p
             signal.signal(signal.SIGCHLD, self.report)
+            return p
         else:
             raise IRCError("A bot has already been started!")
         
     def report(self, signalnum, stackframe):
-        self.log.debug("SIGCHLD intercepted in PID #%d, target bot pid: %d", os.getpid(), self.PROC.pid)
-        self.PROC.join(timeout=10)
+        procs = self.STORAGE.getAllProcs()
+        remove = []
+        for pid, d in procs.iteritems():
+            name, proc = d
+            if not proc.is_alive():
+                proc.join(timeout=10)
+                remove += [pid]
+        for pid in remove:
+            self.STORAGE.delProc(pid)

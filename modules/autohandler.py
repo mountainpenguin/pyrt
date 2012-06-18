@@ -135,7 +135,8 @@ class AutoHandler(object):
             return self._response(name, "start_bot", "ERROR", "Bot already active")
         try:
            ircobj = irc.Irc(name, self.LOG, self.STORE, websocketURI=".sockets/rpc.interface", auth=auth)
-           ircobj.start()
+           p = ircobj.start()
+           self.STORE.saveProc(name, p.pid, p)
         except:
             tb = traceback.format_exc()
             tb_line = tb.strip().split("\n")[-1]

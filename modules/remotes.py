@@ -341,6 +341,7 @@ class RemoteStorage(object):
         except:
             self.STORE = {}
         self.BOTS = {}
+        self.PROCS = {}
 
     def addRemote(self, name, **kwargs):
         """Add a 'source'
@@ -419,6 +420,18 @@ class RemoteStorage(object):
         else:
             return False
 
+    def saveProc(self, name, pid, p):      
+        self.PROCS[pid] = (name, p)
+        
+    def delProc(self, pid):
+        if pid in self.PROCS:
+            p = self.PROCS[pid]
+            del self.PROCS[pid]
+            return p
+        
+    def getAllProcs(self):
+        return self.PROCS
+            
     def _flush(self):
         pickle.dump(self.STORE, open(".remotes.pickle","w"))
 
