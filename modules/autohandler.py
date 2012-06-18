@@ -49,6 +49,14 @@ class AutoHandler(object):
             "remove_filter" : self.remove_filter,
         }
 
+    def _response(self, name, request, response, error):
+        return json.dumps({
+            "name" : name,
+            "request" : request,
+            "response" : response,
+            "error" : error,
+        })
+        
     def _fmt_source(self, name, desc, status):
         fmt = {
             "name" : name,
@@ -110,23 +118,21 @@ class AutoHandler(object):
     def stop_bot(self, name):
         botpid = self.STORE.isBotActive(name)
         if botpid:
-            os.kill(botpid, signal.SIGTERM)
-            #deregister bot
-            self.STORE.deregisterBot(name, botpid)
-            return json.dumps({
-                "request" : "stop_bot",
-                "error" : None,
-                "response" : name,
-            })
+            try:
+                os.kill(botpid, signal.SIGTERM)
+                #deregister bot
+                self.STORE.deregisterBot(name, botpid)
+                return self._response(name, "stop_bot", "OK", None)
+            except OSError:
+                return self._response(name, "stop_bot", "ERROR", "Bot is not active")
         else:
-            return json.dumps({
-                "request" : "stop_bot",
-                "error": "Bot not active",
-                "response" : None,
-            })
+            return self._response(name, "stop_bot", "ERROR", "Bot not active")
 
     def start_bot(self, name):
-        auth = self.LOGIN.getRPCAuth() 
+        auth = self.LOGIN.getRPCAuth()
+        botpid = self.STORE.isBotActive(name)
+        if botpid:
+            return self._response(name, "start_bot", "ERROR", "Bot already active")
         try:
            ircobj = irc.Irc(name, self.LOG, self.STORE, websocketURI=".sockets/rpc.interface", auth=auth)
            ircobj.start()
@@ -135,12 +141,9 @@ class AutoHandler(object):
             tb_line = tb.strip().split("\n")[-1]
             self.LOG.error("AUTO: error starting IRC bot for handler '%s' - %s", name, tb_line)
             logging.error(tb)
-            return "ERROR/%s" % tb_line
-        return json.dumps({
-            "request" : "start_bot",
-            "error" : None,
-            "response" : name,
-        })
+            return self._response(name, "start_bot", "ERROR", tb_line)
+        else:
+            return self._response(name, "start_bot", "OK", None)
 
     def get_source_single(self, select):
         sources = remotes.searchSites()
@@ -159,7 +162,15 @@ class AutoHandler(object):
                     startstopmsg = "Stop IRC"
                     startstop = "stop"
 
-                if self.STORE.getRemoteByName(name):
+                s = self.STORE.getRemoteByName(name)
+                if s:
+                    req_ = []
+                    for r in req:
+                        if r[0] in s.keys():
+                            req_.append( (r[0], s[r[0]]) )
+                        else:
+                            req_.append(r)
+                    req = req_
                     filters = self.get_filters(name, internal=True)
                     filters = self._fmt_filters(filters)
                     botcontrol = """
@@ -172,15 +183,13 @@ class AutoHandler(object):
                     filters = ""
                     botcontrol = ""
 
-                return json.dumps({
-                    "request" : "get_source_single",
-                    "error" : None,
-                    "response" : {
-                        "row" : self._fmt_source(name, desc, status),
-                        "requirements" : req,
-                        "req_row" : self._fmt_keys(name, req, filters, botcontrol),
-                    }
-                })
+                return self._response(name, "get_source_single", {
+                    "row" : self._fmt_source(name, desc, status),
+                    "requirements" : req,
+                    "req_row" : self._fmt_keys(name, req, filters, botcontrol),
+                }, None)
+            return self._response(select, "get_source_single", "ERROR", "Remote name '%r' not known" % select)
+        return self._response(select, "get_source_single", "ERROR", "No remotes defined")
 
     def _get_status(self, name):
         botpid = self.STORE.isBotActive(name)
@@ -208,7 +217,15 @@ class AutoHandler(object):
                     startstop = "stop"
 
                 #fetch filters
-                if self.STORE.getRemoteByName(name):
+                s = self.STORE.getRemoteByName(name)
+                if s:
+                    req_ = []
+                    for r in req:
+                        if r[0] in s.keys():
+                            req_.append( (r[0], s[r[0]]) )
+                        else:
+                            req_.append(r)
+                    req = req_
                     filters = self.get_filters(name, internal=True)
                     filters = self._fmt_filters(filters)
                     botcontrol = """
@@ -226,17 +243,12 @@ class AutoHandler(object):
                     "requirements" : req,
                     "req_row" : self._fmt_keys(name, req, filters, botcontrol),
                 })
-        resp = {
-            "request" : "get_sources",
-            "error" : None,
-            "response" : sites,
-        }
-        return json.dumps(resp)
+        return self._response(None, "get_sources", sites, None)
                 
     def get_filters(self, name, internal=False):
         s = self.STORE.getRemoteByName(name)
         if not s and not internal:
-            return "ERROR/no store for name '%s'" % name
+            return self._response(name, "get_filters", "ERROR", "No store for name '%s'" % name)
         elif not s and internal:
             return []
 
@@ -246,11 +258,7 @@ class AutoHandler(object):
             f = []
 
         if not internal:
-            return json.dumps({
-                "request" : "get_filters",
-                "error" : None,
-                "response" : [x.pattern for x in f],
-            })
+            return self._response(name, "get_filters", [x.pattern for x in f], None)
         else:
             return f 
 
@@ -259,40 +267,32 @@ class AutoHandler(object):
         restring = restring[0]
         s = self.STORE.getRemoteByName(name)
         if not s:
-            return "ERROR/no store for name '%s'" % name
+            return self._response(name, "add_filter", "ERROR", "No store for name '%s'" % name)
 
         #attempt to compile the re string
         try:
             regex = re.compile(restring)
         except:
-            return "ERROR/invalid regex"
+            return self._response(name, "add_filter", "ERROR", "Invalid regex")
 
         if self.STORE.addFilter(name, regex):
             #send sigurg
-            return json.dumps({
-                "request" : "add_filter",
-                "error" : None,
-                "response" : name,
-            })
+            return self._response(name, "add_filter", "OK", None)
         else:
-            return "ERROR/Unknown"
+            return self._response(name, "add_filter", "ERROR", "Unknown error")
         
     def remove_filter(self, name, index):
         name = name[0]
         try:
             index = int(index[0])
         except ValueError:
-            return "ERROR/Not an integer"
+            return self._response(name, "remove_filter", "ERROR", "Not an integer")
 
         r = self.STORE.removeFilter(name, index)
         if r:
-            return json.dumps({
-                "request" : "remove_filter",
-                "error" : None,
-                "response" : name,
-            })
+            return self._response(name, "remove_filter", "OK", None)
         else:
-            return "ERROR/No such filter index"
+            return self._response(name, "remove_filter", "ERROR", "No such filter index")
 
     def set_source(self, **kwargs):
         settings = {
@@ -303,25 +303,15 @@ class AutoHandler(object):
             else:
                 settings[k] = v[0]
         if "name" not in settings:
-            return "ERROR/name must be set"
+            return self._response(None, "set_source", "ERROR", "No remote 'name' provided")
 
         name = self.STORE.addRemote(**settings)
         if name:
             self.LOG.info("New remote added: '%s'" % name)
-            resp = {
-                "request" : "set_source",
-                "error" : None,
-                "response" : name,
-            }
-            return json.dumps(resp)
+            return self._response(name, "set_source", "OK", None)
         else:
             self.LOG.error("Error in adding remote: '%s'" % name)
-            resp = {
-                "request" : "set_source",
-                "error" : True,
-                "response" : "ERROR",
-            }
-            return json.dumps(resp)
+            return self._response(name, "set_source", "ERROR", "Unknown error")
 
     def handle_message(self, message):
         urlparams =  urlparse.parse_qs(message)
@@ -337,10 +327,10 @@ class AutoHandler(object):
         keywords = dict( filter( _miniCheck, urlparams.items()))
         if not request:
             logging.info("autoSocket: no request specified")
-            return
+            return self._response(None, message, "ERROR", "No request specified")
         elif request not in self.METHODS:
             logging.info("autoSocket: request '%r' is not supported", request)
-            return "ERROR/request '%r' is not supported" % request
+            return self._response(None, request, "ERROR", "Request '%r' is not supported" % request)
         else:
             return self.METHODS[request](*arguments, **keywords)
             

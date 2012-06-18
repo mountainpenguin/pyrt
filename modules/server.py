@@ -649,7 +649,12 @@ class autoSocket(tornado.websocket.WebSocketHandler):
         if resp:
             self.write_message(resp)
         else:
-            self.write_message("ERROR/No Response")
+            self.write_message(json.dumps({
+                "name" : None,
+                "request" : message,
+                "response" : "ERROR",
+                "error" : "No response",
+            }))
 
     def on_close(self):
         self.application._pyrtSockets.remove("autoSocket", self.socketID)
