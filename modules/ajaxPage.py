@@ -104,7 +104,12 @@ class Ajax:
         req_args = self.public_commands[commandstr.lower()].need_args
         opt_args = self.public_commands[commandstr.lower()].opt_args
         r_args = [qs.get(x, [None])[0] for x in req_args]
-        o_args = dict([(x, qs.get(x, [None])[0]) for x in opt_args])
+        o_args = {}
+        for x in opt_args:
+            y = qs.get(x, "nosucharg")
+            if y != "nosucharg": #allow None, False, 0, etc.
+                o_args[x] = y
+                
         return self.public_commands[commandstr.lower()].run(*r_args, **o_args)
     
     def mbtob(self, value):
@@ -432,6 +437,17 @@ class Ajax:
         fileContents = open(filepath).read()
         return fileContents
     
+    def load_from_remote(self, filename, remotename, start=True):
+        """Loads a torrent from a file that has been fetched by a remote method"""
+        self.Log.debug("File load request from remote handler %s (filename %s)", remotename, filename)
+        if start:
+            self.RT.start_from_file(os.path.join(os.getcwd(), "torrents/%s" % filename))
+        else:
+            self.RT.load_from_file(os.path.join(os.getcwd(), "torrents/%s" % filename))
+        self.Log.info("AJAX: '%s' (downloaded via remote '%s') loaded%s successfully", filename, remotename, (start and " and started" or ""))
+        return "OK"
+        
+
     def upload_torrent_socket(self, torrent, start=True):
         fileName = torrent["filename"]
         inFile = torrent["content"]
@@ -476,8 +492,13 @@ class Ajax:
     def get_info_multi(self, view, sortby=None, reverse=None, drop_down_ids=None):
         drop_downs = {}
         if drop_down_ids:
-            for t_id in drop_down_ids.split(","):
+            if not isinstance(drop_down_ids, list):
+                drop_down_ids = drop_down_ids.split(",")
+            elif "," in drop_down_ids[0]:
+                drop_down_ids = drop_down_ids[0].split(",")
+            for t_id in drop_down_ids:
                 drop_downs[t_id] = self.get_torrent_info(t_id, html="yes please")
+            
         #wanted:
         #   system info
         #   ratio, dl speed, ul speed, status
@@ -517,29 +538,40 @@ class Ajax:
         
     def start_batch(self, torrentListStr):
         torrentList = torrentListStr.split(",")
+        respList = []
         for torrent_id in torrentList:
-            self.start_torrent(torrent_id)
+            r = self.start_torrent(torrent_id)
+            respList.append(r)
+        return json.dumps(respList)
             
     def pause_batch(self, torrentListStr):
         torrentList = torrentListStr.split(",")
+        respList = []
         for torrent_id in torrentList:
-            self.pause_torrent(torrent_id)
+            respList.append(self.pause_torrent(torrent_id))
+        return json.dumps(respList)
             
     def stop_batch(self, torrentListStr):
         torrentList = torrentListStr.split(",")
+        respList = []
         for torrent_id in torrentList:
-            self.stop_torrent(torrent_id)
+            respList.append(self.stop_torrent(torrent_id))
+        return json.dumps(respList)
             
     def remove_batch(self, torrentListStr):
         torrentList = torrentListStr.split(",")
+        respList = []
         for torrent_id in torrentList:
-            self.remove_torrent(torrent_id)
+            respList.append(self.remove_torrent(torrent_id))
+        return json.dumps(respList)
             
     def delete_batch(self, torrentListStr):
         torrentList = torrentListStr.split(",")
+        respList = []
         for torrent_id in torrentList:
-            self.delete_torrent(torrent_id)
-            
+            respList.append(self.delete_torrent(torrent_id))
+        return json.dumps(respList)
+
     def get_tracker_favicon(self, torrent_id):
         tracker_urls = [urlparse.urlparse(x.url) for x in self.RT.getTrackers(torrent_id)]
         netloc = re.split(":\d+", tracker_urls[0].netloc)[0]

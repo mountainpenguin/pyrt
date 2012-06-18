@@ -2,6 +2,7 @@
 config/.pyrtconfig
 config/.pyrtrc
 .user.pickle
+.remotes.pickle
 .pyrtconfig
 torrents/*
 static/favicons/*.ico
@@ -11,3 +12,4 @@ config/*.crt
 config/*.key
 *.log
 *.pid
+tmp/*.torrent

@@ -873,17 +873,17 @@ class rtorrent:
         return files
 #abs_path, base_path, path_components, completed_chunks, priority, size, chunks, chunk_size
 
-    def getCreationDate(self, id):
-        dat = self.conn.d.get_creation_date(id)
-        dat_time = time.localtime(dat)
-        return "%02i/%02i/%i %02i:%02i:%02i" % (
-            dat_time.tm_mday,
-            dat_time.tm_mon,
-            dat_time.tm_year,
-            dat_time.tm_hour,
-            dat_time.tm_min,
-            dat_time.tm_sec,
-        )
+    #def getCreationDate(self, id):
+    #    dat = self.conn.d.get_creation_date(id)
+    #    dat_time = time.localtime(dat)
+    #    return "%02i/%02i/%i %02i:%02i:%02i" % (
+    #        dat_time.tm_mday,
+    #        dat_time.tm_mon,
+    #        dat_time.tm_year,
+    #        dat_time.tm_hour,
+    #        dat_time.tm_min,
+    #        dat_time.tm_sec,
+    #    )
 
     def getPath(self, id):
         return self.conn.d.get_directory(id)

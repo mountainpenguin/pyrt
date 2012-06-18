@@ -1,0 +1,146 @@
+.rss_img {
+  margin-bottom: 9px; }
+
+table#available {
+  border-collapse: collapse;
+  width: 98%; }
+
+tbody > tr {
+  height: 2em; }
+  tbody > tr.remote_row:hover {
+    cursor: pointer;
+    background-color: #3A4040;
+    color: #FEA; }
+  tbody > tr.remote_row > td {
+    text-align: center; }
+    tbody > tr.remote_row > td.name {
+      text-transform: uppercase;
+      min-width: 6em; }
+    tbody > tr.remote_row > td.desc {
+      min-width: 10em; }
+    tbody > tr.remote_row > td.status {
+      min-width: 6em;
+      font-weight: bold;
+      text-transform: uppercase; }
+      tbody > tr.remote_row > td.status.status-on {
+        color: green; }
+      tbody > tr.remote_row > td.status.status-off {
+        color: red; }
+  tbody > tr.remote_row:nth-child(4n+1):not(:hover) {
+    background-color: #ECE9D8; }
+  tbody > tr.remote_row:nth-child(4n+3):not(:hover) {
+    background-color: #CCCCCC; }
+  tbody > tr.remote_setting > td {
+    box-shadow: inset 0 2px 8px #888888;
+    padding-left: 2em;
+    padding-right: 2em;
+    padding-bottom: 2em; }
+    tbody > tr.remote_setting > td div.filters {
+      margin-top: 2em; }
+      tbody > tr.remote_setting > td div.filters h4 {
+        float: left;
+        clear: left; }
+      tbody > tr.remote_setting > td div.filters button.add_filter_button {
+        border-radius: 5px;
+        box-shadow: 0 2px 8px #888888;
+        width: 120px;
+        height: 20px;
+        vertical-align: center;
+        border-bottom: 3px; }
+      tbody > tr.remote_setting > td div.filters div.filter {
+        float: left;
+        clear: right;
+        color: #4183C4;
+        font-family: monospace;
+        border: 1px solid #EAEAEA;
+        padding: 0 5px;
+        border-radius: 3px; }
+        tbody > tr.remote_setting > td div.filters div.filter:not(:hover) {
+          background-color: #F8F8F8; }
+        tbody > tr.remote_setting > td div.filters div.filter:hover {
+          background-color: red;
+          cursor: pointer; }
+      tbody > tr.remote_setting > td div.filters div.add_filter_div {
+        float: left;
+        clear: left;
+        margin-top: 1em;
+        width: 80%; }
+    tbody > tr.remote_setting > td div.settings, tbody > tr.remote_setting > td div.filters {
+      margin-left: 2em; }
+      tbody > tr.remote_setting > td div.settings label, tbody > tr.remote_setting > td div.filters label {
+        font-family: monospace;
+        min-width: 150px;
+        float: left;
+        clear: left; }
+      tbody > tr.remote_setting > td div.settings input[type=text], tbody > tr.remote_setting > td div.filters input[type=text] {
+        font-family: monospace;
+        border: none;
+        float: left;
+        clear: right;
+        color: blue;
+        min-width: 70%;
+        background-color: #F8F8F8; }
+      tbody > tr.remote_setting > td div.settings button.submit_button, tbody > tr.remote_setting > td div.settings button.bot_button, tbody > tr.remote_setting > td div.filters button.submit_button, tbody > tr.remote_setting > td div.filters button.bot_button {
+        border-radius: 5px;
+        box-shadow: 0 2px 8px #888888;
+        width: 120px;
+        height: 30px;
+        margin-top: 1em; }
+        tbody > tr.remote_setting > td div.settings button.submit_button > img, tbody > tr.remote_setting > td div.settings button.submit_button > span, tbody > tr.remote_setting > td div.settings button.bot_button > img, tbody > tr.remote_setting > td div.settings button.bot_button > span, tbody > tr.remote_setting > td div.filters button.submit_button > img, tbody > tr.remote_setting > td div.filters button.submit_button > span, tbody > tr.remote_setting > td div.filters button.bot_button > img, tbody > tr.remote_setting > td div.filters button.bot_button > span {
+          float: left; }
+        tbody > tr.remote_setting > td div.settings button.submit_button > span, tbody > tr.remote_setting > td div.settings button.bot_button > span, tbody > tr.remote_setting > td div.filters button.submit_button > span, tbody > tr.remote_setting > td div.filters button.bot_button > span {
+          padding-left: 1em;
+          font-size: 15px; }
+
+thead > tr, tfoot > tr {
+  height: 1.5em;
+  background-color: #3A3737; }
+  thead > tr > td:first-child, tfoot > tr > td:first-child {
+    padding-left: 2em; }
+  thead > tr > td:last-child, tfoot > tr > td:last-child {
+    padding-right: 2em; }
+  thead > tr > th, tfoot > tr > th {
+    color: white; }
+
+thead > tr {
+  height: 3em; }
+  thead > tr > td:first-child {
+    border-top-left-radius: 10px; }
+  thead > tr > td:last-child {
+    border-top-right-radius: 10px; }
+
+#clicktest {
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  padding: 4px;
+  background-color: rgba(128, 128, 128, 0.2);
+  cursor: pointer;
+  float: left; }
+  #clicktest:hover {
+    background-color: rgba(128, 128, 128, 0.9);
+    color: #f0f0f0; }
+
+.topbar-tab_suboption {
+  float: left;
+  padding: 0em 1em;
+  cursor: pointer;
+  line-height: 25px;
+  font-weight: bold;
+  font-size: 9pt;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  border: 1px none;
+  border-bottom: 0px none;
+  color: #AEF; }
+  .topbar-tab_suboption:hover {
+    background-color: #C0C0C0;
+    color: black; }
+
+.is_hidden {
+  display: none;
+  visibility: hidden; }
+
+.submit_buttons {
+  float: left;
+  clear: both; }

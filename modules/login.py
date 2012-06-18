@@ -33,7 +33,7 @@ import math
 import logging
 import traceback
 
-class User:
+class User(object):
     def __init__(self, pass_hash, sess_id=None, testing=[]):
         self.password = pass_hash
         self.sess_id = sess_id
@@ -58,6 +58,36 @@ class Login:
     def _getTimeToken(self):
         return "%i" % math.floor( time.time() / 10 )
         
+    def getRPCAuth(self):
+        if self.USER.__dict__.has_key("rpcauth"):
+            return self.USER.rpcauth
+        else:
+            #gen random
+            rand = hashlib.sha256(os.urandom(20)).hexdigest()
+            self.USER.rpcauth = rand
+            return rand
+
+    def checkRPCAuth(self, auth):
+        try:
+            rand_salt = auth.split("$")[1]
+        except IndexError:
+            self.Log.error("RPC: Invalid syntax in auth string")
+            return False
+
+        rpcauth = self.USER.rpcauth
+        currToken = self._getTimeToken()
+        token_salt = hashlib.sha256(currToken + rand_salt).hexdigest()
+        h1 = hashlib.sha256(rpcauth).hexdigest()
+        h2 = hashlib.sha256(h1 + token_salt).hexdigest()
+        fmt = "$%s$%s" % (rand_salt, h2)
+        if fmt == auth:
+            return True
+        else:
+            return False
+
+    def getPermSalt(self):
+        return self.USER.password.split("$")[1]
+
     def checkPassword(self, pw, ip):
         #pw = TOTP hash
         try:

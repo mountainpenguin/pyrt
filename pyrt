@@ -25,6 +25,7 @@ from modules import mkpasswd
 import os
 import traceback
 import sys
+import glob
 
 
 __AUTHOR__ = "mountainpenguin (pinguino.de.montana@googlemail.com)"
@@ -33,9 +34,19 @@ __VERSION__ = "1.0.0"
 __LICENSE__ = "GPLv3"
 
 def _searchPID():
-    if os.path.exists(".pyrt.pid"):
-        return int(open(".pyrt.pid").read().strip())
+    if os.path.exists("proc/pyrt.pid"):
+        return int(open("proc/pyrt.pid").read().strip())
+
+def _searchBotPID():
+    PIDFiles = glob.glob("proc/bots/*.pid")
+    #e.g. proc/bots/12345.pid
+    pids = []
+    for PIDFile in PIDFiles:
+        with open(PIDFile) as doc:
+            pids.append(int(doc.read().strip()))
     
+    return pids
+
 def start():
     if _searchPID():
         print("pyRT has already been started")
@@ -54,7 +65,7 @@ def start():
     with daemon.DaemonContext(stdout=STDOUT, stderr=STDOUT, working_directory=os.getcwd()):
         serv = server.Main()
         PID = os.getpid()
-        open(".pyrt.pid","w").write(str(PID))
+        open("proc/pyrt.pid","w").write(str(PID))
         serv.main(c)
 
 def stop():
@@ -63,17 +74,34 @@ def stop():
         print("pyRT is not running")
         return
     
+    bots = _searchBotPID()
+    for p in bots:
+        print("Sending SIGTERM to process bot PID %d" % p)
+        try:
+            os.kill(p, 15)
+        except OSError:
+            print("Couldn't kill bot, no process with PID %d" % p)
+        except:
+            traceback.print_exc()
+        else:
+            if os.path.exists("proc/bots/%d.pid" % p):
+                os.remove("proc/bots/%d.pid" % p)
+
     PID = _searchPID()
     print("Sending SIGTERM to process PID %d" % PID)
     try:
         os.kill(PID, 15)
     except OSError:
         print("Something went horribly wrong, there is no process with PID %d" % PID)
-        print("To allow restarting, delete the file .pyrt.pid")
+        print("To allow restarting, delete the file proc/pyrt.pid")
     except:
         traceback.print_exc()
     else:
-        os.remove(".pyrt.pid")
+        os.remove("proc/pyrt.pid")
+
+    print("Removing RPC socket file")
+    if os.path.exists(".sockets/rpc.interface"):
+        os.remove(".sockets/rpc.interface")
     
 
 def status():

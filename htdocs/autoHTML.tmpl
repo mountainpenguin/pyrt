@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>pyRT :: Management of background automatic processes</title>
+        <link rel="stylesheet" type="text/css" href="css/main.css">
+        <link rel="stylesheet" type="text/css" href="css/auto.css">
+        <link rel="stylesheet" type="text/css" href="/css/smoothness/jquery-ui-1.8.13.custom.css">
+        <script src="/javascript/jquery-1.7.min.js" type="text/javascript"></script>
+        <script src="/javascript/jquery-ui-1.8.17.custom.min.js" type="text/javascript"></script>
+        <script src="/javascript/auto.js" type="text/javascript"></script>
+        <script src="/javascript/CryptoJS/sha256.js" type="text/javascript"></script>
+        <script src="/javascript/CryptoJS/enc-base64-min.js" type="text/javascript"></script>
+        <script src="/javascript/login.js" type="text/javascript"></script>
+    </head>
+    <body>
+        <div id="header">
+            <div id="topbar">
+                <div class="topbar-tab" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_tab_toHome(this);" title="main" id="tab_main">Main</div>
+                <div class="topbar-tab_options selected" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_tab(this);" title="auto" id="tab_auto">Auto</div>
+                <!-- <div class="topbar-tab_suboption" id="tab_irc">IRC</div> -->
+            </div>
+        </div>
+        <div id="main_body">
+            <div id="wrapper">
+                <div class="sub_wrapper" id="default_wrapper">
+                    <h2>Set your automatic sources</h2>
+                    <div id="available_handlers">
+                        <div id="available">
+                            <img src="images/loading.gif" id="available_placeholder">
+                        </div>
+                        <table id="available">
+                            <thead>
+                                <tr><td></td><th class='available_heading'>Available Sources</th><td></td></tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr><td></td><td></td><td></td></tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="dialog_form" title="Enter Password">
+            <p class="tip">Enter your application password</p>
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" class="text ui-widget-content ui-corner-all">
+        </div>
+        <input type="hidden" id="permanent_salt" value="%(PERM_SALT)s">
+    </body>
+</html>

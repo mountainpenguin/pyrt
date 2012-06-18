@@ -39,8 +39,7 @@ $(document).ready(function () {
      }, 5000);
 
      ws = new window.WebSocket(socket_protocol + "://" + window.document.location.host + "/ajaxsocket");
-     ws.onmessage = function(e) {
-     }
+     ws.onmessage = messageHandler
      ws.onclose = function(e) {
      }
      ws.onopen = function(e) {
@@ -113,7 +112,7 @@ $(document).ready(function () {
                     if (filerecord.length == 0) {
                          fs.close();
                          destroyDragOverlay();
-                         refresh_content("no");
+                         //refresh_content("no");
                     }
                }
                fs.onclose = function(ev) {
@@ -194,7 +193,6 @@ $(document).ready(function () {
           }
           sendme = "request=" + action + "_batch";
           sendme = sendme + "&torrentIDs=" + torrentIDs.join(",");
-          ws.onmessage = function (e) { };
           ws.send(sendme)
           //refresh_content("no");
      })
@@ -377,11 +375,17 @@ function loadRClickMenus() {
             window.location = "/log";
         }
      );
+     $("#tab_auto").bind(
+        "click",
+        function () {
+            window.location = "/auto";
+        }
+    );
 }
 
-function parse_content(e, repeat) {
-     ws.onmessage = function () {};
-     data = JSON.parse(e.data);
+function parse_content(response, repeat) {
+     //ws.onmessage = function () {};
+     data = JSON.parse(response);
        system = JSON.parse(data.system);
        $("#global_uprate").html(system.uprate + "/s");
        $("#global_uptot").html(system.uptot);
@@ -515,7 +519,7 @@ function refresh_content(repeat) {
     }
     
 /*    $.getJSON(req, function (data) { */
-    ws.onmessage = function(e) { return parse_content(e, repeat) };
+    //ws.onmessage = function(e) { return parse_content(e, repeat) };
     ws.send(req);
 }
 
@@ -686,19 +690,20 @@ function drop_down(elem) {
      var newcell = newrow.insertCell(0);
      newrow.id = "newrow_torrent_id_" + torrent_id;
      newrow.className += "drop_down";
+     newcell.id = "newcell_torrent_id_" + torrent_id;
      newcell.innerHTML = "<img src='/images/loading.gif'> <span style='color:red;'>Loading</span>";
      newcell.colSpan = "7";
      var params = "request=get_torrent_info&html=yesplease&torrent_id=" + torrent_id;
-     ws.onmessage = function (e) {
-          var response = e.data;
-          newcell.className += "drop_down_td";
-          newcellcontents = $(response);
-          newcellcontents = accordionise(newcellcontents, 1);
-          newcellcontents = filetreeise(newcellcontents, torrent_id);
-          newcellcontents.css({"display" : "none"});
-          $(newcell).html(newcellcontents);
-          newcellcontents.slideDown('slow');
-     }
+     //ws.onmessage = function (e) {
+     //     var response = e.data;
+     //     newcell.className += "drop_down_td";
+     //     newcellcontents = $(response);
+     //     newcellcontents = accordionise(newcellcontents, 1);
+     //     newcellcontents = filetreeise(newcellcontents, torrent_id);
+     //     newcellcontents.css({"display" : "none"});
+     //     $(newcell).html(newcellcontents);
+     //     newcellcontents.slideDown('slow');
+     //}
      ws.send(params)
 }
 
@@ -749,14 +754,14 @@ function command(cmd, t_id) {
                resp = true;
           }
           if (resp) {
-               ws.onmessage = function (e) {
-                    var resp = e.data.trim()
-                    if (resp == "OK") {
-                         refresh_content("no");
-                    } else {
-                         console.log("Command Failed with reason: " + resp); 
-                    }
-               }
+               //ws.onmessage = function (e) {
+               //     var resp = e.data.trim()
+               //     if (resp == "OK") {
+               //          refresh_content("no");
+               //     } else {
+               //          console.log("Command Failed with reason: " + resp); 
+               //     }
+               //}
                var params = "request=" + cmd + "&torrent_id=" + t_id;
                ws.send(params);
      
@@ -786,5 +791,32 @@ function destroyDragOverlay() {
                     $(this).remove()
                })
           });
+     }
+}
+
+function messageHandler(evt) {
+     d = JSON.parse(evt.data);
+     if (d.request == "get_info_multi") {
+          return parse_content(d.response, "yes");
+     } else if (d.request == "get_torrent_info") {
+          var response = d.response;
+          newcellcontents = $(response);
+          var _torrent_id = $(".drop_down_main",newcellcontents).first().attr("id").split("drop_down_main_")[1];
+          var newcell = document.getElementById("newcell_torrent_id_" + _torrent_id);
+          newcell.className += "drop_down_td";
+          newcellcontents = accordionise(newcellcontents, 1);
+          newcellcontents = filetreeise(newcellcontents, torrent_id);
+          newcellcontents.css({"display" : "none"});
+          $(newcell).html(newcellcontents);
+          newcellcontents.slideDown('slow');
+     } else if (d.request == "pause_torrent" || d.request === "start_torrent" || d.request === "stop_torrent" || d.request == "remove_torrent" || d.request == "delete_torrent" || d.request == "hash_torrent") {
+          var resp = d.response.trim();
+          if (resp == "OK") {
+               //refresh_content("no");
+          } else {
+               console.log("Command Failed with reason: " + resp);
+          }
+     } else {
+          console.log("Unknown request");
      }
 }

@@ -23,12 +23,16 @@ import time
 import random
 import string
 import logging
+import cgi
 
 class Message(object):
     """Class to contain a message"""
     def __init__(self, msg_id, text, level=2, level_name="INFO"):
         self.msg_id = msg_id
-        self.text = text
+        if type(text) == unicode:
+            self.text = text
+        else:
+            self.text = unicode(text, errors="replace")
         self.level = level
         self.level_name = level_name
 
@@ -53,7 +57,11 @@ class Logger(object):
         _id = self.id_gen()
 
         if "%" in text:
+            #try:
             msg = text % tuple(args)
+            #except TypeError:
+            #    self.error("TypeError: not enough arguments for format string, text: %r, arguments: %r", text.replace("%","&37;"), args)
+            #    return
         else:
             msg = text
         message = self.fmt(Message(_id, msg, level=level, level_name=level_name))
@@ -90,7 +98,7 @@ class Logger(object):
         timestamp = time.strftime("%d %b %Y %H:%M:%S")
         fmt = "(%s) %s" % (timestamp, msg.text)
         msg.colour = colour
-        msg.fmt = fmt
+        msg.fmt = cgi.escape(fmt)
         return msg
 
     def html_format(self, msg, addnewflag=False):
