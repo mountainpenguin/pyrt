@@ -56,6 +56,7 @@ import traceback
 import random
 import string
 import socket
+import time
 
 class null(object):
     @staticmethod
@@ -695,6 +696,9 @@ class RPCSocket(tornado.websocket.WebSocketHandler):
                 self.application._pyrtLog.debug("RPC: got pid %d and name %s", _pid, _name)
                 _autohandler.stop_bot(_name)
                 self.application._pyrtLog.debug("RPC: stopping bot")
+                time.sleep(2)
+                self.application._pyrtLog.debug("RPC: restarting '%s' bot", _name)
+                _autohandler.start_bot(_name)
             except:
                 pass
             
