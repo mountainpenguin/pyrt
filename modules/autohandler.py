@@ -132,9 +132,10 @@ class AutoHandler(object):
            ircobj.start()
         except:
             tb = traceback.format_exc()
-            self.LOG.error("AUTO: error starting IRC bot for handler '%s' - %s", name, tb.strip().split("\n")[-1])
+            tb_line = tb.strip().split("\n")[-1]
+            self.LOG.error("AUTO: error starting IRC bot for handler '%s' - %s", name, tb_line)
             logging.error(tb)
-            return "ERROR/Faulty configuration for handler"
+            return "ERROR/%s" % tb_line
         return json.dumps({
             "request" : "start_bot",
             "error" : None,
@@ -310,7 +311,7 @@ class AutoHandler(object):
             resp = {
                 "request" : "set_source",
                 "error" : None,
-                "response" : "OK",
+                "response" : name,
             }
             return json.dumps(resp)
         else:

@@ -121,7 +121,7 @@ $(document).ready( function () {
     });
     $(".submit_button").live("click", function (evt) {
         // get arguments
-        var inputs = $("input", $(this).parent());
+        var inputs = $("input", $(this).parent().parent());
         args = new Object();
         args.tocrypt = [];
         var exit = false;
@@ -168,10 +168,12 @@ function OnMessage (evt) {
           } else if (response.request == "add_filter") {
             refresh_drop_down(response.response);
           } else if (response.request == "start_bot") {
-            refresh_drop_down(response.response);
+            setTimeout(function () { refresh_drop_down(response.response); }, 2000);
           } else if (response.request == "stop_bot") {
             refresh_drop_down(response.response);
           } else if (response.request == "remove_filter") {
+            refresh_drop_down(response.response);
+          } else if (response.request == "set_source") {
             refresh_drop_down(response.response);
           } else {
             console.log("socket message:", evt.data)
