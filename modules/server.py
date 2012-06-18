@@ -676,7 +676,7 @@ class RPCSocket(tornado.websocket.WebSocketHandler):
         self._RPChandler = rpchandler.RPCHandler(self.application._pyrtLog, self.application._pyrtAJAX, self.application._pyrtRemoteStorage)
     
     def on_message(self, message):
-        logging.info("RPCsocket message: %s", message)
+        #logging.info("RPCsocket message: %s", message)
         auth = self._RPChandler.get_auth(message)
         if not _check.rpc(self, auth):
             self.application._pyrtLog.error("RPC: message denied - invalid auth key")
