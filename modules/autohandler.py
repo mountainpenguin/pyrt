@@ -72,11 +72,13 @@ class AutoHandler(object):
                     <div class="settings">
                         <h4>Settings</h4>
                             %(form)s
-                        <button type="submit" class="submit_button" id="submit_%(name)s">
-                            <img src="/images/submit.png" width=20 height=20>
-                            <span>Submit</span>
-                        </button>
-                        %(botbutton)s
+                        <div class="submit_buttons">
+                            <button type="submit" class="submit_button" id="submit_%(name)s">
+                                <img src="/images/submit.png" width=20 height=20>
+                                <span>Submit</span>
+                            </button>
+                            %(botbutton)s
+                        </div>
                     </div>
                     %(filters)s
                 </td>

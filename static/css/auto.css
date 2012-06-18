@@ -140,3 +140,7 @@ thead > tr {
 .is_hidden {
   display: none;
   visibility: hidden; }
+
+.submit_buttons {
+  float: left;
+  clear: both; }
