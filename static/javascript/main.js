@@ -690,6 +690,7 @@ function drop_down(elem) {
      var newcell = newrow.insertCell(0);
      newrow.id = "newrow_torrent_id_" + torrent_id;
      newrow.className += "drop_down";
+     newcell.id = "newcell_torrent_id_" + torrent_id;
      newcell.innerHTML = "<img src='/images/loading.gif'> <span style='color:red;'>Loading</span>";
      newcell.colSpan = "7";
      var params = "request=get_torrent_info&html=yesplease&torrent_id=" + torrent_id;
@@ -799,8 +800,10 @@ function messageHandler(evt) {
           return parse_content(d.response, "yes");
      } else if (d.request == "get_torrent_info") {
           var response = d.response;
-          newcell.className += "drop_down_td";
           newcellcontents = $(response);
+          var _torrent_id = $(".drop_down_main",newcellcontents).first().attr("id").split("drop_down_main_")[1];
+          var newcell = document.getElementById("newcell_torrent_id_" + _torrent_id);
+          newcell.className += "drop_down_td";
           newcellcontents = accordionise(newcellcontents, 1);
           newcellcontents = filetreeise(newcellcontents, torrent_id);
           newcellcontents.css({"display" : "none"});

@@ -357,13 +357,14 @@ class ajaxSocket(tornado.websocket.WebSocketHandler):
         self.socketID = self.application._pyrtSockets.add("ajaxSocket", self, self.cookies.get("sess_id").value)
         logging.info("%d %s (%s)", self.get_status(), "ajaxSocket opened", self.request.remote_ip)
 
-    def _respond(self, request, response, error=None):
-        resp = json.dumps({
+    def _respond(self, request, response, error=None, **kwargs):
+        resp = {
             "request" : request,
             "response" : response,
             "error" : error,
-        })
-        self.write_message(resp)
+        }
+        resp.update(kwargs)
+        self.write_message(json.dumps(resp))
         
     def on_message(self, message):
         if not _check.socket(self):
