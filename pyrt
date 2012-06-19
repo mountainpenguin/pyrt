@@ -26,6 +26,7 @@ import os
 import traceback
 import sys
 import glob
+import time
 
 
 __AUTHOR__ = "mountainpenguin (pinguino.de.montana@googlemail.com)"
@@ -86,6 +87,16 @@ def stop():
         else:
             if os.path.exists("proc/bots/%d.pid" % p):
                 os.remove("proc/bots/%d.pid" % p)
+        
+    count = 0
+    while count < 3:
+        bots = _searchBotPID()
+        if len(bots) > 0:
+            print("Waiting for bots to die (%d)" % count)
+            time.sleep(2)
+            count += 1
+        else:
+            break
 
     PID = _searchPID()
     print("Sending SIGTERM to process PID %d" % PID)
