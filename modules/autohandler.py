@@ -124,6 +124,7 @@ class AutoHandler(object):
                 self.STORE.deregisterBot(name, botpid)
                 return self._response(name, "stop_bot", "OK", None)
             except OSError:
+                self.STORE.deregisterBot(name, botpid)
                 return self._response(name, "stop_bot", "ERROR", "Bot is not active")
         else:
             return self._response(name, "stop_bot", "ERROR", "Bot not active")

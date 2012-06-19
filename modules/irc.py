@@ -151,7 +151,7 @@ class _ModularBot(ircbot.SingleServerIRCBot):
 
     def on_pubmsg(self, connection, event):
         self.update()
-        self.RPCCommand("publicLog", "debug", "IRCBot #%d: message %r", self.PID, event.arguments()[0])
+        self.RPCCommand("publicLog", "debug", "IRCBot #%d: message %r", self.PID, event.arguments()[0].encode("string_escape"))
         try:
             for regex in self.config.filters:
                 if regex.search(event.arguments()[0]):
