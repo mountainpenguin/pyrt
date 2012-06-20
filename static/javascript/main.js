@@ -71,7 +71,7 @@ $(document).ready(function () {
      });
      
      loadRClickMenus();
-     stripeTable();
+     //stripeTable();
      
      // drag 'n' drop events
      $("body").bind("dragenter", function (e) {
@@ -493,7 +493,7 @@ function parse_content(response, repeat) {
          }
      }
      
-     stripeTable();
+     //stripeTable();
      loadRClickMenus();
 
      if (repeat === "yes") {
@@ -531,7 +531,7 @@ function remove_torrentrow(torrent_id) {
             $(row).fadeTo(2000, 0.1, function() {
                 $(this).slideRow("up", 1000, function() {
                     $("#torrent_id_" + torrent_id).remove();
-                    stripeTable();
+                    //stripeTable();
                 });
             });
         });

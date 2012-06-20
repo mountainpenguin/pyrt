@@ -478,6 +478,12 @@ tr {
             background-color: $d3;
             color: #FEA;
         }
+        &:nth-child(even):not(:hover) {
+            background-color: #ECE9D8;
+        }
+        &:nth-child(odd):not(:hover) {
+            background-color: #CCCCCC;
+        }
     }
     &.new-torrent-row {
         opacity : 0.1;
@@ -491,12 +497,6 @@ tr {
     &.deleting-torrent-row {
         background-color : #676767;
         color : #a6a6a6;
-    }
-    &.blue {
-        background-color : #ECE9D8;
-    }
-    &.green {
-        background-color : #CCCCCC;
     }
     &.red {
         background-color : red;
