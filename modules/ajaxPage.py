@@ -468,6 +468,8 @@ class Ajax:
             return "OK"
         
     def upload_torrent(self, torrent=None, start=None):
+        if type(torrent) is list:
+            torrent = torrent[0]
         fileName = unicode(torrent["filename"])
         inFile = torrent["body"]
         try:
