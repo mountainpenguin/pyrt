@@ -278,6 +278,7 @@ class Base(object):
         except bencode.BTL.BTFailure:
             self._log.error("Error in remote handler '%s': not a valid bencoded string", self.settings.name)
             logging.error("Error in remote handler '%s'\n%s", self.settings.name, traceback.format_exc())
+            open("test.torrent","w").write(filecontent)
             return
 
         target_p = os.path.join("torrents", filename)
