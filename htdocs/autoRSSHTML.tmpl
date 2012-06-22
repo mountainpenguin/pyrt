@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>pyRT :: Management of background automatic processes</title>
+        <link rel="stylesheet" type="text/css" href="css/main.css">
+        <link rel="stylesheet" type="text/css" href="css/auto.css">
+        <link rel="stylesheet" type="text/css" href="/css/smoothness/jquery-ui-1.8.13.custom.css">
+        <script src="/javascript/jquery-1.7.min.js" type="text/javascript"></script>
+        <script src="/javascript/jquery-ui-1.8.17.custom.min.js" type="text/javascript"></script>
+        <script src="/javascript/auto-rss.js" type="text/javascript"></script>
+        <script src="/javascript/auto.js" type="text/javascript"></script>
+        <script src="/javascript/CryptoJS/sha256.js" type="text/javascript"></script>
+        <script src="/javascript/CryptoJS/enc-base64-min.js" type="text/javascript"></script>
+        <script src="/javascript/login.js" type="text/javascript"></script>
+    </head>
+    <body>
+        <div id="header">
+            <div id="topbar">
+                <div class="topbar-tab" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_tab_toHome(this);" title="main" id="tab_main">Main</div>
+                <div class="topbar-tab_options" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_tab(this);" title="IRC" id="tab_IRC">IRC</div>
+                <div class="topbar-tab_options selected" onclick="navigate_tab(this);" title="RSS" id="tab_RSS">RSS</div>
+                <!-- <div class="topbar-tab_suboption" id="tab_irc">IRC</div> -->
+            </div>
+        </div>
+        <div id="main_body">
+            <div id="wrapper">
+                <div class="sub_wrapper" id="default_wrapper">
+                    <h2>Set your RSS sources</h2>
+                    <div id="add_feed">
+                        <img id="add_feed_img" src="/images/add-rss.png" width=20 height=20>
+                        <span id="add_feed_txt">Add Feed</span>
+                    </div>
+                    <fieldset class="hidden" id="add_feed_hidden">
+                        <div class="fake_form" id="alias_fake">
+                            <label>Alias: </label>
+                            <input type="text" id="alias" placeholder="Feed nickname">
+                        </div>
+                        <div class="fake_form" id="ttl_fake">
+                            <label>TTL: </label>
+                            <input type="text" id="ttl" placeholder="Refresh rate (minutes)">
+                        </div>
+                        <div class="fake_form" id="url_fake">
+                            <label>URI: </label>
+                            <input type="text" id="url" placeholder="RSS Feed URI">
+                        </div>
+                        <div class="fake_form" id="submit_fake">
+                            <button type="submit" id="rss_submit">Add</button>
+                        </div>
+                        </div>
+                    </fieldset>
+                    <div id="current_feeds">
+                        <div id="temp">
+                            <img src="/images/loading.gif" id="feeds_placeholder">
+                        </div>
+                        <table id="feeds">
+                            <thead>
+                                <tr><td></td><th class="available_heading">Current Feeds</th><td></td></tr>
+                                <tr class="sub_heading"><th class="sub_title">Alias</th><th class="sub_title">TTL</th><th class="sub_title">URI</th></tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr><td></td><td></td><td></td></tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="permanent_salt" value="%(PERM_SALT)s">
+    </body>
+</html>

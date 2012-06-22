@@ -1,7 +1,7 @@
 .rss_img {
   margin-bottom: 9px; }
 
-table#available {
+table#available, table#feeds {
   border-collapse: collapse;
   width: 98%; }
 
@@ -99,15 +99,19 @@ thead > tr, tfoot > tr {
     padding-left: 2em; }
   thead > tr > td:last-child, tfoot > tr > td:last-child {
     padding-right: 2em; }
-  thead > tr > th, tfoot > tr > th {
-    color: white; }
 
-thead > tr {
+thead > tr.sub_heading {
+  height: 1em; }
+thead > tr:not(.sub_heading) {
   height: 3em; }
-  thead > tr > td:first-child {
-    border-top-left-radius: 10px; }
-  thead > tr > td:last-child {
-    border-top-right-radius: 10px; }
+thead > tr > td:first-child {
+  border-top-left-radius: 10px; }
+thead > tr > td:last-child {
+  border-top-right-radius: 10px; }
+thead > tr > th.available_heading {
+  color: white; }
+thead > tr > th.sub_title {
+  color: #AFC5FF; }
 
 #clicktest {
   -moz-border-radius: 4px;
@@ -144,3 +148,51 @@ thead > tr {
 .submit_buttons {
   float: left;
   clear: both; }
+
+#add_feed {
+  margin-bottom: 1em; }
+
+#add_feed_hidden {
+  margin-bottom: 1em; }
+
+#add_feed_img {
+  vertical-align: bottom; }
+
+#add_feed_txt {
+  vertical-align: middle;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: bold; }
+  #add_feed_txt:not(.selected) {
+    color: #FF7C25; }
+  #add_feed_txt.selected {
+    color: #8A8A8A; }
+
+div.fake_form {
+  padding-left: 2px;
+  padding-bottom: 2px;
+  padding-top: 2px;
+  margin-bottom: 10px;
+  margin-top: 10px; }
+  div.fake_form > input[type="text"] {
+    font-family: monospace;
+    min-width: 60%; }
+    div.fake_form > input[type="text"]:not(.error) {
+      border: none;
+      background-color: #F8F8F8; }
+    div.fake_form > input[type="text"].error {
+      border: 1px solid red;
+      background-color: #FCCFCF; }
+    div.fake_form > input[type="text"]:focus {
+      color: blue; }
+  div.fake_form > label {
+    font-family: "Helvetica";
+    float: left;
+    clear: left;
+    min-width: 10em; }
+  div.fake_form > input[type="text"], div.fake_form select {
+    float: left;
+    /*clear: right;*/ }
+  div.fake_form#submit_fake {
+    float: left;
+    clear: left; }

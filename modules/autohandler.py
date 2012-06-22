@@ -47,7 +47,10 @@ class AutoHandler(object):
             "get_filters" : self.get_filters,
             "add_filter" : self.add_filter,
             "remove_filter" : self.remove_filter,
+            "get_rss" : self.get_rss,
+            "add_rss" : self.add_rss,
         }
+        
 
     def _response(self, name, request, response, error):
         return json.dumps({
@@ -57,6 +60,7 @@ class AutoHandler(object):
             "error" : error,
         })
         
+        
     def _fmt_source(self, name, desc, status):
         fmt = {
             "name" : name,
@@ -65,6 +69,7 @@ class AutoHandler(object):
         }
         row_templ = "<tr class='remote_row' id='remote_name_%(name)s'><td class='name'>%(name)s</td><td class='desc'>%(desc)s</td><td class='status status-%(status)s status-%(name)s'>%(status)s</td></tr>"
         return row_templ % fmt
+    
 
     def _fmt_keys(self, name, keys, filters, botcontrol):
         input_templ = "<label for='%(key)s'>%(key)s:</label><input type='text' name='%(key)s' placeholder='%(desc)s'>"
@@ -93,6 +98,7 @@ class AutoHandler(object):
             </tr>
         """
         return row_templ % fmt
+    
 
     def _fmt_filters(self, filters):
         filter_templ = """
@@ -114,6 +120,7 @@ class AutoHandler(object):
             </div>
         """
         return templ % fmt
+    
 
     def stop_bot(self, name):
         botpid = self.STORE.isBotActive(name)
@@ -128,6 +135,7 @@ class AutoHandler(object):
                 return self._response(name, "stop_bot", "ERROR", "Bot is not active")
         else:
             return self._response(name, "stop_bot", "ERROR", "Bot not active")
+            
 
     def start_bot(self, name):
         auth = self.LOGIN.getRPCAuth()
@@ -150,46 +158,49 @@ class AutoHandler(object):
     def get_source_single(self, select):
         sources = remotes.searchSites()
         if sources:
-            for name, desc, req in sources:
+            for name, desc, req, methods in sources:
                 if name.upper() != select.upper():
                     continue
                 #determine if bot is running
-                status = self._get_status(name)
-                if status == "off":
-                    statusimage = "on.png"
-                    startstopmsg = "Start IRC"
-                    startstop = "start"
+                if "IRC" in methods:
+                    status = self._get_status(name)
+                    if status == "off":
+                        statusimage = "on.png"
+                        startstopmsg = "Start IRC"
+                        startstop = "start"
+                    else:
+                        statusimage = "off.png"
+                        startstopmsg = "Stop IRC"
+                        startstop = "stop"
+    
+                    s = self.STORE.getRemoteByName(name)
+                    if s:
+                        req_ = []
+                        for r in req:
+                            if r[0] in s.keys():
+                                req_.append( (r[0], s[r[0]]) )
+                            else:
+                                req_.append(r)
+                        req = req_
+                        filters = self.get_filters(name, internal=True)
+                        filters = self._fmt_filters(filters)
+                        botcontrol = """
+                            <button class="bot_button" id="%(startstop)s_%(name)s">
+                                <img src="/images/%(statusimage)s" width=20 height=20>
+                                <span>%(startstopmsg)s</span>
+                            </button>
+                        """ % { "statusimage" : statusimage, "startstop" : startstop, "startstopmsg" : startstopmsg, "name" : name }
+                    else:
+                        filters = ""
+                        botcontrol = ""
+    
+                    return self._response(name, "get_source_single", {
+                        "row" : self._fmt_source(name, desc, status),
+                        "requirements" : req,
+                        "req_row" : self._fmt_keys(name, req, filters, botcontrol),
+                    }, None)
                 else:
-                    statusimage = "off.png"
-                    startstopmsg = "Stop IRC"
-                    startstop = "stop"
-
-                s = self.STORE.getRemoteByName(name)
-                if s:
-                    req_ = []
-                    for r in req:
-                        if r[0] in s.keys():
-                            req_.append( (r[0], s[r[0]]) )
-                        else:
-                            req_.append(r)
-                    req = req_
-                    filters = self.get_filters(name, internal=True)
-                    filters = self._fmt_filters(filters)
-                    botcontrol = """
-                        <button class="bot_button" id="%(startstop)s_%(name)s">
-                            <img src="/images/%(statusimage)s" width=20 height=20>
-                            <span>%(startstopmsg)s</span>
-                        </button>
-                    """ % { "statusimage" : statusimage, "startstop" : startstop, "startstopmsg" : startstopmsg, "name" : name }
-                else:
-                    filters = ""
-                    botcontrol = ""
-
-                return self._response(name, "get_source_single", {
-                    "row" : self._fmt_source(name, desc, status),
-                    "requirements" : req,
-                    "req_row" : self._fmt_keys(name, req, filters, botcontrol),
-                }, None)
+                    return self._response(name, "get_source_single", "ERROR", "IRC not specified as a valid method")
             return self._response(select, "get_source_single", "ERROR", "Remote name '%r' not known" % select)
         return self._response(select, "get_source_single", "ERROR", "No remotes defined")
 
@@ -205,46 +216,47 @@ class AutoHandler(object):
         sources = remotes.searchSites() 
         sites = []
         if sources:
-            for name, desc, req in sources:
+            for name, desc, req, methods in sources:
                 #determine if bot is running
-                status = self._get_status(name)
-                if status == "off":
-                    statusimage = "on.png"
-                    startstopmsg = "Start IRC"
-                    startstop = "start"
-
-                else:
-                    statusimage = "off.png"
-                    startstopmsg = "Stop IRC"
-                    startstop = "stop"
-
-                #fetch filters
-                s = self.STORE.getRemoteByName(name)
-                if s:
-                    req_ = []
-                    for r in req:
-                        if r[0] in s.keys():
-                            req_.append( (r[0], s[r[0]]) )
-                        else:
-                            req_.append(r)
-                    req = req_
-                    filters = self.get_filters(name, internal=True)
-                    filters = self._fmt_filters(filters)
-                    botcontrol = """
-                        <button class="bot_button" id="%(startstop)s_%(name)s">
-                            <img src="/images/%(statusimage)s" width=20 height=20>
-                            <span>%(startstopmsg)s</span>
-                        </button>
-                    """ % { "statusimage" : statusimage, "startstop" : startstop, "startstopmsg" : startstopmsg, "name" : name }
-                else:
-                    filters = ""
-                    botcontrol = ""
-
-                sites.append({
-                    "row" : self._fmt_source(name, desc, status),
-                    "requirements" : req,
-                    "req_row" : self._fmt_keys(name, req, filters, botcontrol),
-                })
+                if "IRC" in methods:
+                    status = self._get_status(name)
+                    if status == "off":
+                        statusimage = "on.png"
+                        startstopmsg = "Start IRC"
+                        startstop = "start"
+    
+                    else:
+                        statusimage = "off.png"
+                        startstopmsg = "Stop IRC"
+                        startstop = "stop"
+    
+                    #fetch filters
+                    s = self.STORE.getRemoteByName(name)
+                    if s:
+                        req_ = []
+                        for r in req:
+                            if r[0] in s.keys():
+                                req_.append( (r[0], s[r[0]]) )
+                            else:
+                                req_.append(r)
+                        req = req_
+                        filters = self.get_filters(name, internal=True)
+                        filters = self._fmt_filters(filters)
+                        botcontrol = """
+                            <button class="bot_button" id="%(startstop)s_%(name)s">
+                                <img src="/images/%(statusimage)s" width=20 height=20>
+                                <span>%(startstopmsg)s</span>
+                            </button>
+                        """ % { "statusimage" : statusimage, "startstop" : startstop, "startstopmsg" : startstopmsg, "name" : name }
+                    else:
+                        filters = ""
+                        botcontrol = ""
+    
+                    sites.append({
+                        "row" : self._fmt_source(name, desc, status),
+                        "requirements" : req,
+                        "req_row" : self._fmt_keys(name, req, filters, botcontrol),
+                    })
         return self._response(None, "get_sources", sites, None)
                 
     def get_filters(self, name, internal=False):
@@ -315,6 +327,35 @@ class AutoHandler(object):
             self.LOG.error("Error in adding remote: '%s'" % name)
             return self._response(name, "set_source", "ERROR", "Unknown error")
 
+    def _fmt_feed(self, feed):
+        
+        templ = "<tr class='remote_row' id='feed_id_%(id)s'><td class='alias'>%(alias)s</td><td class='ttl'>%(ttl)s</td><td class='url'>%(url)s</td></tr>"
+        return templ % feed
+        
+    def get_rss(self, **kwargs):
+        feeds_ = self.STORE.getRSSFeeds()
+        feeds = []
+        for f in feeds_:
+            feeds.append(self._fmt_feed(f))
+        return self._response("RSS", "get_rss", feeds, None)
+        
+    def add_rss(self, alias=None, ttl=None, uri=None):
+        if not alias or not ttl or not uri:
+            raise remotes.UndefinedError("Insufficient arguments")
+        try:
+            uri = uri[0]
+            ttl = ttl[0]
+            alias = alias[0]
+            self.STORE.addRSSFeed(uri, ttl, alias)
+        except:
+            err = traceback.format_exc()
+            errsh = err.strip().split("\n")[-1]
+            self.LOG.error("ERROR in autohandler (add_rss): %s", errsh)
+            logging.error("ERROR in autohandler (add_rss)\n%s", err)
+            return self._response("RSS", "add_rss", "ERROR", errsh)
+        else:
+            return self._response("RSS", "add_rss", "OK", None)
+        
     def handle_message(self, message):
         urlparams =  urlparse.parse_qs(message)
         request = urlparams.get("request") and urlparams.get("request")[0] or None

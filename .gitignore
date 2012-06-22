@@ -1,8 +1,7 @@
 *.pyc
 config/.pyrtconfig
 config/.pyrtrc
-.user.pickle
-.remotes.pickle
+*.pickle
 .pyrtconfig
 torrents/*
 static/favicons/*.ico

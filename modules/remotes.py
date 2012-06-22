@@ -31,6 +31,7 @@ import random
 import string
 import hashlib
 import imp
+import urlparse
 
 from modules import bencode
 
@@ -50,7 +51,7 @@ def searchSites():
         try:
             d = imp.find_module(f.split(".py")[0],["modules/sites"])
             c = imp.load_module("modules.sites.%s" % f.split(".py")[0], d[0], d[1], d[2])
-            srcs.append( (f.split(".py")[0], c.DESCRIPTION, c.REQUIRED_KEYS) )
+            srcs.append( (f.split(".py")[0], c.DESCRIPTION, c.REQUIRED_KEYS, c.METHODS) )
         except:
             logging.error(traceback.format_exc())
             pass
@@ -79,6 +80,16 @@ class BencodeError(Exception):
     def __repr__(self):
         return "BencodeError: %s" % self.param
 
+class RSS(object):
+    def __init__(self, rand_id, url, ttl, alias):
+        """url = string
+            ttl = float: refresh rate (in minutes)
+        """
+        self.ID = rand_id
+        self.url = url
+        self.ttl = ttl
+        self.alias = alias
+    
 class Settings(dict):
     """ Semi-implemented recursive 'dictionary object'
 
@@ -336,6 +347,9 @@ class RemoteStorage(object):
         (if it is even possible)
     """
 
+    def _randomID(self, length=10):
+        return "".join([random.choice(string.letters + string.digits) for x in range(length)])
+        
     def __init__(self):
         try:
             self.STORE = pickle.load(open(".remotes.pickle"))
@@ -343,6 +357,10 @@ class RemoteStorage(object):
             self.STORE = {}
         self.BOTS = {}
         self.PROCS = {}
+        try:
+            self.RSS = pickle.load(open(".rss.pickle"))
+        except:
+            self.RSS = {}
 
     def addRemote(self, name, **kwargs):
         """Add a 'source'
@@ -433,6 +451,40 @@ class RemoteStorage(object):
     def getAllProcs(self):
         return self.PROCS
             
+    def addRSSFeed(self, url, ttl, alias=None):
+        try:
+            ttl = float(ttl)
+        except ValueError:
+            raise UndefinedError("TTL must be a number")
+        url_chk = urlparse.urlparse(url)
+        if not url_chk.netloc:
+            raise UndefinedError("URL malformed")
+        
+        if not alias:
+            alias = url_chk.netloc
+        rand_id = self._randomID()
+        newRSS = RSS(rand_id, url, ttl, alias)
+        self.RSS[rand_id] = newRSS
+        self._flushRSS()
+            
+    def _ttlhuman(self, mins):
+        s = round(mins*60)
+        stri = ""
+        if s > 60**2:
+            stri += "%ih " % (s / 60**2)
+            s %= 60**2
+        if s > 60:
+            stri += "%im " % (s / 60)
+            s %= 60
+        if s > 0:
+            stri += "%is" % s
+        return stri
+        
+    def getRSSFeeds(self):
+        return [{"id":x.ID, "url":x.url,"ttl":self._ttlhuman(x.ttl),"alias":x.alias} for x in self.RSS.values()]
+    
     def _flush(self):
         pickle.dump(self.STORE, open(".remotes.pickle","w"))
+    def _flushRSS(self):
+        pickle.dump(self.RSS, open(".rss.pickle","w"))
 

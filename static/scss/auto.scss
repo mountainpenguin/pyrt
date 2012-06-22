@@ -3,7 +3,7 @@
 }
 
 table {
-    &#available {
+    &#available, &#feeds {
         border-collapse: collapse;
         width: 98%;
     }
@@ -138,21 +138,32 @@ thead, tfoot {
                 padding-right: 2em;
             }
         }
-        &>th {
-            color: white;
-        }
     }
 }
 
 thead {
     &>tr {
-        height: 3em;
+        &.sub_heading {
+            height: 1em;
+        }
+        &:not(.sub_heading) {
+            height: 3em;
+        }
         &>td:first-child {
             border-top-left-radius: 10px;
         }
         &>td:last-child {
             border-top-right-radius: 10px;
         }
+        &>th {
+            &.available_heading {
+                color: white;
+            }
+            &.sub_title {
+                color: #AFC5FF;
+            }
+        }
+        
     }
 }
 
@@ -200,4 +211,67 @@ thead {
 .submit_buttons {
     float: left;
     clear: both;
+}
+
+#add_feed {
+    margin-bottom: 1em;
+}
+#add_feed_hidden {
+    margin-bottom: 1em;
+}
+#add_feed_img {
+    vertical-align: bottom;
+}
+#add_feed_txt {
+    vertical-align: middle;
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: bold;
+    &:not(.selected) {
+        color: #FF7C25;
+    }
+    &.selected {
+        color: #8A8A8A;
+    }
+}
+
+div.fake_form {
+    padding: {
+        left: 2px;
+        bottom:2px;
+        top:2px;
+    }
+    margin: {
+        bottom: 10px;
+        top: 10px;
+    }
+    &>input[type="text"] {
+        font-family: monospace;
+        &:not(.error) {
+            border: none;
+            background-color: #F8F8F8;
+        }
+        &.error {
+            border: 1px solid red;
+            background-color: #FCCFCF;
+        }
+        &:focus {
+            color: blue;
+        }
+        min-width: 60%;
+    }
+    &>label {
+        font-family: "Helvetica";
+        float: left;
+        clear: left;
+        min-width: 10em;
+    }
+    &>input[type="text"], select {
+        float: left;
+        /*clear: right;*/
+    }
+    &#submit_fake {
+        float:left;
+        clear:left;
+    }
 }

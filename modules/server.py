@@ -670,8 +670,13 @@ class autoHandler(tornado.web.RequestHandler):
         elif chk[0] and chk[1]:
             self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
 
-        with open("htdocs/autoHTML.tmpl") as doc:
-            self.write(doc.read() % { "PERM_SALT" : self.application._pyrtL.getPermSalt() })
+        which = self.get_argument("which", None)
+        if not which or which.upper() == "IRC":
+            with open("htdocs/autoIRCHTML.tmpl") as doc:
+                self.write(doc.read() % { "PERM_SALT" : self.application._pyrtL.getPermSalt() })
+        else:
+            with open("htdocs/autoRSSHTML.tmpl") as doc:
+                self.write(doc.read() % { "PERM_SALT" : self.application._pyrtL.getPermSalt() })
     post = get
     
 class RPCSocket(tornado.websocket.WebSocketHandler):
