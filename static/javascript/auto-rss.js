@@ -51,11 +51,55 @@ $(document).ready( function() {
         if (!url) {
             $("#url").addClass("error");
             err = true;
+        } else {
+            url = encodeURIComponent(url);
         }
         if (err) {
             return false;
         } else {
             socket.send("request=add_rss&alias=" + alias + "&ttl=" + ttl + "&uri=" + url)
+        }
+    });
+    $(".remote_row").live("click", function () {
+        var nxt = $(this).next();
+        if (nxt.hasClass("hidden")) {
+            nxt.slideDown("fast");
+            nxt.removeClass("hidden");
+        } else {
+            nxt.slideUp("fast");
+            nxt.addClass("hidden");
+        }
+    });
+    $(".rss_delete").live("click", function () {
+        var ID = $(this).parent().parent().parent().attr("id").split("feed_")[1];
+        if (confirm("Are you sure you want to delete this RSS feed?")) {
+            socket.send("request=remove_rss&ID=" + ID);
+        }
+    });
+    $(".rss_enable").live("click", function () {
+        var ID = $(this).parent().parent().parent().attr("id").split("feed_")[1];
+        socket.send("request=enable_rss&ID=" + ID);
+    });
+    $(".rss_disable").live("click", function () {
+        var ID = $(this).parent().parent().parent().attr("id").split("feed_")[1];
+        socket.send("request=disable_rss&ID=" + ID);
+    });
+    $(".add_filter_button").live("click", function () {
+        var ID = $(this).parents(".remote_setting").attr("id").split("feed_")[1];
+        var newf = $(this).parent().next();
+        var newfval = newf.val()
+        if (!newfval) {
+            newf.focus();
+            return false;
+        }
+        socket.send("request=add_rss_filter&ID=" + ID + "&restring=" + encodeURIComponent(newfval));
+    });
+    $(".filter").live("click", function () {
+        var ID = $(this).parents(".remote_setting").attr("id").split("feed_")[1];
+        var index = $(".filter", $(this).parent()).index($(this));
+        var c = confirm("Are you sure you want to remove this filter?");
+        if (c) {
+            socket.send("request=remove_rss_filter&ID=" + ID + "&index=" + index);
         }
     });
 });
@@ -83,6 +127,49 @@ function onMessage (evt) {
                 return false;
             }
             window.location.replace(window.location);
+        } else if (response.request == "remove_rss") {
+            if (response.error) {
+                alert("ERROR in request " + response.request + ": " + response.error);
+                return false;
+            }
+            window.location.replace(window.location);
+        } else if (response.request == "enable_rss") {
+            if (response.error) {
+                alert("ERROR in request " + response.request + ": " + response.error);
+                return false;
+            }
+            socket.send("request=get_rss_single&ID=" + response.name);
+        } else if (response.request == "disable_rss") {
+            if (response.error) {
+                alert("ERROR in request " + response.request + ": " + response.error);
+                return false;
+            }
+            socket.send("request=get_rss_single&ID=" + response.name);
+        } else if (response.request == "add_rss_filter") {
+            if (response.error) {
+                console.log("ERROR in request " + response.request + ": " + response.error);
+                return false;
+            }
+            socket.send("request=get_rss_single&ID=" + response.name);
+        } else if (response.request == "remove_rss_filter") {
+            if (response.error) {
+                console.log("ERROR in request " + response.request + ": " + response.error);
+                return false;
+            }
+            socket.send("request=get_rss_single&ID=" + response.name);
+        } else if (response.request == "get_rss_single") {
+            if (response.error) {
+                console.log("ERROR in request " + response.request + ": " + response.error);
+                return false;
+            }
+            // replace
+            var ID = response.name;
+            var resp = response.response;
+            $("#feed_id_" + ID).replaceWith($(resp[0]));
+            //var hid = $("#feed_" + ID).hasClass("hidden");
+            var drop = $(resp[1]);
+            $("#feed_" + ID).children().replaceWith(drop.children());
+            
         } else {
             console.log("socket message:", evt.data)
         }

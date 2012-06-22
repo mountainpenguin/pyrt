@@ -275,3 +275,24 @@ div.fake_form {
         clear:left;
     }
 }
+
+div.rss_controls {
+    margin: {
+        left: 2em;
+        top: 2em;
+    }
+    &>img {
+        cursor: pointer;
+    }
+}
+
+button {
+    cursor: pointer;
+}
+
+td.url {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 6em;
+}

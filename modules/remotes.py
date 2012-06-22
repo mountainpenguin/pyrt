@@ -81,7 +81,7 @@ class BencodeError(Exception):
         return "BencodeError: %s" % self.param
 
 class RSS(object):
-    def __init__(self, rand_id, url, ttl, alias):
+    def __init__(self, rand_id, url, ttl, alias, enabled=False, filters=[]):
         """url = string
             ttl = float: refresh rate (in minutes)
         """
@@ -89,6 +89,8 @@ class RSS(object):
         self.url = url
         self.ttl = ttl
         self.alias = alias
+        self.enabled = enabled
+        self.filters = filters
     
 class Settings(dict):
     """ Semi-implemented recursive 'dictionary object'
@@ -466,7 +468,58 @@ class RemoteStorage(object):
         newRSS = RSS(rand_id, url, ttl, alias)
         self.RSS[rand_id] = newRSS
         self._flushRSS()
+    
+    def removeRSSFeed(self, ID):
+        if ID not in self.RSS:
+            return False
+        else:
+            del self.RSS[ID]
+            self._flush()
+            return True
+        
+    def enableRSSFeed(self, ID):
+        if ID not in self.RSS:
+            return False
+        else:
+            self.RSS[ID].enabled = True
+            self._flushRSS()
+            return True
+        
+    def disableRSSFeed(self, ID):
+        if ID not in self.RSS:
+            return False
+        else:
+            self.RSS[ID].enabled = False
+            self._flushRSS()
+            return True
+        
+    def addRSSFilter(self, ID, regex):
+        if ID not in self.RSS:
+            return False
+        else:
+            self.RSS[ID].filters.append(regex)
+            self._flushRSS()
+            return True
+        
+    def removeRSSFilter(self, ID, index):
+        if ID not in self.RSS:
+            return False
+        else:
+            filters = self.RSS[ID].filters
+            if index < len(filters):
+                filters.pop(index)
+                self.RSS[ID].filters = filters
+                self._flushRSS()
+                return True
+            else:
+                return None
             
+    def getRSSFilters(self, ID):
+        if ID not in self.RSS:
+            return False
+        else:
+            return self.RSS[ID].filters
+        
     def _ttlhuman(self, mins):
         s = round(mins*60)
         stri = ""
@@ -481,7 +534,35 @@ class RemoteStorage(object):
         return stri
         
     def getRSSFeeds(self):
-        return [{"id":x.ID, "url":x.url,"ttl":self._ttlhuman(x.ttl),"alias":x.alias} for x in self.RSS.values()]
+        return [
+            {
+                "id":x.ID,
+                "url":x.url,
+                "ttl":self._ttlhuman(x.ttl),
+                "alias":x.alias,
+                "enabled":x.enabled,
+                "enabled_str":x.enabled and "disable" or "enable",
+                "enabled_image":x.enabled and "/images/red-x.png" or "/images/submit.png",
+                "filters":x.filters,
+            } for x in self.RSS.values()
+        ]
+        
+    def getRSSFeed(self, ID):
+        if ID in self.RSS:
+            rss = self.RSS[ID]
+            return {
+                "id":rss.ID,
+                "url":rss.url,
+                "ttl":self._ttlhuman(rss.ttl),
+                "alias":rss.alias,
+                "enabled":rss.enabled,
+                "enabled_str":rss.enabled and "disable" or "enable",
+                "enabled_image":rss.enabled and "/images/red-x.png" or "/images/submit.png",
+                "filters":rss.filters,
+            }
+        else:
+            return False
+        
     
     def _flush(self):
         pickle.dump(self.STORE, open(".remotes.pickle","w"))

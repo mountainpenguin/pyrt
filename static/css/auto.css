@@ -196,3 +196,18 @@ div.fake_form {
   div.fake_form#submit_fake {
     float: left;
     clear: left; }
+
+div.rss_controls {
+  margin-left: 2em;
+  margin-top: 2em; }
+  div.rss_controls > img {
+    cursor: pointer; }
+
+button {
+  cursor: pointer; }
+
+td.url {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 6em; }

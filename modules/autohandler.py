@@ -49,6 +49,13 @@ class AutoHandler(object):
             "remove_filter" : self.remove_filter,
             "get_rss" : self.get_rss,
             "add_rss" : self.add_rss,
+            "remove_rss" : self.remove_rss,
+            "enable_rss" : self.enable_rss,
+            "disable_rss" : self.disable_rss,
+            "add_rss_filter" : self.add_rss_filter,
+            "remove_rss_filter" : self.remove_rss_filter,
+            "get_rss_single" : self.get_rss_single,
+            "get_rss_filters" : self.get_rss_filters,
         }
         
 
@@ -307,7 +314,7 @@ class AutoHandler(object):
             return self._response(name, "remove_filter", "OK", None)
         else:
             return self._response(name, "remove_filter", "ERROR", "No such filter index")
-
+            
     def set_source(self, **kwargs):
         settings = {
         }
@@ -328,16 +335,50 @@ class AutoHandler(object):
             return self._response(name, "set_source", "ERROR", "Unknown error")
 
     def _fmt_feed(self, feed):
-        
-        templ = "<tr class='remote_row' id='feed_id_%(id)s'><td class='alias'>%(alias)s</td><td class='ttl'>%(ttl)s</td><td class='url'>%(url)s</td></tr>"
-        return templ % feed
+        templ = """
+            <tr class='remote_row' id='feed_id_%(id)s'>
+                <td class='alias'>%(alias)s</td>
+                <td class='ttl'>%(ttl)s</td>
+                <td class='url' title='%(url)s'>%(url)s</td>
+            </tr>""" % feed
+        filter_templ = """<label for='filter%(count)d'>Filter:</label><div name='filter%(count)d' class='filter'><code>%(filter)s</code></div>"""
+        feed["filters"] = "".join([ filter_templ % { "filter" : cgi.escape(x.pattern), "count": feed["filters"].index(x) + 1 } for x in feed["filters"]])
+        sub_templ = """
+            <tr class='hidden remote_setting' id='feed_%(id)s'>
+                <td colspan=10>
+                    <div class='rss_controls'>
+                        <img class='rss_%(enabled_str)s rss_status' src='%(enabled_image)s' alt='%(enabled_str)s' title='%(enabled_str)s' width=48 height=48>
+                        <img class='rss_delete' src='/images/delete48.png' alt='delete' title='Delete' width=48 height=48'>
+                    </div>
+                    <div class='filters'>
+                        <h4>Filters</h4>
+                        %(filters)s
+                        <div class='add_filter_div'>
+                            <label for='add_filter'>
+                                <button class='add_filter_button'>Add Filter</button>
+                            </label>
+                            <input name='add_filter' class='add_filter_input' type='text' placeholder='Filter'>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        """ % feed
+        return [templ.replace("\t","").replace("\n",""), sub_templ.replace("\t","").replace("\n","")]
         
     def get_rss(self, **kwargs):
         feeds_ = self.STORE.getRSSFeeds()
         feeds = []
         for f in feeds_:
-            feeds.append(self._fmt_feed(f))
+            feeds.extend(self._fmt_feed(f))
         return self._response("RSS", "get_rss", feeds, None)
+        
+    def get_rss_single(self, ID):
+        ID = ID[0]
+        resp = self.STORE.getRSSFeed(ID)
+        if resp:
+            return self._response(ID, "get_rss_single", self._fmt_feed(resp), None)
+        else:
+            return self._response(ID, "get_rss_single", "ERROR", "No such RSS feed")
         
     def add_rss(self, alias=None, ttl=None, uri=None):
         if not alias or not ttl or not uri:
@@ -355,6 +396,70 @@ class AutoHandler(object):
             return self._response("RSS", "add_rss", "ERROR", errsh)
         else:
             return self._response("RSS", "add_rss", "OK", None)
+            
+    def remove_rss(self, ID):
+        if type(ID) is list:
+            ID = ID[0]
+        resp = self.STORE.removeRSSFeed(ID)
+        if resp:
+            return self._response(ID, "remove_rss", "OK", None)
+        else:
+            return self._response(ID, "remove_rss", "ERROR", "No such RSS feed")
+            
+    def enable_rss(self, ID):
+        if type(ID) is list:
+            ID = ID[0]
+        resp = self.STORE.enableRSSFeed(ID)
+        if resp:
+            return self._response(ID, "enable_rss", "OK", None)
+        else:
+            return self._response(ID, "enable_rss", "ERROR", "No such RSS feed")
+            
+    def disable_rss(self, ID):
+        if type(ID) is list:
+            ID = ID[0]
+        resp = self.STORE.disableRSSFeed(ID)
+        if resp:
+            return self._response(ID, "enable_rss", "OK", None)
+        else:
+            return self._response(ID, "enable_rss", "ERROR", "No such RSS feed")
+    
+    def add_rss_filter(self, ID, restring):
+        ID = ID[0]
+        restring = restring[0]
+        try:
+            regex = re.compile(restring)
+        except:
+            return self._response(ID, "add_rss_filter", "ERROR", "Invalid regex")
+            
+        resp = self.STORE.addRSSFilter(ID, regex)
+        if resp:
+            return self._response(ID, "add_rss_filter", "OK", None)
+        else:
+            return self._response(ID, "add_rss_filter", "ERROR", "No such RSS feed")
+            
+    def remove_rss_filter(self, ID, index):
+        ID = ID[0]
+        try:
+            index = int(index[0])
+        except ValueError:
+            return self._response(ID, "remove_rss_filter", "ERROR", "Index must be an integer")
+            
+        resp = self.STORE.removeRSSFilter(ID, index)
+        if resp:
+            return self._response(ID, "remove_rss_filter", "OK", None)
+        elif resp == False:
+            return self._response(ID, "remove_rss_filter", "ERROR", "No such RSS feed")
+        elif resp == None:
+            return self._response(ID, "remove_rss_filter", "ERROR", "No such filter index")
+            
+    def get_rss_filters(self, ID):
+        ID = ID[0]
+        resp = self.STORE.getRSSFilters(ID)
+        if resp:
+            return self._response(ID, "get_rss_filters", resp, None)
+        else:
+            return self._response(ID, "get_rss_filters", "ERROR", "No such RSS feed")
         
     def handle_message(self, message):
         urlparams =  urlparse.parse_qs(message)
