@@ -1,20 +1,33 @@
 #!/usr/bin/env python
 
+""" Copyright (C) 2012 mountainpenguin (pinguino.de.montana@googlemail.com)
+    <http://github.com/mountainpenguin/pyrt>
+    
+    This file is part of pyRT.
+
+    pyRT is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    pyRT is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with pyRT.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
 from modules.irclib import irclib
 from modules.irclib import ircbot
 from modules import websocket
 from modules import remotes
-import logging
+from modules import rpc
 import multiprocessing
 import os
 import signal
 import json
-import select
-import socket
-import time
-import hashlib
-import base64
-import math
 import re
 import traceback
 
@@ -25,6 +38,7 @@ class IRCError(Exception):
         return repr(self.val)
     def __repr__(self):
         return "IRCError: %s" % self.val
+    
 class SettingsError(Exception):
     def __init__(self, value):
         self.val = value
@@ -33,15 +47,11 @@ class SettingsError(Exception):
     def __repr__(self):
         return "SettingsError: %s" % self.val
 
-class RPCResponse(object):
-    def __init__(self, **args):
-        self.__dict__.update(args)
-
 class _ModularBot(ircbot.SingleServerIRCBot):
     def shutdown(self, signalnum, stackframe):
-        self.RPCCommand("log", "info", "IRCbot #%d: shutting down", self.PID)
+        self.RPC.RPCCommand("log", "info", "IRCbot #%d: shutting down", self.PID)
         #if self.IS_REGISTERED:
-        #    self.RPCCommand("deregister", self.config.name, self.PID)
+        #    self.RPC.RPCCommand("deregister", self.config.name, self.PID)
         try:
             os.remove("proc/bots/%d.pid" % self.PID)
         except:
@@ -51,7 +61,7 @@ class _ModularBot(ircbot.SingleServerIRCBot):
         sys.exit(0)
 
     def update(self):
-        response = self.RPCCommand("get_filters", self.config.name)
+        response = self.RPC.RPCCommand("get_filters", self.config.name)
         if response:
             try:
                 unjsoned = json.loads(response.response)
@@ -60,51 +70,11 @@ class _ModularBot(ircbot.SingleServerIRCBot):
                     return
                 newf = []
                 for f in unjsoned:
-                    newf.append(re.compile(f))
+                    newf.append(re.compile(f, re.I))
                 self.config.filters = newf
             except:
-                self.RPCCommand("log", "error", "IRCBot #%d: recieved filter list but not JSON-encoded (%r)", self.PID, response)
+                self.RPC.RPCCommand("log", "error", "IRCBot #%d: recieved filter list but not JSON-encoded (%r)", self.PID, response)
                 self.config.filters = []
-
-    def _OTPAuth(self):
-        random_salt = base64.b64encode(os.urandom(10))
-        token = "%i" % math.floor( time.time() / 10 )
-        hashed_token = hashlib.sha256(token + random_salt).hexdigest()
-        h1 = hashlib.sha256(self.config.auth).hexdigest()
-        h2 = hashlib.sha256(h1 + hashed_token).hexdigest()
-        return "$%s$%s" % (random_salt, h2)
-
-    def RPCCommand(self, command, *args, **kwargs):
-        OTPAuth = self._OTPAuth() 
-        obj = {
-            "command" : command,
-            "arguments" : args,
-            "keywords" : kwargs,
-            "PID" : self.PID,
-            "name" : self.config.name,
-            "auth" : OTPAuth,
-        }
-        return self._ssend(json.dumps(obj))
-
-    def _ssend(self, thing, json_encoded=False):
-        if not json_encoded:
-            try:
-                jsoned = json.dumps(thing)
-            except ValueError:
-                #don't raise error here, transfer it on to the main loop
-                jsoned = thing
-        else:
-            jsoned = thing
-
-        self.socket.send(thing)
-        #block for reply
-        self.socket.settimeout(3)
-        try:
-            resp = self.socket.recv()
-        except socket.timeout:
-            return None
-        else:
-            return RPCResponse(**json.loads(resp))
 
     def __init__(self, net, nick, name, config, **kwargs):
         signal.signal(signal.SIGTERM, self.shutdown)
@@ -114,27 +84,28 @@ class _ModularBot(ircbot.SingleServerIRCBot):
         self.name = name
         self.config = config
         self.config.channel = kwargs["channel"]
-        self.socket = websocket.create_connection(self.config.websocketURI)  
+        sock = websocket.create_connection(self.config.websocketURI)  
         self.PID = os.getpid()
+        self.RPC = rpc.RPC(self.config.auth, self.config.name, sock)
         open("proc/bots/%d.pid" % self.PID, "w").write(str(self.PID))
         ircbot.SingleServerIRCBot.__init__(self, net, nick, name)
 
     def on_nicknameinuse(self, connection, event):
-        self.RPCCommand("log", "error", "IRCbot #%d: started up, but nick '%s' is in use!", self.PID, self.nick)
+        self.RPC.RPCCommand("log", "error", "IRCbot #%d: started up, but nick '%s' is in use!", self.PID, self.nick)
         self.shutdown(None, None)
 
     def on_erroneusnickname(self, connection, event):
-        self.RPCCommand("log", "error", "IRCbot #%d: started up, but nick '%s' is invalid", self.PID, self.nick)
+        self.RPC.RPCCommand("log", "error", "IRCbot #%d: started up, but nick '%s' is invalid", self.PID, self.nick)
         self.shutdown(None, None)
 
     def on_welcome(self, connection, event):
-        r = self.RPCCommand("register", self.PID, self.config.name)
+        r = self.RPC.RPCCommand("register", self.PID, self.config.name)
         if not r.response:
-            self.RPCCommand("log", "warning", "IRCbot #%d: started up, but another bot is already registered!", self.PID)
+            self.RPC.RPCCommand("log", "warning", "IRCbot #%d: started up, but another bot is already registered!", self.PID)
             self.shutdown(None, None)
         self.IS_REGISTERED = True
         connection.join(self.config.channel)
-        self.RPCCommand("log", "info", "IRCbot #%d: connected to IRC successfully", self.PID)
+        self.RPC.RPCCommand("log", "info", "IRCbot #%d: connected to IRC successfully", self.PID)
         if hasattr(self.config, "startup"):
             for cmd in self.config.startup:
                 try:
@@ -146,20 +117,20 @@ class _ModularBot(ircbot.SingleServerIRCBot):
                         cmd = cmd % fmt
                     connection.send_raw(cmd)
                 except:
-                    self.RPCCommand("publicLog", "warning", "IRCbot #%d: command failed", self.PID)
-                    self.RPCCommand("privateLog", "warning", "IRCbot #%d: command '%s' failed\n%s", self.PID, cmd, traceback.format_exc())
+                    self.RPC.RPCCommand("publicLog", "warning", "IRCbot #%d: command failed", self.PID)
+                    self.RPC.RPCCommand("privateLog", "warning", "IRCbot #%d: command '%s' failed\n%s", self.PID, cmd, traceback.format_exc())
 
     def on_pubmsg(self, connection, event):
         self.update()
-        self.RPCCommand("publicLog", "debug", "IRCBot #%d: message %r", self.PID, event.arguments()[0].encode("string_escape"))
+        self.RPC.RPCCommand("publicLog", "debug", "IRCBot #%d: message %r", self.PID, event.arguments()[0].encode("string_escape"))
         try:
             for regex in self.config.filters:
                 if regex.search(event.arguments()[0]):
                     idmatch = self.config.matcher.search(event.arguments()[0])
                     if idmatch:
                         torrentid = idmatch.group(1)
-                        self.RPCCommand("log", "info", "IRCbot #%d: got filter match in source handler '%s' for torrentid '%s'", self.PID, self.config.name, torrentid)
-                        self.RPCCommand("fetchTorrent", name=self.config.name, torrentid=torrentid)
+                        self.RPC.RPCCommand("log", "info", "IRCbot #%d: got filter match in source handler '%s' for torrentid '%s'", self.PID, self.config.name, torrentid)
+                        self.RPC.RPCCommand("fetchTorrent", name=self.config.name, torrentid=torrentid)
                         return
         except:
             pass

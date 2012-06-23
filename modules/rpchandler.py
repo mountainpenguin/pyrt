@@ -22,7 +22,12 @@
 import json
 import logging
 import traceback
+import urllib2
+import random
+import string
+import os
 from modules import remotes
+from modules import bencode
 
 class RPCHandler(object):
     def __init__(self, publog, ajax, storage):
@@ -36,11 +41,47 @@ class RPCHandler(object):
             "register": self.register,
             "deregister" : self.deregister,
             "get_filters" : self.get_filters,
+            "get_rss_filters" : self.get_rss_filters,
+            "get_active_rss" : self.get_active_rss,
+            "update_rss" : self.update_rss,
+            "disable_rss" : self.disable_rss,
+            "updatehash_rss" : self.updatehash_rss,
+            "fetch_torrent_rss" : self.fetch_torrent_rss,
         }
         self.publog = publog
         self.ajax = ajax
         self.storage = storage
 
+    
+        
+    def updatehash_rss(self, ID, h):
+        self.log("info", "Updated hash for feed %s", ID)
+        return self.storage.updateHashRSSFeed(ID, h)
+        
+    def disable_rss(self, ID):
+        return self.storage.disableRSSFeed(ID)
+        
+    def update_rss(self, ID, timestamp):
+        self.log("info", "Updated feed %s", ID)
+        return self.storage.updateRSSFeed(ID, timestamp)
+        
+    def get_rss_filters(self, ID):
+        if ID not in self.storage.RSS:
+            return json.dumps({"error" : "No such RSS feed"})
+        
+        return [x.pattern for x in self.storage.RSS[ID].filters]
+        
+    def get_active_rss(self):
+        feeds_ = filter(lambda x: x["enabled"], self.storage.getRSSFeeds())
+        feeds = []
+        for f in feeds_:
+            fi_ = []
+            for fi in f["filters"]:
+                fi_.append(fi.pattern)
+            f["filters"] = fi_
+            feeds.append(f)
+        return feeds
+        
     def get_filters(self, name):
         s = self.storage.getRemoteByName(name)
         if s:
@@ -120,6 +161,37 @@ class RPCHandler(object):
             return self._respond("OK", None)
         else:
             return self._respond("No such handler", "No such handler")
+            
+    def fetch_torrent_rss(self, ID, alias, link):
+        lnk = urllib2.urlopen(link)
+        #get filename if offered, else generate random filename
+        try:
+            filename = lnk.info()['Content-Disposition'].split("filename=\"")[1][:-1]
+        except:
+            filename = "".join([random.choice(string.letters) for x in range(20)]) + ".torrent"
+            
+        linkcontent = lnk.read()
+        #check valid torrent file
+        try:
+            bencode.bdecode(linkcontent)
+        except bencode.BTL.BTFailure:
+            self.log("error", "Error downloading from RSS feed (id: %s, alias: %s) - not a valid bencoded string", ID, alias)
+            open("rss.test.torrent","w").write(linkcontent)
+            return
+        
+        target_p = os.path.join("torrents", filename)
+        if os.path.exists(target_p):
+            prepend = "".join(random.choice(string.letters) for x in range(5))
+            filename = "%s-%s" % (prepend, filename)
+        open("torrents/%s" % (filename), "wb").write(linkcontent)
+        self.ajax.load_from_remote(filename, "RSS %s (%s)" % (alias, ID), start=False)
+        #target_p = os.path.join("torrents", filename)
+        #if os.path.exists(target_p):
+        #    #rename
+        #    prepend = "".join(random.choice(string.letters) for x in range(10))
+        #    filename = "%s-%s" % (prepend, filename)
+        #open("torrents/%s" % (filename), "wb").write(filecontent)
+        #self._ajax.load_from_remote(filename, self.settings.name, start=True)
 
     def get_auth(self, msg):
         try:

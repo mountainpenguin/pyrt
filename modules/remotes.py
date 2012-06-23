@@ -32,8 +32,10 @@ import string
 import hashlib
 import imp
 import urlparse
+import hashlib
 
 from modules import bencode
+from modules import feedparser
 
 
 def searchSites():
@@ -81,7 +83,7 @@ class BencodeError(Exception):
         return "BencodeError: %s" % self.param
 
 class RSS(object):
-    def __init__(self, rand_id, url, ttl, alias, enabled=False, filters=[]):
+    def __init__(self, rand_id, url, ttl, alias, lasthash, enabled=False, filters=[]):
         """url = string
             ttl = float: refresh rate (in minutes)
         """
@@ -91,6 +93,8 @@ class RSS(object):
         self.alias = alias
         self.enabled = enabled
         self.filters = filters
+        self.updated = 0
+        self.lasthash = lasthash
     
 class Settings(dict):
     """ Semi-implemented recursive 'dictionary object'
@@ -461,11 +465,20 @@ class RemoteStorage(object):
         url_chk = urlparse.urlparse(url)
         if not url_chk.netloc:
             raise UndefinedError("URL malformed")
+            
+        #check feed is parseable
+        try:
+            feed_chk = feedparser.parse(url)
+        except:
+            raise UndefinedError("URL is not an RSS feed")
+        else:
+            last_item = feed_chk.entries[0]
+            lasthash = hashlib.sha256(last_item.link).hexdigest()
         
         if not alias:
             alias = url_chk.netloc
         rand_id = self._randomID()
-        newRSS = RSS(rand_id, url, ttl, alias)
+        newRSS = RSS(rand_id, url, ttl, alias, lasthash)
         self.RSS[rand_id] = newRSS
         self._flushRSS()
     
@@ -538,12 +551,16 @@ class RemoteStorage(object):
             {
                 "id":x.ID,
                 "url":x.url,
-                "ttl":self._ttlhuman(x.ttl),
+                "ttl_str":self._ttlhuman(x.ttl),
+                "ttl" : x.ttl,
+                "ttl_sec" : x.ttl*60,
                 "alias":x.alias,
                 "enabled":x.enabled,
                 "enabled_str":x.enabled and "disable" or "enable",
                 "enabled_image":x.enabled and "/images/red-x.png" or "/images/submit.png",
                 "filters":x.filters,
+                "lasthash":x.lasthash,
+                "updated":x.updated,
             } for x in self.RSS.values()
         ]
         
@@ -553,17 +570,35 @@ class RemoteStorage(object):
             return {
                 "id":rss.ID,
                 "url":rss.url,
-                "ttl":self._ttlhuman(rss.ttl),
+                "ttl_str":self._ttlhuman(rss.ttl),
+                "ttl":rss.ttl,
+                "ttl_sec":rss.ttl*60,
                 "alias":rss.alias,
                 "enabled":rss.enabled,
                 "enabled_str":rss.enabled and "disable" or "enable",
                 "enabled_image":rss.enabled and "/images/red-x.png" or "/images/submit.png",
                 "filters":rss.filters,
+                "lasthash":rss.lasthash,
+                "updated":rss.updated,
             }
         else:
             return False
         
-    
+    def updateRSSFeed(self, ID, timestamp):
+        if ID not in self.RSS:
+            return False
+        else:
+            self.RSS[ID].updated = timestamp
+            self._flushRSS()
+            return True
+        
+    def updateHashRSSFeed(self, ID, h):
+        if ID not in self.RSS:
+            return False
+        else:
+            self.RSS[ID].lasthash = h
+            return True
+        
     def _flush(self):
         pickle.dump(self.STORE, open(".remotes.pickle","w"))
     def _flushRSS(self):

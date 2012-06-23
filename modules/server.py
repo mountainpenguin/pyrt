@@ -27,6 +27,7 @@ from modules import rpchandler
 from modules import autohandler
 from modules import remotes
 from modules import create
+from modules import rss
 from modules.Cheetah.Template import Template
 
 from modules import indexPage
@@ -57,6 +58,7 @@ import random
 import string
 import socket
 import time
+import multiprocessing
 
 class null(object):
     @staticmethod
@@ -721,6 +723,8 @@ class Main(object):
         pass
     
     def shutdown(self, *args, **kwargs):
+        if self._pyrtPID != os.getpid():
+            return
         logging.info("SIGTERM received, shutting down")
         self.instance.stop()
         
@@ -802,7 +806,8 @@ class Main(object):
         
        
         http_server = tornado.httpserver.HTTPServer(application, ssl_options=ssl_options)
-        logging.info("Starting webserver on http%s://%s:%i" % ((ssl_options and "s" or ""), global_config["server.socket_host"], global_config["server.socket_port"]))
+        logging.info("Starting webserver on http%s://%s:%i with PID %d", (ssl_options and "s" or ""), global_config["server.socket_host"], global_config["server.socket_port"], os.getpid())
+        self._pyrtPID = os.getpid()
         logging.info("Starting UNIX websocket on .sockets/rpc.interface")
         sockets = tornado.netutil.bind_unix_socket(".sockets/rpc.interface")
         http_server.add_socket(sockets)
@@ -817,6 +822,10 @@ class Main(object):
                 os.remove(".sockets/rpc.interface")
                 
             sys.exit(0)
+
+        logging.info("Starting RSS listener")
+        application._pyrtRSS = rss.RSS(application._pyrtL, application._pyrtLog, application._pyrtRemoteStorage)
+        self._pyrtRSSPID = application._pyrtRSS.start()
         
         self.instance = tornado.ioloop.IOLoop.instance()
         self.instance.start()
