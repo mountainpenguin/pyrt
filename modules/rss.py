@@ -28,6 +28,7 @@ import multiprocessing
 import os
 import hashlib
 import re
+import traceback
 
 from modules import websocket
 from modules import rpc
@@ -105,7 +106,12 @@ class RSS(object):
         signal.signal(signal.SIGTERM, self.shutdownRSS)
         self.RPC.RPCCommand("log","info", "RSS started in the background")
         while True:
-            self.refreshRSS()
+            try:
+                self.refreshRSS()
+            except:
+                tb = traceback.format_exc()
+                self.RPC.RPCCommand("publicLog", "error", "ERROR in RSS process: %s", tb.strip().split("\n")[-1])
+                self.RPC.RPCCommand("privateLog", "error", "ERROR in RSS process:\n%s", tb)
             time.sleep(10)
     
     def start(self):
