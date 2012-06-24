@@ -12,7 +12,7 @@ $(document).ready(function () {
 });
 
 function getToken() {
-    return Math.floor( (new Date().getTime() / 1000) / 10 );
+    return Math.floor( (new Date().getTime() / 1000) / 120 );
 }
 
 function getPermSalt() {

@@ -56,7 +56,7 @@ class Login:
         pickle.dump(self.USER, open(".user.pickle", "w"))
         
     def _getTimeToken(self):
-        return "%i" % math.floor( time.time() / 10 )
+        return "%i" % math.floor( time.time() / 120 )
         
     def getRPCAuth(self):
         if self.USER.__dict__.has_key("rpcauth"):
