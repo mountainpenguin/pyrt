@@ -37,7 +37,7 @@ class RPC(object):
         
     def _OTPAuth(self):
         random_salt = base64.b64encode(os.urandom(10))
-        token = "%i" % math.floor( time.time() / 10 )
+        token = "%i" % math.floor( time.time() / 120 )
         hashed_token = hashlib.sha256(token + random_salt).hexdigest()
         h1 = hashlib.sha256(self.auth).hexdigest()
         h2 = hashlib.sha256(h1 + hashed_token).hexdigest()
