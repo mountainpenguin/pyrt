@@ -79,11 +79,17 @@ class RSS(object):
         
     def refreshRSS(self):
         feeds_req = self.RPC.RPCCommand("get_active_rss")
+        if not feeds_req:
+            return
+        
         if feeds_req.error:
             self.RPC.RPCCommand("log", "error", "Error in RSS process: %s", feeds_req.error)
             return
         
         timestamp = time.time()
+        if not feeds_req.response:
+            return
+        
         for feed in feeds_req.response:
             #self.RPC.RPCCommand("log", "debug", "Got filters for RSS feed ID %s (%s): %r", feed["id"], feed["alias"], feed["filters"])
             #"id":x.ID,
