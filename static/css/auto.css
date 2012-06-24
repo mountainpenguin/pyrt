@@ -95,9 +95,9 @@ tbody > tr {
 thead > tr, tfoot > tr {
   height: 1.5em;
   background-color: #3A3737; }
-  thead > tr > td:first-child, tfoot > tr > td:first-child {
+  thead > tr > td:not(.enabled):first-child, tfoot > tr > td:not(.enabled):first-child {
     padding-left: 2em; }
-  thead > tr > td:last-child, tfoot > tr > td:last-child {
+  thead > tr > td:not(.enabled):last-child, tfoot > tr > td:not(.enabled):last-child {
     padding-right: 2em; }
 
 thead > tr.sub_heading {
@@ -211,3 +211,8 @@ td.url {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 6em; }
+
+td.enabled.feed_enabled_True {
+  background-color: green; }
+td.enabled.feed_enabled_False {
+  background-color: red; }

@@ -130,7 +130,7 @@ thead, tfoot {
     &>tr {
         height: 1.5em;
         background-color: #3A3737;
-        &>td {
+        &>td:not(.enabled) {
             &:first-child {
                 padding-left: 2em;
             }
@@ -295,4 +295,14 @@ td.url {
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 6em;
+}
+
+td.enabled {
+    &.feed_enabled_True {
+        background-color: green;
+    }
+    &.feed_enabled_False {
+        background-color: red;
+    }
+    
 }

@@ -336,7 +336,8 @@ class AutoHandler(object):
 
     def _fmt_feed(self, feed):
         templ = """
-            <tr class='remote_row' id='feed_id_%(id)s' class='rss_%(enabled)s'>
+            <tr class='remote_row' id='feed_id_%(id)s'>
+                <td class='enabled feed_enabled_%(enabled)s'></td>
                 <td class='alias'>%(alias)s</td>
                 <td class='ttl'>%(ttl_str)s</td>
                 <td class='url' title='%(url)s'>%(url)s</td>
