@@ -184,14 +184,7 @@ class RPCHandler(object):
             prepend = "".join(random.choice(string.letters) for x in range(5))
             filename = "%s-%s" % (prepend, filename)
         open("torrents/%s" % (filename), "wb").write(linkcontent)
-        self.ajax.load_from_remote(filename, "RSS %s (%s)" % (alias, ID), start=False)
-        #target_p = os.path.join("torrents", filename)
-        #if os.path.exists(target_p):
-        #    #rename
-        #    prepend = "".join(random.choice(string.letters) for x in range(10))
-        #    filename = "%s-%s" % (prepend, filename)
-        #open("torrents/%s" % (filename), "wb").write(filecontent)
-        #self._ajax.load_from_remote(filename, self.settings.name, start=True)
+        self.ajax.load_from_rss(filename, alias, ID, start=False)
 
     def get_auth(self, msg):
         try:

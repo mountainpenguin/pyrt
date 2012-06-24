@@ -82,7 +82,7 @@ class BencodeError(Exception):
     def __repr__(self):
         return "BencodeError: %s" % self.param
 
-class RSS(object):
+class RSSFeed(dict):
     def __init__(self, rand_id, url, ttl, alias, lasthash, enabled=False, filters=[]):
         """url = string
             ttl = float: refresh rate (in minutes)
@@ -478,7 +478,20 @@ class RemoteStorage(object):
         if not alias:
             alias = url_chk.netloc
         rand_id = self._randomID()
-        newRSS = RSS(rand_id, url, ttl, alias, lasthash)
+        
+        #self.ID = rand_id
+        #self.url = url
+        #self.ttl = ttl
+        #self.alias = alias
+        #self.enabled = enabled
+        #self.filters = filters
+        #self.updated = 0
+        #self.lasthash = lasthash
+        newRSS = {
+            "ID":rand_id, "url":url, "ttl":ttl, "alias":alias,
+            "enabled":False, "filters":[], "updated":0, "lasthash":lasthash,
+        }
+        #newRSS = RSSFeed(rand_id, url, ttl, alias, lasthash)
         self.RSS[rand_id] = newRSS
         self._flushRSS()
     
@@ -494,7 +507,7 @@ class RemoteStorage(object):
         if ID not in self.RSS:
             return False
         else:
-            self.RSS[ID].enabled = True
+            self.RSS[ID]["enabled"] = True
             self._flushRSS()
             return True
         
@@ -502,7 +515,7 @@ class RemoteStorage(object):
         if ID not in self.RSS:
             return False
         else:
-            self.RSS[ID].enabled = False
+            self.RSS[ID]["enabled"] = False
             self._flushRSS()
             return True
         
@@ -510,7 +523,7 @@ class RemoteStorage(object):
         if ID not in self.RSS:
             return False
         else:
-            self.RSS[ID].filters.append(regex)
+            self.RSS[ID]["filters"].append(regex)
             self._flushRSS()
             return True
         
@@ -518,10 +531,10 @@ class RemoteStorage(object):
         if ID not in self.RSS:
             return False
         else:
-            filters = self.RSS[ID].filters
+            filters = self.RSS[ID]["filters"]               
             if index < len(filters):
                 filters.pop(index)
-                self.RSS[ID].filters = filters
+                self.RSS[ID]["filters"] = filters
                 self._flushRSS()
                 return True
             else:
@@ -531,7 +544,7 @@ class RemoteStorage(object):
         if ID not in self.RSS:
             return False
         else:
-            return self.RSS[ID].filters
+            return self.RSS[ID]["filters"]
         
     def _ttlhuman(self, mins):
         s = round(mins*60)
@@ -549,18 +562,18 @@ class RemoteStorage(object):
     def getRSSFeeds(self):
         return [
             {
-                "id":x.ID,
-                "url":x.url,
-                "ttl_str":self._ttlhuman(x.ttl),
-                "ttl" : x.ttl,
-                "ttl_sec" : x.ttl*60,
-                "alias":x.alias,
-                "enabled":x.enabled,
-                "enabled_str":x.enabled and "disable" or "enable",
-                "enabled_image":x.enabled and "/images/red-x.png" or "/images/submit.png",
-                "filters":x.filters,
-                "lasthash":x.lasthash,
-                "updated":x.updated,
+                "id":x["ID"],
+                "url":x["url"],
+                "ttl_str":self._ttlhuman(x["ttl"]),
+                "ttl" : x["ttl"],
+                "ttl_sec" : x["ttl"]*60,
+                "alias":x["alias"],
+                "enabled":x["enabled"],
+                "enabled_str":x["enabled"] and "disable" or "enable",
+                "enabled_image":x["enabled"] and "/images/red-x.png" or "/images/submit.png",
+                "filters":x["filters"],
+                "lasthash":x["lasthash"],
+                "updated":x["updated"],
             } for x in self.RSS.values()
         ]
         
@@ -568,18 +581,18 @@ class RemoteStorage(object):
         if ID in self.RSS:
             rss = self.RSS[ID]
             return {
-                "id":rss.ID,
-                "url":rss.url,
-                "ttl_str":self._ttlhuman(rss.ttl),
-                "ttl":rss.ttl,
-                "ttl_sec":rss.ttl*60,
-                "alias":rss.alias,
-                "enabled":rss.enabled,
-                "enabled_str":rss.enabled and "disable" or "enable",
-                "enabled_image":rss.enabled and "/images/red-x.png" or "/images/submit.png",
-                "filters":rss.filters,
-                "lasthash":rss.lasthash,
-                "updated":rss.updated,
+                "id":rss["ID"],
+                "url":rss["url"],
+                "ttl_str":self._ttlhuman(rss["ttl"]),
+                "ttl":rss["ttl"],
+                "ttl_sec":rss["ttl"]*60,
+                "alias":rss["alias"],
+                "enabled":rss["enabled"],
+                "enabled_str":rss["enabled"] and "disable" or "enable",
+                "enabled_image":rss["enabled"] and "/images/red-x.png" or "/images/submit.png",
+                "filters":rss["filters"],
+                "lasthash":rss["lasthash"],
+                "updated":rss["updated"],
             }
         else:
             return False
@@ -588,7 +601,7 @@ class RemoteStorage(object):
         if ID not in self.RSS:
             return False
         else:
-            self.RSS[ID].updated = timestamp
+            self.RSS[ID]["updated"] = timestamp
             self._flushRSS()
             return True
         
@@ -596,7 +609,7 @@ class RemoteStorage(object):
         if ID not in self.RSS:
             return False
         else:
-            self.RSS[ID].lasthash = h
+            self.RSS[ID]["lasthash"] = h
             return True
         
     def _flush(self):

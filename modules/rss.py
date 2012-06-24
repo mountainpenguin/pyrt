@@ -72,7 +72,7 @@ class RSS(object):
                     for filt in [re.compile(x, re.I) for x in feed["filters"]]:
                         if filt.search(e.title):
                             #got match!
-                            self.RPC.RPCCommand("log", "info", "Got filter match in RSS feed (id: %s, alias: %s) for title '%s'", feed["id"], feed["alias"], e.title.encode("string_escape"))
+                            #self.RPC.RPCCommand("log", "info", "Got filter match in RSS feed (id: %s, alias: %s) for title '%s'", feed["id"], feed["alias"], e.title)
                             self.RPC.RPCCommand("fetch_torrent_rss", ID=feed["id"], alias=feed["alias"], link=e.link)
         
     def refreshRSS(self):

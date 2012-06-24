@@ -449,12 +449,12 @@ class Ajax:
     
     def load_from_rss(self, filename, rss_alias, rss_id, start=True):
         """Loads a torrent from a file that has been fetched from an RSS feed"""
-        self.Log.debug("File load request from RSS feed (id: %s, alias: %s), filename: %s", rss_id, rss_alias, filename.encode("string_escape"))
+        self.Log.debug("File load request from RSS feed (id: %s, alias: %s), filename: %s", rss_id, rss_alias, filename)
         if start:
             self.RT.start_from_file(os.path.join(os.getcwd(), "torrents/%s" % filename))
         else:
             self.RT.load_from_file(os.path.join(os.getcwd(), "torrents/%s" % filename))
-        self.Log.info("AJAX: '%s' (downloaded via RSS feed [id: %s, alias: %s]) loaded%s successfully", filename.encode("string_escape"), rss_id, rss_alias, (start and " and started" or ""))
+        self.Log.info("AJAX: '%s' (downloaded via RSS feed [id: %s, alias: %s]) loaded%s successfully", filename, rss_id, rss_alias, (start and " and started" or ""))
         
 
     def upload_torrent_socket(self, torrent, start=True):

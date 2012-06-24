@@ -57,11 +57,21 @@ class Logger(object):
         _id = self.id_gen()
 
         if "%" in text:
-            #try:
-            msg = text % tuple(args)
-            #except TypeError:
-            #    self.error("TypeError: not enough arguments for format string, text: %r, arguments: %r", text.replace("%","&37;"), args)
-            #    return
+            try:
+                msg = text % tuple(args)
+            except TypeError:
+                self.error("TypeError: not enough arguments for format string, text: %r, arguments: %r", text.replace("%","&37;"), args)
+                return
+            except UnicodeDecodeError:
+                a_ = []
+                for arg in args:
+                    if type(arg) is str:
+                        a_.append(arg.encode("string_escape"))
+                    elif type(arg) is unicode:
+                        a_.append(arg.encode("utf-8").encode("string_escape"))
+                    else:
+                        a_.append(arg)
+                msg = text % tuple(a_)
         else:
             msg = text
         message = self.fmt(Message(_id, msg, level=level, level_name=level_name))
