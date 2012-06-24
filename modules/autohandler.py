@@ -341,8 +341,8 @@ class AutoHandler(object):
                 <td class='ttl'>%(ttl_str)s</td>
                 <td class='url' title='%(url)s'>%(url)s</td>
             </tr>""" % feed
-        filter_templ = """<label for='filter%(count)d'>Filter:</label><span class='hidden'>FOR ID %(id)s</span><div name='filter%(count)d' class='filter'><code>%(filter)s</code></div>"""
-        feed["filters"] = "".join([ filter_templ % { "id":feed["id"],"filter" : cgi.escape(x.pattern), "count": feed["filters"].index(x) + 1 } for x in feed["filters"]])
+        filter_templ = """<label for='filter%(count)d'>Filter:</label><div name='filter%(count)d' class='filter'><code>%(filter)s</code></div>"""
+        feed["filters"] = "".join([ filter_templ % { "filter" : cgi.escape(x.pattern), "count": feed["filters"].index(x) + 1 } for x in feed["filters"]])
         sub_templ = """
             <tr class='hidden remote_setting' id='feed_%(id)s'>
                 <td colspan=10>
@@ -445,7 +445,6 @@ class AutoHandler(object):
         except ValueError:
             return self._response(ID, "remove_rss_filter", "ERROR", "Index must be an integer")
             
-        print("autohandler: feed id: %s, index: %i, removing filter" % (ID, index))
         resp = self.STORE.removeRSSFilter(ID, index)
         if resp:
             return self._response(ID, "remove_rss_filter", "OK", None)

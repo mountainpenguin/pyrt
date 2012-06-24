@@ -57,7 +57,8 @@ class RSS(object):
             lasthash = hashlib.sha256(f.entries[0].link).hexdigest()
             if lasthash == feed["lasthash"]:
                 #no new entries
-                self.RPC.RPCCommand("log", "debug", "No new entries for feed (id: %s, alias: %s)", feed["id"], feed["alias"])
+                #self.RPC.RPCCommand("log", "debug", "No new entries for feed (id: %s, alias: %s)", feed["id"], feed["alias"])
+                pass
             else:
                 self.RPC.RPCCommand("updatehash_rss", feed["id"], lasthash)
                 newentries = [f.entries[0]]

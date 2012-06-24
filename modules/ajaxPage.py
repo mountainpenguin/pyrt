@@ -439,7 +439,7 @@ class Ajax:
     
     def load_from_remote(self, filename, remotename, start=True):
         """Loads a torrent from a file that has been fetched by a remote method"""
-        self.Log.debug("File load request from remote handler %s (filename %s)", remotename, filename)
+        #self.Log.debug("File load request from remote handler %s (filename %s)", remotename, filename)
         if start:
             self.RT.start_from_file(os.path.join(os.getcwd(), "torrents/%s" % filename))
         else:
@@ -449,7 +449,7 @@ class Ajax:
     
     def load_from_rss(self, filename, rss_alias, rss_id, start=True):
         """Loads a torrent from a file that has been fetched from an RSS feed"""
-        self.Log.debug("File load request from RSS feed (id: %s, alias: %s), filename: %s", rss_id, rss_alias, filename)
+        #self.Log.debug("File load request from RSS feed (id: %s, alias: %s), filename: %s", rss_id, rss_alias, filename)
         if start:
             self.RT.start_from_file(os.path.join(os.getcwd(), "torrents/%s" % filename))
         else:

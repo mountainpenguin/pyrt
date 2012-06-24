@@ -55,14 +55,14 @@ class RPCHandler(object):
     
         
     def updatehash_rss(self, ID, h):
-        self.log("info", "Updated hash for feed %s", ID)
+        #self.log("info", "Updated hash for feed %s", ID)
         return self.storage.updateHashRSSFeed(ID, h)
         
     def disable_rss(self, ID):
         return self.storage.disableRSSFeed(ID)
         
     def update_rss(self, ID, timestamp):
-        self.log("info", "Updated feed %s", ID)
+        #self.log("info", "Updated feed %s", ID)
         return self.storage.updateRSSFeed(ID, timestamp)
         
     def get_rss_filters(self, ID):
