@@ -699,13 +699,14 @@ class RPCSocket(tornado.websocket.WebSocketHandler):
                 msg = json.loads(message)
                 _pid = msg["PID"]
                 _name = msg["name"]
-                _autohandler = autohandler.AutoHandler(login=self.application._pyrtL, log=self.application._pyrtLog, remoteStorage=self.application._pyrtRemoteStorage)
-                self.application._pyrtLog.debug("RPC: got pid %d and name %s", _pid, _name)
-                _autohandler.stop_bot(_name)
-                self.application._pyrtLog.debug("RPC: stopping bot")
-                time.sleep(2)
-                self.application._pyrtLog.debug("RPC: restarting '%s' bot", _name)
-                _autohandler.start_bot(_name)
+                if _name != "RSS":
+                    _autohandler = autohandler.AutoHandler(login=self.application._pyrtL, log=self.application._pyrtLog, remoteStorage=self.application._pyrtRemoteStorage)
+                    self.application._pyrtLog.debug("RPC: got pid %d and name %s", _pid, _name)
+                    _autohandler.stop_bot(_name)
+                    self.application._pyrtLog.debug("RPC: stopping bot")
+                    time.sleep(2)
+                    self.application._pyrtLog.debug("RPC: restarting '%s' bot", _name)
+                    _autohandler.start_bot(_name)
             except:
                 pass
             
