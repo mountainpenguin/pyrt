@@ -55,6 +55,10 @@ class RSS(object):
             self.RPC.RPCCommand("log","error","Invalid RSS feed (id: %s, alias: %s), disabling", feed["id"], feed["alias"])
             self.RPC.RPCCommand("disable_rss", feed["id"])
         else:
+            if len(f.entries) == 0:
+                self.RPC.RPCCommand("log","warning", "RSS feed (id: %s, alias: %s) is empty", feed["id"], feed["alias"])
+                return
+            
             lasthash = hashlib.sha256(f.entries[0].link).hexdigest()
             if lasthash == feed["lasthash"]:
                 #no new entries
@@ -69,7 +73,7 @@ class RSS(object):
                         break
                     else:
                         newentries.append(e)
-                self.RPC.RPCCommand("log","debug","%i new entries for feed (id: %s, alias: %s)", len(newentries), feed["id"], feed["alias"])
+                #self.RPC.RPCCommand("log","debug","%i new entries for feed (id: %s, alias: %s)", len(newentries), feed["id"], feed["alias"])
                 for e in newentries:
                     for filt in [re.compile(x, re.I) for x in feed["filters"]]:
                         if filt.search(e.title):
