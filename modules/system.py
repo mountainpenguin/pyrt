@@ -26,6 +26,7 @@ import rtorrent
 import config
 import torrentHandler
 import re
+import traceback
 try:
     import json
 except ImportError:
@@ -82,7 +83,10 @@ def mem():
         try:
             total = int(re.search("MemTotal:.*?(\d+) kB", meminfo).group(1))*1024
             free = int(re.search("MemFree:.*?(\d+) kB", meminfo).group(1))*1024
-            used = total-free
+            cached = int(re.search("Cached:.*?(\d+) kB", meminfo).group(1))*1024
+            buffers = int(re.search("Buffers:.*?(\d+) kB", meminfo).group(1))*1024
+            effectivefree = free+cached+buffers
+            used = total-effectivefree
         except:
             return (0, 0)
       
