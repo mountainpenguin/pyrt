@@ -79,7 +79,7 @@ class RSS(object):
         
     def refreshRSS(self):
         feeds_req = self.RPC.RPCCommand("get_active_rss")
-        print("feeds_req:", feeds_req)
+        print("feeds_req:", feeds_req.__dict__)
         if not feeds_req:
             return
         
