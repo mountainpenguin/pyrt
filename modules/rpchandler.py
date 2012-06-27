@@ -140,12 +140,13 @@ class RPCHandler(object):
     def register(self, pid, name):
         resp = self.storage.registerBot(pid, name)
         if resp:
-            return self._respond("OK", None)
+            return "OK"
         else:
-            return self._respond(None, "Bot already running")
+            return None, "Bot already running"
 
-    def _respond(self, response, error):
+    def _respond(self, request, response, error):
         respDict = {
+            "request":request,
             "response": response,
             "error" : error
         }
@@ -237,10 +238,12 @@ class RPCHandler(object):
 
         try:
             response = self.METHODS[command](*arguments, **keywords)
+            if type(response) is tuple:
+                response, error = response
         except:
             tb = traceback.format_exc()
             self.publicLog("error", "RPC: %s" % tb.strip().split("\n")[-1])
             self.privateLog("error", "RPC: traceback: %s" % tb)
             error = "005: %s" % tb.strip().split("\n")[-1]
         self.log("debug","handle_message, command: %r, response: %r, error: %r", command, response, error)
-        return self._respond(response, error) 
+        return self._respond(command, response, error) 
