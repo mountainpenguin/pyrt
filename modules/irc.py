@@ -73,7 +73,7 @@ class _ModularBot(ircbot.SingleServerIRCBot):
                     newf.append(re.compile(f, re.I))
                 self.config.filters = newf
             except:
-                self.RPC.RPCCommand("log", "error", "IRCBot #%d: recieved filter list but not JSON-encoded (%r)", self.PID, response.__dict__)
+                self.RPC.RPCCommand("log", "error", "%s IRCBot (#%d): recieved filter list but not JSON-encoded (%r)", self.config.name, self.PID, response.__dict__)
                 self.config.filters = []
 
     def __init__(self, net, nick, name, config, **kwargs):
@@ -91,21 +91,21 @@ class _ModularBot(ircbot.SingleServerIRCBot):
         ircbot.SingleServerIRCBot.__init__(self, net, nick, name)
 
     def on_nicknameinuse(self, connection, event):
-        self.RPC.RPCCommand("log", "error", "IRCbot #%d: started up, but nick '%s' is in use!", self.PID, self.nick)
+        self.RPC.RPCCommand("log", "error", "%s IRCbot (#%d): started up, but nick '%s' is in use!", self.config.name, self.PID, self.nick)
         self.shutdown(None, None)
 
     def on_erroneusnickname(self, connection, event):
-        self.RPC.RPCCommand("log", "error", "IRCbot #%d: started up, but nick '%s' is invalid", self.PID, self.nick)
+        self.RPC.RPCCommand("log", "error", "%s IRCbot #%d: started up, but nick '%s' is invalid", self.config.name, self.PID, self.nick)
         self.shutdown(None, None)
 
     def on_welcome(self, connection, event):
         r = self.RPC.RPCCommand("register", self.PID, self.config.name)
         if not r.response:
-            self.RPC.RPCCommand("log", "warning", "IRCbot #%d: started up, but another bot is already registered!", self.PID)
+            self.RPC.RPCCommand("log", "warning", "%s IRCbot (#%d): started up, but another bot is already registered!", self.config.name, self.PID)
             self.shutdown(None, None)
         self.IS_REGISTERED = True
         connection.join(self.config.channel)
-        self.RPC.RPCCommand("log", "info", "IRCbot #%d: connected to IRC successfully", self.PID)
+        self.RPC.RPCCommand("log", "info", "%s IRCbot (#%d): connected to IRC successfully", self.config.name, self.PID)
         if hasattr(self.config, "startup"):
             for cmd in self.config.startup:
                 try:
@@ -117,19 +117,19 @@ class _ModularBot(ircbot.SingleServerIRCBot):
                         cmd = cmd % fmt
                     connection.send_raw(cmd)
                 except:
-                    self.RPC.RPCCommand("publicLog", "warning", "IRCbot #%d: command failed", self.PID)
-                    self.RPC.RPCCommand("privateLog", "warning", "IRCbot #%d: command '%s' failed\n%s", self.PID, cmd, traceback.format_exc())
+                    self.RPC.RPCCommand("publicLog", "warning", "%s IRCbot (#%d): command failed", self.config.name, self.PID)
+                    self.RPC.RPCCommand("privateLog", "warning", "%s IRCbot (#%d): command '%s' failed\n%s", self.config.name, self.PID, cmd, traceback.format_exc())
 
     def on_pubmsg(self, connection, event):
         self.update()
-        self.RPC.RPCCommand("publicLog", "debug", "IRCBot #%d: message %r", self.PID, event.arguments()[0].encode("string_escape"))
+        self.RPC.RPCCommand("publicLog", "debug", "%s IRCBot (#%d): message %r", self.config.name, self.PID, event.arguments()[0].encode("string_escape"))
         try:
             for regex in self.config.filters:
                 if regex.search(event.arguments()[0]):
                     idmatch = self.config.matcher.search(event.arguments()[0])
                     if idmatch:
                         torrentid = idmatch.group(1)
-                        self.RPC.RPCCommand("log", "debug", "IRCbot #%d: got filter match in source handler '%s' for torrentid '%s'", self.PID, self.config.name, torrentid)
+                        self.RPC.RPCCommand("log", "debug", "%s IRCbot (#%d): got filter match in source handler '%s' for torrentid '%s'", self.config.name, self.PID, self.config.name, torrentid)
                         self.RPC.RPCCommand("fetchTorrent", name=self.config.name, torrentid=torrentid)
                         return
         except:
