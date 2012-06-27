@@ -293,29 +293,29 @@ class options(tornado.web.RequestHandler):
         elif chk[0] and chk[1]:
             self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
 
-        test = self.get_argument("test", False)
-        if not test:
-            try:
-                link = self.request.headers["Referer"]
-            except KeyError:
-                link = "/index"
-            self.write("""
-                        <html>
-                            <head>
-                                <title>Options</title>
-                                <link rel="stylesheet" type="text/css" href="/css/main.css">
-                            </head>
-                            <body>
-                                <div style="background-color : white; padding : 2em;">
-                                    <div>Nothing here yet</div>
-                                    Go back to <a style="color:black;" href="%(link)s">%(link)s</a>
-                                </div>
-                            </body>
-                        </html>
-                       """ % {"link" : link})
-            return
-        else:
-            self.write(self.application._pyrtOPTIONS.index())
+        #test = self.get_argument("test", False)
+        #if not test:
+        #    try:
+        #        link = self.request.headers["Referer"]
+        #    except KeyError:
+        #        link = "/index"
+        #    self.write("""
+        #                <html>
+        #                    <head>
+        #                        <title>Options</title>
+        #                        <link rel="stylesheet" type="text/css" href="/css/main.css">
+        #                    </head>
+        #                    <body>
+        #                        <div style="background-color : white; padding : 2em;">
+        #                            <div>Nothing here yet</div>
+        #                            Go back to <a style="color:black;" href="%(link)s">%(link)s</a>
+        #                        </div>
+        #                    </body>
+        #                </html>
+        #               """ % {"link" : link})
+        #    return
+        #else:
+        self.write(self.application._pyrtOPTIONS.index())
 
     post = get
    
@@ -824,9 +824,9 @@ class Main(object):
                 
             sys.exit(0)
 
-        logging.info("Starting RSS listener")
-        application._pyrtRSS = rss.RSS(application._pyrtL, application._pyrtLog, application._pyrtRemoteStorage)
-        self._pyrtRSSPID = application._pyrtRSS.start()
+        #logging.info("Starting RSS listener")
+        #application._pyrtRSS = rss.RSS(application._pyrtL, application._pyrtLog, application._pyrtRemoteStorage)
+        #self._pyrtRSSPID = application._pyrtRSS.start()
         
         self.instance = tornado.ioloop.IOLoop.instance()
         self.instance.start()

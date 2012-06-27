@@ -56,6 +56,7 @@ class RPC(object):
         return self._ssend(json.dumps(obj))
 
     def _ssend(self, thing, json_encoded=False):
+        print("RPC _ssend:", thing)
         if not json_encoded:
             try:
                 jsoned = json.dumps(thing)
@@ -71,6 +72,8 @@ class RPC(object):
         try:
             resp = self.socket.recv()
         except socket.timeout:
+            print("RPC resp timeout")
             return None
         else:
+            print("RPC resp (raw):", resp)
             return RPCResponse(**json.loads(resp))
