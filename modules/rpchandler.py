@@ -159,9 +159,9 @@ class RPCHandler(object):
             s = site.Main(self.publog, self.ajax, self.storage)
             filename, torrent = s.fetch(kwargs["torrentid"]) 
             s.process(filename, torrent)
-            return self._respond("OK", None)
+            return "OK", None
         else:
-            return self._respond("No such handler", "No such handler")
+            return "ERROR", "No such handler"
             
     def fetch_torrent_rss(self, ID, alias, link):
         lnk = urllib2.urlopen(link)
