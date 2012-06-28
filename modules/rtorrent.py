@@ -107,7 +107,7 @@ class rtorrent:
         else:
             #path defined
             self.conn = xmlrpc.RTorrentXMLRPCClient(port)
-        self.conn.system.listMethods()
+        self.availableMethods = self.conn.system.listMethods()
 
     def getTorrentList(self):
         """
@@ -457,6 +457,26 @@ class rtorrent:
         #edit .rtorrent.rc?
         return self.conn.set_directory(path)
         
+    def setGlobalMoveTo(self, path):
+        #set method 'move_complete_pyrt'
+        return self.conn.system.method.set_key("event.download.finished","move_complete_pyrt","d.set_directory=%(path)s; execute=mv,-u,$d.get_base_path=,%(path)s" % {"path" : path})
+        
+    def getGlobalMoveTo(self):
+        if self.conn.system.method.has_key("event.download.finished","move_complete_pyrt"):
+            try:
+                cmd = self.conn.system.method.get("event.download.finished")["move_complete_pyrt"]
+                "d.set_directory=%(path)s; execute=mv,-u,$d.get_base_path=,%(path)s"
+                p = cmd.split("d.set_directory=")[1].split(";")[0]
+                return (True, p)
+            except:
+                return (True, None)
+        else:
+            return (False, None)
+            
+    def removeGlobalMoveTo(self, arg):
+        if arg == "false" and self.conn.system.method.has_key("event.download.finished","move_complete_pyrt"):
+            return self.conn.system.method.set_key("event.download.finished","move_complete_pyrt")
+        
     def getGlobalPortRange(self):
         return self.conn.get_port_range()
         
@@ -543,7 +563,10 @@ class rtorrent:
         return self.conn.get_max_open_sockets()
         
     def setGlobalMaxOpenSockets(self, sockets):
-        return self.conn.set_max_open_sockets(sockets)
+        if "set_max_open_sockets" in self.availableMethods:
+            return self.conn.set_max_open_sockets(sockets)
+        elif "network.max_open_sockets.set" in self.availableMethods:
+            return self.conn.network.max_open_sockets.set("", sockets)
         
     def getGlobalMaxOpenHttp(self):
         return self.conn.get_max_open_http()

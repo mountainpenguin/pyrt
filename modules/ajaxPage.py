@@ -160,8 +160,8 @@ class Ajax:
             pyrt-refreshrate
             pyrt-port
             general-dir
-            general-moveto
-            general-stopat
+            general-moveto **
+            general-stopat **
             throttle-up
             throttle-down
             network-portfrom
@@ -179,11 +179,14 @@ class Ajax:
             performance-sendbuffer
             performance-readahead
         """
+        
         actions = {
             #key : function
             #"pyrt-refreshrate" : ,
             #"pyrt-port" : ,
             "general-dir" : self.RT.setGlobalRootPath,
+            "general-moveto" : self.RT.setGlobalMoveTo,
+            "general-movecheck" : self.RT.removeGlobalMoveTo,
             "throttle-up" : self.throttleUp,
             "throttle-down" : self.throttleDown,
             "network-simuluploads" : self.RT.setGlobalMaxUploads,

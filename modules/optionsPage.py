@@ -48,11 +48,28 @@ class Options:
         maxpeersseed = self.RT.getGlobalMaxPeersSeed()
         if maxpeersseed == -1:
             maxpeersseed = maxpeers
+            
+        try:
+            performancereadahead = int(float(self.RT.getGlobalHashReadAhead()))
+        except:
+            performancereadahead = None
+            
+        gmc_bool, gmc_value = self.RT.getGlobalMoveTo()
+        gmc_enabled = gmc_bool and "checked" or ""
+        if gmc_bool:
+            gmc_hidden = ""
+        else:
+            gmc_hidden = "hidden"
+        gmc_value = gmc_value and gmc_value or ""
+        
         definitions = {
             "config" : self.C.CONFIG,
             "throttleup" : int(float(self.RT.getGlobalUpThrottle()) / 1024) ,
             "throttledown" : int(float(self.RT.getGlobalDownThrottle()) / 1024),
             "generaldir" : self.RT.getGlobalRootPath(),
+            "generalmovecheckbool" : gmc_enabled,
+            "generalmovecheckvalue" : gmc_value,
+            "generalmovecheckhidden" : gmc_hidden,
             "networkportfrom" : portrange.split("-")[0],
             "networkportto" : portrange.split("-")[1],
             "trackericons" : favicons,
@@ -61,7 +78,7 @@ class Options:
             "performancesendbuffer" : int(float(self.RT.getGlobalSendBufferSize())/1024),
             "performancemaxopenfiles" : self.RT.getGlobalMaxOpenFiles(),
             "performancemaxfilesize" : int(float(self.RT.getGlobalMaxFileSize())/1024/1024),
-            "performancereadahead" : int(float(self.RT.getGlobalHashReadAhead())/1024/1024),
+            "performancereadahead" : performancereadahead,
             "networksimuluploads" : self.RT.getGlobalMaxUploads(),
             "networksimuldownloads" : self.RT.getGlobalMaxDownloads(),
             "networkmaxpeers" : maxpeers,

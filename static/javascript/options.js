@@ -18,8 +18,7 @@
  *
  */
 
-var rtorrent_display = false;
-var pyrt_display = false;
+var tabView = null;
 
 $(document).ready( function () {
    $("#tab_main").bind(
@@ -28,28 +27,33 @@ $(document).ready( function () {
          window.location = "/?view=main";
       }
    );
+   
+   // check for hash fragment
+   if (window.location.hash) {
+      showoptions(window.location.hash.substring(1).split("show-")[1]);
+   } else {
+      showoptions("pyrt");
+   }
+   
    $("ol.sidebar-list > li").bind(
       "click", function (e) {
-         $(".selected").each(function () {
-            if (this.id !== "tab_options") {
-               $(this).removeClass("selected");
-            }
-         })
-         $(e.target).addClass("selected");
-         $("#" + e.target.id.split("-tab")[0]).parent().addClass("selected");
+         nam = e.target.id.split("-tab")[0]
+         showoptions(nam);
       }
    )
    $("input").bind("keyup", function (e) {
       if (e.target.id == "pyrt-newpass" || e.target.id == "pyrt-newpassconf") {
-         if ($("#pyrt-newpass").attr("value") == "" || $("#pyrt-newpassconf").attr("value") == "") {
-            $("#pyrt-newpassconf,#pyrt-newpass").removeClass("badinput goodinput");
-            return;
-         }
-         if ($("#pyrt-newpass").attr("value") == $("#pyrt-newpassconf").attr("value")) {
-            $("#pyrt-newpassconf,#pyrt-newpass").removeClass("badinput").addClass("goodinput");
-         } else {
-            $("#pyrt-newpassconf").addClass("badinput").removeClass("goodinput");
-         }
+         //if ($("#pyrt-newpass").attr("value") == "" || $("#pyrt-newpassconf").attr("value") == "") {
+         //   $("#pyrt-newpassconf,#pyrt-newpass").removeClass("badinput goodinput");
+         //   return;
+         //}
+         //if ($("#pyrt-newpass").attr("value") == $("#pyrt-newpassconf").attr("value")) {
+         //   $("#pyrt-newpassconf,#pyrt-newpass").removeClass("badinput").addClass("goodinput");
+         //} else {
+         //   $("#pyrt-newpassconf").addClass("badinput").removeClass("goodinput");
+         //}
+      } else if (e.target.id == "pyrt-oldpass") {
+         return false;
       } else if (e.target.value == "") {
          $(e.target).removeClass("badinput goodinput warninginput");
          $("#" + e.target.id + "error").html("");
@@ -58,6 +62,7 @@ $(document).ready( function () {
       }
    }).bind("change", function (e) {
       if (e.target.id == "general-movecheck") {
+         $(e.target).addClass("goodinput");
          if (e.target.checked == true) {
             $(".general-moveto").show();
          } else {
@@ -74,25 +79,48 @@ $(document).ready( function () {
       }
    });
    $(".submit-box").bind("click", function (e) {
-      console.log("Submitting <" + e.target.id.split("-")[0] + ">");
       elems = $("." + e.target.id.split("-")[0] + "-config.goodinput");
-      console.log("." + e.target.id.split("-")[0] + "-config.goodinput");
       keys = new Array();
       values = new Array();
       for (i=0;i<elems.length;i++) {
          keys.push(elems[i].id);
-         values.push(encodeURIComponent(elems[i].value));
-      }
-      console.log("keys: " + keys);
-      $.ajax({
-         url: "/ajax?request=set_config_multiple&keys=" + keys + "&values=" + encodeURIComponent(values),
-         success: function (data) {
-            console.log(data);
-            $("#" + e.target.id.split("-")[0] + "-status").html(data);
+         if (elems[i].id == "general-movecheck") {
+            values.push(encodeURIComponent(elems[i].checked));
+         } else {
+            values.push(encodeURIComponent(elems[i].value));
          }
-      });
+      }
+      if (keys.length > 0) {
+         $.ajax({
+            url: "/ajax?request=set_config_multiple&keys=" + keys + "&values=" + encodeURIComponent(values),
+            success: function (data) {
+               //$("#" + e.target.id.split("-")[0] + "-status").html(data);
+               window.location.hash = "show-" + tabView;
+               window.location.reload(window.location);
+            }
+         });
+      } else {
+         alert("Nothing to submit!");
+      }
    });
 });
+
+function showoptions(nam) {
+   $(".selected").each(function () {
+      if (this.id !== "tab_options") {
+         $(this).removeClass("selected");
+      }
+   })
+
+   var tabs = ["pyrt","general","throttle","network","performance","trackers"]; 
+   if (tabs.indexOf(nam) == -1) {
+      nam = "pyrt";
+   }
+   
+   tabView = nam;
+   $("#" + nam + "-tab").addClass("selected");
+   $("#" + nam).parent().addClass("selected");
+}
 
 function verify(key, value) {
    $.ajax({

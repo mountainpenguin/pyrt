@@ -251,18 +251,15 @@ ol li {
     padding-right: 1em; }
 
 .submit-box {
-  border: 1px solid #41B14A;
-  width: 114px;
   padding: 10px;
   border-radius: 5px;
   /*background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(0,128,0,0.7)), to(rgba(0,170,0,0.5)));*/
-  background-color: #41B14A;
-  color: white;
   font-weight: bold;
-  cursor: pointer; }
-  .submit-box:hover {
-    /*background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(0,100,0,0.7)), to(rgba(0,128,0,0.5)));*/
-    background-color: #008000; }
+  cursor: pointer;
+  /*    &:hover {
+          /*background-image : -webkit-gradient(linear, left top, left bottom, from(rgba(0,100,0,0.7)), to(rgba(0,128,0,0.5))); */
+          /*background-color : #008000; */
+      }*/ }
 
 #sidebar {
   border-top: 1px solid #888; }
