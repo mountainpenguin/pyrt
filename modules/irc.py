@@ -129,7 +129,7 @@ class _ModularBot(ircbot.SingleServerIRCBot):
                     idmatch = self.config.matcher.search(event.arguments()[0])
                     if idmatch:
                         torrentid = idmatch.group(1)
-                        self.RPC.RPCCommand("log", "debug", "%s IRCbot (#%d): got filter match in source handler '%s' for torrentid '%s'", self.config.name, self.PID, self.config.name, torrentid)
+                        #self.RPC.RPCCommand("log", "debug", "%s IRCbot (#%d): got filter match in source handler '%s' for torrentid '%s'", self.config.name, self.PID, self.config.name, torrentid)
                         self.RPC.RPCCommand("fetchTorrent", name=self.config.name, torrentid=torrentid)
                         return
         except:

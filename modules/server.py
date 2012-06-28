@@ -824,9 +824,9 @@ class Main(object):
                 
             sys.exit(0)
 
-        #logging.info("Starting RSS listener")
-        #application._pyrtRSS = rss.RSS(application._pyrtL, application._pyrtLog, application._pyrtRemoteStorage)
-        #self._pyrtRSSPID = application._pyrtRSS.start()
+        logging.info("Starting RSS listener")
+        application._pyrtRSS = rss.RSS(application._pyrtL, application._pyrtLog, application._pyrtRemoteStorage)
+        self._pyrtRSSPID = application._pyrtRSS.start()
         
         self.instance = tornado.ioloop.IOLoop.instance()
         self.instance.start()
