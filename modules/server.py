@@ -31,10 +31,8 @@ from modules import rss
 from modules.Cheetah.Template import Template
 
 from modules import indexPage
-from modules import detailPage
 from modules import ajaxPage
 from modules import optionsPage
-from modules import rssPage
 from modules import statsPage
 
 import tornado.ioloop
@@ -164,13 +162,20 @@ class index(tornado.web.RequestHandler):
             return
         elif chk[0] and chk[1]:
             self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
-
+        
         view = self.get_argument("view", None)
         sortby = self.get_argument("sortby", None)
         reverse = self.get_argument("reverse", None)
-
-        self.write(self.application._pyrtINDEX.index(view, sortby, reverse))
-
+        
+        if not view or view not in ["main","started","stopped","complete","incomplete","hashing","seeding","active"]:
+            view = "main"
+        if not sortby:
+            sortby = "none"
+            
+        handler = torrentHandler.Handler()
+        
+        torrentList = self.application._pyrtRT.getTorrentList2(view)
+        self.write(handler.torrentHTML(torrentList, sortby, view, reverse))
         
     post = get
     
@@ -213,36 +218,6 @@ class downloadCreation(tornado.web.RequestHandler):
             self.set_header("Content-Type", "application/x-bittorrent")
             self.set_header("Content-Disposition", "attachment; filename=%s" % filename)
             self.write(contents)
-        
-    post = get
-    
-class detail(tornado.web.RequestHandler):
-    """ *** DEPRECATED DO NOT USE *** Detailed page view handler (/detail)
-        
-        Retrieves detailPage.Detail() passing the torrent_id argument.
-        This has attribute HTML, which is written.
-    """
-    def get(self):
-        view = self.get_argument("view", None)
-        torrent_id = self.get_argument("torrent_id", None)
-        password = self.get_argument("password", None)
-        
-        client_cookie = self.cookies
-        Lcheck = self.application._pyrtL.checkLogin(client_cookie)
-        if not Lcheck and not password:
-            self.write(self.application._pyrtL.loginHTML())
-            return
-        elif not Lcheck and password:
-            Pcheck = self.application._pyrtL.checkPassword(password, self.request.remote_ip)
-            if Pcheck:
-                #set cookie
-                self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
-            else:
-                self.write(self.application._pyrtL.loginHTML("Incorrect Password"))
-                return
-            
-        Detail = detailPage.Detail(torrent_id, conf=self.application._pyrtGLOBALS["config"])
-        self.write(Detail.HTML)
         
     post = get
     
@@ -337,17 +312,6 @@ class logHandler(tornado.web.RequestHandler):
             self.write(template.read() % locals())
 
     post = get
-
-class RSS(tornado.web.RequestHandler):
-    def get(self):
-        chk = _check.web(self)
-        if not chk[0]:
-            self.write(self.application._pyrtL.loginHTML(chk[1]))
-            return
-        elif chk[0] and chk[1]:
-            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
-
-        self.write(self.application._pyrtRSS_PAGE.index())
         
 class ajaxSocket(tornado.websocket.WebSocketHandler):
     socketID = None
@@ -763,10 +727,8 @@ class Main(object):
             (r"/favicons/(.*)", tornado.web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/favicons/") }),
             (r"/", index),
             (r"/index", index),
-            (r"/detail", detail),
             (r"/ajax", ajax),
             (r"/options", options),
-            (r"/RSS", RSS),
             (r"/stats", stats),
             (r"/log", logHandler),
             (r"/ajaxsocket", ajaxSocket),
@@ -788,7 +750,6 @@ class Main(object):
         application._pyrtINDEX = indexPage.Index(conf=c, RT=application._pyrtRT)
         application._pyrtAJAX = ajaxPage.Ajax(conf=c, RT=application._pyrtRT, Log=application._pyrtLog)
         application._pyrtOPTIONS = optionsPage.Options(conf=c, RT=application._pyrtRT)
-        application._pyrtRSS_PAGE = rssPage.Index(conf=c, RT=application._pyrtRT)
         application._pyrtSTATS = statsPage.Index(conf=c, RT=application._pyrtRT)
         application._pyrtRemoteStorage = remotes.RemoteStorage()
         application._pyrtGLOBALS = {
@@ -796,7 +757,6 @@ class Main(object):
             "indexPage" : application._pyrtINDEX,
             "ajaxPage" : application._pyrtAJAX,
             "optionsPage" : application._pyrtOPTIONS,
-            "rssPage" : application._pyrtRSS_PAGE,
             "statsPage" : application._pyrtSTATS,
             "log" : application._pyrtLog,
             "RT" : application._pyrtRT,
