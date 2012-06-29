@@ -28,6 +28,7 @@ from modules import autohandler
 from modules import remotes
 from modules import create
 from modules import rss
+from modules import torrentHandler
 from modules.Cheetah.Template import Template
 
 from modules import indexPage
