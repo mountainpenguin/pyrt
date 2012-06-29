@@ -89,7 +89,6 @@ class RPCHandler(object):
                 f = s.filters
             except AttributeError:
                 f = []
-            self.log("debug", "RPC call 'get_filters' returned %r", [x.pattern for x in f])
             return json.dumps([x.pattern for x in f])
         else:
             return json.dumps({
