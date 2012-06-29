@@ -37,7 +37,7 @@ from modules import feedparser
 
         
 class RSS(object):
-    def __init__(self, l, log, s, websocketURI=".sockets/rpc.interface"):
+    def __init__(self, l, log, s, websocketURI=".sockets/rss.interface"):
         self.LOGIN = l
         self.LOG = log
         self.STORE = s

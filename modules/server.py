@@ -770,9 +770,16 @@ class Main(object):
         http_server = tornado.httpserver.HTTPServer(application, ssl_options=ssl_options)
         logging.info("Starting webserver on http%s://%s:%i with PID %d", (ssl_options and "s" or ""), global_config["server.socket_host"], global_config["server.socket_port"], os.getpid())
         self._pyrtPID = os.getpid()
-        logging.info("Starting UNIX websocket on .sockets/rpc.interface")
-        sockets = tornado.netutil.bind_unix_socket(".sockets/rpc.interface")
-        http_server.add_socket(sockets)
+        
+        #start listening on 10 UNIX sockets + the dedicated RSS socket
+        sockets = []
+        s_rss = tornado.netutil.bind_unix_socket(".sockets/rss.interface")
+        logging.info("Starting UNIX websocket on .sockets/rss.interface")
+        http_server.add_socket(s_rss)
+        logging.info("Starting UNIX websockets")
+        for i in range(10):
+            s = tornado.netutil.bind_unix_socket(".sockets/rpc%i.interface" % i)
+            http_server.add_socket(s)
         try:
             http_server.listen(global_config["server.socket_port"], global_config["server.socket_host"])
         except socket.error:
@@ -780,8 +787,13 @@ class Main(object):
             if os.path.exists("proc/pyrt.pid"):
                 os.remove("proc/pyrt.pid")
 
-            if os.path.exists(".sockets/rpc.interface"):
-                os.remove(".sockets/rpc.interface")
+            if os.path.exists(".sockets/rss.interface"):
+                os.remove(".sockets/rss.interface")
+            for i in range(10):
+                try:
+                    os.remove(".sockets/rpc%i.interface" % i)
+                except:
+                    pass
                 
             sys.exit(0)
 

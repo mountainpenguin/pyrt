@@ -110,9 +110,14 @@ def stop():
     else:
         os.remove("proc/pyrt.pid")
 
-    print("Removing RPC socket file")
-    if os.path.exists(".sockets/rpc.interface"):
-        os.remove(".sockets/rpc.interface")
+    if os.path.exists(".sockets/rss.interface"):
+        print("Removing RPC RSS socket file")
+        os.remove(".sockets/rss.interface")
+    for i in range(10):
+        pth = ".sockets/rpc%i.interface" % i
+        if os.path.exists(pth):
+            print("Removing RPC IRC socket file <%s>" % pth)
+            os.remove(pth)
     
 
 def status():

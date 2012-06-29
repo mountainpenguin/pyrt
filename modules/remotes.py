@@ -367,7 +367,47 @@ class RemoteStorage(object):
             self.RSS = pickle.load(open(".rss.pickle"))
         except:
             self.RSS = {}
-
+        self.SOCKETS = {
+            0: [],
+            1: [],
+            2: [],
+            3: [],
+            4: [],
+            5: [],
+            6: [],
+            7: [],
+            8: [],
+            9: [],
+        }
+        
+    def assignSocket(self, num, name):
+        self.SOCKETS[num] += [name]
+        
+    def getFreeSocket(self):
+        for i in range(10):
+            if not self.SOCKETS[num]:
+                return i
+        return random.choice(range(10))
+        
+    def assigneeSocket(self, name):
+        for i in range(10):
+            if name in self.SOCKETS[i]:
+                return name
+            
+    def releaseSocket(self, num, name):
+        assigned = self.SOCKETS[num]
+        if name in assigned:
+            idx = assigned.index(name)
+        else:
+            return False
+        try:
+            assigned.pop(idx)
+        except IndexError:
+            return False
+        self.SOCKETS[num] = assigned
+        return True
+            
+        
     def addRemote(self, name, **kwargs):
         """Add a 'source'
 

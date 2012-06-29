@@ -132,6 +132,12 @@ class AutoHandler(object):
     def stop_bot(self, name):
         botpid = self.STORE.isBotActive(name)
         if botpid:
+            #release socket
+            socknum = self.STORE.assigneeSocket(name)
+            if self.STORE.releaseSocket(socknum, name):
+                self.LOG.info("Released RPC socket number %i" % socknum)
+            else:
+                self.LOG.error("Could not release RPC socket number %i" % socknum)
             try:
                 os.kill(botpid, signal.SIGTERM)
                 #deregister bot
@@ -150,9 +156,12 @@ class AutoHandler(object):
         if botpid:
             return self._response(name, "start_bot", "ERROR", "Bot already active")
         try:
-           ircobj = irc.Irc(name, self.LOG, self.STORE, websocketURI=".sockets/rpc.interface", auth=auth)
-           p = ircobj.start()
-           self.STORE.saveProc(name, p.pid, p)
+            #get websocketURI
+            socknum = self.STORE.getFreeSocket()
+            ircobj = irc.Irc(name, self.LOG, self.STORE, websocketURI=".sockets/rpc%i.interface" % (socknum), auth=auth)
+            self.LOG.info("RPC socket number %i assigned to %s IRCbot", socknum, name)
+            p = ircobj.start()
+            self.STORE.saveProc(name, p.pid, p)
         except:
             tb = traceback.format_exc()
             tb_line = tb.strip().split("\n")[-1]
