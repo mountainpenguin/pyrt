@@ -385,7 +385,7 @@ class RemoteStorage(object):
         
     def getFreeSocket(self):
         for i in range(10):
-            if not self.SOCKETS[num]:
+            if not self.SOCKETS[i]:
                 return i
         return random.choice(range(10))
         
