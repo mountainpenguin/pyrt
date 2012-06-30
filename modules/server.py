@@ -517,32 +517,22 @@ class statSocket(tornado.websocket.WebSocketHandler):
         self.application._pyrtSockets.remove("statSocket", self.socketID)
         logging.info("%d %s (%s)", self.get_status(), "statSocket closed", self.request.remote_ip) 
 
-class testing(tornado.web.RequestHandler):
+class test(tornado.web.RequestHandler):
     def get(self):
-        chk = _check.web(self)
-        if not chk[0]:
-            self.write(self.application._pyrtL.loginHTML(chk[1]))
-            return
-        elif chk[0] and chk[1]:
-            self.set_cookie("sess_d", self.application._pyrtL.sendCookie(self.request.remote_ip))
-
-        from modules.sites import ptp
-        self.application._pyrtLog.debug("modules.sites.ptp imported")
-        authkey = self.get_argument("authkey")
-        torrent_pass = self.get_argument("torrent_pass")
-        torrentid = self.get_argument("torrentid")
-
-        if not authkey or not torrent_pass or not torrentid:
-            raise tornado.web.HTTPError(400)
-        p = ptp.PTP(self.application._pyrtLog, self.application._pyrtAJAX, authkey=authkey, torrent_pass=torrent_pass)
-        self.application._pyrtLog.debug("PTP object initalised")
-
-        resp = p.fetch(torrentid)
-        filename = resp[0]
-        content_length = len(resp[1])
-        self.application._pyrtLog.debug("Got filename %s with length %d", filename, content_length)
-        p.process(filename, resp[1])
-        self.write("<!DOCTYPE html><html><body>Test Completed</body></html>")
+        store = self.application._pyrtRemoteStorage
+        self.write("""<!DOCTYPE html>
+                   <html>
+                    <body>
+                        <div>
+                            <pre>
+                                <code>
+                                    %s
+                                </code>
+                            </pre>
+                        </div>
+                    </body>
+                   </html>
+                   """ % repr(store.SOCKETS))
 
     post = get
 
@@ -742,6 +732,7 @@ class Main(object):
             (r"/create", createHandler),
             (r"/createsocket", createSocket),
             (r"/downloadcreation", downloadCreation),
+            (r"/test", test),
         ], **settings)
     
         application._pyrtSockets = SocketStorage()
@@ -797,9 +788,9 @@ class Main(object):
                 
             sys.exit(0)
 
-        logging.info("Starting RSS listener")
-        application._pyrtRSS = rss.RSS(application._pyrtL, application._pyrtLog, application._pyrtRemoteStorage)
-        self._pyrtRSSPID = application._pyrtRSS.start()
+        #logging.info("Starting RSS listener")
+        #application._pyrtRSS = rss.RSS(application._pyrtL, application._pyrtLog, application._pyrtRemoteStorage)
+        #self._pyrtRSSPID = application._pyrtRSS.start()
         
         self.instance = tornado.ioloop.IOLoop.instance()
         self.instance.start()
