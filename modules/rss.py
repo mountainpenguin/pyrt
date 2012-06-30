@@ -83,6 +83,7 @@ class RSS(object):
         
     def refreshRSS(self):
         feeds_req = self.RPC.RPCCommand("get_active_rss")
+        logging.info("RSS response: %r", feeds_req)
         if not feeds_req or feeds_req.response == "True":
             return
         
