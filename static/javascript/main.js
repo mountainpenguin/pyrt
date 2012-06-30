@@ -32,17 +32,19 @@ if (window.document.location.protocol == "https:") {
 } else {
      var socket_protocol = "ws"
 }
+var refresh_rate = 5000;
 
 $(document).ready(function () {
      setTimeout(function () {
           refresh_content("yes");
-     }, 5000);
+     }, refresh_rate);
 
      ws = new window.WebSocket(socket_protocol + "://" + window.document.location.host + "/ajaxsocket");
      ws.onmessage = messageHandler
      ws.onclose = function(e) {
      }
      ws.onopen = function(e) {
+          ws.send("request=get_refresh_rate");
      }
      ws.onerror = function(e) {
         console.log("WebSocket error", ws, e);
@@ -499,7 +501,7 @@ function parse_content(response, repeat) {
      if (repeat === "yes") {
          setTimeout(function () {
              refresh_content("yes");
-         }, 5000);
+         }, refresh_rate);
      }
 }
 
@@ -798,6 +800,8 @@ function messageHandler(evt) {
      d = JSON.parse(evt.data);
      if (d.request == "get_info_multi") {
           return parse_content(d.response, "yes");
+     } else if (d.request == "get_refresh_rate") {
+          refresh_rate = parseInt(d.response) * 1000;
      } else if (d.request == "get_torrent_info") {
           var response = d.response;
           newcellcontents = $(response);

@@ -82,6 +82,7 @@ class Ajax:
             "get_tracker_favicon" : Handle(self.get_tracker_favicon, ["torrent_id"]),
             "verify_conf_value" : Handle(self.verify_conf_value, ["key", "value"]),
             "set_config_multiple" : Handle(self.set_config_multiple, ["keys","values"]),
+            "get_refresh_rate" : Handle(self.getRefreshRate),
         }
         
     def has_command(self, commandstr):
@@ -240,7 +241,10 @@ class Ajax:
         return json.dumps(responses)
             
     def _setRefreshRate(self, val):
-        self.Config.set("refresh", int(val))
+        return self.Config.set("refresh", int(val))
+        
+    def getRefreshRate(self):
+        return self.Config.get("refresh")
     
     def verify_conf_value(self, key, value):
         if key == "pyrt-oldpass":
