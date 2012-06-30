@@ -392,7 +392,7 @@ class RemoteStorage(object):
     def assigneeSocket(self, name):
         for i in range(10):
             if name in self.SOCKETS[i]:
-                return name
+                return i
             
     def releaseSocket(self, num, name):
         assigned = self.SOCKETS[num]
