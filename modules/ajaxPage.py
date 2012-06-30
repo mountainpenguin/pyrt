@@ -248,7 +248,7 @@ class Ajax:
                     "response" : returnval,
                     "error" : None,
                 }
-                sock.write_message(json.dumps(resp))
+                sock.socketObject.write_message(json.dumps(resp))
                 
         #resp = {
         #    "request" : request,
