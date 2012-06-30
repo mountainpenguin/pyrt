@@ -37,7 +37,13 @@
 
     ## relative or full path to the log file that pyrt should use
     ## this will default to pyrt.log if not defined here
+    ## OPTIONAL
     #"logfile" : "pyrt.log",
+    
+    ## refresh rate of the main PyRT page
+    ## this will default to 10 seconds if not defined here
+    ## OPTIONAL
+    #"refresh" : 10,
 
     ## hashed password that pyrt will use
     ## plaintext is hashed twice, the second iteration with a random salt 
