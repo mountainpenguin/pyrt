@@ -36,7 +36,7 @@ class ConfigError(Exception):
     def __str__(self):
         return self.__repr__()
         
-class ConfigStore:
+class ConfigStore(object):
     def __init__(self, sockpath, serverhost, serverport, password, ssl_certificate=None, ssl_private_key=None, ca_certs = None, root_directory="/", logfile="pyrt.log", refresh=10):
         self.rtorrent_socket = sockpath
         self.host = serverhost
@@ -59,7 +59,12 @@ class Config:
             self.loadconfig()
     
     def set(self, key, value):
-        pass
+        if key not in self.CONFIG.__dict__:
+            return False
+        else:
+            self.CONFIG.__dict__[key] = value
+            self._flush()
+            return self.CONFIG.__dict__[key]
         
     def _flush(self):
         pickle.dump(self.CONFIG, open(os.path.join("config",".pyrtconfig"),"w"))

@@ -182,7 +182,7 @@ class Ajax:
         
         actions = {
             #key : function
-            #"pyrt-refreshrate" : ,
+            "pyrt-refreshrate" : self._setRefreshRate,
             #"pyrt-port" : ,
             "general-dir" : self.RT.setGlobalRootPath,
             "general-moveto" : self.RT.setGlobalMoveTo,
@@ -239,6 +239,9 @@ class Ajax:
                 responses[k] = "unknown"
         return json.dumps(responses)
             
+    def _setRefreshRate(self, val):
+        self.Config.set("refresh", int(val))
+    
     def verify_conf_value(self, key, value):
         if key == "pyrt-oldpass":
             if self.Login.checkPassword(value):
