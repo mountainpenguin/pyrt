@@ -277,10 +277,11 @@
                         <div id="trackers" class="options">
                             <div id="trackers-settings" class="options-box">
                                 <h3>Tracker icons</h3>
+                                <div class="info">Drag to group icons</div>
                                 <div>
                                     #for $tracker, $trackericon in $trackericons.iteritems()
-                                    <div id="tracker-$tracker">
-                                        <img width=16 height=16 alt="$tracker icon" class="trackericon" src="$trackericon">
+                                    <div id="tracker-$tracker" draggable=true class="tracker-div">
+                                        <img draggable=false width=16 height=16 alt="$tracker icon" class="trackericon" src="$trackericon">
                                         <div class="tracker">$tracker</div>
                                     </div>
                                     #end for

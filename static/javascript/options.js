@@ -103,6 +103,11 @@ $(document).ready( function () {
          alert("Nothing to submit!");
       }
    });
+   
+   $(".torrent-div").bind("dragstart", function (e) {
+      e.dataTransfer.effectAllowed = "copy";
+      e.dataTransfer.setData("Text", this.id);
+   });
 });
 
 function showoptions(nam) {

@@ -263,3 +263,11 @@ ol li {
 
 #sidebar {
   border-top: 1px solid #888; }
+
+.info {
+  color: #969696; }
+
+div.tracker-div {
+  cursor: pointer; }
+  div.tracker-div:hover {
+    background-color: rgba(230, 230, 230, 0.5); }
