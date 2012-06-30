@@ -280,9 +280,9 @@
                                 <div class="info">Drag to group icons</div>
                                 <div>
                                     #for $tracker, $trackericon in $trackericons.iteritems()
-                                    <div id="tracker-$tracker" draggable=true droppable=true ondragstart="dragstart(event);" ondragover="dragover(event);" ondrop="drop(event);" class="tracker-div">
+                                    <div id="tracker-$tracker" class="tracker-div">
                                         <img draggable=false width=16 height=16 alt="$tracker icon" class="trackericon" src="$trackericon">
-                                        <div class="tracker">$tracker</div>
+                                        <div draggable=true droppable=true ondragstart="dragstart(event);" ondragover="dragover(event);" ondrop="drop(event);" class="tracker">$tracker</div>
                                     </div>
                                     #end for
                                 </div>

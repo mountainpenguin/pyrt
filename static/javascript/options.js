@@ -107,7 +107,8 @@ $(document).ready( function () {
 
 function dragstart(e) {
    e.dataTransfer.effectAllowed = "copy";
-   e.dataTransfer.setData("Text", e.target.id);
+   var realtarget = $(e.target).closest(".tracker-div");
+   e.dataTransfer.setData("Text", realtarget.id);
 }
 
 function dragover(e) {
@@ -116,11 +117,9 @@ function dragover(e) {
 
 function drop(e) {
    e.preventDefault();
-   var realtarget = $(e.target).closest(".torrent-div");
-   console.log(realtarget);
-   console.log("Dropped on " + $(e.target));
+   var realtarget = $(e.target).closest(".tracker-div");
    var data = e.dataTransfer.getData("Text");
-   console.log("Dropped on " + e.target.id + ", with data: " + data);
+   console.log("Dropped on " + realtarget.attr("id") + ", with data: " + data);
 }
 
 function showoptions(nam) {

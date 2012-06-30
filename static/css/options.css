@@ -267,7 +267,7 @@ ol li {
 .info {
   color: #969696; }
 
-div.tracker-div {
+div.tracker {
   cursor: pointer; }
-  div.tracker-div:hover {
+  div.tracker:hover {
     background-color: rgba(230, 230, 230, 0.5); }
