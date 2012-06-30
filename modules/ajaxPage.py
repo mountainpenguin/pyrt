@@ -22,10 +22,7 @@
 
 from __future__ import print_function
 import cgi
-try:
-    import simplejson as json
-except ImportError:
-    import json
+import json
 import time
 import os
 import sys
@@ -51,7 +48,7 @@ class Handle(object):
         self.opt_args = opt_args
         
 class Ajax:
-    def __init__(self, conf=config.Config(), RT=None, Log=None):
+    def __init__(self, conf=config.Config(), RT=None, Log=None, Sockets=None):
         self.Config = conf
         if not RT:
             self.RT = rtorrent.rtorrent(self.Config.get("rtorrent_socket"))
@@ -60,6 +57,7 @@ class Ajax:
         self.Handler = torrentHandler.Handler()
         self.Login = login.Login(conf=self.Config)
         self.Log = Log
+        self.Sockets = Sockets
         self.public_commands = {
             "get_torrent_info" : Handle(self.get_torrent_info, ["torrent_id"], ["html"]),
             "get_info_multi" : Handle(self.get_info_multi, ["view"], ["sortby", "reverse", "drop_down_ids"]),
@@ -241,7 +239,24 @@ class Ajax:
         return json.dumps(responses)
             
     def _setRefreshRate(self, val):
-        return self.Config.set("refresh", int(val))
+        returnval = self.Config.set("refresh", int(val))
+        if returnval == int(val):
+            sockets = self.Sockets.getType("ajaxSocket")
+            for sock in sockets:
+                resp = {
+                    "request" : "get_refresh_rate",
+                    "response" : returnval,
+                    "error" : None,
+                }
+                sock.write_message(json.dumps(resp))
+                
+        #resp = {
+        #    "request" : request,
+        #    "response" : response,
+        #    "error" : error,
+        #}
+        #resp.update(kwargs)
+        #self.write_message(json.dumps(resp))
         
     def getRefreshRate(self):
         return self.Config.get("refresh")
