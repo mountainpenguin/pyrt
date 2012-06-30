@@ -103,12 +103,25 @@ $(document).ready( function () {
          alert("Nothing to submit!");
       }
    });
-   
-   $(".torrent-div").bind("dragstart", function (e) {
-      e.dataTransfer.effectAllowed = "copy";
-      e.dataTransfer.setData("Text", this.id);
-   });
 });
+
+function dragstart(e) {
+   e.dataTransfer.effectAllowed = "copy";
+   e.dataTransfer.setData("Text", e.target.id);
+}
+
+function dragover(e) {
+   e.preventDefault();
+}
+
+function drop(e) {
+   e.preventDefault();
+   var realtarget = $(e.target).closest(".torrent-div");
+   console.log(realtarget);
+   console.log("Dropped on " + $(e.target));
+   var data = e.dataTransfer.getData("Text");
+   console.log("Dropped on " + e.target.id + ", with data: " + data);
+}
 
 function showoptions(nam) {
    $(".selected").each(function () {
