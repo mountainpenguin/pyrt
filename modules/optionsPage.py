@@ -27,12 +27,14 @@ import os
 import glob
 
 class Options:
-    def __init__(self, conf=config.Config(), RT=None):
+    def __init__(self, conf=config.Config(), RT=None, aliases=aliases):
         self.C = conf
         if not RT:
             self.RT = rtorrent.rtorrent(self.C.get("rtorrent_socket"))
         else:
             self.RT = RT
+            
+        self.ALIASES = aliases
     
     def index(self):
         #PyRT:
@@ -43,7 +45,8 @@ class Options:
             #global upload throttle
             #global download throttle
         portrange = self.RT.getGlobalPortRange()
-        favicons = dict([(os.path.basename(x.split(".ico")[0]), "/favicons/%s" % os.path.basename(x)) for x in glob.glob("static/favicons/*.ico")])
+        #favicons = dict([(os.path.basename(x.split(".ico")[0]), "/favicons/%s" % os.path.basename(x)) for x in glob.glob("static/favicons/*.ico")])
+        aliases = self.ALIASES.STORE
         maxpeers = self.RT.getGlobalMaxPeers()
         maxpeersseed = self.RT.getGlobalMaxPeersSeed()
         if maxpeersseed == -1:
@@ -72,7 +75,7 @@ class Options:
             "generalmovecheckhidden" : gmc_hidden,
             "networkportfrom" : portrange.split("-")[0],
             "networkportto" : portrange.split("-")[1],
-            "trackericons" : favicons,
+            "aliases" : aliases,
             "performancemaxmemory" : int(float(self.RT.getGlobalMaxMemoryUsage())/1024/1024),
             "performancereceivebuffer" : int(float(self.RT.getGlobalReceiveBufferSize())/1024),
             "performancesendbuffer" : int(float(self.RT.getGlobalSendBufferSize())/1024),
