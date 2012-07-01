@@ -31,6 +31,11 @@ import urllib2
 import urlparse
 import re
 
+class TrackerSimple(object):
+    def __init__(self, root_url, favicon):
+        self.url = self.root_url = root_url
+        self.favicon = favicon
+    
 class Tracker(object):
     def __init__(self, url, type, interval, seeds, leechs, enabled, favicon, root_url):
         self.url = url
@@ -154,6 +159,15 @@ class rtorrent:
             ]
         return torrentL
 
+    def getCurrentTrackers(self, view="main"):
+        torrentdict = self.getTorrentList()
+        trackerdict = {}
+        for torrentID, torrentName in torrentdict:
+            trackers = self.getTrackers(torrentID)
+            for t in trackers:
+                trackerdict[t.root_url] = TrackerSimple(t.root_url, t.favicon)
+        return trackerdict
+        
     def getTorrentList2(self,view="main"):
         """
             More developed version of getTorrentList
