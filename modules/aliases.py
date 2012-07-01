@@ -54,6 +54,9 @@ class AliasStore(object):
         Same instance should be shared between statsPage, optionsPage, and ajaxPage
     """
     def __init__(self, log, rt):
+        self.LOG = log
+        self.RT = rt
+        
         if os.path.exists(".aliases.pickle"):
             self.STORE = pickle.load(open(".aliases.pickle"))
         else:
@@ -61,12 +64,9 @@ class AliasStore(object):
             self._flush()
             
         self.REVERSE_LOOKUP = {}
-        for alias, alias_obj in self.STORE:
+        for alias, alias_obj in self.STORE.iteritems():
             for alias_url in alias_obj.urls:
                 self.REVERSE_LOOKUP[alias_url] = alias
-            
-        self.LOG = log
-        self.RT = rt
         
     # structure will be:
     #    alias: AliasGroup
@@ -95,7 +95,7 @@ class AliasStore(object):
         currTrackers = self.RT.getCurrentTrackers()
         knownTrackers = dict([(os.path.basename(x.split(".ico")[0]), rtorrent.TrackerSimple(os.path.basename(x.split(".ico")[0]), "/favicons/%s" % os.path.basename(x))) for x in glob.glob("static/favicons/*.ico")])
         #merge dictionaries
-        for t_url, t in currTrackers:
+        for t_url, t in currTrackers.iteritems():
             if t_url not in knownTrackers:
                 knownTrackers[t_url] = t
         return knownTrackers
@@ -104,7 +104,7 @@ class AliasStore(object):
         """Initialises the database for the first time, should *only* be run if pickle file doesn't exist"""
         knownTrackers = self.getTrackers()
         aliases = {}
-        for t_url, t_obj in knownTrackers:
+        for t_url, t_obj in knownTrackers.iteritems():
             aliases[t_url] = AliasGroup(t_url, t_obj.favicon, [t_obj])
         return aliases
             

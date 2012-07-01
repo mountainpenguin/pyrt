@@ -45,6 +45,7 @@ class Tracker(object):
         self.leechs = leechs
         self.enabled = enabled
         self.favicon_url = favicon
+        self.favicon = "/favicons/%s.ico" % root_url
         self.root_url = root_url
 class File(object):
     def __init__(self, abs_path, base_path, path_components, completed_chunks, priority, size, chunks, chunk_size):
@@ -124,7 +125,7 @@ class rtorrent:
                 dictionary with torrent names indexed by torrent ids
                 { ID : NAME }
         """
-        torrentlist = self.conn.download_list("main")
+        torrentlist = self.conn.download_list()
         torrentdict = {}
         for i in torrentlist:
             name = self.getNameByID(i)
