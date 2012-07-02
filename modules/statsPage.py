@@ -65,8 +65,8 @@ class Index(object):
             for t in torrentList:
                 tracker_url = t.trackers[0].root_url
                 #get alias
-                alias = self.aliases.getAlias(tracker_url)
-                alias_url = alias.url
+                alias = self.aliases.getAliasGroup(tracker_url)
+                alias_url = alias.alias
                 if alias_url in tDict:
                     tDict[alias_url]["up_total"] += t.up_total
                     tDict[alias_url]["down_total"] += t.down_total
