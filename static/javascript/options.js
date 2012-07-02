@@ -136,17 +136,28 @@ function dragend(e) {
 
 function dragoverInfo(e) {
    e.preventDefault();
-   $(e.target).css("background-color", "orange");
+   $(e.target).css({
+      "color": "orange",
+      "font-weight": "bold"
+   });
 }
 
 function dragleaveInfo(e) {
    e.preventDefault();
-   $(e.target).css("background-color", "");
+   $(e.target).css({
+      "color": "",
+      "font-weight": ""
+   });
 }
 
 function dropInfo(e) {
    e.preventDefault();
    console.log("Dropped into info box");
+   $(e.target).css({
+      "color": "",
+      "font-weight": ""
+   });
+   var data = e.dataTransfer.getData("Text");
    $.ajax({
       url: "/ajax?request=move_tracker&url=" + data + "&target_alias=" + null,
       success: function (data) {

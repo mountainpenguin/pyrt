@@ -141,7 +141,7 @@ class AliasStore(object):
                 self.STORE[alias] = group
             
             #create new group
-            if not newalias:
+            if not newalias or newalias == "null":
                 newalias = url
                 
             if newalias in self.REVERSE_LOOKUP:

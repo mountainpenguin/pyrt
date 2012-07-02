@@ -276,4 +276,5 @@ ol li {
   border-top: 1px solid #888; }
 
 .info {
-  color: #969696; }
+  color: #969696;
+  width: 10em; }
