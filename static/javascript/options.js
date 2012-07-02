@@ -53,7 +53,6 @@ $(document).ready( function () {
          //   $("#pyrt-newpassconf").addClass("badinput").removeClass("goodinput");
          //}
       } else if (e.target.id == "pyrt-oldpass") {
-         return false;
       } else if (e.target.value == "") {
          $(e.target).removeClass("badinput goodinput warninginput");
          $("#" + e.target.id + "error").html("");
@@ -109,6 +108,7 @@ function dragstart(e) {
    e.dataTransfer.effectAllowed = "copy";
    var realtarget = $(e.target).closest(".tracker-div");
    e.dataTransfer.setData("Text", realtarget.attr("id"));
+   $("#tracker-info").html("Drag here to create a new group");
 }
 
 function dragover(e) {
@@ -119,7 +119,17 @@ function drop(e) {
    e.preventDefault();
    var realtarget = $(e.target).closest(".tracker-div");
    var data = e.dataTransfer.getData("Text");
-   console.log("Dropped on " + realtarget.attr("id") + ", with data: " + data);
+   //console.log("Dropped on " + realtarget.attr("id") + ", with data: " + data);
+   $.ajax({
+      url: "/ajax?request=move_tracker&keys=" + Array("url", "target_alias") + "&values=" + encodeURIComponent(Array(data, realtarget.attr("id"))),
+      success: function (data) {
+         console.log(data);
+      }
+   });
+}
+
+function dragend(e) {
+   $("#tracker-info").html("Drag to group icons");
 }
 
 function showoptions(nam) {

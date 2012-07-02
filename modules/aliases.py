@@ -89,8 +89,64 @@ class AliasStore(object):
             alias = self.REVERSE_LOOKUP[url]
             return self.STORE[alias]
         else:
-            raise AliasError("No such alias")
+            raise AliasError("Unknown tracker URL")
     
+    def moveTracker(self, url, newalias=None):
+        """Removes a tracker URL from an alias group, and creates a new group for it
+        
+            if newalias is defined, new group will be named such
+            else newalias will be the popped out tracker url
+        """
+        if url in self.REVERSE_LOOKUP:
+            alias = self.REVERSE_LOOKUP[url]
+            if alias == url:
+                return
+            
+            #remove from old group
+            group = self.STORE[alias]
+            idx = group.urls.index(url)
+            oldurls = group.urls
+            oldurls.pop(idx)
+            group.urls = oldurls
+            
+            oldmembers = group.members
+            thismember = oldmembers.pop(idx)
+            group.members = oldmembers
+            #change favicon
+            #remove group if empty
+            if len(oldurls) == 0:
+                #delete group
+                del self.STORE[alias]
+            else:
+                newfavicon = group.members[0].favicon
+                group.favicon = newfavicon
+            self.STORE[alias] = group
+            
+            #create new group
+            if not newalias:
+                newalias = url
+                
+            if newalias in self.REVERSE_LOOKUP:
+                grp = self.STORE[newalias]
+                #add to group
+                oldurls = grp.urls
+                oldmembers = grp.members
+                oldurls += [thismember.url]
+                oldmembers += [thismember]
+                grp.urls = oldurls
+                grp.members = oldmembers
+            else:
+                grp = AliasGroup(newalias, thismember.favicon, [thismember])
+                
+            self.STORE[newalias] = grp
+            
+            #deal with REVERSE_LOOKUP
+            self.REVERSE_LOOKUP[url] = newalias
+            
+            self._flush()
+        else:
+            raise AliasError("Unknown tracker URL")
+        
     def getTrackers(self):
         currTrackers = self.RT.getCurrentTrackers()
         knownTrackers = dict([(os.path.basename(x.split(".ico")[0]), rtorrent.TrackerSimple(os.path.basename(x.split(".ico")[0]), "/favicons/%s" % os.path.basename(x))) for x in glob.glob("static/favicons/*.ico")])
