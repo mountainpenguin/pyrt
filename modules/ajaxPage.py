@@ -631,5 +631,6 @@ class Ajax:
             self.aliases.moveTracker(url, target_alias)
             return "OK"
         except:
+            print(traceback.print_exc())
             return "NO"
         

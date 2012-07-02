@@ -106,7 +106,8 @@ $(document).ready( function () {
 function dragstart(e) {
    e.dataTransfer.effectAllowed = "copy";
    e.dataTransfer.setData("Text", $(e.target).html());
-   $("#tracker-info").html("Drag here to create a new group");
+   //$("#tracker-info").html("Drag here to create a new group");
+   console.log("dragstart");
 }
 
 function dragover(e) {
@@ -115,23 +116,25 @@ function dragover(e) {
 
 function drop(e) {
    e.preventDefault();
-   var realtarget = $(e.target).closest(".tracker-div");
-   var data = e.dataTransfer.getData("Text");
-   //console.log("Dropped on " + realtarget.attr("id") + ", with data: " + data);
-   $.ajax({
-      url: "/ajax?request=move_tracker&url=" + data + "&target_alias=" + realtarget.attr("id").split("tracker-")[1],
-      success: function (data) {
-         if (data == "OK") {
-            refresh_page();
-         } else {
-            console.log(data);
-         }
-      }
-   });
+   e.dataTransfer.dropEffect = "copy";
+   console.log("drop")
+   //var realtarget = $(e.target).closest(".tracker-div");
+   //var data = e.dataTransfer.getData("Text");
+   ////console.log("Dropped on " + realtarget.attr("id") + ", with data: " + data);
+   //$.ajax({
+   //   url: "/ajax?request=move_tracker&url=" + data + "&target_alias=" + realtarget.attr("id").split("tracker-")[1],
+   //   success: function (data) {
+   //      if (data == "OK") {
+   //         refresh_page();
+   //      } else {
+   //         console.log(data);
+   //      }
+   //   }
+   //});
 }
 
 function dragend(e) {
-   $("#tracker-info").html("Drag to group icons");
+   //$("#tracker-info").html("Drag to group icons");
 }
 
 function dragoverInfo(e) {
@@ -152,22 +155,23 @@ function dragleaveInfo(e) {
 
 function dropInfo(e) {
    e.preventDefault();
+   e.dataTransfer.dropEffect = "copy";
    console.log("Dropped into info box");
    $(e.target).css({
       "color": "",
       "font-weight": ""
    });
-   var data = e.dataTransfer.getData("Text");
-   $.ajax({
-      url: "/ajax?request=move_tracker&url=" + data + "&target_alias=" + null,
-      success: function (data) {
-         if (data == "OK") {
-            refresh_page();
-         } else {
-            console.log(data);
-         }
-      }
-   })
+   //var data = e.dataTransfer.getData("Text");
+   //$.ajax({
+   //   url: "/ajax?request=move_tracker&url=" + data + "&target_alias=" + null,
+   //   success: function (data) {
+   //      if (data == "OK") {
+   //         refresh_page();
+   //      } else {
+   //         console.log(data);
+   //      }
+   //   }
+   //})
 }
 
 function showoptions(nam) {

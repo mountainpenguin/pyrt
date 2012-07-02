@@ -145,7 +145,7 @@ class AliasStore(object):
                 newalias = url
                 
             if newalias in self.REVERSE_LOOKUP:
-                grp = self.STORE[newalias]
+                grp = self.STORE[self.REVERSE_LOOKUP[newalias]]
                 #add to group
                 oldurls = grp.urls
                 oldmembers = grp.members
