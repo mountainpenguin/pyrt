@@ -139,6 +139,7 @@ class AliasStore(object):
                 newname = group.members[0].url
                 group.favicon = newfavicon
                 #rename alias to first member
+                group.alias = newname
                 self.STORE[newname] = group
                 for i in group.members:
                     self.REVERSE_LOOKUP[i.url] = newname

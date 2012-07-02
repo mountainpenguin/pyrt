@@ -279,7 +279,7 @@
                                 <h3>Tracker icons</h3>
                                 <div class="info" id="tracker-info" droppable="true" ondragover="dragoverInfo(event);" ondrop="dropInfo(event);" ondragleave="dragleaveInfo(event);">Drag to group icons</div>
                                 <div>
-                                    #for $alias, $group in $aliases.iteritems()
+                                    #for $alias, $group in sorted($aliases.items())
                                     <div id="tracker-$alias" droppable=true ondrop="drop(event);" ondragover="dragover(event);" class="tracker-div">
                                         <img draggable=false width=16 height=16 alt="$alias icon" class="trackericon" src="$group.favicon">
                                         #for $trackerurl in $group.urls
