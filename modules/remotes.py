@@ -356,7 +356,8 @@ class RemoteStorage(object):
     def _randomID(self, length=10):
         return "".join([random.choice(string.letters + string.digits) for x in range(length)])
         
-    def __init__(self):
+    def __init__(self, log):
+        self.LOG = log
         try:
             self.STORE = pickle.load(open(".remotes.pickle"))
         except:
@@ -380,10 +381,22 @@ class RemoteStorage(object):
             9: [],
         }
         
-    def assignSocket(self, num, name):
-        self.SOCKETS[num] += [name]
+    def _purgeSockets(self):
+        for socknum, assigned in self.SOCKETS.iteritems():
+            if assigned:
+                for sockname, process in assigned:
+                    if not process.is_alive():
+                        #purge!
+                        self.LOG.warning("Process on socket #%i (name: %s) is dead, purging", socknum, sockname)
+                        logging.warning("Process on socket #%i (name: %s) is dead, purging", socknum, sockname)
+                        self.releaseSocket(socknum, sockname)
+        
+    def assignSocket(self, num, name, process):
+        self._purgeSockets()
+        self.SOCKETS[num] += [(name, process)]
         
     def getFreeSocket(self):
+        self._purgeSockets()
         for i in range(10):
             if not self.SOCKETS[i]:
                 return i
@@ -391,14 +404,18 @@ class RemoteStorage(object):
         
     def assigneeSocket(self, name):
         for i in range(10):
-            if name in self.SOCKETS[i]:
+            if name in [x[0] for x in self.SOCKETS[i]]:
                 return i
             
     def releaseSocket(self, num, name):
         assigned = self.SOCKETS[num]
-        if name in assigned:
-            idx = assigned.index(name)
-        else:
+        idx = None
+        count = 0
+        for x in assigned:
+            if name == x[0]:
+                idx = count
+                break
+        if not idx:
             return False
         try:
             assigned.pop(idx)

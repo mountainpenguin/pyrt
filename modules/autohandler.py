@@ -159,10 +159,10 @@ class AutoHandler(object):
             #get websocketURI
             socknum = self.STORE.getFreeSocket()
             ircobj = irc.Irc(name, self.LOG, self.STORE, websocketURI=".sockets/rpc%i.interface" % (socknum), auth=auth)
-            self.STORE.assignSocket(socknum, name)
-            self.LOG.info("RPC socket number %i assigned to %s IRCbot", socknum, name)
             p = ircobj.start()
             self.STORE.saveProc(name, p.pid, p)
+            self.STORE.assignSocket(socknum, name, p)
+            self.LOG.info("RPC socket number %i assigned to %s IRCbot", socknum, name)
         except:
             tb = traceback.format_exc()
             tb_line = tb.strip().split("\n")[-1]
