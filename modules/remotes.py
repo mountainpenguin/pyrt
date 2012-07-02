@@ -412,10 +412,11 @@ class RemoteStorage(object):
         idx = None
         count = 0
         for x in assigned:
-            if name == x[0]:
+            if name == str(x[0]):
                 idx = count
                 break
-        if not idx:
+            count += 1
+        if idx == None:
             return False
         try:
             assigned.pop(idx)
