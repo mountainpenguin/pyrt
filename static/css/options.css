@@ -196,7 +196,9 @@ ol li {
   .options-box input[type="password"] {
     width: 200px; }
   .options-box div {
-    padding-bottom: 0.5em; }
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
+    padding: 0.1em; }
   .options-box label {
     margin-right: 5px;
     /*
@@ -244,11 +246,17 @@ ol li {
     padding-top: 5px;
     margin-left: -5px; }
   .options-box .tracker {
-    display: inline; }
+    display: inline;
+    cursor: pointer;
+    border: 1px solid #646464;
+    border-radius: 3px; }
+    .options-box .tracker:hover {
+      background-color: rgba(226, 238, 221, 0.5); }
   .options-box .trackericon {
     border: none;
     outline: none;
-    padding-right: 1em; }
+    padding-right: 1em;
+    vertical-align: top; }
 
 .submit-box {
   padding: 10px;
@@ -266,10 +274,3 @@ ol li {
 
 .info {
   color: #969696; }
-
-div.tracker {
-  cursor: pointer;
-  border: 1px solid #646464;
-  border-radius: 3px; }
-  div.tracker:hover {
-    background-color: rgba(230, 230, 230, 0.5); }

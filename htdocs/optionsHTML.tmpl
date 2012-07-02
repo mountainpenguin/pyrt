@@ -277,7 +277,7 @@
                         <div id="trackers" class="options">
                             <div id="trackers-settings" class="options-box">
                                 <h3>Tracker icons</h3>
-                                <div class="info" id="tracker-info">Drag to group icons</div>
+                                <div class="info" id="tracker-info" droppable="true">Drag to group icons</div>
                                 <div>
                                     #for $alias, $group in $aliases.iteritems()
                                     <div id="tracker-$alias" droppable=true ondrop="drop(event);" ondragover="dragover(event);" class="tracker-div">

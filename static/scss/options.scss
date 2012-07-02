@@ -231,7 +231,11 @@ ol {
         width : 200px;
     }
     div {
-        padding-bottom : 0.5em;
+        margin : {
+            top: 0.25em;
+            bottom: 0.25em;
+        }
+        padding: 0.1em;
     }
     label {
         margin-right : 5px;
@@ -300,11 +304,18 @@ ol {
     }
     .tracker {
         display : inline;
+        cursor: pointer;
+        &:hover {
+            background-color: rgba(226, 238, 221, 0.5);
+        }
+        border: 1px solid #646464;
+        border-radius: 3px;
     }
     .trackericon {
         border : none;
         outline : none;
         padding-right : 1em;
+        vertical-align: top;
     }
 }
 
@@ -330,13 +341,4 @@ ol {
 
 .info {
     color: #969696;
-}
-
-div.tracker {
-    cursor: pointer;
-    &:hover {
-        background-color: rgba(230,230,230,0.5);
-    }
-    border: 1px solid #646464;
-    border-radius: 3px;
 }

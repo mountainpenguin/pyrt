@@ -106,8 +106,7 @@ $(document).ready( function () {
 
 function dragstart(e) {
    e.dataTransfer.effectAllowed = "copy";
-   var realtarget = $(e.target).closest(".tracker-div");
-   e.dataTransfer.setData("Text", realtarget.attr("id"));
+   e.dataTransfer.setData("Text", $(e.target).html());
    $("#tracker-info").html("Drag here to create a new group");
 }
 
@@ -121,7 +120,7 @@ function drop(e) {
    var data = e.dataTransfer.getData("Text");
    //console.log("Dropped on " + realtarget.attr("id") + ", with data: " + data);
    $.ajax({
-      url: "/ajax?request=move_tracker&url=" + data.split("tracker-")[1] + "&target_alias=" + realtarget.attr("id").split("tracker-")[1],
+      url: "/ajax?request=move_tracker&url=" + data + "&target_alias=" + realtarget.attr("id").split("tracker-")[1],
       success: function (data) {
          console.log(data);
       }
@@ -130,6 +129,16 @@ function drop(e) {
 
 function dragend(e) {
    $("#tracker-info").html("Drag to group icons");
+}
+
+function dragoverInfo(e) {
+   e.preventDefault();
+   $(e.target).css("background-color", "orange");
+}
+
+function dropInfo(e) {
+   e.preventDefault();
+   console.log("Dropped into info box");
 }
 
 function showoptions(nam) {
