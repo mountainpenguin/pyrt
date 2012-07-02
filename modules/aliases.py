@@ -97,18 +97,14 @@ class AliasStore(object):
             if newalias is defined, new group will be named such
             else newalias will be the popped out tracker url
         """
-        print("Processing url: %s; moving to alias group: %s" % (url, newalias))
         if url in self.REVERSE_LOOKUP:
             alias = self.REVERSE_LOOKUP[url]
-            print("Got alias: %s" % alias)
-            if alias == url:
+            if newalias == url:
                 return
             
             #remove from old group
             group = self.STORE[alias]
-            print("group: ", group.__dict__)
             idx = group.urls.index(url)
-            print("idx: ", idx)
             oldurls = group.urls
             oldurls.pop(idx)
             group.urls = oldurls
@@ -120,13 +116,16 @@ class AliasStore(object):
             #remove group if empty
             if len(oldurls) == 0:
                 #delete group
-                print("Removing old group")
                 del self.STORE[alias]
+                print("Deleting old group")
+                try:
+                    print(self.STORE[alias])
+                except:
+                    print("Deleted successfully")
             else:
                 newfavicon = group.members[0].favicon
                 group.favicon = newfavicon
             self.STORE[alias] = group
-            print("Modified group ", self.STORE[alias].__dict__)
             
             #create new group
             if not newalias:
@@ -141,13 +140,10 @@ class AliasStore(object):
                 oldmembers += [thismember]
                 grp.urls = oldurls
                 grp.members = oldmembers
-                print("Added to existing group")
             else:
                 grp = AliasGroup(newalias, thismember.favicon, [thismember])
-                print("Created new group")
                 
             self.STORE[newalias] = grp
-            print("New group:", self.STORE[newalias].__dict__)
             
             #deal with REVERSE_LOOKUP
             self.REVERSE_LOOKUP[url] = newalias
