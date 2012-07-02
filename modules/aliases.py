@@ -134,11 +134,15 @@ class AliasStore(object):
                 #delete group
                 del self.STORE[alias]
             else:
+                del self.STORE[alias]
                 newfavicon = group.members[0].favicon
                 newname = group.members[0].url
                 group.favicon = newfavicon
                 #rename alias to first member
-                self.STORE[alias] = group
+                self.STORE[newname] = group
+                for i in group.members:
+                    self.REVERSE_LOOKUP[i.url] = newname
+                
             #remove url from REVERSE_LOOKUP
             del self.REVERSE_LOOKUP[url]
             
