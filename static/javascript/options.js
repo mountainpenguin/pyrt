@@ -104,7 +104,7 @@ $(document).ready( function () {
 });
 
 function dragstart(e) {
-   e.dataTransfer.effectAllowed = "copy";
+   e.dataTransfer.effectAllowed = "move";
    e.dataTransfer.setData("Text", $(e.target).html());
    $("#tracker-info").html("Drag here to create a new group");
 }
@@ -115,7 +115,7 @@ function dragover(e) {
 
 function drop(e) {
    e.preventDefault();
-   e.dataTransfer.dropEffect = "copy";
+   e.dataTransfer.dropEffect = "move";
    var realtarget = $(e.target).closest(".tracker-div");
    var data = e.dataTransfer.getData("Text");
    //console.log("Dropped on " + realtarget.attr("id") + ", with data: " + data);
@@ -153,7 +153,7 @@ function dragleaveInfo(e) {
 
 function dropInfo(e) {
    e.preventDefault();
-   e.dataTransfer.dropEffect = "copy";
+   e.dataTransfer.dropEffect = "move";
    console.log("Dropped into info box");
    $(e.target).css({
       "color": "",
