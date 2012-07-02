@@ -123,6 +123,8 @@ function drop(e) {
       success: function (data) {
          if (data == "OK") {
             refresh_page();
+         } else {
+            console.log(data);
          }
       }
    });
@@ -137,9 +139,24 @@ function dragoverInfo(e) {
    $(e.target).css("background-color", "orange");
 }
 
+function dragleaveInfo(e) {
+   e.preventDefault();
+   $(e.target).css("background-color", "");
+}
+
 function dropInfo(e) {
    e.preventDefault();
    console.log("Dropped into info box");
+   $.ajax({
+      url: "/ajax?request=move_tracker&url=" + data + "&target_alias=" + null,
+      success: function (data) {
+         if (data == "OK") {
+            refresh_page();
+         } else {
+            console.log(data);
+         }
+      }
+   })
 }
 
 function showoptions(nam) {
