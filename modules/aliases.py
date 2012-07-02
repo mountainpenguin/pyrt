@@ -125,7 +125,7 @@ class AliasStore(object):
             else:
                 newfavicon = group.members[0].favicon
                 group.favicon = newfavicon
-            self.STORE[alias] = group
+                self.STORE[alias] = group
             
             #create new group
             if not newalias:

@@ -268,6 +268,8 @@ ol li {
   color: #969696; }
 
 div.tracker {
-  cursor: pointer; }
+  cursor: pointer;
+  border: 1px solid #646464;
+  border-radius: 3px; }
   div.tracker:hover {
     background-color: rgba(230, 230, 230, 0.5); }

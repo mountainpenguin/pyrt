@@ -163,7 +163,7 @@ class rtorrent:
     def getCurrentTrackers(self, view="main"):
         torrentdict = self.getTorrentList()
         trackerdict = {}
-        for torrentID, torrentName in torrentdict:
+        for torrentID, torrentName in torrentdict.iteritems():
             trackers = self.getTrackers(torrentID)
             for t in trackers:
                 trackerdict[t.root_url] = TrackerSimple(t.root_url, t.favicon)
