@@ -27,7 +27,7 @@ import os
 import glob
 
 class Options:
-    def __init__(self, conf=config.Config(), RT=None, aliases=aliases):
+    def __init__(self, conf=config.Config(), RT=None, aliases=None):
         self.C = conf
         if not RT:
             self.RT = rtorrent.rtorrent(self.C.get("rtorrent_socket"))

@@ -245,5 +245,4 @@ class RPCHandler(object):
             self.privateLog("error", "RPC: traceback: %s" % tb)
             error = "005: %s" % tb.strip().split("\n")[-1]
             
-        self.privateLog("info", "RPC request: %r, response: %r, error: %r", command, response, error)
         return self._respond(command, response, error) 
