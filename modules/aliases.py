@@ -139,6 +139,8 @@ class AliasStore(object):
                 group.favicon = newfavicon
                 #rename alias to first member
                 self.STORE[alias] = group
+            #remove url from REVERSE_LOOKUP
+            del self.REVERSE_LOOKUP[url]
             
             #create new group
             if not newalias or newalias == "null":
