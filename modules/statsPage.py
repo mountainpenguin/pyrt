@@ -28,13 +28,14 @@ import os
 import json
 
 class Index(object):
-    def __init__(self, conf=config.Config(), RT=None):
+    def __init__(self, conf=config.Config(), RT=None, aliases=None):
         self.Config = conf
         if not RT:
             self.RT = rtorrent.rtorrent(self.Config.get("rtorrent_socket"))
         else:
             self.RT = RT
         self.handler = torrentHandler.Handler()
+        self.aliases = aliases
 
     def handle_request(self, request):
         if request == "global":
@@ -63,14 +64,17 @@ class Index(object):
             ratioTotal = 0
             for t in torrentList:
                 tracker_url = t.trackers[0].root_url
-                if tracker_url in tDict:
-                    tDict[tracker_url]["up_total"] += t.up_total
-                    tDict[tracker_url]["down_total"] += t.down_total
+                #get alias
+                alias = self.aliases.getAlias(tracker_url)
+                alias_url = alias.url
+                if alias_url in tDict:
+                    tDict[alias_url]["up_total"] += t.up_total
+                    tDict[alias_url]["down_total"] += t.down_total
                 else:
-                    tDict[tracker_url] = {}
-                    tDict[tracker_url]["favicon"] = t.trackers[0].favicon_url
-                    tDict[tracker_url]["up_total"] = t.up_total
-                    tDict[tracker_url]["down_total"] = t.down_total
+                    tDict[alias_url] = {}
+                    tDict[alias_url]["favicon"] = alias.favicon
+                    tDict[alias_url]["up_total"] = t.up_total
+                    tDict[alias_url]["down_total"] = t.down_total
                 upTotal += t.up_total
                 downTotal += t.down_total
 

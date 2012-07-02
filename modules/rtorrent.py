@@ -114,6 +114,7 @@ class rtorrent:
             #path defined
             self.conn = xmlrpc.RTorrentXMLRPCClient(port)
         self.availableMethods = self.conn.system.listMethods()
+        self.newAliases = []
 
     def getTorrentList(self):
         """
@@ -319,6 +320,14 @@ class rtorrent:
     def getUploadSpeed(self, id):
         return self.conn.d.get_up_rate(id)
 
+    def flushNewAliases(self):
+        if self.newAliases:
+            new = self.newAliases
+            self.newAliases = []
+            return new
+        else:
+            return []
+        
     def getTrackers(self, id):
         trackers = []
         resp = self.conn.t.multicall(
@@ -349,17 +358,19 @@ class rtorrent:
                         try:
                             fav_icon = urllib2.urlopen(fav_icon_url, timeout=2).read()
                             open("static/favicons/%s.ico" % (root_url),"wb").write(fav_icon)
+                            self.newAliases.append(TrackerSimple(root_url, "/favicons/%s.ico" % (root_url)))
                         except:
                             fav_icon_url2 = "%s://%s/favicon.ico" % (url_parsed.scheme, ".".join(root_url.split(".")[1:]))
-                            print fav_icon_url2
                             try:
                                 fav_icon = urllib2.urlopen(fav_icon_url2, timeout=2).read()
                                 open("static/favicons/%s.ico" % (root_url),"wb").write(fav_icon)
+                                self.newAliases.append(TrackerSimple(root_url, "/favicons/%s.ico" % (root_url)))
                             except:
                                 fav_icon = None
                 if fav_icon == None:
                     try:
                         os.symlink("default.ico", "static/favicons/%s.ico" % root_url)
+                        self.newAliases.append(TrackerSimple(root_url, "/favicons/%s.ico" % (root_url)))
                     except:
                         pass
                     faviconurl = "/favicons/default.ico"

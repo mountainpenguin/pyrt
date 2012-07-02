@@ -76,8 +76,24 @@ class AliasStore(object):
     #       .urls       = list of group URLs
     #       .members    = list of rtorrent.TrackerSimple objects
     
+    def addNewAlias(self, url=None, favicon=None, trackerSimple=None):
+        self._update()
+        if trackerSimple:
+            url = trackerSimple.url
+            favicon = trackerSimple.favicon
+        else:
+            trackerSimple = rtorrent.TrackerSimple(url, favicon)
+        
+        if url in self.STORE:
+            raise AliasError("Alias already defined")
+        else:
+            self.STORE[url] = AliasGroup(url, favicon, [trackerSimple])
+            self.REVERSE_LOOKUP[url] = url
+            self._flush()
+        
     def getAlias(self, alias):
         """Returns the alias group for a specified alias"""
+        self._update()
         if alias in self.STORE:
             return self.STORE[alias]
         else:
@@ -85,6 +101,7 @@ class AliasStore(object):
     
     def getAliasGroup(self, url):
         """Returns the alias group for a specified tracker URL"""
+        self._update()
         if url in self.REVERSE_LOOKUP:
             alias = self.REVERSE_LOOKUP[url]
             return self.STORE[alias]
@@ -97,10 +114,9 @@ class AliasStore(object):
             if newalias is defined, new group will be named such
             else newalias will be the popped out tracker url
         """
+        self._update()
         if url in self.REVERSE_LOOKUP:
             alias = self.REVERSE_LOOKUP[url]
-            if newalias == url:
-                return
             
             #remove from old group
             group = self.STORE[alias]
@@ -119,7 +135,9 @@ class AliasStore(object):
                 del self.STORE[alias]
             else:
                 newfavicon = group.members[0].favicon
+                newname = group.members[0].url
                 group.favicon = newfavicon
+                #rename alias to first member
                 self.STORE[alias] = group
             
             #create new group
@@ -163,6 +181,14 @@ class AliasStore(object):
         for t_url, t_obj in knownTrackers.iteritems():
             aliases[t_url] = AliasGroup(t_url, t_obj.favicon, [t_obj])
         return aliases
-            
+
+    def _update(self):
+        new = self.RT.flushNewAliases()
+        for n in new:
+            if n.url not in self.STORE:
+                self.STORE[n.url] = AliasGroup(n.url, n.favicon, [n])
+                self.REVERSE_LOOKUP[n.url] = n.url
+                self._flush()
+                
     def _flush(self):
         pickle.dump(self.STORE, open(".aliases.pickle","w"))
