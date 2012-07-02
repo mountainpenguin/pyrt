@@ -248,10 +248,13 @@ ol li {
   .options-box .tracker {
     display: inline;
     cursor: pointer;
-    border: 1px solid #646464;
-    border-radius: 3px; }
+    border-radius: 3px;
+    font-family: monospace; }
     .options-box .tracker:hover {
-      background-color: rgba(226, 238, 221, 0.5); }
+      background-color: rgba(226, 238, 221, 0.5);
+      border: 1px solid #C1C1C1; }
+    .options-box .tracker:not(hover) {
+      border: 1px solid #EBEBEB; }
   .options-box .trackericon {
     border: none;
     outline: none;

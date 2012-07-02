@@ -117,11 +117,6 @@ class AliasStore(object):
             if len(oldurls) == 0:
                 #delete group
                 del self.STORE[alias]
-                print("Deleting old group")
-                try:
-                    print(self.STORE[alias])
-                except:
-                    print("Deleted successfully")
             else:
                 newfavicon = group.members[0].favicon
                 group.favicon = newfavicon

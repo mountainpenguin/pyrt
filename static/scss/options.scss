@@ -307,9 +307,13 @@ ol {
         cursor: pointer;
         &:hover {
             background-color: rgba(226, 238, 221, 0.5);
+            border: 1px solid #C1C1C1;
         }
-        border: 1px solid #646464;
+        &:not(hover) {
+            border: 1px solid #EBEBEB;
+        }
         border-radius: 3px;
+        font-family: monospace;
     }
     .trackericon {
         border : none;

@@ -94,8 +94,7 @@ $(document).ready( function () {
             url: "/ajax?request=set_config_multiple&keys=" + keys + "&values=" + encodeURIComponent(values),
             success: function (data) {
                //$("#" + e.target.id.split("-")[0] + "-status").html(data);
-               window.location.hash = "show-" + tabView;
-               window.location.reload(window.location);
+               refresh_page();
             }
          });
       } else {
@@ -122,7 +121,9 @@ function drop(e) {
    $.ajax({
       url: "/ajax?request=move_tracker&url=" + data + "&target_alias=" + realtarget.attr("id").split("tracker-")[1],
       success: function (data) {
-         console.log(data);
+         if (data == "OK") {
+            refresh_page();
+         }
       }
    });
 }
@@ -180,4 +181,9 @@ function verify(key, value) {
       }
    })
    return false;
+}
+
+function refresh_page() {
+   window.location.hash = "show-" + tabView;
+   window.location.reload(window.location);
 }
