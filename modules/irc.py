@@ -134,8 +134,6 @@ class _ModularBot(ircbot.SingleServerIRCBot):
                         return
         except:
             pass
-        if event.arguments()[0] == "DIE!":
-            raise OSError
 
     def on_ctcp(self, connection, event):
         pass
