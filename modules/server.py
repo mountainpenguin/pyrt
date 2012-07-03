@@ -681,6 +681,7 @@ class manifest(tornado.web.RequestHandler):
         manifest = open("static/cache.manifest").read()
         self.write(manifest)
         self.set_header("Content-Type", "text/cache-manifest")
+        self.set_status(200)
     
     
 class Main(object):
