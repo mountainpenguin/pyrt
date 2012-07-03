@@ -12,7 +12,7 @@ CACHE:
 /images/file_archive.png
 /images/file_disk.png
 /images/file_music.png
-/images/file_unknown.gif
+/images/file_unknown.png
 /images/file_video.jpg
 /images/folder.gif
 /images/folder-closed.gif
@@ -53,7 +53,8 @@ CACHE:
 /javascript/auto-irc.js
 /javascript/auto-rss.js
 /javascript/create.js
-/javascript/enc-base64-min.js
+/javascript/CryptoJS/sha256.js
+/javascript/CryptoJS/enc-base64-min.js
 /javascript/jquery-1.7.min.js
 /javascript/jquery.contextmenu.r2.js
 /javascript/jquery.cookie.js
@@ -66,5 +67,4 @@ CACHE:
 /javascript/login.js
 /javascript/main.js
 /javascript/options.js
-/javascript/sha256.js
 /javascript/stats.js
