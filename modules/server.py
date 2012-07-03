@@ -683,7 +683,20 @@ class manifest(tornado.web.RequestHandler):
         self.write(manifest)
         self.set_header("Content-Type", "text/cache-manifest")
         self.set_status(200)
-    
+        
+class manifesthack(tornado.web.RequestHandler):
+    """Prevent dynamic index from being cached"""
+    def get(self):
+        html = """
+        <!DOCTYPE html>
+        <html manifest="cache.manifest>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+            </head>
+            <body></body>
+        </html>
+        """
+        self.write(html)    
     
 class Main(object):
     def __init__(self):
@@ -728,6 +741,7 @@ class Main(object):
             (r"/images/(.*)", tornado.web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/images/") }),
             (r"/favicons/(.*)", tornado.web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/favicons/") }),
             (r"/cache\.manifest", manifest),
+            (r"/manifest-hack", manifesthack),
             (r"/", index),
             (r"/index", index),
             (r"/ajax", ajax),
