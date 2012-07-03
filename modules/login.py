@@ -93,7 +93,7 @@ class Login:
         try:
             TOTP_salt = pw.split("$")[1]
         except IndexError:
-            self.Log.error("LOGIN: Invalid syntax in login attempt from %s.*.*.*", ip.split(".")[0])
+            self.Log.error("LOGIN: Invalid syntax in login attempt from %s", ip)
             logging.error("Invalid syntax in login attempt from %s", ip)
             return False
         except:
@@ -108,10 +108,10 @@ class Login:
         cmp_hash = hashlib.sha256(pwhash + token_salt).hexdigest()
         cmpval = "$%s$%s" % (TOTP_salt, cmp_hash)
         if pw == cmpval:
-            self.Log.info("LOGIN: User successfully logged in from %s.*.*.*", ip.split(".")[0])
+            self.Log.info("LOGIN: User successfully logged in from %s", ip)
             return True
         else:
-            self.Log.warning("LOGIN: Attempted login from %s.*.*.* failed (invalid password)", ip.split(".")[0])
+            self.Log.warning("LOGIN: Attempted login from %s failed (invalid password)", ip)
             return False
                 
     def checkLogin(self, cookies, ipaddr):
@@ -119,22 +119,23 @@ class Login:
             session_id = cookies.get("sess_id").value
             salt = session_id.split("$")[1]
 
-            #h1 = hashlib.sha256(self.USER.sess_id).hexdigest()
-            #h2 = hashlib.sha256(h1 + ipaddr).hexdigest()
-            #h3 = hashlib.sha256(h2 + salt).hexdigest()
-            #if "$%s$%s" % (salt, h3) == session_id:
-            #   return True
-            #else:
-            #   return False
+            h1 = hashlib.sha256(self.USER.sess_id).hexdigest()
+            h2 = hashlib.sha256(h1 + ipaddr).hexdigest()
+            h3 = hashlib.sha256(h2 + salt).hexdigest()
+            if "$%s$%s" % (salt, h3) == session_id:
+                return True
+            else:
+                self.Log.debug("Session for %s has expired", ipaddr)
+                return False
 
-            for sess_id in self.USER.testing:
-                h1 = hashlib.sha256(sess_id).hexdigest()
-                h2 = hashlib.sha256(h1 + ipaddr).hexdigest()
-                h3 = hashlib.sha256(h2 + salt).hexdigest()
-                if "$%s$%s" % (salt, h3) == session_id:
-                    return True
-            self.Log.debug("Session for %s.*.*.* has expired" % ipaddr.split(".")[0])
-            return False
+            #for sess_id in self.USER.testing:
+            #    h1 = hashlib.sha256(sess_id).hexdigest()
+            #    h2 = hashlib.sha256(h1 + ipaddr).hexdigest()
+            #    h3 = hashlib.sha256(h2 + salt).hexdigest()
+            #    if "$%s$%s" % (salt, h3) == session_id:
+            #        return True
+            #self.Log.debug("Session for %s.*.*.* has expired" % ipaddr.split(".")[0])
+            #return False
         except:
             return False
         
@@ -176,8 +177,8 @@ class Login:
     def sendCookie(self, ipaddr):
         randstring = "".join([random.choice(string.letters + string.digits) for i in range(20)])
         #add sess_id to self.USER
-        #self.USER.sess_id = randstring
-        self.USER.testing += [randstring]
+        self.USER.sess_id = randstring
+        #self.USER.testing += [randstring]
         self._flush()  
 
         #hash sess_id
