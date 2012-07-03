@@ -34,7 +34,7 @@ function noupdateEvent(e) {
     console.log("everything is up-to-date");
 }
 
-var appCache = window.applicationCache;
+var appCache = document.getElementById("manifest-hack").applicationCache;
 appCache.addEventListener("checking", checkingEvent, false);
 appCache.addEventListener("downloading", downloadingEvent, false);
 appCache.addEventListener("progress", progressEvent, false);
