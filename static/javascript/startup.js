@@ -17,18 +17,25 @@
  *  along with pyRT.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
- 
-$(document).ready( function () {
-    var appCache = window.applicationCache;
-    
-    $(appCache).bind("checking", function (e) {
-        console.log("checking application cache");
-    }).bind("downloading", function (e) {
-        console.log("there are new resources");
-    }).bind("progress", function(e) {
-        console.log("progress", e);
-    }).bind("noupdate", function(e) {
-        console.log("everything up to date");
-    });
-    appCache.update();
-});
+
+function checkingEvent(e) {
+    console.log("checking application cache");    
+}
+
+function downloadingEvent(e) {
+    console.log("there are new resources");
+}
+
+function progressEvent(e) {
+    console.log("progress", e);
+}
+
+function noupdateEvent(e) {
+    console.log("everything is up-to-date");
+}
+
+var appCache = window.applicationCache;
+appCache.addEventListener("checking", checkingEvent, false);
+appCache.addEventListener("downloading", downloadingEvent, false);
+appCache.addEventListener("progress", progressEvent, false);
+appCache.addEventListener("noupdate", noupdateEvent, false);
