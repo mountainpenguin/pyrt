@@ -1,6 +1,6 @@
 CACHE MANIFEST
-# 03.07.2012:2822eb12f15e612263265ccac9ee82c35edc56c6
-# dd.mm.yyyy:last-commit
+# 03.07.2012.21:56:e9d633abe1fb7174c7587b7fa77b35f9550197a9
+# dd.mm.yyyy.HH:MM:last-commit
 
 CACHE:
 #images
@@ -68,6 +68,7 @@ CACHE:
 /javascript/main.js
 /javascript/options.js
 /javascript/stats.js
+/javascript/startup.js
 
 NETWORK:
 /cache.manifest
