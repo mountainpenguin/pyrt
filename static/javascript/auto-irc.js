@@ -177,7 +177,6 @@ function onMessage (evt) {
           } else if (response.request == "stop_bot") {
                if (response.error) {
                     console.log("ERROR in request " + response.request + ": " + response.error);
-                    return false;
                }
                refresh_drop_down(response.name);
           } else if (response.request == "remove_filter") {
