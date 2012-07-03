@@ -675,6 +675,14 @@ class RPCSocket(tornado.websocket.WebSocketHandler):
         logging.info("RPCsocket closed")
         
 
+class manifest(tornado.web.RequestHandler):
+    """Fake static file handler for serving static/cache.manifest"""
+    def get(self):
+        manifest = open("static/cache.manifest").read()
+        self.write(manifest)
+        self.set_header("Content-Type", "text/cache-manifest")
+    
+    
 class Main(object):
     def __init__(self):
         pass
@@ -717,6 +725,7 @@ class Main(object):
             (r"/javascript/(.*)", tornado.web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/javascript/")}),
             (r"/images/(.*)", tornado.web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/images/") }),
             (r"/favicons/(.*)", tornado.web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/favicons/") }),
+            (r"/cache\.manifest", manifest),
             (r"/", index),
             (r"/index", index),
             (r"/ajax", ajax),
