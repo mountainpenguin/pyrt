@@ -689,7 +689,7 @@ class manifesthack(tornado.web.RequestHandler):
     def get(self):
         html = """
         <!DOCTYPE html>
-        <html manifest="cache.manifest>
+        <html manifest="cache.manifest">
             <head>
                 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
             </head>
