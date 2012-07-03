@@ -33,9 +33,12 @@ function progressEvent(e) {
 function noupdateEvent(e) {
     console.log("everything is up-to-date");
 }
-
-var appCache = document.getElementById("manifest-hack").applicationCache;
-appCache.addEventListener("checking", checkingEvent, false);
-appCache.addEventListener("downloading", downloadingEvent, false);
-appCache.addEventListener("progress", progressEvent, false);
-appCache.addEventListener("noupdate", noupdateEvent, false);
+var hack = $("#manifest-hack");
+hack.contents().load(function () {
+    console.log("loaded!");
+    var appCache = hack[0].contentWindow.applicationCache;
+    appCache.addEventListener("checking", checkingEvent, false);
+    appCache.addEventListener("downloading", downloadingEvent, false);
+    appCache.addEventListener("progress", progressEvent, false);
+    appCache.addEventListener("noupdate", noupdateEvent, false); 
+});
