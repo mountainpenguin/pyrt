@@ -67,7 +67,6 @@ class RPC(object):
 
         self.socket.send(thing)
         #block for reply
-        self.socket.settimeout(3)
         try:
             resp = self.socket.recv()
         except socket.timeout:
