@@ -178,6 +178,7 @@ class index(tornado.web.RequestHandler):
         
         torrentList = self.application._pyrtRT.getTorrentList2(view)
         self.write(handler.torrentHTML(torrentList, sortby, view, reverse))
+        self.set_header("Cache-Control", "no-cache")
         
     post = get
     
