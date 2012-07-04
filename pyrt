@@ -28,6 +28,7 @@ import sys
 import glob
 import time
 import subprocess
+import argparse
 
 
 __AUTHOR__ = "mountainpenguin (pinguino.de.montana@googlemail.com)"
@@ -55,8 +56,19 @@ def _isGitRepo():
     else:
         return False
     
+def _checkRepo():
+    p = subprocess.Popen(["git remote update"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    print("Checking for updates")
+    stdout, stderr = p.communicate()
+    if "remote:" in stdout:
+        return True
+    else:
+        print("Repository is up-to-date")
+        return False
+    
 def _updateRepo():
-    pass
+    #update remote
+    os.system("git pull")
     
 def start():
     if _searchPID():
@@ -144,6 +156,18 @@ if __name__ == "__main__":
     print("This program comes with ABSOLUTELY NO WARRANTY")
     print("This is free software, and you are welcome to redistribute it under certain conditions")
     print("See LICENCE for details", end="\n\n")
+    
+    parser = argparse.ArgumentParser(description="PyRT rtorrent webUI")
+    parser.add_argument("start", help="Start the webUI daemon")
+    parser.add_argument("stop", help="Stop the webUI daemon")
+    parser.add_argument("restart", help="Restart the webUI daemon")
+    parser.add_argument("status", help="Return the status of the webUI daemon")
+    parser.add_argument("mkpasswd", help="Create a password hash")
+    parser.add_argument("--no-update", "-n", help="Specify that the daemon shouldn't check for updates")
+    
+    print(parser.parse_args(sys.argv))
+    sys.exit()
+    
     try:
         arg = sys.argv[1]
     except:
