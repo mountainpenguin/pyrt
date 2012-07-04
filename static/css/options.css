@@ -13,7 +13,7 @@ body {
   height: 100%; }
 
 a:link, a:visited, a:active, a:hover {
-  color: white; }
+  text-decoration: none; }
 
 #header {
   padding-top: 20px;

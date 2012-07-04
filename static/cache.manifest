@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# 04.07.2012.10:37:0c2440d7f6f0f62a16531ca7dc9cb1d97b78629b
+# 04.07.2012.14:56:8af3377aca4457a64d6922b4e5680d980b6c9e9b
 # dd.mm.yyyy.HH:MM:last-commit
 
 CACHE:
@@ -8,6 +8,7 @@ CACHE:
 /images/add.png
 /images/add-rss.png
 /images/delete.png
+/images/delete48.png
 /images/down_icon.gif
 /images/file_archive.png
 /images/file_disk.png
@@ -23,6 +24,7 @@ CACHE:
 /images/pause.png
 /images/progress.gif
 /images/ratio.jpg
+/images/red-x.png
 /images/remove.png
 /images/sort_none.gif
 /images/start.png
@@ -50,28 +52,20 @@ CACHE:
 /css/jquery.treeview.css
 
 #javascript
-/javascript/auto.js
-/javascript/auto-irc.js
-/javascript/auto-rss.js
-/javascript/create.js
-/javascript/CryptoJS/sha256.js
-/javascript/CryptoJS/enc-base64-min.js
+/javascript/auto-combined.min.js
+/javascript/auto-irc.min.js
+/javascript/auto-rss.min.js
+/javascript/create-combined.min.js
+/javascript/index-combined.min.js
 /javascript/jquery-1.7.min.js
-/javascript/jquery.contextmenu.r2.js
-/javascript/jquery.cookie.js
-/javascript/jquery-sliderow.js
-/javascript/jquery.treeview.js
 /javascript/jquery-ui-1.8.17.custom.min.js
 /javascript/kinetic-v3.9.5.min.js
-/javascript/liteaccordion.jquery.min.js
-/javascript/log.js
-/javascript/login.js
-/javascript/main.js
-/javascript/options.js
-/javascript/stats.js
-/javascript/startup.js
+/javascript/log.min.js
+/javascript/login-combined.min.js
+/javascript/options.min.js
+/javascript/stats.min.js
+/javascript/startup.min.js
+
 
 NETWORK:
 /cache.manifest
-/
-/?view=*

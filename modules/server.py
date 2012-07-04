@@ -693,7 +693,7 @@ class manifesthack(tornado.web.RequestHandler):
             <head>
                 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
                 <script type="text/javascript" src="/javascript/jquery-1.7.min.js"></script>
-                <script type="text/javascript" src="/javascript/startup.js"></script>
+                <script type="text/javascript" src="/javascript/startup.min.js"></script>
             </head>
             <body></body>
         </html>
@@ -736,6 +736,7 @@ class Main(object):
             os.remove(".user.pickle")
         settings = {
             "static_path" : os.path.join(os.getcwd(), "static"),
+            "gzip" : True,
         }
         application = tornado.web.Application([
             (r"/css/(.*)", tornado.web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/css/")}),

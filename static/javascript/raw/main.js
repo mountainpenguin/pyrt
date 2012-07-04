@@ -359,30 +359,6 @@ function loadRClickMenus() {
              minWidth : "10em"
          }
      });
-     $("#tab_options").bind(
-         "click",
-         function () {
-         window.location = "/options";
-         }
-     );
-     $("#tab_stats").bind(
-         "click",
-         function () {
-           window.location = "/stats";
-         }
-     );
-     $("#tab_log").bind(
-        "click",
-        function () {
-            window.location = "/log";
-        }
-     );
-     $("#tab_auto").bind(
-        "click",
-        function () {
-            window.location = "/auto";
-        }
-    );
 }
 
 function parse_content(response, repeat) {
@@ -660,18 +636,6 @@ function deselect_torrent(elem) {
      if (SELECTED.indexOf(elem.id) !== -1) {
           elem.style.backgroundColor = "#7ae41b";
      }
-}
-
-function navigate_tab(elem) {
-    window.location = "?view=" + elem.id.split("tab_")[1];
-}
-
-function navigate_tab_fromRSS(elem) {
-     window.location = "/?view=" + elem.id.split("tab_")[1];
-}
-
-function navigate_torrent(elem) {
-    window.location = "detail?torrent_id=" + elem.id.split("torrent_id_")[1]
 }
 
 function removerow(torrent_id) {

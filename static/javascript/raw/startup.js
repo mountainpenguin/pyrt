@@ -38,4 +38,5 @@ function updatereadyEvent(e) {
 var appCache = window.applicationCache;
 appCache.ondownloading = downloadingEvent;
 appCache.onupdateready = updatereadyEvent;
+appCache.oncached = updatereadyEvent;
 //appCache.addEventListener("downloading", downloadingEvent, false);

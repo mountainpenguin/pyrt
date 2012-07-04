@@ -8,18 +8,15 @@
         <link rel="stylesheet" type="text/css" href="/css/smoothness/jquery-ui-1.8.13.custom.css">
         <script src="/javascript/jquery-1.7.min.js" type="text/javascript"></script>
         <script src="/javascript/jquery-ui-1.8.17.custom.min.js" type="text/javascript"></script>
-        <script src="/javascript/auto-rss.js" type="text/javascript"></script>
-        <script src="/javascript/auto.js" type="text/javascript"></script>
-        <script src="/javascript/CryptoJS/sha256.js" type="text/javascript"></script>
-        <script src="/javascript/CryptoJS/enc-base64-min.js" type="text/javascript"></script>
-        <script src="/javascript/login.js" type="text/javascript"></script>
+        <script src="/javascript/auto-rss.min.js" type="text/javascript"></script>
+        <script src="/javascript/auto-combined.min.js" type="text/javascript"></script>
     </head>
     <body>
         <div id="header">
             <div id="topbar">
-                <div class="topbar-tab" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_tab_toHome(this);" title="main" id="tab_main">Main</div>
-                <div class="topbar-tab_options" onmouseover="select_tab(this);" onmouseout="deselect_tab(this);" onclick="navigate_tab(this);" title="IRC" id="tab_IRC">IRC</div>
-                <div class="topbar-tab_options selected" onclick="navigate_tab(this);" title="RSS" id="tab_RSS">RSS</div>
+                <a class="topbar-tab" href="/" title="main" id="tab_main">Main</a>
+                <a class="topbar-tab_options" href="?which=IRC" title="IRC" id="tab_IRC">IRC</a>
+                <a class="topbar-tab_options selected" href="?which=RSS" title="RSS" id="tab_RSS">RSS</a>
                 <!-- <div class="topbar-tab_suboption" id="tab_irc">IRC</div> -->
             </div>
         </div>
