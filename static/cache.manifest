@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# 04.07.2012.14:32:49c8135f30bdaf3ec48e268f534c7976ceff0c1e
+# 04.07.2012.14:56:8af3377aca4457a64d6922b4e5680d980b6c9e9b
 # dd.mm.yyyy.HH:MM:last-commit
 
 CACHE:
@@ -8,6 +8,7 @@ CACHE:
 /images/add.png
 /images/add-rss.png
 /images/delete.png
+/images/delete48.png
 /images/down_icon.gif
 /images/file_archive.png
 /images/file_disk.png
@@ -23,6 +24,7 @@ CACHE:
 /images/pause.png
 /images/progress.gif
 /images/ratio.jpg
+/images/red-x.png
 /images/remove.png
 /images/sort_none.gif
 /images/start.png
@@ -67,5 +69,3 @@ CACHE:
 
 NETWORK:
 /cache.manifest
-/
-/?view=*
