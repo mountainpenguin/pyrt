@@ -289,14 +289,31 @@ label {
 }
 
 .overlay {
-    background-color: white;
-    background-image: "/images/progress.gif";
+    background: {
+        color: white;
+        image: url("/images/progress.gif");
+        repeat: no-repeat;
+        size: 160px 160px;
+        position: 10px 10px;
+    }
     z-index: 2000;
     position: fixed;
-    top: 0;
+    top: -15;
     left: 0;
     width: 100%;
     height: 100%;
+    &>#innerdiv {
+        font-family: 'Linux Libertine', Palatino, 'Palatino Linotype', 'Book Antiqua', Georgia, 'Times New Roman', serif;
+        left: 200px;
+        width: 15em;
+        text-align: justify;
+        font-size: large;
+        top: 10px;
+        color: black;
+        &>a {
+            color: inherit;
+        }
+    }
 }
 
 #peers_table {

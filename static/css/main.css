@@ -240,13 +240,26 @@ label {
 
 .overlay {
   background-color: white;
-  background-image: "/images/progress.gif";
+  background-image: url("/images/progress.gif");
+  background-repeat: no-repeat;
+  background-size: 160px 160px;
+  background-position: 10px 10px;
   z-index: 2000;
   position: fixed;
-  top: 0;
+  top: -15;
   left: 0;
   width: 100%;
   height: 100%; }
+  .overlay > #innerdiv {
+    font-family: 'Linux Libertine', Palatino, 'Palatino Linotype', 'Book Antiqua', Georgia, 'Times New Roman', serif;
+    left: 200px;
+    width: 15em;
+    text-align: justify;
+    font-size: large;
+    top: 10px;
+    color: black; }
+    .overlay > #innerdiv > a {
+      color: inherit; }
 
 #peers_table {
   margin-top: 1em; }

@@ -21,6 +21,10 @@
 function downloadingEvent(e) {
     console.log("there are new resources");
     var overlay = $("<p id='cacheupdate' />").addClass('overlay');
+    var inner = $("<div id='innerdiv' />").html(
+        "A new version of PyRT is available, click <a href='/' alt='Refresh' title='Refresh'>here</a> to load it"
+    )
+    overlay.append(inner);
     $("body", window.parent.document).css({"overflow":"hidden","position":"fixed"}).prepend(overlay);
 }
 
