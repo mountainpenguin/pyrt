@@ -60,7 +60,8 @@ def _isGitRepo():
 def _checkRepo():
     p = subprocess.Popen(["git remote update"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     print("Checking for updates...")
-    stdout, stderr = p.communicate()
+    p.wait()
+    stdout, stderr = p.stdout.read(), p.stderr.read()
     print("stdout:", stdout)
     if "remote:" in stdout:
         return True
