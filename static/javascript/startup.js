@@ -24,6 +24,7 @@ function downloadingEvent(e) {
     var inner = $("<div id='innerdiv' />").html(
         "A new version of PyRT is downloading"
     )
+    overlay.append(inner);
     $("body", window.parent.document).css({"overflow":"hidden","position":"fixed"}).prepend(overlay);
 }
 
