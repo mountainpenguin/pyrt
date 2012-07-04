@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# 04.07.2012.14:23:1d9711e92770eb79aef5afd6053f68bc9a8ef68c
+# 04.07.2012.14:32:49c8135f30bdaf3ec48e268f534c7976ceff0c1e
 # dd.mm.yyyy.HH:MM:last-commit
 
 CACHE:
@@ -59,8 +59,10 @@ CACHE:
 /javascript/jquery-ui-1.8.17.custom.min.js
 /javascript/kinetic-v3.9.5.min.js
 /javascript/log.min.js
+/javascript/login-combined.min.js
 /javascript/options.min.js
 /javascript/stats.min.js
+/javascript/startup.min.js
 
 
 NETWORK:

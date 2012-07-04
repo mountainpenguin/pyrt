@@ -157,7 +157,7 @@ class Login:
                 <script type="text/javascript" src="/javascript/jquery-1.7.min.js"></script>
                 <script type="text/javascript" src="/javascript/CryptoJS/sha256.js"></script>
                 <script type="text/javascript" src="/javascript/CryptoJS/enc-base64-min.js"></script>
-                <script type="text/javascript" src="/javascript/login.js"></script>
+                <script type="text/javascript" src="/javascript/login-combined.min.js"></script>
             </head>
             <body>
                 <input type="hidden" id="permanent_salt" value="%(PERM_SALT)s">
