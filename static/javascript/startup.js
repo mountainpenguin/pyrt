@@ -46,13 +46,12 @@ function noupdateEvent(e) {
 
 function updatereadyEvent(e) {
     console.log("got everything, should refresh now");
-    $("#cacheupdate", window.parent.document).remove();
-    $("body", window.parent.document).css({"overflow":"","position":""});
 }
 
 var appCache = window.applicationCache;
-appCache.addEventListener("checking", checkingEvent, false);
-appCache.addEventListener("downloading", downloadingEvent, false);
-appCache.addEventListener("progress", progressEvent, false);
-appCache.addEventListener("noupdate", noupdateEvent, false);
-appCache.addEventListener("updateready", updatereadyEvent, false);
+appCache.onchecking = checkingEvent;
+appCache.ondownloading = downloadingEvent;
+appCache.onprogress = progressEvent;
+appCache.onnoupdate = noupdateEvent;
+appCache.onupdateready = updatereadyEvent;
+//appCache.addEventListener("downloading", downloadingEvent, false);
