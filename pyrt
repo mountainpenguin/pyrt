@@ -71,6 +71,7 @@ def _checkRepo():
         if "Your branch is behind" in stdout:
             return True
         else:
+            print("Repository is up-to-date")
             return False
     
 def _updateRepo():
