@@ -158,14 +158,16 @@ if __name__ == "__main__":
     print("See LICENCE for details", end="\n\n")
     
     parser = argparse.ArgumentParser(description="PyRT rtorrent webUI")
-    parser.add_argument("start", help="Start the webUI daemon")
-    parser.add_argument("stop", help="Stop the webUI daemon")
-    parser.add_argument("restart", help="Restart the webUI daemon")
-    parser.add_argument("status", help="Return the status of the webUI daemon")
-    parser.add_argument("mkpasswd", help="Create a password hash")
-    parser.add_argument("--no-update", "-n", help="Specify that the daemon shouldn't check for updates")
+    sp = parser.add_subparsers()
+    start = sp.add_parser("start", help="Start the webUI daemon")
+    stop = sp.add_parser("stop", help="Stop the webUI daemon") #should probably add a --force option to send SIGKILL
+    restart = sp.add_parser("restart", help="Restart the webUI daemon")
+    status = sp.add_parser("status", help="Return the status of the webUI daemon")
+    mkpasswd = sp.add_parser("mkpasswd", help="Create a password hash")
+    parser.add_argument("-n", "--no-update", help="Don't check for updates")
+    parser.add_argument("-f", "--force", help="Force the webUI to stop")
     
-    print(parser.parse_args(sys.argv))
+    print(parser.parse_args())
     sys.exit()
     
     try:
