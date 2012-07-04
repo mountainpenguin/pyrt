@@ -62,8 +62,8 @@ def _checkRepo():
     print("Checking for updates...")
     p.wait()
     stdout, stderr = p.stdout.read(), p.stderr.read()
-    print("stdout:", stdout)
-    if "remote:" in stdout:
+    print("stdout: %r, stderr: %r" % (stdout,stderr))
+    if "origin" in stderr:
         return True
     else:
         print("Repository is up-to-date")
