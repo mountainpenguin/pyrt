@@ -65,7 +65,13 @@ def _checkRepo():
     if "origin" in stderr:
         return True
     else:
-        return False
+        p2 = subprocess.Popen(["git status"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p2.wait()
+        stdout, stderr = p2.stdout.read(), p2.stderr.read()
+        if "Your branch is behind" in stdout:
+            return True
+        else:
+            return False
     
 def _updateRepo():
     #update remote
