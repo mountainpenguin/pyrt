@@ -19,7 +19,7 @@
  */
 
 function checkingEvent(e) {
-    console.log("checking application cache");    
+    console.log("checking application cache");
 }
 
 function downloadingEvent(e) {
@@ -29,9 +29,11 @@ function downloadingEvent(e) {
         "z-index" : 200,
         "position": "fixed",
         "top": 0,
-        "left" : 0
+        "left" : 0,
+        "width" : "100%",
+        "height" : "100%"
     });
-    $("body", window.parent.document).prepend(overlay);
+    $("body", window.parent.document).css({"overflow":"hidden","position":"fixed"}).prepend(overlay);
 }
 
 function progressEvent(e) {
@@ -43,7 +45,9 @@ function noupdateEvent(e) {
 }
 
 function updatereadyEvent(e) {
+    console.log("got everything, should refresh now");
     $("#cacheupdate", window.parent.document).remove();
+    $("body", window.parent.document).css({"overflow":"","position":""});
 }
 
 var appCache = window.applicationCache;
