@@ -18,30 +18,10 @@
  *
  */
 
-function checkingEvent(e) {
-    console.log("checking application cache");
-}
-
 function downloadingEvent(e) {
     console.log("there are new resources");
-    var overlay = $("<p id='cacheupdate' />").css({
-        "background-color" : "black",
-        "z-index" : 200,
-        "position": "fixed",
-        "top": 0,
-        "left" : 0,
-        "width" : "100%",
-        "height" : "100%"
-    });
+    var overlay = $("<p id='cacheupdate' />").addClass('overlay');
     $("body", window.parent.document).css({"overflow":"hidden","position":"fixed"}).prepend(overlay);
-}
-
-function progressEvent(e) {
-    console.log("progress", e);
-}
-
-function noupdateEvent(e) {
-    console.log("everything is up-to-date");
 }
 
 function updatereadyEvent(e) {
@@ -49,9 +29,6 @@ function updatereadyEvent(e) {
 }
 
 var appCache = window.applicationCache;
-appCache.onchecking = checkingEvent;
 appCache.ondownloading = downloadingEvent;
-appCache.onprogress = progressEvent;
-appCache.onnoupdate = noupdateEvent;
 appCache.onupdateready = updatereadyEvent;
 //appCache.addEventListener("downloading", downloadingEvent, false);
