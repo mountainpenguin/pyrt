@@ -78,16 +78,8 @@ def start(update=True):
         print("pyRT has already been started")
         return
     
-    if update and _isGitRepo():
-        updateready = _checkRepo()
-        if updateready:
-            goahead = raw_input("An update is available, download? (Y/N): ")
-            if goahead.upper() == "Y":
-                _updateRepo()
-                print("Update completed")
-                return
-            else:
-                print("Ignoring update")
+    if update:
+        runUpdate()
 
     from modules import server
     from modules import config
@@ -167,6 +159,20 @@ def status():
         print("pyRT is running with PID: %i" % _searchPID())
     else:
         print("pyRT is not running")
+        
+def runUpdate():
+    if _isGitRepo():
+        updateready = _checkRepo()
+        if updateready:
+            goahead = raw_input("An update is available, download? (Y/N): ")
+            if goahead.upper() == "Y":
+                _updateRepo()
+                print("Update completed")
+                return
+            else:
+                print("Ignoring update")
+    else:
+        print("Not a git repository")
 
 if __name__ == "__main__":
     # cmd line syntax
@@ -178,7 +184,7 @@ if __name__ == "__main__":
     print("See LICENCE for details", end="\n\n")
     
     parser = argparse.ArgumentParser(description="PyRT rtorrent webUI")
-    parser.add_argument("action", choices=("start","stop","restart","status","mkpasswd"), help="Control the webUI daemon")
+    parser.add_argument("action", choices=("start","stop","restart","status","mkpasswd","update"), help="Control the webUI daemon")
     parser.add_argument("-n", "--noupdate", help="Don't check for updates", action="store_false")
     parser.add_argument("-f", "--force", help="Force the webUI to stop", action="store_true")
     args = parser.parse_args()
@@ -194,5 +200,7 @@ if __name__ == "__main__":
         status()
     elif args.action == "mkpasswd":
         mkpasswd.main()
+    elif args.action == "update":
+        runUpdate()
     else:
         print("Syntax: pyrt start|stop|restart|status|mkpasswd")
