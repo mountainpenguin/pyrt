@@ -27,6 +27,9 @@ import traceback
 import sys
 import glob
 import time
+import subprocess
+import argparse
+import signal
 
 
 __AUTHOR__ = "mountainpenguin (pinguino.de.montana@googlemail.com)"
@@ -48,11 +51,41 @@ def _searchBotPID():
     
     return pids
 
-def start():
+def _isGitRepo():
+    if os.path.exists(".git"):
+        return True
+    else:
+        return False
+    
+def _checkRepo():
+    p = subprocess.Popen(["git remote update"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    print("Checking for updates...")
+    p.wait()
+    stdout, stderr = p.stdout.read(), p.stderr.read()
+    if "origin" in stderr:
+        return True
+    else:
+        p2 = subprocess.Popen(["git status"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p2.wait()
+        stdout, stderr = p2.stdout.read(), p2.stderr.read()
+        if "Your branch is behind" in stdout:
+            return True
+        else:
+            print("Repository is up-to-date")
+            return False
+    
+def _updateRepo():
+    #update remote
+    os.system("git pull")
+    
+def start(update=True):
     if _searchPID():
         print("pyRT has already been started")
         return
     
+    if update:
+        runUpdate()
+
     from modules import server
     from modules import config
     from modules import daemon
@@ -69,17 +102,23 @@ def start():
         open("proc/pyrt.pid","w").write(str(PID))
         serv.main(c)
 
-def stop():
-    
+def stop(force=False):
     if not _searchPID():
         print("pyRT is not running")
         return
     
+    if force:
+        signum = signal.SIGKILL
+        signame = "SIGKILL"
+    else:
+        signum = signal.SIGTERM
+        signame = "SIGTERM"
+
     bots = _searchBotPID()
     for p in bots:
-        print("Sending SIGTERM to process bot PID %d" % p)
+        print("Sending %s to process bot PID %d" % (signame, p))
         try:
-            os.kill(p, 15)
+            os.kill(p, signum)
         except OSError:
             print("Couldn't kill bot, no process with PID %d" % p)
         except:
@@ -99,9 +138,9 @@ def stop():
             break
 
     PID = _searchPID()
-    print("Sending SIGTERM to process PID %d" % PID)
+    print("Sending %s to process PID %d" % (signame, PID))
     try:
-        os.kill(PID, 15)
+        os.kill(PID, signum)
     except OSError:
         print("Something went horribly wrong, there is no process with PID %d" % PID)
         print("To allow restarting, delete the file proc/pyrt.pid")
@@ -125,6 +164,19 @@ def status():
         print("pyRT is running with PID: %i" % _searchPID())
     else:
         print("pyRT is not running")
+        
+def runUpdate():
+    if _isGitRepo():
+        updateready = _checkRepo()
+        if updateready:
+            goahead = raw_input("An update is available, download? (Y/N): ")
+            if goahead.upper() == "Y":
+                _updateRepo()
+                return
+            else:
+                print("Ignoring update")
+    else:
+        print("Not a git repository")
 
 if __name__ == "__main__":
     # cmd line syntax
@@ -134,20 +186,25 @@ if __name__ == "__main__":
     print("This program comes with ABSOLUTELY NO WARRANTY")
     print("This is free software, and you are welcome to redistribute it under certain conditions")
     print("See LICENCE for details", end="\n\n")
-    try:
-        arg = sys.argv[1]
-    except:
-        arg = ""
-    if arg == "start":
-        start()
-    elif arg == "stop":
-        stop()
-    elif arg == "restart":
-        stop()
-        start()
-    elif arg == "status":
+    
+    parser = argparse.ArgumentParser(description="PyRT rtorrent webUI")
+    parser.add_argument("action", choices=("start","stop","restart","status","mkpasswd","update"), help="Control the webUI daemon")
+    parser.add_argument("-n", "--noupdate", help="Don't check for updates", action="store_false")
+    parser.add_argument("-f", "--force", help="Force the webUI to stop", action="store_true")
+    args = parser.parse_args()
+    
+    if args.action == "start":
+        start(args.noupdate)
+    elif args.action == "stop":
+        stop(args.force)
+    elif args.action == "restart":
+        stop(args.force)
+        start(args.noupdate)
+    elif args.action == "status":
         status()
-    elif arg == "mkpasswd":
+    elif args.action == "mkpasswd":
         mkpasswd.main()
+    elif args.action == "update":
+        runUpdate()
     else:
         print("Syntax: pyrt start|stop|restart|status|mkpasswd")
