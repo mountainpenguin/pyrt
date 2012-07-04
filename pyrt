@@ -27,6 +27,7 @@ import traceback
 import sys
 import glob
 import time
+import subprocess
 
 
 __AUTHOR__ = "mountainpenguin (pinguino.de.montana@googlemail.com)"
@@ -48,6 +49,15 @@ def _searchBotPID():
     
     return pids
 
+def _isGitRepo():
+    if os.path.exists(".git"):
+        return True
+    else:
+        return False
+    
+def _updateRepo():
+    pass
+    
 def start():
     if _searchPID():
         print("pyRT has already been started")
