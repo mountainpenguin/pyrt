@@ -359,30 +359,6 @@ function loadRClickMenus() {
              minWidth : "10em"
          }
      });
-     $("#tab_options").bind(
-         "click",
-         function () {
-         window.location = "/options";
-         }
-     );
-     $("#tab_stats").bind(
-         "click",
-         function () {
-           window.location = "/stats";
-         }
-     );
-     $("#tab_log").bind(
-        "click",
-        function () {
-            window.location = "/log";
-        }
-     );
-     $("#tab_auto").bind(
-        "click",
-        function () {
-            window.location = "/auto";
-        }
-    );
 }
 
 function parse_content(response, repeat) {
