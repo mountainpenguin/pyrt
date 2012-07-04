@@ -23,16 +23,16 @@
             <div id="topbar">
             #for $topbartype in ["main","started","stopped","complete","incomplete","hashing","seeding","active"]
                 #if $topbartype == $this_view
-                    <div class="topbar-tab selected" onclick="navigate_tab(this);" title="$topbartype.capitalize()" id="tab_$topbartype">$topbartype.capitalize()</div>
+                    <a class="topbar-tab selected" href="?view=$this_view" title="$topbartype.capitalize()" id="tab_$topbartype">$topbartype.capitalize()</a>
                 #else
-                    <div class="topbar-tab" onclick="navigate_tab(this);" title="$topbartype.capitalize()" id="tab_$topbartype">$topbartype.capitalize()</div>
+                    <a class="topbar-tab" href="?view=$topbartype" onclick="navigate_tab(this);" title="$topbartype.capitalize()" id="tab_$topbartype">$topbartype.capitalize()</a>
                 #end if
             #end for
                 <div id="tools-bar">
-                    <div class="topbar-tab_options" title="Options" id="tab_options">Options</div>
-                    <div class="topbar-tab_options" title="Stats" id="tab_stats">Stats</div>
-                    <div class="topbar-tab_options" title="Log" id="tab_log">Log</div>
-                    <div class="topbar-tab_options" title="Auto" id="tab_auto">Auto</div>
+                    <a href="/options" class="topbar-tab_options" title="Options" id="tab_options">Options</a>
+                    <a href="/stats" class="topbar-tab_options" title="Stats" id="tab_stats">Stats</a>
+                    <a href="/log" class="topbar-tab_options" title="Log" id="tab_log">Log</a>
+                    <a href="/auto" class="topbar-tab_options" title="Auto" id="tab_auto">Auto</a>
                 </div>
             </div>
             <div id="actions-bar">
