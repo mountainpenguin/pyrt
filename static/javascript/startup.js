@@ -22,14 +22,16 @@ function downloadingEvent(e) {
     console.log("there are new resources");
     var overlay = $("<p id='cacheupdate' />").addClass('overlay');
     var inner = $("<div id='innerdiv' />").html(
-        "A new version of PyRT is available, click <a href='/' alt='Refresh' title='Refresh'>here</a> to load it"
+        "A new version of PyRT is downloading"
     )
-    overlay.append(inner);
     $("body", window.parent.document).css({"overflow":"hidden","position":"fixed"}).prepend(overlay);
 }
 
 function updatereadyEvent(e) {
     console.log("got everything, should refresh now");
+    $("#innerdiv", window.parent.document).html(
+        "A new version of PyRT is available, click <a href='/' alt='Refresh' title='Refresh'>here</a> to load it"
+    )
 }
 
 var appCache = window.applicationCache;
