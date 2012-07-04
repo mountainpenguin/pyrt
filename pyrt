@@ -179,7 +179,6 @@ if __name__ == "__main__":
     parser.add_argument("action", choices=("start","stop","restart","status","mkpasswd"), help="Control the webUI daemon")
     parser.add_argument("-n", "--noupdate", help="Don't check for updates", action="store_false")
     parser.add_argument("-f", "--force", help="Force the webUI to stop", action="store_true")
-    
     args = parser.parse_args()
     
     if args.action == "start":
