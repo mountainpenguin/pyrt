@@ -736,6 +736,7 @@ class Main(object):
             os.remove(".user.pickle")
         settings = {
             "static_path" : os.path.join(os.getcwd(), "static"),
+            "gzip" : "on",
         }
         application = tornado.web.Application([
             (r"/css/(.*)", tornado.web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/css/")}),
