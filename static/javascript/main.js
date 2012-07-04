@@ -662,18 +662,6 @@ function deselect_torrent(elem) {
      }
 }
 
-function navigate_tab(elem) {
-    window.location = "?view=" + elem.id.split("tab_")[1];
-}
-
-function navigate_tab_fromRSS(elem) {
-     window.location = "/?view=" + elem.id.split("tab_")[1];
-}
-
-function navigate_torrent(elem) {
-    window.location = "detail?torrent_id=" + elem.id.split("torrent_id_")[1]
-}
-
 function removerow(torrent_id) {
     if (row = document.getElementById("newrow_torrent_id_" + torrent_id)) {
         var table = document.getElementById("torrent_list");

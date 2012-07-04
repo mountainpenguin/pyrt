@@ -5,7 +5,7 @@
 /* used by td headings and tr hover */
 /* arranged alphabetically */
 a:link, a:visited, a:active, a:hover {
-  color: white; }
+  text-decoration: none; }
 
 #actions {
   margin-top: 10px; }
@@ -20,7 +20,8 @@ a:link, a:visited, a:active, a:hover {
   color: white;
   font-weight: bold; }
   #actions-bar a:link, #actions-bar a:visited, #actions-bar a:active {
-    color: #FF7C25; }
+    color: #FF7C25;
+    text-decoration: underline; }
 
 .actions-bar-item {
   padding-left: 1em;

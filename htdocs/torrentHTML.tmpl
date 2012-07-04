@@ -25,7 +25,7 @@
                 #if $topbartype == $this_view
                     <a class="topbar-tab selected" href="?view=$this_view" title="$topbartype.capitalize()" id="tab_$topbartype">$topbartype.capitalize()</a>
                 #else
-                    <a class="topbar-tab" href="?view=$topbartype" onclick="navigate_tab(this);" title="$topbartype.capitalize()" id="tab_$topbartype">$topbartype.capitalize()</a>
+                    <a class="topbar-tab" href="?view=$topbartype" title="$topbartype.capitalize()" id="tab_$topbartype">$topbartype.capitalize()</a>
                 #end if
             #end for
                 <div id="tools-bar">

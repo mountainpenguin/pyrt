@@ -163,11 +163,3 @@ function constructTorrent(output) {
     newdiv.append(newlink)
     $("#progressbar").parent().append(newdiv)
 }
-
-function navigate_tab(elem) {
-    window.location.replace(window.location);
-}
-
-function navigate_tab_toHome(elem) {
-    window.location = "/?view=" + elem.id.split("tab_")[1];
-}

@@ -9,7 +9,7 @@ $d3 : #3A3737; /* used by td headings and tr hover */
 /* arranged alphabetically */
 
 a {
-    &:link, &:visited, &:active, &:hover { color : white; }
+    &:link, &:visited, &:active, &:hover { text-decoration: none;}
 }
 
 #actions {
@@ -27,7 +27,8 @@ a {
     font-weight: bold;
     a {
         &:link, &:visited, &:active {
-            color : #FF7C25; 
+            color : #FF7C25;
+            text-decoration: underline;
         }
     }
 }
