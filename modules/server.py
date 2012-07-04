@@ -178,6 +178,7 @@ class index(tornado.web.RequestHandler):
         
         torrentList = self.application._pyrtRT.getTorrentList2(view)
         self.write(handler.torrentHTML(torrentList, sortby, view, reverse))
+        self.set_header("Cache-Control", "no-cache")
         
     post = get
     
@@ -675,6 +676,30 @@ class RPCSocket(tornado.websocket.WebSocketHandler):
         logging.info("RPCsocket closed")
         
 
+class manifest(tornado.web.RequestHandler):
+    """Fake static file handler for serving static/cache.manifest"""
+    def get(self):
+        manifest = open("static/cache.manifest").read()
+        self.write(manifest)
+        self.set_header("Content-Type", "text/cache-manifest")
+        self.set_status(200)
+        
+class manifesthack(tornado.web.RequestHandler):
+    """Prevent dynamic index from being cached"""
+    def get(self):
+        html = """
+        <!DOCTYPE html>
+        <html manifest="cache.manifest">
+            <head>
+                <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+                <script type="text/javascript" src="/javascript/jquery-1.7.min.js"></script>
+                <script type="text/javascript" src="/javascript/startup.js"></script>
+            </head>
+            <body></body>
+        </html>
+        """
+        self.write(html)    
+    
 class Main(object):
     def __init__(self):
         pass
@@ -717,6 +742,8 @@ class Main(object):
             (r"/javascript/(.*)", tornado.web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/javascript/")}),
             (r"/images/(.*)", tornado.web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/images/") }),
             (r"/favicons/(.*)", tornado.web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/favicons/") }),
+            (r"/cache\.manifest", manifest),
+            (r"/manifest-hack", manifesthack),
             (r"/", index),
             (r"/index", index),
             (r"/ajax", ajax),
