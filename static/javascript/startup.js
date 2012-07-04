@@ -24,6 +24,14 @@ function checkingEvent(e) {
 
 function downloadingEvent(e) {
     console.log("there are new resources");
+    var overlay = $("<p id='cacheupdate' />").css({
+        "background-color" : "black",
+        "z-index" : 200,
+        "position": "fixed",
+        "top": 0,
+        "left" : 0
+    });
+    $("body", window.parent.document).prepend(overlay);
 }
 
 function progressEvent(e) {
@@ -32,13 +40,15 @@ function progressEvent(e) {
 
 function noupdateEvent(e) {
     console.log("everything is up-to-date");
-    $(window.parent.document).ready( function () {
-        $("#global-stats", window.parent.document).append($("<div />").html("Test worked"));        
-    })
+}
+
+function updatereadyEvent(e) {
+    $("#cacheupdate", window.parent.document).remove();
 }
 
 var appCache = window.applicationCache;
 appCache.addEventListener("checking", checkingEvent, false);
 appCache.addEventListener("downloading", downloadingEvent, false);
 appCache.addEventListener("progress", progressEvent, false);
-appCache.addEventListener("noupdate", noupdateEvent, false); 
+appCache.addEventListener("noupdate", noupdateEvent, false);
+appCache.addEventListener("updateready", updatereadyEvent, false);

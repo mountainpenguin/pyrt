@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# 03.07.2012.23:38:681cbe8b8edd5a0915b05203d959334bd3262dd7
+# 04.07.2012.01:24:f6d25211f5cd0abf239268ef0060d4f31e343e0b
 # dd.mm.yyyy.HH:MM:last-commit
 
 CACHE:
@@ -21,6 +21,7 @@ CACHE:
 /images/off.png
 /images/on.png
 /images/pause.png
+/images/progress.gif
 /images/ratio.jpg
 /images/remove.png
 /images/sort_none.gif
