@@ -44,6 +44,8 @@ class Index(object):
             loadavg = os.getloadavg()[0]
             memusage = system.mem()
             memperc = int((float(memusage[0]) / memusage[1])*100)
+            hdusage = system.hdd()
+            hdperc = int((float(hdusage[0]) / hdusage[1])*100)
             return json.dumps({
                 "type" : "global",
                 "uprate" : uprate,
@@ -52,6 +54,9 @@ class Index(object):
                 "uprate_str" : self.handler.humanSize(uprate),
                 "downrate_str" : self.handler.humanSize(downrate),
                 "memusage" : memperc,
+                "hdperc" : hdperc,
+                "hdusage" : hdusage[0],
+                "hdmax" : hdusage[1],
             })
         elif request == "trackers":
             #calculate up/down totals for each torrent

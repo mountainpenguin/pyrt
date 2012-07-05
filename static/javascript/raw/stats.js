@@ -23,6 +23,8 @@ var UpData = new Array();
 var DownData = new Array();
 var LoadData = new Array();
 var MemData = new Array();
+var HddData = new Array();
+var HddTotal = null;
 var netctx = null;
 var sysctx = null;
 var iolayer = null;
@@ -496,13 +498,18 @@ function getScaleFactor() {
 function getLoadSF() {
     max = Math.max.apply(Math, LoadData);
     scaleF = max / eHeight;
-    return scaleF
+    return scaleF;
 }
 
 function getMemSF() {
     max = Math.max.apply(Math, MemData);
     scaleF = max / eHeight;
-    return scaleF
+    return scaleF;
+}
+
+function getHDDSF() {
+     scaleF = HddTotal / eHeight;
+     return scaleF;
 }
 
 function update_canvas() {
@@ -526,19 +533,30 @@ function update_canvas() {
      sysctx.closePath();
    
      // mem data
-     /*
-     * memSF = getMemSF();
-     * sysctx.beginPath();
-     * sysctx.strokeStyle = "rgb(0,0,255)";
-     * startY = eHeight - (MemData[0] / memSF) + yoffset + 1;
-     * sysctx.moveTo(cOriginX + 1, startY);
-     * for (i=0; i<MemData.length; i++) {
-     *    mm_y = eHeight - (MemData[i] / memSF) + yoffset;
-     *    sysctx.lineTo(cOriginX + i*2 + 1, mm_y);
-     * }
-     * sysctx.stroke();
-     * sysctx.closePath();
-     */
+     memSF = getMemSF();
+     sysctx.beginPath();
+     sysctx.strokeStyle = "rgb(0,0,255)";
+     startY = eHeight - (MemData[0] / memSF) + yoffset + 1;
+     sysctx.moveTo(cOriginX + 1, startY);
+     for (i=0; i<MemData.length; i++) {
+        mm_y = eHeight - (MemData[i] / memSF) + yoffset;
+        sysctx.lineTo(cOriginX + i*2 + 1, mm_y);
+     }
+     sysctx.stroke();
+     sysctx.closePath();
+     
+     // hdd data
+     hddSF = getHDDSF();
+     sysctx.beginPath();
+     sysctx.strokeStyle = "rgb(0,255,0)";
+     startY = eHeight - (HddData[0] / hddSF) + yoffset + 1;
+     sysctx.moveTo(cOriginX + 1, startY);
+     for (i=0; i<HddData.length; i++) {
+          hd_y = eHeight - (HddData[i] / hddSF) + yoffset;
+          sysctx.lineTo(cOriginX + i*2 + 1, hd_y);
+     }
+     sysctx.stroke();
+     sysctx.closePath();
 
      // uprate data
      netctx.beginPath();
@@ -590,22 +608,27 @@ function onMessage(e) {
               trackerData = data.data;
               initTGraph();
           } else if (data.type == "global") {
-              $("#status-uprate").html("<div class='status-label'>Upload rate:</div><div class='status-uprate-value status-value'>" + data.uprate_str + "/s</div>");
-              $("#status-downrate").html("<div class='status-label'>Download rate:</div><div class='status-downrate-value status-value'>" + data.downrate_str + "/s</div>");
-              $("#status-loadavg").html("<div class='status-label'>Load average:</div><div class='status-loadavg-value status-value'>" + data.loadavg + "</div>");
-//              $("#status-mem").html("<div class='status-label'>Memory usage:</div><div class='status-mem-value status-value'>" + data.memusage + "%</div>");
-              if (UpData.push(data.uprate) > maxValues) {
-                   UpData.shift();
-              }
-              if (DownData.push(data.downrate) > maxValues) {
-                   DownData.shift();
-              }
-              if (LoadData.push(data.loadavg) > maxValues) {
-                   LoadData.shift();
-              }
-              if (MemData.push(data.memusage) > maxValues) {
-                   MemData.shift();
-              }
+               $("#status-uprate").html("<div class='status-label'>Upload rate:</div><div class='status-uprate-value status-value'>" + data.uprate_str + "/s</div>");
+               $("#status-downrate").html("<div class='status-label'>Download rate:</div><div class='status-downrate-value status-value'>" + data.downrate_str + "/s</div>");
+               $("#status-loadavg").html("<div class='status-label'>Load average:</div><div class='status-loadavg-value status-value'>" + data.loadavg + "</div>");
+               $("#status-mem").html("<div class='status-label'>Memory usage:</div><div class='status-mem-value status-value'>" + data.memusage + "%</div>");
+               $("#status-hdd").html("<div class='status-label'>HDD usage:</div><div class='status-mem-value status-value'>" + data.hdusage + " / " + data.hdmax + "</div>");
+               HddTotal = data.hdmax;
+               if (UpData.push(data.uprate) > maxValues) {
+                    UpData.shift();
+               }
+               if (DownData.push(data.downrate) > maxValues) {
+                    DownData.shift();
+               }
+               if (LoadData.push(data.loadavg) > maxValues) {
+                    LoadData.shift();
+               }
+               if (MemData.push(data.memusage) > maxValues) {
+                    MemData.shift();
+               }
+               if (HddData.push(data.hddusage) > maxValues) {
+                    HddData.shift();
+               }
 
               if (UpData.length < 60) {
                   $("#canvas-title-dynamic").html("(Last " + UpData.length + " seconds)");
