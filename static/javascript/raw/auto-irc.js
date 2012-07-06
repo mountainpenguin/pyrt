@@ -24,22 +24,19 @@ $(document).ready( function () {
         var positivevals = new Array();
         var negativevals = new Array();
         $(this).closest(".add_filter_div").children().each( function () {
-            if (($(this).hasClass("add_filter") || $(this).hasClass("and_filter")) && $(this).children("input")[0].val() !== "") {
-                positivevals.push( $(this).children("input")[0].val() );
-            } else if ($(this).hasClass("not_filter") && $(this).children("input")[0].val() !== "") {
-                negativevals.push( $(this).children("input")[0].val() );
+            if (($(this).hasClass("add_filter") || $(this).hasClass("and_filter")) && $(this).children("input")[0].value !== "") {
+                positivevals.push( $(this).children("input")[0].value );
+            } else if ($(this).hasClass("not_filter") && $(this).children("input")[0].value !== "") {
+                negativevals.push( $(this).children("input")[0].value );
             }
         });
-        console.log("positivevals:", positivevals);
-        console.log("negativevals:", negativevals);
-        
-        
+        positivevals = positivevals.join("||||||");
+        negativevals = negativevals.join("||||||");
         var name = $(this).closest(".remote_setting").attr("id").split("remote_settings_")[1];
-        console.log("name:", name);
         
-        //if (inputval) {
-        //    socket.send("request=add_filter&name=" + name + "&restring=" + encodeURIComponent(inputval));
-        //}
+        if (positivevals !== "") {
+            socket.send("request=add_filter&name=" + name + "&positive=" + encodeURIComponent(positivevals) + "&negative=" + encodeURIComponent(negativevals));
+        }
     });
     $(".filter_select").live("change", function() {
         var selectelem = $("<select class='filter_select'><option selected='selected'>---</option><option>and</option><option>not</option></select>");

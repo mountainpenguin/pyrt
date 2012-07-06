@@ -89,7 +89,12 @@ class RPCHandler(object):
                 f = s.filters
             except AttributeError:
                 f = []
-            return json.dumps([x.pattern for x in f])
+            return json.dumps(
+                [([x.pattern for x in z[0]],
+                  [y.pattern for y in z[1]])
+                 for z in f
+                ]
+            )
         else:
             return json.dumps({
                 "error" : "Not registered"

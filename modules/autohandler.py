@@ -300,21 +300,36 @@ class AutoHandler(object):
         else:
             return f 
 
-    def add_filter(self, name, restring):
+    def add_filter(self, name, positive, negative=None):
         name = name[0]
-        restring = restring[0]
+        positive = positive[0].split("||||||")
+        if negative:
+            negative = negative[0].split("||||||")
+        else:
+            negative = []
+            
         s = self.STORE.getRemoteByName(name)
         if not s:
             return self._response(name, "add_filter", "ERROR", "No store for name '%s'" % name)
 
         #attempt to compile the re string
-        try:
-            regex = re.compile(restring)
-        except:
-            return self._response(name, "add_filter", "ERROR", "Invalid regex")
+        positives = []
+        negatives = []
+        for restring in positive:
+            try:
+                regex = re.compile(restring)
+                positives.append(regex)
+            except:
+                return self._response(name, "add_filter", "ERROR", "Invalid regex %r" % restring)
+                
+        for restring in negative:
+            try:
+                regex = re.compile(restring)
+                negatives.append(regex)
+            except:
+                return self._response(name, "add_filter", "ERROR", "Invalid regex %r" % restring)
 
-        if self.STORE.addFilter(name, regex):
-            #send sigurg
+        if self.STORE.addFilter(name, positives, negatives):
             return self._response(name, "add_filter", "OK", None)
         else:
             return self._response(name, "add_filter", "ERROR", "Unknown error")

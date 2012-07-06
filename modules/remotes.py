@@ -304,7 +304,7 @@ class Base(object):
             prepend = "".join(random.choice(string.letters) for x in range(10))
             filename = "%s-%s" % (prepend, filename)
         open("torrents/%s" % (filename), "wb").write(filecontent)
-        self._ajax.load_from_remote(filename, self.settings.name, start=True)
+        self._ajax.load_from_remote(filename, self.settings.name, start=False)
 
             
 
@@ -463,10 +463,10 @@ class RemoteStorage(object):
                     self._flush()
                     return True
 
-    def addFilter(self, name, f):
+    def addFilter(self, name, pos, neg):
         """Adds a regex filter to a 'source' setting
 
-            input argument 'f' should be a compiled regular expression
+            input arguments 'pos' and 'neg' should be lists of compiled regular expressions
             These must be checked as valid regular expressions before submission
         """
         if name.upper() in self.STORE:
@@ -476,7 +476,7 @@ class RemoteStorage(object):
             except AttributeError:
                 filters = []
 
-            filters += [f]
+            filters += [(pos, neg)]
             #make sure everything is written back
             s.filters = filters
             self.STORE[name.upper()] = s
