@@ -23,6 +23,7 @@ var UpData = new Array();
 var DownData = new Array();
 var LoadData = new Array();
 var MemData = new Array();
+var MemTotal = null;
 var HddData = new Array();
 var HddTotal = null;
 var netctx = null;
@@ -502,8 +503,8 @@ function getLoadSF() {
 }
 
 function getMemSF() {
-    max = Math.max.apply(Math, MemData);
-    scaleF = max / eHeight;
+    //max = Math.max.apply(Math, MemData);
+    scaleF = MemTotal / eHeight;
     return scaleF;
 }
 
@@ -518,31 +519,22 @@ function update_canvas() {
      drawAxes(netctx);
      drawAxes(sysctx);
      scale_factor = getScaleFactor();
-
-     // load average data
-     loadSF = getLoadSF();
-     sysctx.beginPath();
-     sysctx.strokeStyle = "rgb(255,0,0)";
-     startY = eHeight - (LoadData[0] / loadSF) + yoffset + 1;
-     sysctx.moveTo(cOriginX + 1, startY);
-     for (i=0; i<DownData.length; i++) {
-         ld_y = eHeight - (LoadData[i] / loadSF) + yoffset;
-         sysctx.lineTo(cOriginX + i*2 + 1, ld_y);
-     }
-     sysctx.stroke();
-     sysctx.closePath();
    
      // mem data
      memSF = getMemSF();
      sysctx.beginPath();
      sysctx.strokeStyle = "rgb(0,0,255)";
+     sysctx.fillStyle = "rgb(0,0,240)";
      startY = eHeight - (MemData[0] / memSF) + yoffset + 1;
      sysctx.moveTo(cOriginX + 1, startY);
      for (i=0; i<MemData.length; i++) {
         mm_y = eHeight - (MemData[i] / memSF) + yoffset;
         sysctx.lineTo(cOriginX + i*2 + 1, mm_y);
      }
-     sysctx.stroke();
+     sysctx.lineTo(cOriginX + i*2 + 1, eHeight - 1 + yoffset);
+     sysctx.lineTo(cOriginX + 1, eHeight - 1 + yoffset);
+     sysctx.lineTo(cOriginX + 1, startY);
+     sysctx.fill();
      sysctx.closePath();
      
      // hdd data
@@ -557,17 +549,24 @@ function update_canvas() {
           hd_y = eHeight - (HddData[i] / hddSF) + yoffset;
           sysctx.lineTo(cOriginX + i*2 + 1, hd_y);
      }
-     //sysctx.stroke();
-     //sysctx.closePath();
-     //// create rect
-     //sysctx.beginPath();
-     //sysctx.strokeStyle = "rgba(0, 255, 0, 0.1)";
-     sysctx.lineTo(cOriginX + i*2 + 1, eHeight-1);
-     sysctx.lineTo(cOriginX + 1, eHeight-1);
+     sysctx.lineTo(cOriginX + i*2 + 1, eHeight - 1 + yoffset);
+     sysctx.lineTo(cOriginX + 1, eHeight - 1 + yoffset);
      sysctx.lineTo(cOriginX + 1, startY);
      sysctx.fill();
      sysctx.closePath();
      
+     // load average data
+     loadSF = getLoadSF();
+     sysctx.beginPath();
+     sysctx.strokeStyle = "rgb(255,0,0)";
+     startY = eHeight - (LoadData[0] / loadSF) + yoffset + 1;
+     sysctx.moveTo(cOriginX + 1, startY);
+     for (i=0; i<DownData.length; i++) {
+         ld_y = eHeight - (LoadData[i] / loadSF) + yoffset;
+         sysctx.lineTo(cOriginX + i*2 + 1, ld_y);
+     }
+     sysctx.stroke();
+     sysctx.closePath();
 
      // uprate data
      netctx.beginPath();
@@ -622,9 +621,10 @@ function onMessage(e) {
                $("#status-uprate").html("<div class='status-label status-system'>Upload rate:</div><div class='status-uprate-value status-value'>" + data.uprate_str + "/s</div>");
                $("#status-downrate").html("<div class='status-label status-system'>Download rate:</div><div class='status-downrate-value status-value'>" + data.downrate_str + "/s</div>");
                $("#status-loadavg").html("<div class='status-label status-system'>Load average:</div><div class='status-loadavg-value status-value'>" + data.loadavg + "</div>");
-               $("#status-mem").html("<div class='status-label status-system'>Memory usage:</div><div class='status-mem-value status-value'>" + data.memusage + "%</div>");
-               $("#status-hdd").html("<div class='status-label status-system'>HDD usage:</div><div class='status-hdd-value status-value'>" + data.hdusage_human + " / " + data.hdmax_human + "</div>");
+               $("#status-mem").html("<div class='status-label status-system'>Memory usage:</div><div class='status-mem-value status-value'>" + data.memperc + "% (" + data.memusage_human + " / " + data.memmax_human + ")</div>");
+               $("#status-hdd").html("<div class='status-label status-system'>HDD usage:</div><div class='status-hdd-value status-value'>" + data.hdperc + "% (" + data.hdusage_human + " / " + data.hdmax_human + ")</div>");
                HddTotal = data.hdmax;
+               MemTotal = data.memmax;
                if (UpData.push(data.uprate) > maxValues) {
                     UpData.shift();
                }
