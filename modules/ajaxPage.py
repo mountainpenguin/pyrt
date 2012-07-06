@@ -36,6 +36,7 @@ import urllib2
 import socket
 import traceback
 import logging
+import thread
 
 from modules.Cheetah.Template import Template
 from modules import rtorrent, torrentHandler, login
@@ -417,6 +418,15 @@ class Ajax:
             self.log.info("AJAX: torrent rehash started (ID: %s)", torrent_id)
             return "OK"
             
+    def _remove_files(self, torrent_id, path):
+        if os.path.isfile(path):
+            os.remove(path)
+        else:
+            shutil.rmtree(path)
+        self.log.info("AJAX: torrent deleted (ID: %s)", torrent_id)
+        self.remove_torrent(torrent_id)
+            
+        
     def delete_torrent(self, torrent_id):
         response = self.stop_torrent(torrent_id)
         if response == "OK":
@@ -434,16 +444,7 @@ class Ajax:
                 self.log.error("AJAX: torrent delete error - no such file '%s' (ID: %s)", delete, torrent_id)
                 return "ERROR/no such file"
             else:
-                try:
-                    if os.path.isfile(delete):
-                        os.remove(delete)
-                    else:
-                        shutil.rmtree(delete)
-                    self.log.info("AJAX: torrent deleted (ID: %s)", torrent_id)
-                    self.remove_torrent(torrent_id)
-                    return "OK"
-                except:
-                    return "ERROR/unknown"
+                thread.start_new_thread(self._remove_files, (torrent_id, delete))
         else:
             return "ERROR/could not stop torrent"
 
