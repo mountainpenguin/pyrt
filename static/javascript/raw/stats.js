@@ -514,43 +514,35 @@ function getHDDSF() {
      return scaleF;
 }
 
-function drawMem(sysctx) {
-     // mem data
-     memSF = getMemSF();
-     sysctx.beginPath();
-     sysctx.strokeStyle = "rgb(0,0,255)";
-     sysctx.fillStyle = "rgba(0,0,255,0.5)";
-     startY = eHeight - (MemData[0] / memSF) + yoffset + 1;
-     sysctx.moveTo(cOriginX + 1, startY);
-     for (i=0; i<MemData.length; i++) {
-        mm_y = eHeight - (MemData[i] / memSF) + yoffset;
-        sysctx.lineTo(cOriginX + i*2 + 1, mm_y);
+function drawFilledDataLine(ctx, scaleF, data, strokeStyle, fillStyle) {
+     ctx.beginPath();
+     ctx.strokeStyle = strokeStyle;
+     ctx.fillStyle = fillStyle;
+     startY = eHeight - (data[0] / scaleF) + yoffset + 1;
+     ctx.moveTo(cOriginX + 1, startY);
+     for (i=0; i<data.length; i++) {
+          pos_y = eHeight - (data[i] / scaleF) + yoffset;
+          ctx.lineTo(cOriginX + i*2 + 1, pos_y);
      }
-     sysctx.lineTo(cOriginX + i*2 + 1, eHeight - 1 + yoffset);
-     sysctx.lineTo(cOriginX + 1, eHeight - 1 + yoffset);
-     sysctx.lineTo(cOriginX + 1, startY);
-     sysctx.closePath();
-     sysctx.fill();
+     ctx.lineTo(cOriginX + i*2, eHeight - 1 + yoffset);
+     ctx.lineTo(cOriginX + 1, eHeight - 1 + yoffset);
+     ctx.lineTo(cOriginX + 1, startY);
+     ctx.closePath();
+     ctx.fill();
+     ctx.stroke();
 }
 
-function drawHDD(sysctx) {
-     // hdd data
-     hddSF = getHDDSF();
-     sysctx.beginPath();
-     sysctx.strokeStyle = "rgb(0,255,0)";
-     sysctx.fillStyle = "rgba(0,255,0,0.5)";
-     startY = eHeight - (HddData[0] / hddSF) + yoffset + 1;
-     sysctx.moveTo(cOriginX + 1, startY);
-     
-     for (i=0; i<HddData.length; i++) {
-          hd_y = eHeight - (HddData[i] / hddSF) + yoffset;
-          sysctx.lineTo(cOriginX + i*2 + 1, hd_y);
+function drawDataLine(ctx, scaleF, data, strokeStyle) {
+     ctx.beginPath();
+     ctx.strokeStyle = strokeStyle;
+     startY = eHeight - (data[0] / scaleF) + yoffset + 1;
+     ctx.moveTo(cOriginX + 1, startY);
+     for (i=0; i<data.length; i++) {
+         pos_y = eHeight - (data[i] / scaleF) + yoffset;
+         ctx.lineTo(cOriginX + i*2 + 1, pos_y);
      }
-     sysctx.lineTo(cOriginX + i*2 + 1, eHeight - 1 + yoffset);
-     sysctx.lineTo(cOriginX + 1, eHeight - 1 + yoffset);
-     sysctx.lineTo(cOriginX + 1, startY);
-     sysctx.closePath();
-     sysctx.fill();
+     ctx.closePath();
+     ctx.stroke();
 }
 
 function update_canvas() {
@@ -561,53 +553,22 @@ function update_canvas() {
      scale_factor = getScaleFactor();
 
      if (HddFirst == 1) {
-          drawHDD(sysctx);
-          drawMem(sysctx);
+          //drawFilledDataLine(ctx, scaleF, data, strokeStyle, fillStyle)
+          drawFilledDataLine(sysctx, getHDDSF(), HddData, "rgb(0,255,0)", "rgba(0,255,0,0.5)");
+          drawFilledDataLine(sysctx, getMemSF(), MemData, "rgb(0,0,255)", "rgba(0,0,255,0.5)");
      } else {
-          drawMem(sysctx);
-          drawHDD(sysctx);
+          drawFilledDataLine(sysctx, getMemSF(), MemData, "rgb(0,0,255)", "rgba(0,0,255,0.5)");
+          drawFilledDataLine(sysctx, getHDDSF(), HddData, "rgb(0,255,0)", "rgba(0,255,0,0.5)");
      }
      
      // load average data
-     loadSF = getLoadSF();
-     sysctx.beginPath();
-     sysctx.strokeStyle = "rgb(255,0,0)";
-     startY = eHeight - (LoadData[0] / loadSF) + yoffset + 1;
-     sysctx.moveTo(cOriginX + 1, startY);
-     for (i=0; i<DownData.length; i++) {
-         ld_y = eHeight - (LoadData[i] / loadSF) + yoffset;
-         sysctx.lineTo(cOriginX + i*2 + 1, ld_y);
-     }
-     sysctx.stroke();
-     sysctx.closePath();
+     drawDataLine(sysctx, getLoadSF(), LoadData, "rgb(255,0,0)");
 
      // uprate data
-     netctx.beginPath();
-     netctx.strokeStyle = "rgb(255,0,0)";
-     startY = eHeight - (UpData[0] / scale_factor) + yoffset + 1;
-     netctx.moveTo(cOriginX + 1, startY);
-     for (i=0;i<UpData.length;i++) {
-          up_y = eHeight - (UpData[i] / scale_factor) + yoffset;
-          netctx.lineTo(cOriginX + i*2 + 1, up_y);
-          // x position = i*2
-          // y position = re-scaled
-          
-          //netctx.moveTo(i*2,)
-     }
-     netctx.stroke();
-     netctx.closePath();
+     drawDataLine(netctx, scale_factor, UpData, "rgb(255,0,0)");
      
      // downrate data
-     netctx.beginPath();
-     netctx.strokeStyle = "rgb(0,0,255)";
-     startY = eHeight - (DownData[0] / scale_factor) + yoffset + 1;
-     netctx.moveTo(cOriginX + 1, startY);
-     for (i=0; i<DownData.length; i++) {
-          dn_y = eHeight - (DownData[i] / scale_factor) + yoffset;
-          netctx.lineTo(cOriginX + i*2 + 1, dn_y);
-     }
-     netctx.stroke();
-     netctx.closePath();
+     drawDataLine(netctx, scale_factor, DownData, "rgb(0,0,255)");
 }
 
 function clearCanvas() {
