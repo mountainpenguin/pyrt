@@ -121,11 +121,10 @@ def stop(force=False):
             os.kill(p, signum)
         except OSError:
             print("Couldn't kill bot, no process with PID %d" % p)
-        except:
-            traceback.print_exc()
-        else:
             if os.path.exists("proc/bots/%d.pid" % p):
                 os.remove("proc/bots/%d.pid" % p)
+        except:
+            traceback.print_exc()
         
     count = 0
     while count < 3:
