@@ -21,22 +21,44 @@
 $(document).ready( function () {
     $(".add_filter_button").live("click", function () {
         var inputval = $(this).parent().next().val();
-        var name = $(this).closest(".remote_setting").attr("id").split("remote_settings_")[1];
-        if (inputval) {
-            socket.send("request=add_filter&name=" + name + "&restring=" + encodeURIComponent(inputval));
+        var inputdivs = $(this).closest(".add_filter_div").children();
+        console.log("inputdivs:", inputdivs);
+        var positive = $(".add_filter, .and_filter", inputdivs);
+        console.log("positive:", positive);
+        var negative = $(".not_filter", inputdivs);
+        console.log("negative:", negative);
+        
+        var positivevals = new Array();
+        var negativevals = new Array();
+        
+        for (i=0; i<positive.length; i++) {
+            positivevals.push($(positive[i]).children("input").val());
         }
+        console.log("positivevals:", positivevals);
+        
+        for (j=0; j<negative.length; j++) {
+            negativevals.push($(negative[j]).children("input").val());
+        }
+        console.log("negativevals:", negativevals);
+        
+        var name = $(this).closest(".remote_setting").attr("id").split("remote_settings_")[1];
+        console.log("name:", name);
+        
+        //if (inputval) {
+        //    socket.send("request=add_filter&name=" + name + "&restring=" + encodeURIComponent(inputval));
+        //}
     });
     $(".filter_select").live("change", function() {
-        var selectelem = $("<select class='filter_select'><option selected='selected'>---</option><option>AND</option><option>NOT</option></select>");
+        var selectelem = $("<select class='filter_select'><option selected='selected'>---</option><option>and</option><option>not</option></select>");
         if ($(this).val() == "---") {
             if ($(this).parent().next().hasClass("add_filter")) {
                 return;
             } else {
                 $(this).parent().next().remove();
             }
-        } else if ($(this).val() == "AND") {
+        } else if ($(this).val() == "and") {
             $(this).parent().after($("<div class='and_filter'><input name='add_filter' class='input_filter' type='text' placeholder='Filter' /></div>").append(selectelem));
-        } else if ($(this).val() == "NOT") {
+        } else if ($(this).val() == "not") {
             $(this).parent().after($("<div class='not_filter'><input name='not_filter' class='not_filter input_filter' type='text' placeholder='Negative Filter' /></div>").append(selectelem));
         }
         console.log("filter_select changed to", $(this).val());

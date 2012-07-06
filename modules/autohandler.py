@@ -126,8 +126,8 @@ class AutoHandler(object):
                         <input name="add_filter" class="input_filter" type="text" placeholder="Filter">
                         <select class="filter_select">
                             <option selected="selected">---</option>
-                            <option value="AND">AND</option>
-                            <option value="NOT">NOT</option>
+                            <option value="and">and</option>
+                            <option value="not">not</option>
                         </select>
                     </div>
                 </div>
