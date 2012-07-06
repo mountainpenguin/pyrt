@@ -101,9 +101,14 @@ tbody > tr {
                         font-family: monospace;
                         border: none;
                         float: left;
-                         clear: right;
+                        clear: right;
                         color: blue;
-                        min-width: 70%;
+                        &:not(.input_filter) {
+                            min-width: 70%;
+                        }
+                        &.input_filter {
+                            min-width: 40%;
+                        }
                         background-color: #F8F8F8;
                     }
                     button.submit_button, button.bot_button {

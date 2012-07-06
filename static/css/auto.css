@@ -78,8 +78,11 @@ tbody > tr {
         float: left;
         clear: right;
         color: blue;
-        min-width: 70%;
         background-color: #F8F8F8; }
+        tbody > tr.remote_setting > td div.settings input[type=text]:not(.input_filter), tbody > tr.remote_setting > td div.filters input[type=text]:not(.input_filter) {
+          min-width: 70%; }
+        tbody > tr.remote_setting > td div.settings input[type=text].input_filter, tbody > tr.remote_setting > td div.filters input[type=text].input_filter {
+          min-width: 40%; }
       tbody > tr.remote_setting > td div.settings button.submit_button, tbody > tr.remote_setting > td div.settings button.bot_button, tbody > tr.remote_setting > td div.filters button.submit_button, tbody > tr.remote_setting > td div.filters button.bot_button {
         border-radius: 5px;
         box-shadow: 0 2px 8px #888888;
