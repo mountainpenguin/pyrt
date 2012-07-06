@@ -549,7 +549,7 @@ function update_canvas() {
      hddSF = getHDDSF();
      sysctx.beginPath();
      sysctx.strokeStyle = "rgb(0,255,0)";
-     sysctx.fillStyle = "rbga(0,255,0,0.2)";
+     sysctx.fillStyle = "rbg(0,240,0)";
      startY = eHeight - (HddData[0] / hddSF) + yoffset + 1;
      sysctx.moveTo(cOriginX + 1, startY);
      
@@ -562,9 +562,9 @@ function update_canvas() {
      //// create rect
      //sysctx.beginPath();
      //sysctx.strokeStyle = "rgba(0, 255, 0, 0.1)";
-     sysctx.lineTo(cOriginX + i*2 + 1, 1);
-     sysctx.lineTo(1, 1);
-     sysctx.lineTo(1, startY);
+     sysctx.lineTo(cOriginX + i*2 + 1, eHeight-1);
+     sysctx.lineTo(cOriginX + 1, eHeight-1);
+     sysctx.lineTo(cOriginX + 1, startY);
      sysctx.fill();
      sysctx.closePath();
      
