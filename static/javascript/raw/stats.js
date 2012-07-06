@@ -422,7 +422,7 @@ function initGraph() {
      drawAxes(netctx);
      drawAxes(sysctx);
      drawLegend(netctx, new Array("Upload","Download"));
-     drawLegend(sysctx, new Array("Load Avg"));
+     drawLegend(sysctx, new Array("Load Avg", "Memory", "HDD"));
 }
 
 function _drawLegendItem(ctx, text, startX, startY, fillStyle) {
@@ -612,7 +612,7 @@ function onMessage(e) {
                $("#status-downrate").html("<div class='status-label'>Download rate:</div><div class='status-downrate-value status-value'>" + data.downrate_str + "/s</div>");
                $("#status-loadavg").html("<div class='status-label'>Load average:</div><div class='status-loadavg-value status-value'>" + data.loadavg + "</div>");
                $("#status-mem").html("<div class='status-label'>Memory usage:</div><div class='status-mem-value status-value'>" + data.memusage + "%</div>");
-               $("#status-hdd").html("<div class='status-label'>HDD usage:</div><div class='status-mem-value status-value'>" + data.hdusage + " / " + data.hdmax + "</div>");
+               $("#status-hdd").html("<div class='status-label'>HDD usage:</div><div class='status-mem-value status-value'>" + data.hdusage_human + " / " + data.hdmax_human + "</div>");
                HddTotal = data.hdmax;
                if (UpData.push(data.uprate) > maxValues) {
                     UpData.shift();

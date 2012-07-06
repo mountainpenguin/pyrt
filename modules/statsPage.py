@@ -57,6 +57,8 @@ class Index(object):
                 "hdperc" : hdperc,
                 "hdusage" : hdusage[0],
                 "hdmax" : hdusage[1],
+                "hdusage_human" : self.handler.humanSize(hdusage[0]),
+                "hdmax_human" : self.handler.humanSize(hdusage[1]),
             })
         elif request == "trackers":
             #calculate up/down totals for each torrent
