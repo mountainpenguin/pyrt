@@ -26,6 +26,9 @@ $(document).ready( function () {
             socket.send("request=add_filter&name=" + name + "&restring=" + encodeURIComponent(inputval));
         }
     });
+    $(".filter_select").live("change", function() {
+        console.log("filter_select changed!")
+    });
     $(".filter").live("click", function () {
         var name = $(this).closest(".remote_setting").attr("id").split("remote_settings_")[1];
         var index = $(".filter", $(this).parent()).index($(this));
