@@ -444,7 +444,7 @@ class Ajax:
                 self.log.error("AJAX: torrent delete error - no such file '%s' (ID: %s)", delete, torrent_id)
                 return "ERROR/no such file"
             else:
-                thread.start_new_thread(_remove_files, (torrent_id, delete))
+                thread.start_new_thread(self._remove_files, (torrent_id, delete))
         else:
             return "ERROR/could not stop torrent"
 
