@@ -554,6 +554,7 @@ function update_canvas() {
      for (i=0; i<HddData.length; i++) {
           hd_y = eHeight - (HddData[i] / hddSF) + yoffset;
           sysctx.lineTo(cOriginX + i*2 + 1, hd_y);
+          console.log("Writing hdd value, x: ", cOriginX + i*2 + 1, "y: ", hd_y);
      }
      sysctx.stroke();
      sysctx.closePath();
@@ -608,11 +609,11 @@ function onMessage(e) {
               trackerData = data.data;
               initTGraph();
           } else if (data.type == "global") {
-               $("#status-uprate").html("<div class='status-label'>Upload rate:</div><div class='status-uprate-value status-value'>" + data.uprate_str + "/s</div>");
-               $("#status-downrate").html("<div class='status-label'>Download rate:</div><div class='status-downrate-value status-value'>" + data.downrate_str + "/s</div>");
-               $("#status-loadavg").html("<div class='status-label'>Load average:</div><div class='status-loadavg-value status-value'>" + data.loadavg + "</div>");
-               $("#status-mem").html("<div class='status-label'>Memory usage:</div><div class='status-mem-value status-value'>" + data.memusage + "%</div>");
-               $("#status-hdd").html("<div class='status-label'>HDD usage:</div><div class='status-mem-value status-value'>" + data.hdusage_human + " / " + data.hdmax_human + "</div>");
+               $("#status-uprate").html("<div class='status-label status-system'>Upload rate:</div><div class='status-uprate-value status-value'>" + data.uprate_str + "/s</div>");
+               $("#status-downrate").html("<div class='status-label status-system'>Download rate:</div><div class='status-downrate-value status-value'>" + data.downrate_str + "/s</div>");
+               $("#status-loadavg").html("<div class='status-label status-system'>Load average:</div><div class='status-loadavg-value status-value'>" + data.loadavg + "</div>");
+               $("#status-mem").html("<div class='status-label status-system'>Memory usage:</div><div class='status-mem-value status-value'>" + data.memusage + "%</div>");
+               $("#status-hdd").html("<div class='status-label status-system'>HDD usage:</div><div class='status-hdd-value status-value'>" + data.hdusage_human + " / " + data.hdmax_human + "</div>");
                HddTotal = data.hdmax;
                if (UpData.push(data.uprate) > maxValues) {
                     UpData.shift();

@@ -35,10 +35,18 @@ body {
 .status-mem-value {
     color : rgb(0,0,255);
 }
-.status-label {
+.status-hdd-value {
+    color : rgb(0,255,0);
+}
+.status-network {
     float : left;
     min-width : 7em;
     display : inline;
+}
+.status-system {
+    float: left;
+    min-width: 10em;
+    display: inline;
 }
 #io-detail {
     border: 1px solid red;
