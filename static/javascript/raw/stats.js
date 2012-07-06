@@ -23,6 +23,10 @@ var UpData = new Array();
 var DownData = new Array();
 var LoadData = new Array();
 var MemData = new Array();
+var MemTotal = null;
+var HddData = new Array();
+var HddTotal = null;
+var HddFirst = null;
 var netctx = null;
 var sysctx = null;
 var iolayer = null;
@@ -420,7 +424,7 @@ function initGraph() {
      drawAxes(netctx);
      drawAxes(sysctx);
      drawLegend(netctx, new Array("Upload","Download"));
-     drawLegend(sysctx, new Array("Load Avg"));
+     drawLegend(sysctx, new Array("Load Avg", "Memory", "HDD"));
 }
 
 function _drawLegendItem(ctx, text, startX, startY, fillStyle) {
@@ -496,13 +500,49 @@ function getScaleFactor() {
 function getLoadSF() {
     max = Math.max.apply(Math, LoadData);
     scaleF = max / eHeight;
-    return scaleF
+    return scaleF;
 }
 
 function getMemSF() {
-    max = Math.max.apply(Math, MemData);
-    scaleF = max / eHeight;
-    return scaleF
+    //max = Math.max.apply(Math, MemData);
+    scaleF = MemTotal / eHeight;
+    return scaleF;
+}
+
+function getHDDSF() {
+     scaleF = HddTotal / eHeight;
+     return scaleF;
+}
+
+function drawFilledDataLine(ctx, scaleF, data, strokeStyle, fillStyle) {
+     ctx.beginPath();
+     ctx.strokeStyle = strokeStyle;
+     ctx.fillStyle = fillStyle;
+     startY = eHeight - (data[0] / scaleF) + yoffset + 1;
+     ctx.moveTo(cOriginX + 1, startY);
+     for (i=0; i<data.length; i++) {
+          pos_y = eHeight - (data[i] / scaleF) + yoffset;
+          ctx.lineTo(cOriginX + i*2 + 1, pos_y);
+     }
+     ctx.stroke();
+     ctx.lineTo(cOriginX + i*2, eHeight - 1 + yoffset);
+     ctx.lineTo(cOriginX + 1, eHeight - 1 + yoffset);
+     ctx.lineTo(cOriginX + 1, startY);
+     ctx.closePath();
+     ctx.fill();
+}
+
+function drawDataLine(ctx, scaleF, data, strokeStyle) {
+     ctx.beginPath();
+     ctx.strokeStyle = strokeStyle;
+     startY = eHeight - (data[0] / scaleF) + yoffset + 1;
+     ctx.moveTo(cOriginX + 1, startY);
+     for (i=0; i<data.length; i++) {
+         pos_y = eHeight - (data[i] / scaleF) + yoffset;
+         ctx.lineTo(cOriginX + i*2 + 1, pos_y);
+     }
+     ctx.stroke();
+     ctx.closePath();
 }
 
 function update_canvas() {
@@ -512,61 +552,23 @@ function update_canvas() {
      drawAxes(sysctx);
      scale_factor = getScaleFactor();
 
+     //if (HddFirst == 1) {
+     //     //drawFilledDataLine(ctx, scaleF, data, strokeStyle, fillStyle)
+     //     drawFilledDataLine(sysctx, getHDDSF(), HddData, "rgb(0,255,0)", "rgba(0,255,0,0.5)");
+     //     drawFilledDataLine(sysctx, getMemSF(), MemData, "rgb(0,0,255)", "rgba(0,0,255,0.5)");
+     //} else {
+          drawFilledDataLine(sysctx, getMemSF(), MemData, "rgb(0,0,255)", "rgba(0,0,255,0.2)");
+          drawFilledDataLine(sysctx, getHDDSF(), HddData, "rgb(0,255,0)", "rgba(0,255,0,0.2)");
+     //}
+     
      // load average data
-     loadSF = getLoadSF();
-     sysctx.beginPath();
-     sysctx.strokeStyle = "rgb(255,0,0)";
-     startY = eHeight - (LoadData[0] / loadSF) + yoffset + 1;
-     sysctx.moveTo(cOriginX + 1, startY);
-     for (i=0; i<DownData.length; i++) {
-         ld_y = eHeight - (LoadData[i] / loadSF) + yoffset;
-         sysctx.lineTo(cOriginX + i*2 + 1, ld_y);
-     }
-     sysctx.stroke();
-     sysctx.closePath();
-   
-     // mem data
-     /*
-     * memSF = getMemSF();
-     * sysctx.beginPath();
-     * sysctx.strokeStyle = "rgb(0,0,255)";
-     * startY = eHeight - (MemData[0] / memSF) + yoffset + 1;
-     * sysctx.moveTo(cOriginX + 1, startY);
-     * for (i=0; i<MemData.length; i++) {
-     *    mm_y = eHeight - (MemData[i] / memSF) + yoffset;
-     *    sysctx.lineTo(cOriginX + i*2 + 1, mm_y);
-     * }
-     * sysctx.stroke();
-     * sysctx.closePath();
-     */
+     drawDataLine(sysctx, getLoadSF(), LoadData, "rgb(255,0,0)");
 
      // uprate data
-     netctx.beginPath();
-     netctx.strokeStyle = "rgb(255,0,0)";
-     startY = eHeight - (UpData[0] / scale_factor) + yoffset + 1;
-     netctx.moveTo(cOriginX + 1, startY);
-     for (i=0;i<UpData.length;i++) {
-          up_y = eHeight - (UpData[i] / scale_factor) + yoffset;
-          netctx.lineTo(cOriginX + i*2 + 1, up_y);
-          // x position = i*2
-          // y position = re-scaled
-          
-          //netctx.moveTo(i*2,)
-     }
-     netctx.stroke();
-     netctx.closePath();
+     drawDataLine(netctx, scale_factor, UpData, "rgb(255,0,0)");
      
      // downrate data
-     netctx.beginPath();
-     netctx.strokeStyle = "rgb(0,0,255)";
-     startY = eHeight - (DownData[0] / scale_factor) + yoffset + 1;
-     netctx.moveTo(cOriginX + 1, startY);
-     for (i=0; i<DownData.length; i++) {
-          dn_y = eHeight - (DownData[i] / scale_factor) + yoffset;
-          netctx.lineTo(cOriginX + i*2 + 1, dn_y);
-     }
-     netctx.stroke();
-     netctx.closePath();
+     drawDataLine(netctx, scale_factor, DownData, "rgb(0,0,255)");
 }
 
 function clearCanvas() {
@@ -578,6 +580,14 @@ function init() {
      mainLoop();
 }
 
+//function roughAreaUnder(xlen, y1, y2) {
+//     // get rect
+//     var recth = Math.min(y1, y2);
+//     var recta = recth * xlen;
+//     var triangleh = Math.max(y1, y2) - recth;
+//     var trianglea = (triangleh * xlen) / 2;
+//     return recta + trianglea;
+//}
 function onMessage(e) {
      if (e.data.indexOf("ERROR") !== -1) {
           $("#status-div").removeClass("status-ok status-bad").addClass("status-bad").html(
@@ -590,23 +600,29 @@ function onMessage(e) {
               trackerData = data.data;
               initTGraph();
           } else if (data.type == "global") {
-              $("#status-uprate").html("<div class='status-label'>Upload rate:</div><div class='status-uprate-value status-value'>" + data.uprate_str + "/s</div>");
-              $("#status-downrate").html("<div class='status-label'>Download rate:</div><div class='status-downrate-value status-value'>" + data.downrate_str + "/s</div>");
-              $("#status-loadavg").html("<div class='status-label'>Load average:</div><div class='status-loadavg-value status-value'>" + data.loadavg + "</div>");
-//              $("#status-mem").html("<div class='status-label'>Memory usage:</div><div class='status-mem-value status-value'>" + data.memusage + "%</div>");
-              if (UpData.push(data.uprate) > maxValues) {
-                   UpData.shift();
-              }
-              if (DownData.push(data.downrate) > maxValues) {
-                   DownData.shift();
-              }
-              if (LoadData.push(data.loadavg) > maxValues) {
-                   LoadData.shift();
-              }
-              if (MemData.push(data.memusage) > maxValues) {
-                   MemData.shift();
-              }
-
+               $("#status-uprate").html("<div class='status-label status-system'>Upload rate:</div><div class='status-uprate-value status-value'>" + data.uprate_str + "/s</div>");
+               $("#status-downrate").html("<div class='status-label status-system'>Download rate:</div><div class='status-downrate-value status-value'>" + data.downrate_str + "/s</div>");
+               $("#status-loadavg").html("<div class='status-label status-system'>Load average:</div><div class='status-loadavg-value status-value'>" + data.loadavg + "</div>");
+               $("#status-mem").html("<div class='status-label status-system'>Memory usage:</div><div class='status-mem-value status-value'>" + data.memperc + "% (" + data.memusage_human + " / " + data.memmax_human + ")</div>");
+               $("#status-hdd").html("<div class='status-label status-system'>HDD usage:</div><div class='status-hdd-value status-value'>" + data.hdperc + "% (" + data.hdusage_human + " / " + data.hdmax_human + ")</div>");
+               HddTotal = data.hdmax;
+               MemTotal = data.memmax;
+               
+               if (UpData.push(data.uprate) > maxValues) {
+                    UpData.shift();
+               }
+               if (DownData.push(data.downrate) > maxValues) {
+                    DownData.shift();
+               }
+               if (LoadData.push(data.loadavg) > maxValues) {
+                    LoadData.shift();
+               }
+               if (MemData.push(data.memusage) > maxValues) {
+                    MemData.shift();
+               }
+               if (HddData.push(data.hdusage) > maxValues) {
+                    HddData.shift();
+               }
               if (UpData.length < 60) {
                   $("#canvas-title-dynamic").html("(Last " + UpData.length + " seconds)");
               } else {

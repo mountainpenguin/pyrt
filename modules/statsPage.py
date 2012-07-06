@@ -26,6 +26,7 @@ from modules import torrentHandler
 from modules import system
 import os
 import json
+import random
 
 class Index(object):
     def __init__(self, conf=config.Config(), RT=None, aliases=None):
@@ -44,6 +45,8 @@ class Index(object):
             loadavg = os.getloadavg()[0]
             memusage = system.mem()
             memperc = int((float(memusage[0]) / memusage[1])*100)
+            hdusage = system.hdd()
+            hdperc = int((float(hdusage[0]) / hdusage[1])*100)
             return json.dumps({
                 "type" : "global",
                 "uprate" : uprate,
@@ -51,7 +54,16 @@ class Index(object):
                 "loadavg" : loadavg,
                 "uprate_str" : self.handler.humanSize(uprate),
                 "downrate_str" : self.handler.humanSize(downrate),
-                "memusage" : memperc,
+                "memusage" : memusage[0],
+                "memmax" : memusage[1],
+                "memperc" : memperc,
+                "memusage_human" : self.handler.humanSize(memusage[0]),
+                "memmax_human" : self.handler.humanSize(memusage[1]),
+                "hdperc" : hdperc,
+                "hdusage" : hdusage[0],
+                "hdmax" : hdusage[1],
+                "hdusage_human" : self.handler.humanSize(hdusage[0]),
+                "hdmax_human" : self.handler.humanSize(hdusage[1]),
             })
         elif request == "trackers":
             #calculate up/down totals for each torrent
