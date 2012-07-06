@@ -627,7 +627,7 @@ function onMessage(e) {
                if (MemData.push(data.memusage) > maxValues) {
                     MemData.shift();
                }
-               if (HddData.push(data.hddusage) > maxValues) {
+               if (HddData.push(data.hdusage) > maxValues) {
                     HddData.shift();
                }
 
