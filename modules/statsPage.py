@@ -26,6 +26,7 @@ from modules import torrentHandler
 from modules import system
 import os
 import json
+import random
 
 class Index(object):
     def __init__(self, conf=config.Config(), RT=None, aliases=None):
@@ -43,8 +44,11 @@ class Index(object):
             downrate = self.RT.getGlobalDownRate()
             loadavg = os.getloadavg()[0]
             memusage = system.mem()
+            #debugging: randomize mem usage
+            memusage = (random.randint(0, memusage[1]), memusage[1])
             memperc = int((float(memusage[0]) / memusage[1])*100)
             hdusage = system.hdd()
+            hdusage = (random.randint(0, hdusage[1]), hdusage[1])
             hdperc = int((float(hdusage[0]) / hdusage[1])*100)
             return json.dumps({
                 "type" : "global",

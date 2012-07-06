@@ -580,6 +580,14 @@ function init() {
      mainLoop();
 }
 
+function roughAreaUnder(xlen, y1, y2) {
+     // get rect
+     var recth = Math.min(y1, y2);
+     var recta = recth * xlen;
+     var triangleh = Math.max(y1, y2) - recth;
+     var trianglea = (triangleh * xlen) / 2;
+     return recta + trianglea;
+}
 function onMessage(e) {
      if (e.data.indexOf("ERROR") !== -1) {
           $("#status-div").removeClass("status-ok status-bad").addClass("status-bad").html(
@@ -599,11 +607,7 @@ function onMessage(e) {
                $("#status-hdd").html("<div class='status-label status-system'>HDD usage:</div><div class='status-hdd-value status-value'>" + data.hdperc + "% (" + data.hdusage_human + " / " + data.hdmax_human + ")</div>");
                HddTotal = data.hdmax;
                MemTotal = data.memmax;
-               if (data.hdperc > data.memperc) {
-                    HddFirst = 1;
-               } else {
-                    HddFirst = 0;
-               }
+               
                if (UpData.push(data.uprate) > maxValues) {
                     UpData.shift();
                }
@@ -619,7 +623,13 @@ function onMessage(e) {
                if (HddData.push(data.hdusage) > maxValues) {
                     HddData.shift();
                }
-
+               hdarea = roughAreaUnder(HddData.length * 2, HddData[0], HddData[HddData.length - 1]);
+               memarea = roughAreaUnder(MemData.length * 2, MemData[0], MemData[MemData.length - 1]);
+               if (hdarea > memarea) {
+                    HddFirst = 1;
+               } else {
+                    HddFirst = 0;
+               }
               if (UpData.length < 60) {
                   $("#canvas-title-dynamic").html("(Last " + UpData.length + " seconds)");
               } else {
