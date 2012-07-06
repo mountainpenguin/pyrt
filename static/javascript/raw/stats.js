@@ -26,6 +26,7 @@ var MemData = new Array();
 var MemTotal = null;
 var HddData = new Array();
 var HddTotal = null;
+var HddFirst = null;
 var netctx = null;
 var sysctx = null;
 var iolayer = null;
@@ -513,18 +514,12 @@ function getHDDSF() {
      return scaleF;
 }
 
-function update_canvas() {
-     netctx.clearRect(0, 0, cWidth - nxoffset, cHeight);
-     sysctx.clearRect(0, 0, cWidth - nxoffset, cHeight);
-     drawAxes(netctx);
-     drawAxes(sysctx);
-     scale_factor = getScaleFactor();
-   
+function drawMem(sysctx) {
      // mem data
      memSF = getMemSF();
      sysctx.beginPath();
      sysctx.strokeStyle = "rgb(0,0,255)";
-     sysctx.fillStyle = "rgb(0,0,240)";
+     sysctx.fillStyle = "rgba(0,0,255,0.5)";
      startY = eHeight - (MemData[0] / memSF) + yoffset + 1;
      sysctx.moveTo(cOriginX + 1, startY);
      for (i=0; i<MemData.length; i++) {
@@ -534,14 +529,16 @@ function update_canvas() {
      sysctx.lineTo(cOriginX + i*2 + 1, eHeight - 1 + yoffset);
      sysctx.lineTo(cOriginX + 1, eHeight - 1 + yoffset);
      sysctx.lineTo(cOriginX + 1, startY);
-     sysctx.fill();
      sysctx.closePath();
-     
+     sysctx.fill();
+}
+
+function drawHDD(sysctx) {
      // hdd data
      hddSF = getHDDSF();
      sysctx.beginPath();
      sysctx.strokeStyle = "rgb(0,255,0)";
-     sysctx.fillStyle = "rbg(0,240,0)";
+     sysctx.fillStyle = "rgba(0,255,0,0.5)";
      startY = eHeight - (HddData[0] / hddSF) + yoffset + 1;
      sysctx.moveTo(cOriginX + 1, startY);
      
@@ -552,8 +549,24 @@ function update_canvas() {
      sysctx.lineTo(cOriginX + i*2 + 1, eHeight - 1 + yoffset);
      sysctx.lineTo(cOriginX + 1, eHeight - 1 + yoffset);
      sysctx.lineTo(cOriginX + 1, startY);
-     sysctx.fill();
      sysctx.closePath();
+     sysctx.fill();
+}
+
+function update_canvas() {
+     netctx.clearRect(0, 0, cWidth - nxoffset, cHeight);
+     sysctx.clearRect(0, 0, cWidth - nxoffset, cHeight);
+     drawAxes(netctx);
+     drawAxes(sysctx);
+     scale_factor = getScaleFactor();
+
+     if (HddFirst == 1) {
+          drawHDD(sysctx);
+          drawMem(sysctx);
+     } else {
+          drawMem(sysctx);
+          drawHDD(sysctx);
+     }
      
      // load average data
      loadSF = getLoadSF();
@@ -625,6 +638,11 @@ function onMessage(e) {
                $("#status-hdd").html("<div class='status-label status-system'>HDD usage:</div><div class='status-hdd-value status-value'>" + data.hdperc + "% (" + data.hdusage_human + " / " + data.hdmax_human + ")</div>");
                HddTotal = data.hdmax;
                MemTotal = data.memmax;
+               if (data.hdperc > data.memperc) {
+                    HddFirst = 1;
+               } else {
+                    HddFirst = 0;
+               }
                if (UpData.push(data.uprate) > maxValues) {
                     UpData.shift();
                }
