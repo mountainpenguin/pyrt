@@ -27,7 +27,7 @@ $(document).ready( function () {
         }
     });
     $(".filter_select").live("change", function() {
-        var selectelem = $("<select><option selected='selected'>---</option><option>AND</option><option>NOT</option></select>");
+        var selectelem = $("<select class='filter_select'><option selected='selected'>---</option><option>AND</option><option>NOT</option></select>");
         if ($(this).val() == "---") {
             if ($(this).parent().next().hasClass("add_filter")) {
                 return;
