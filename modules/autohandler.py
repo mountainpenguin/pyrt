@@ -122,7 +122,7 @@ class AutoHandler(object):
                     <label for="add_filter">
                         <button class="add_filter_button">Add Filter</button>
                     </label>
-                    <input name="add_filter" id="add_filter" type="text" placeholder="Filter">
+                    <input name="add_filter" class="add_filter" type="text" placeholder="Filter">
                     <select class="filter_select">
                         <option selected="selected">---</option>
                         <option value="AND">AND</option>
