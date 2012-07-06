@@ -21,25 +21,18 @@
 $(document).ready( function () {
     $(".add_filter_button").live("click", function () {
         var inputval = $(this).parent().next().val();
-        var inputdivs = $(this).closest(".add_filter_div").children();
-        console.log("inputdivs:", inputdivs);
-        var positive = $(".add_filter, .and_filter", inputdivs);
-        console.log("positive:", positive);
-        var negative = $(".not_filter", inputdivs);
-        console.log("negative:", negative);
-        
         var positivevals = new Array();
         var negativevals = new Array();
-        
-        for (i=0; i<positive.length; i++) {
-            positivevals.push($(positive[i]).children("input").val());
-        }
+        $(this).closest(".add_filter_div").children().each( function () {
+            if (($(this).hasClass("add_filter") || $(this).hasClass("and_filter")) && $(this).children("input")[0].val() !== "") {
+                positivevals.push( $(this).children("input")[0].val() );
+            } else if ($(this).hasClass("not_filter") && $(this).children("input")[0].val() !== "") {
+                negativevals.push( $(this).children("input")[0].val() );
+            }
+        });
         console.log("positivevals:", positivevals);
-        
-        for (j=0; j<negative.length; j++) {
-            negativevals.push($(negative[j]).children("input").val());
-        }
         console.log("negativevals:", negativevals);
+        
         
         var name = $(this).closest(".remote_setting").attr("id").split("remote_settings_")[1];
         console.log("name:", name);
