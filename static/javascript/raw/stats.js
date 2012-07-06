@@ -557,8 +557,8 @@ function update_canvas() {
      //     drawFilledDataLine(sysctx, getHDDSF(), HddData, "rgb(0,255,0)", "rgba(0,255,0,0.5)");
      //     drawFilledDataLine(sysctx, getMemSF(), MemData, "rgb(0,0,255)", "rgba(0,0,255,0.5)");
      //} else {
-          drawFilledDataLine(sysctx, getMemSF(), MemData, "rgb(0,0,255)", "rgba(0,0,255,0.1)");
-          drawFilledDataLine(sysctx, getHDDSF(), HddData, "rgb(0,255,0)", "rgba(0,255,0,0.1)");
+          drawFilledDataLine(sysctx, getMemSF(), MemData, "rgb(0,0,255)", "rgba(0,0,255,0.2)");
+          drawFilledDataLine(sysctx, getHDDSF(), HddData, "rgb(0,255,0)", "rgba(0,255,0,0.2)");
      //}
      
      // load average data
