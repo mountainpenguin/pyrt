@@ -549,15 +549,25 @@ function update_canvas() {
      hddSF = getHDDSF();
      sysctx.beginPath();
      sysctx.strokeStyle = "rgb(0,255,0)";
+     sysctx.fillStyle = "rbga(0,255,0,0.2)";
      startY = eHeight - (HddData[0] / hddSF) + yoffset + 1;
      sysctx.moveTo(cOriginX + 1, startY);
+     
      for (i=0; i<HddData.length; i++) {
           hd_y = eHeight - (HddData[i] / hddSF) + yoffset;
           sysctx.lineTo(cOriginX + i*2 + 1, hd_y);
-          console.log("Writing hdd value, x: ", cOriginX + i*2 + 1, "y: ", hd_y);
      }
-     sysctx.stroke();
+     //sysctx.stroke();
+     //sysctx.closePath();
+     //// create rect
+     //sysctx.beginPath();
+     //sysctx.strokeStyle = "rgba(0, 255, 0, 0.1)";
+     sysctx.lineTo(cOriginX + i*2 + 1, 1);
+     sysctx.lineTo(1, 1);
+     sysctx.lineTo(1, startY);
+     sysctx.fill();
      sysctx.closePath();
+     
 
      // uprate data
      netctx.beginPath();
