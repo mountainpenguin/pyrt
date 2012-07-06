@@ -524,12 +524,12 @@ function drawFilledDataLine(ctx, scaleF, data, strokeStyle, fillStyle) {
           pos_y = eHeight - (data[i] / scaleF) + yoffset;
           ctx.lineTo(cOriginX + i*2 + 1, pos_y);
      }
+     ctx.stroke();
      ctx.lineTo(cOriginX + i*2, eHeight - 1 + yoffset);
      ctx.lineTo(cOriginX + 1, eHeight - 1 + yoffset);
      ctx.lineTo(cOriginX + 1, startY);
      ctx.closePath();
      ctx.fill();
-     ctx.stroke();
 }
 
 function drawDataLine(ctx, scaleF, data, strokeStyle) {
@@ -541,8 +541,8 @@ function drawDataLine(ctx, scaleF, data, strokeStyle) {
          pos_y = eHeight - (data[i] / scaleF) + yoffset;
          ctx.lineTo(cOriginX + i*2 + 1, pos_y);
      }
-     ctx.closePath();
      ctx.stroke();
+     ctx.closePath();
 }
 
 function update_canvas() {
