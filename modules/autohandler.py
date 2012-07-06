@@ -124,7 +124,8 @@ class AutoHandler(object):
                     </label>
                     <input name="add_filter" id="add_filter" type="text" placeholder="Filter">
                     <select class="filter_select">
-                        <option value="AND" selected="selected">AND</option>
+                        <option selected="selected">---</option>
+                        <option value="AND">AND</option>
                         <option value="NOT">NOT</option>
                     </select>
                 </div>

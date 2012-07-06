@@ -27,7 +27,7 @@ $(document).ready( function () {
         }
     });
     $(".filter_select").live("change", function() {
-        console.log("filter_select changed!")
+        console.log("filter_select changed to", $(this).val());
     });
     $(".filter").live("click", function () {
         var name = $(this).closest(".remote_setting").attr("id").split("remote_settings_")[1];
