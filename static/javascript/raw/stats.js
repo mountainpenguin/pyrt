@@ -552,14 +552,14 @@ function update_canvas() {
      drawAxes(sysctx);
      scale_factor = getScaleFactor();
 
-     if (HddFirst == 1) {
-          //drawFilledDataLine(ctx, scaleF, data, strokeStyle, fillStyle)
-          drawFilledDataLine(sysctx, getHDDSF(), HddData, "rgb(0,255,0)", "rgba(0,255,0,0.5)");
-          drawFilledDataLine(sysctx, getMemSF(), MemData, "rgb(0,0,255)", "rgba(0,0,255,0.5)");
-     } else {
-          drawFilledDataLine(sysctx, getMemSF(), MemData, "rgb(0,0,255)", "rgba(0,0,255,0.5)");
-          drawFilledDataLine(sysctx, getHDDSF(), HddData, "rgb(0,255,0)", "rgba(0,255,0,0.5)");
-     }
+     //if (HddFirst == 1) {
+     //     //drawFilledDataLine(ctx, scaleF, data, strokeStyle, fillStyle)
+     //     drawFilledDataLine(sysctx, getHDDSF(), HddData, "rgb(0,255,0)", "rgba(0,255,0,0.5)");
+     //     drawFilledDataLine(sysctx, getMemSF(), MemData, "rgb(0,0,255)", "rgba(0,0,255,0.5)");
+     //} else {
+          drawFilledDataLine(sysctx, getMemSF(), MemData, "rgb(0,0,255)", "rgba(0,0,255,0.1)");
+          drawFilledDataLine(sysctx, getHDDSF(), HddData, "rgb(0,255,0)", "rgba(0,255,0,0.1)");
+     //}
      
      // load average data
      drawDataLine(sysctx, getLoadSF(), LoadData, "rgb(255,0,0)");
@@ -580,14 +580,14 @@ function init() {
      mainLoop();
 }
 
-function roughAreaUnder(xlen, y1, y2) {
-     // get rect
-     var recth = Math.min(y1, y2);
-     var recta = recth * xlen;
-     var triangleh = Math.max(y1, y2) - recth;
-     var trianglea = (triangleh * xlen) / 2;
-     return recta + trianglea;
-}
+//function roughAreaUnder(xlen, y1, y2) {
+//     // get rect
+//     var recth = Math.min(y1, y2);
+//     var recta = recth * xlen;
+//     var triangleh = Math.max(y1, y2) - recth;
+//     var trianglea = (triangleh * xlen) / 2;
+//     return recta + trianglea;
+//}
 function onMessage(e) {
      if (e.data.indexOf("ERROR") !== -1) {
           $("#status-div").removeClass("status-ok status-bad").addClass("status-bad").html(
@@ -622,13 +622,6 @@ function onMessage(e) {
                }
                if (HddData.push(data.hdusage) > maxValues) {
                     HddData.shift();
-               }
-               hdarea = roughAreaUnder(HddData.length * 2, HddData[0], HddData[HddData.length - 1]);
-               memarea = roughAreaUnder(MemData.length * 2, MemData[0], MemData[MemData.length - 1]);
-               if (hdarea > memarea) {
-                    HddFirst = 1;
-               } else {
-                    HddFirst = 0;
                }
               if (UpData.length < 60) {
                   $("#canvas-title-dynamic").html("(Last " + UpData.length + " seconds)");
