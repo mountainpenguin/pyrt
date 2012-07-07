@@ -102,7 +102,7 @@ tbody > tr {
         tbody > tr.remote_setting > td div.settings div.and_filter select, tbody > tr.remote_setting > td div.settings div.not_filter select, tbody > tr.remote_setting > td div.filters div.and_filter select, tbody > tr.remote_setting > td div.filters div.not_filter select {
           float: left; }
       tbody > tr.remote_setting > td div.settings div.add_filter, tbody > tr.remote_setting > td div.filters div.add_filter {
-        padding-left: 62px;
+        padding-left: 52px;
         float: left;
         clear: right; }
         tbody > tr.remote_setting > td div.settings div.add_filter input, tbody > tr.remote_setting > td div.filters div.add_filter input {

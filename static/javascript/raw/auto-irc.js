@@ -43,8 +43,12 @@ $(document).ready( function () {
         var andinput = $("<input name='add_filter' class='input_filter' type='text' placeholder='Filter' />");
         var notinput = $("<input name='not_filter' class='input_filter' type='text' placeholder='Negative Filter' />");
         if ($(this).val() == "---") {
-            $(this).parent().prev().append($(this));
-            $(this).parent().next().remove();
+            if ($(this).parent().children("select").length == 2) {
+                $(this).parent().remove();
+            } else {
+                $(this).parent().prev().append($(this));
+                $(this).parent().next().remove();
+            }
         } else if ($(this).val() == "and") {
             if ($(this).next().length > 0) {
                 $(this).parent().toggleClass("not_filter and_filter");
