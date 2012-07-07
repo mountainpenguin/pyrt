@@ -125,6 +125,13 @@ tbody > tr {
                     }
                     div.and_filter, div.not_filter {
                         padding-left: 150px;
+                        input {
+                            float: left;
+                            padding-left: 10px;
+                        }
+                        select {
+                            float: left;
+                        }
                     }
                     button.submit_button, button.bot_button {
                         border-radius: 5px;
