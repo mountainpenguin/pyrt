@@ -50,7 +50,9 @@ $(document).ready( function () {
             }
         } else if ($(this).val() == "and") {
             if ($(this).parent().next().length > 0) {
-                $(this).parent().next().toggleClass("not_filter and_filter").attr("placeholder", "Filter");
+                $(this).parent().next().toggleClass("not_filter and_filter");
+                $(this).parent().next().children("input").attr("placeholder", "Filter");
+                return;
             }
             $(this).parent().after(
                 $("<div class='and_filter' />")
@@ -59,7 +61,9 @@ $(document).ready( function () {
             );
         } else if ($(this).val() == "not") {
             if ($(this).parent().next().length > 0) {
-                $(this).parent().next().toggleClass("not_filter and_filter").attr("placeholder", "Negative Filter");
+                $(this).parent().next().toggleClass("not_filter and_filter");
+                $(this).parent().next().children("input").attr("placeholder", "Negative Filter");
+                return;
             }
             $(this).parent().after(
                 $("<div class='not_filter' />")
