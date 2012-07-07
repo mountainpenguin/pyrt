@@ -304,7 +304,7 @@ class Base(object):
             prepend = "".join(random.choice(string.letters) for x in range(10))
             filename = "%s-%s" % (prepend, filename)
         open("torrents/%s" % (filename), "wb").write(filecontent)
-        self._ajax.load_from_remote(filename, self.settings.name, start=False)
+        self._ajax.load_from_remote(filename, self.settings.name, start=True)
 
             
 
