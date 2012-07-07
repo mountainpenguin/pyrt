@@ -108,11 +108,25 @@ class AutoHandler(object):
     
 
     def _fmt_filters(self, filters):
+        filter_pos = """<div class='filter_positive'><code>%s</code></div>"""
+        filter_neg = """<div class='filter_negative'><code>%s</code></div>"""
         filter_templ = """
-            <label for='filter%(count)d'>Filter:</label><div name='filter%(count)d' class='filter'><code>%(filter)s</code></div>
+            <label for='filter%(count)d'>Filter:</label>
+            <div name='filter%(count)d' class='filter'>
+                %(subfilters)s
+            </div>
         """
+        subfilters = [
+            filter_pos % (y.pattern) for y in [ x[0] for x in filters ]
+        ]
+        subfilters += [
+            filter_neg % (z.pattern) for z in [ x[1] for x in filters ]
+        ]
         fmt = {
-            "filters" : "".join([ filter_templ % { "filter" : cgi.escape(x.pattern), "count": filters.index(x) + 1 } for x in filters]),
+            "filters" : "".join([ filter_templ % {
+                "count": filters.index(x) + 1,
+                "subfilters": "".join(subfilters),
+            } for x in filters]),
         }
         templ = """
             <div class="filters">
