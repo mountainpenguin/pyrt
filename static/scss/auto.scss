@@ -67,16 +67,16 @@ tbody > tr {
                         border-bottom: 3px;
                     }
                     div.filter_group {
+                        float: left;
+                        clear: right;
                         &:hover {
-                            /*background-color: red !important;*/
-                            border-color: red !important;
+                            border: 1px solid red !important;
                             cursor: pointer;
                         }
                     }
                     div.filter {
-                        float: left;
-                        clear: right;
                         color: #4183C4;
+                        margin: 2px;
                         font-family: monospace;
                         border: 1px solid #EAEAEA;
                         padding: 0 5px;
