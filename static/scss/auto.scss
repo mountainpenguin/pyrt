@@ -72,14 +72,17 @@ tbody > tr {
                         color: #4183C4;
                         font-family: monospace;
                         border: 1px solid #EAEAEA;
-                        &:not(:hover) {
-                            background-color: #F8F8F8;
-                        }
                         padding: 0 5px;
                         border-radius: 3px;
                         &:hover {
                             background-color: red;
                             cursor: pointer;
+                        }
+                        .filter_positive:not(:hover) {
+                            background-color: #F8F8F8;
+                        }
+                        .filter_negative:not(:hover) {
+                            background-color: #FFCCCC;
                         }
                     }
                     div.add_filter_div {

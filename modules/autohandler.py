@@ -108,16 +108,14 @@ class AutoHandler(object):
     
 
     def _fmt_filters(self, filters):
-        filter_pos = """<div class='filter_positive'><code>%s</code></div>"""
-        filter_neg = """<div class='filter_negative'><code>%s</code></div>"""
+        filter_pos = """<div class='filter_positive filter'><code>%s</code></div>"""
+        filter_neg = """<div class='filter_negative filter'><code>%s</code></div>"""
         filter_templ = """
             <label for='filter%(count)d'>Filter:</label>
-            <div name='filter%(count)d' class='filter'>
+            <div name='filter%(count)d' class='filter_group'>
                 %(subfilters)s
             </div>
         """
-        print(filters)
-        #[([<_sre.SRE_Pattern object at 0x91e6660>, <_sre.SRE_Pattern object at 0xb74f8a70>], [<_sre.SRE_Pattern object at 0x91e67a0>])]
         filters_fmtted = []
         idx = 0
         for f_group_pos, f_group_neg in filters:
@@ -135,7 +133,7 @@ class AutoHandler(object):
             idx += 1
             
         fmt = {
-            "filters" : filters_fmtted,
+            "filters" : "".join(filters_fmtted),
         }
         templ = """
             <div class="filters">
