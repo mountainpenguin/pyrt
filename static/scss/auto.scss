@@ -68,7 +68,8 @@ tbody > tr {
                     }
                     div.filter_group {
                         &:hover {
-                            background-color: red;
+                            /*background-color: red !important;*/
+                            border-color: red !important;
                             cursor: pointer;
                         }
                     }
@@ -80,10 +81,10 @@ tbody > tr {
                         border: 1px solid #EAEAEA;
                         padding: 0 5px;
                         border-radius: 3px;
-                        .filter_positive:not(:hover) {
+                        &.filter_positive:not(:hover) {
                             background-color: #F8F8F8;
                         }
-                        .filter_negative:not(:hover) {
+                        &.filter_negative:not(:hover) {
                             background-color: #FFCCCC;
                         }
                     }

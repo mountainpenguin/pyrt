@@ -48,7 +48,8 @@ tbody > tr {
         vertical-align: center;
         border-bottom: 3px; }
       tbody > tr.remote_setting > td div.filters div.filter_group:hover {
-        background-color: red;
+        /*background-color: red !important;*/
+        border-color: red !important;
         cursor: pointer; }
       tbody > tr.remote_setting > td div.filters div.filter {
         float: left;
@@ -58,9 +59,9 @@ tbody > tr {
         border: 1px solid #EAEAEA;
         padding: 0 5px;
         border-radius: 3px; }
-        tbody > tr.remote_setting > td div.filters div.filter .filter_positive:not(:hover) {
+        tbody > tr.remote_setting > td div.filters div.filter.filter_positive:not(:hover) {
           background-color: #F8F8F8; }
-        tbody > tr.remote_setting > td div.filters div.filter .filter_negative:not(:hover) {
+        tbody > tr.remote_setting > td div.filters div.filter.filter_negative:not(:hover) {
           background-color: #FFCCCC; }
       tbody > tr.remote_setting > td div.filters div.add_filter_div {
         float: left;
