@@ -44,10 +44,10 @@ $(document).ready( function () {
         var notinput = $("<input name='not_filter' class='input_filter' type='text' placeholder='Negative Filter' />");
         if ($(this).val() == "---") {
             if ($(this).parent().children("select").length == 2) {
-                $(this).parent().remove();
-            } else {
                 $(this).parent().prev().append($(this));
                 $(this).parent().next().remove();
+            } else {
+                $(this).parent().remove();
             }
         } else if ($(this).val() == "and") {
             if ($(this).next().length > 0) {
