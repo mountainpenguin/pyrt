@@ -49,22 +49,24 @@ $(document).ready( function () {
                 $(this).parent().next().remove();
             }
         } else if ($(this).val() == "and") {
-            console.log($(this).parent().next());
+            if ($(this).parent().next().length > 0) {
+                $(this).parent().next().toggleClass("not_filter and_filter").attr("placeholder", "Filter");
+            }
             $(this).parent().after(
                 $("<div class='and_filter' />")
                 .append(selectelem)
                 .append(andinput)
             );
         } else if ($(this).val() == "not") {
-            console.log($(this).parent().next());
+            if ($(this).parent().next().length > 0) {
+                $(this).parent().next().toggleClass("not_filter and_filter").attr("placeholder", "Negative Filter");
+            }
             $(this).parent().after(
                 $("<div class='not_filter' />")
                 .append(selectelem)
                 .append(notinput)
             );
         }
-        console.log("filter_select changed to", $(this).val());
-        
     });
     $(".filter_group").live("click", function () {
         var name = $(this).closest(".remote_setting").attr("id").split("remote_settings_")[1];
