@@ -53,16 +53,19 @@ tbody > tr {
         tbody > tr.remote_setting > td div.filters div.filter_group:hover {
           border: 1px solid red !important;
           cursor: pointer; }
+        tbody > tr.remote_setting > td div.filters div.filter_group:not(:hover) {
+          border: 1px solid rgba(0, 0, 0, 0); }
       tbody > tr.remote_setting > td div.filters div.filter {
         color: #4183C4;
+        float: left;
         margin: 2px;
         font-family: monospace;
         border: 1px solid #EAEAEA;
         padding: 0 5px;
         border-radius: 3px; }
-        tbody > tr.remote_setting > td div.filters div.filter.filter_positive:not(:hover) {
+        tbody > tr.remote_setting > td div.filters div.filter.filter_positive {
           background-color: #F8F8F8; }
-        tbody > tr.remote_setting > td div.filters div.filter.filter_negative:not(:hover) {
+        tbody > tr.remote_setting > td div.filters div.filter.filter_negative {
           background-color: #FFCCCC; }
       tbody > tr.remote_setting > td div.filters div.add_filter_div {
         float: left;
