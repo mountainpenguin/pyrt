@@ -75,11 +75,26 @@ class RSS(object):
                         newentries.append(e)
                 #self.RPC.RPCCommand("log","debug","%i new entries for feed (id: %s, alias: %s)", len(newentries), feed["id"], feed["alias"])
                 for e in newentries:
-                    for filt in [re.compile(x, re.I) for x in feed["filters"]]:
-                        if filt.search(e.title):
-                            #got match!
-                            #self.RPC.RPCCommand("log", "info", "Got filter match in RSS feed (id: %s, alias: %s) for title '%s'", feed["id"], feed["alias"], e.title)
-                            self.RPC.RPCCommand("fetch_torrent_rss", ID=feed["id"], alias=feed["alias"], link=e.link)
+                    for positive, negative in feed["filters"]:
+                        contTrue = 0
+                        for regex in [re.compile(x, re.I) for x in positive]:
+                            if not regex.search(e.title):
+                                break
+                            else:
+                                contTrue += 1
+                        if contTrue != len(feed["filters"]):
+                            break
+                        
+                        for regex in [re.compile(y, re.I) for y in negative]:
+                            if regex.search(e.title):
+                                cont = False
+                                break
+                            else:
+                                cont = True
+                                
+                        if not cont:
+                            break
+                        self.RPC.RPCCommand("fetch_torrent_rss", ID=feed["id"], alias=feed["alias"], link=e.link)
         
     def refreshRSS(self):
         feeds_req = self.RPC.RPCCommand("get_active_rss")
@@ -95,15 +110,6 @@ class RSS(object):
             return
         
         for feed in feeds_req.response:
-            #self.RPC.RPCCommand("log", "debug", "Got filters for RSS feed ID %s (%s): %r", feed["id"], feed["alias"], feed["filters"])
-            #"id":x.ID,
-            #"url":x.url,
-            #"ttl":self._ttlhuman(x.ttl),
-            #"alias":x.alias,
-            #"enabled":x.enabled,
-            #"enabled_str":x.enabled and "disable" or "enable",
-            #"enabled_image":x.enabled and "/images/red-x.png" or "/images/submit.png",
-            #"filters":x.filters,
             timediff = timestamp - feed["updated"]
             if timediff > feed["ttl_sec"]:
                 args = [feed["id"], timestamp]
