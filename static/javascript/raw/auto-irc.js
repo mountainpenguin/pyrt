@@ -40,6 +40,8 @@ $(document).ready( function () {
     });
     $(".filter_select").live("change", function() {
         var selectelem = $("<select class='filter_select'><option selected='selected'>---</option><option>and</option><option>not</option></select>");
+        var andinput = $("<input name='add_filter' class='input_filter' type='text' placeholder='Filter' />");
+        var notinput = $("<input name='not_filter' class='input_filter' type='text' placeholder='Negative Filter' />");
         if ($(this).val() == "---") {
             if ($(this).parent().next().hasClass("add_filter")) {
                 return;
@@ -48,12 +50,21 @@ $(document).ready( function () {
             }
         } else if ($(this).val() == "and") {
             console.log($(this).parent().next());
-            $(this).parent().after($("<div class='and_filter'><input name='add_filter' class='input_filter' type='text' placeholder='Filter' /></div>").append(selectelem));
+            $(this).parent().after(
+                $("<div class='and_filter' />")
+                .append(selectelem)
+                .append(andinput)
+            );
         } else if ($(this).val() == "not") {
             console.log($(this).parent().next());
-            $(this).parent().after($("<div class='not_filter'><input name='not_filter' class='not_filter input_filter' type='text' placeholder='Negative Filter' /></div>").append(selectelem));
+            $(this).parent().after(
+                $("<div class='not_filter' />")
+                .append(selectelem)
+                .append(notinput)
+            );
         }
         console.log("filter_select changed to", $(this).val());
+        
     });
     $(".filter_group").live("click", function () {
         var name = $(this).closest(".remote_setting").attr("id").split("remote_settings_")[1];
