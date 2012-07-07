@@ -43,15 +43,12 @@ $(document).ready( function () {
         var andinput = $("<input name='add_filter' class='input_filter' type='text' placeholder='Filter' />");
         var notinput = $("<input name='not_filter' class='input_filter' type='text' placeholder='Negative Filter' />");
         if ($(this).val() == "---") {
-            if ($(this).parent().next().hasClass("add_filter")) {
-                return;
-            } else {
-                $(this).parent().next().remove();
-            }
+            $(this).parent().prev().append($(this));
+            $(this).parent().next().remove();
         } else if ($(this).val() == "and") {
-            if ($(this).parent().next().length > 0) {
-                $(this).parent().next().toggleClass("not_filter and_filter");
-                $(this).parent().next().children("input").attr("placeholder", "Filter");
+            if ($(this).next().length > 0) {
+                $(this).parent().toggleClass("not_filter and_filter");
+                $(this).next().attr("placeholder", "Filter");
                 return;
             }
             $(this).parent().after(
@@ -61,9 +58,9 @@ $(document).ready( function () {
             );
             $(this).parent().next().prepend($(this));
         } else if ($(this).val() == "not") {
-            if ($(this).parent().next().length > 0) {
-                $(this).parent().next().toggleClass("not_filter and_filter");
-                $(this).parent().next().children("input").attr("placeholder", "Negative Filter");
+            if ($(this).next().length > 0) {
+                $(this).parent().toggleClass("not_filter and_filter");
+                $(this).next().attr("placeholder", "Negative Filter");
                 return;
             }
             $(this).parent().after(

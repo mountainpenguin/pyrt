@@ -91,7 +91,8 @@ tbody > tr {
         tbody > tr.remote_setting > td div.settings input[type=text]:not(.input_filter), tbody > tr.remote_setting > td div.filters input[type=text]:not(.input_filter) {
           min-width: 70%; }
         tbody > tr.remote_setting > td div.settings input[type=text].input_filter, tbody > tr.remote_setting > td div.filters input[type=text].input_filter {
-          min-width: 265px; }
+          min-width: 265px;
+          margin-left: 62px; }
       tbody > tr.remote_setting > td div.settings div.and_filter, tbody > tr.remote_setting > td div.settings div.not_filter, tbody > tr.remote_setting > td div.filters div.and_filter, tbody > tr.remote_setting > td div.filters div.not_filter {
         padding-left: 150px;
         float: left;
