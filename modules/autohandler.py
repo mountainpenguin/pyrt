@@ -116,17 +116,26 @@ class AutoHandler(object):
                 %(subfilters)s
             </div>
         """
-        subfilters = [
-            filter_pos % (y.pattern) for y in [ x[0] for x in filters ]
-        ]
-        subfilters += [
-            filter_neg % (z.pattern) for z in [ x[1] for x in filters ]
-        ]
+        print(filters)
+        #[([<_sre.SRE_Pattern object at 0x91e6660>, <_sre.SRE_Pattern object at 0xb74f8a70>], [<_sre.SRE_Pattern object at 0x91e67a0>])]
+        filters_fmtted = []
+        idx = 0
+        for f_group_pos, f_group_neg in filters:
+            subfilters = []
+            for regex in f_group_pos:
+                subfilters += [filter_pos % regex.pattern]
+            for regex in f_group_neg:
+                subfilters += [filter_neg % regex.pattern]
+            filters_fmtted += [
+                filter_templ % {
+                    "count" : idx + 1,
+                    "subfilters" : "".join(subfilters)
+                }
+            ]
+            idx += 1
+            
         fmt = {
-            "filters" : "".join([ filter_templ % {
-                "count": filters.index(x) + 1,
-                "subfilters": "".join(subfilters),
-            } for x in filters]),
+            "filters" : filters_fmtted,
         }
         templ = """
             <div class="filters">
