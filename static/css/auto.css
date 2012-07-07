@@ -93,10 +93,12 @@ tbody > tr {
         tbody > tr.remote_setting > td div.settings input[type=text].input_filter, tbody > tr.remote_setting > td div.filters input[type=text].input_filter {
           min-width: 265px; }
       tbody > tr.remote_setting > td div.settings div.and_filter, tbody > tr.remote_setting > td div.settings div.not_filter, tbody > tr.remote_setting > td div.filters div.and_filter, tbody > tr.remote_setting > td div.filters div.not_filter {
-        padding-left: 150px; }
+        padding-left: 150px;
+        float: left;
+        clear: right; }
         tbody > tr.remote_setting > td div.settings div.and_filter input, tbody > tr.remote_setting > td div.settings div.not_filter input, tbody > tr.remote_setting > td div.filters div.and_filter input, tbody > tr.remote_setting > td div.filters div.not_filter input {
           float: left;
-          padding-left: 10px; }
+          margin-left: 10px; }
         tbody > tr.remote_setting > td div.settings div.and_filter select, tbody > tr.remote_setting > td div.settings div.not_filter select, tbody > tr.remote_setting > td div.filters div.and_filter select, tbody > tr.remote_setting > td div.filters div.not_filter select {
           float: left; }
       tbody > tr.remote_setting > td div.settings button.submit_button, tbody > tr.remote_setting > td div.settings button.bot_button, tbody > tr.remote_setting > td div.filters button.submit_button, tbody > tr.remote_setting > td div.filters button.bot_button {

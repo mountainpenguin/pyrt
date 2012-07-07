@@ -56,9 +56,10 @@ $(document).ready( function () {
             }
             $(this).parent().after(
                 $("<div class='and_filter' />")
-                .append(selectelem)
                 .append(andinput)
+                .append(selectelem)
             );
+            $(this).parent().next().prepend($(this));
         } else if ($(this).val() == "not") {
             if ($(this).parent().next().length > 0) {
                 $(this).parent().next().toggleClass("not_filter and_filter");
@@ -67,9 +68,10 @@ $(document).ready( function () {
             }
             $(this).parent().after(
                 $("<div class='not_filter' />")
-                .append(selectelem)
                 .append(notinput)
+                .append(selectelem)
             );
+            $(this).parent().next().prepend($(this));
         }
     });
     $(".filter_group").live("click", function () {
