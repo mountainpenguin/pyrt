@@ -51,8 +51,6 @@ class RPCHandler(object):
         self.publog = publog
         self.ajax = ajax
         self.storage = storage
-
-    
         
     def updatehash_rss(self, ID, h):
         #self.log("info", "Updated hash for feed %s", ID)
@@ -69,7 +67,13 @@ class RPCHandler(object):
         if ID not in self.storage.RSS:
             return json.dumps({"error" : "No such RSS feed"})
         
-        return [x.pattern for x in self.storage.RSS[ID].filters]
+        filter_list = []
+        for fi in self.storage.RSS[ID].filters:
+            filter_list.append(
+                ([x.pattern for x in fi[0]],
+                 [y.pattern for y in fi[1]])
+            )
+        return filter_list
         
     def get_active_rss(self):
         feeds_ = filter(lambda x: x["enabled"], self.storage.getRSSFeeds())
@@ -77,7 +81,10 @@ class RPCHandler(object):
         for f in feeds_:
             fi_ = []
             for fi in f["filters"]:
-                fi_.append(fi.pattern)
+                fi_.append(
+                    ([x.pattern for x in fi[0]],
+                     [y.pattern for y in fi[1]])
+                )
             f["filters"] = fi_
             feeds.append(f)
         return feeds
