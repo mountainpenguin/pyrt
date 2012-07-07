@@ -66,6 +66,12 @@ tbody > tr {
                         vertical-align: center;
                         border-bottom: 3px;
                     }
+                    div.filter_group {
+                        &:hover {
+                            background-color: red;
+                            cursor: pointer;
+                        }
+                    }
                     div.filter {
                         float: left;
                         clear: right;
@@ -74,10 +80,6 @@ tbody > tr {
                         border: 1px solid #EAEAEA;
                         padding: 0 5px;
                         border-radius: 3px;
-                        &:hover {
-                            background-color: red;
-                            cursor: pointer;
-                        }
                         .filter_positive:not(:hover) {
                             background-color: #F8F8F8;
                         }
