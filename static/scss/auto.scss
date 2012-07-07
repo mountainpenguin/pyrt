@@ -120,12 +120,23 @@ tbody > tr {
                         }
                         &.input_filter {
                             min-width: 265px;
-                            margin-left: 62px;
                         }
                         background-color: #F8F8F8;
                     }
                     div.and_filter, div.not_filter {
                         padding-left: 150px;
+                        float: left;
+                        clear: right;
+                        input {
+                            float: left;
+                            margin-left: 10px;
+                        }
+                        select {
+                            float: left;
+                        }
+                    }
+                    div.add_filter {
+                        padding-left: 62px;
                         float: left;
                         clear: right;
                         input {
