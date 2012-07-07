@@ -72,6 +72,8 @@ tbody > tr {
                         &:hover {
                             border: 1px solid red !important;
                             cursor: pointer;
+                            border-radius: 3px;
+                            background-color: rgba(255,0,0,0.5);
                         }
                         &:not(:hover) {
                             border: 1px solid rgba(0,0,0,0);
