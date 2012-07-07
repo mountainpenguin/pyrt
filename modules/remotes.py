@@ -424,8 +424,7 @@ class RemoteStorage(object):
             return False
         self.SOCKETS[num] = assigned
         return True
-            
-        
+             
     def addRemote(self, name, **kwargs):
         """Add a 'source'
 
@@ -577,11 +576,11 @@ class RemoteStorage(object):
             self._flushRSS()
             return True
         
-    def addRSSFilter(self, ID, regex):
+    def addRSSFilter(self, ID, pos, neg):
         if ID not in self.RSS:
             return False
         else:
-            self.RSS[ID]["filters"].append(regex)
+            self.RSS[ID]["filters"].append((pos, neg))
             self._flushRSS()
             return True
         
