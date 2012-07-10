@@ -78,16 +78,21 @@ class RPCHandler(object):
     def get_active_rss(self):
         feeds_ = filter(lambda x: x["enabled"], self.storage.getRSSFeeds())
         feeds = []
-        for f in feeds_:
-            fi_ = []
-            for fi in f["filters"]:
-                fi_.append(
-                    ([x.pattern for x in fi[0]],
-                     [y.pattern for y in fi[1]])
-                )
-            f["filters"] = fi_
-            feeds.append(f)
-        return feeds
+        try:
+            for f in feeds_:
+                fi_ = []
+                for fi in f["filters"]:
+                    fi_.append(
+                        ([x.pattern for x in fi[0]],
+                         [y.pattern for y in fi[1]])
+                    )
+                f["filters"] = fi_
+                feeds.append(f)
+            return feeds
+        
+        except TypeError:
+            self.storage.reflowRSSFilters()
+            
         
     def get_filters(self, name):
         s = self.storage.getRemoteByName(name)

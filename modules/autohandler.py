@@ -110,19 +110,31 @@ class AutoHandler(object):
         """
         filters_fmtted = []
         idx = 0
-        for f_group_pos, f_group_neg in filters:
-            subfilters = []
-            for regex in f_group_pos:
-                subfilters += [filter_pos % regex.pattern]
-            for regex in f_group_neg:
-                subfilters += [filter_neg % regex.pattern]
-            filters_fmtted += [
-                filter_templ % {
-                    "count" : idx + 1,
-                    "subfilters" : "".join(subfilters)
-                }
-            ]
-            idx += 1
+        
+        try:
+            for f_group_pos, f_group_neg in filters:
+                subfilters = []
+                for regex in f_group_pos:
+                    subfilters += [filter_pos % regex.pattern]
+                for regex in f_group_neg:
+                    subfilters += [filter_neg % regex.pattern]
+                filters_fmtted += [
+                    filter_templ % {
+                        "count" : idx + 1,
+                        "subfilters" : "".join(subfilters)
+                    }
+                ]
+                idx += 1
+        except TypeError:
+            for regex in filters:
+                filters_fmtted += [
+                    filter_templ % {
+                        "count" : idx + 1,
+                        "subfilters" : filter_pos % regex.pattern,
+                    }
+                ]
+                idx += 1
+            self.STORE.reflowFilters()
             
         fmt = {
             "filters" : "".join(filters_fmtted),
@@ -388,21 +400,37 @@ class AutoHandler(object):
             </div>
         """
         
+        #check if filters is in correct format
+        
+        
         filters_fmtted = []
         idx = 0
-        for f_group_pos, f_group_neg in feed["filters"]:
-            subfilters = []
-            for regex in f_group_pos:
-                subfilters += [filter_pos % regex.pattern]
-            for regex in f_group_neg:
-                subfilters += [filter_neg % regex.pattern]
-            filters_fmtted += [
-                filter_templ % {
-                    "count" : idx + 1,
-                    "subfilters" : "".join(subfilters)
-                }
-            ]
-            idx += 1
+        try:
+            for f_group_pos, f_group_neg in feed["filters"]:
+                subfilters = []
+                for regex in f_group_pos:
+                    subfilters += [filter_pos % regex.pattern]
+                for regex in f_group_neg:
+                    subfilters += [filter_neg % regex.pattern]
+                filters_fmtted += [
+                    filter_templ % {
+                        "count" : idx + 1,
+                        "subfilters" : "".join(subfilters)
+                    }
+                ]
+                idx += 1
+        except TypeError:
+            for regex in feed["filters"]:
+                filters_fmtted += [
+                    filter_templ % {
+                        "count" : idx + 1,
+                        "subfilters" : filter_pos % regex.pattern,
+                    }
+                ]
+                idx += 1
+            self.STORE.reflowRSSFilters()
+                
+            
         feed["filters"] = "".join(filters_fmtted)
         
         sub_templ = """

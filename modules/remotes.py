@@ -482,6 +482,16 @@ class RemoteStorage(object):
             self._flush()
             return True
 
+    def reflowFilters(self):
+        for name in self.STORE:
+            f = self.STORE[name].filters
+            # list of regexes, each is a single positive filter
+            new_f = []
+            for regex in f:
+                new_f += [([regex], [])]
+            self.STORE[name].filters = new_f
+        self._flush()
+        
     def deregisterBot(self, name, pid):
         if name.upper() in self.BOTS and self.BOTS[name.upper()] == int(pid):
             del self.BOTS[name.upper()]
@@ -583,6 +593,16 @@ class RemoteStorage(object):
             self.RSS[ID]["filters"].append((pos, neg))
             self._flushRSS()
             return True
+        
+    def reflowRSSFilters(self):
+        for ID in self.RSS:
+            f = self.RSS[ID]["filters"]
+            # list of regexes, each is a single positive filter
+            new_f = []
+            for regex in f:
+                new_f += [([regex], [])]
+            self.RSS[ID]["filters"] = new_f
+        self._flushRSS()
         
     def removeRSSFilter(self, ID, index):
         if ID not in self.RSS:
