@@ -86,17 +86,73 @@ $(document).ready( function() {
     });
     $(".add_filter_button").live("click", function () {
         var ID = $(this).parents(".remote_setting").attr("id").split("feed_")[1];
-        var newf = $(this).parent().next();
-        var newfval = newf.val()
-        if (!newfval) {
-            newf.focus();
-            return false;
+        //var newf = $(this).parent().next();
+        //var newfval = newf.val()
+        //if (!newfval) {
+        //    newf.focus();
+        //    return false;
+        //}
+        //socket.send("request=add_rss_filter&ID=" + ID + "&restring=" + encodeURIComponent(newfval));
+        
+        var positivevals = new Array();
+        var negativevals = new Array();
+        $(this).closest(".add_filter_div").children().each( function () {
+            if (($(this).hasClass("add_filter") || $(this).hasClass("and_filter")) && $(this).children("input")[0].value !== "") {
+                positivevals.push( $(this).children("input")[0].value );
+            } else if ($(this).hasClass("not_filter") && $(this).children("input")[0].value !== "") {
+                negativevals.push( $(this).children("input")[0].value );
+            }
+        });
+        positivevals = positivevals.join("||||||");
+        negativevals = negativevals.join("||||||");
+        var name = $(this).closest(".remote_setting").attr("id").split("remote_settings_")[1];
+        
+        if (positivevals !== "") {
+            socket.send("request=add_rss_filter&ID=" + ID + "&positive=" + encodeURIComponent(positivevals) + "&negative=" + encodeURIComponent(negativevals));
         }
-        socket.send("request=add_rss_filter&ID=" + ID + "&restring=" + encodeURIComponent(newfval));
     });
-    $(".filter").live("click", function () {
+    
+    $(".filter_select").live("change", function() {
+        var selectelem = $("<select class='filter_select'><option selected='selected'>---</option><option>and</option><option>not</option></select>");
+        var andinput = $("<input name='add_filter' class='input_filter' type='text' placeholder='Filter' />");
+        var notinput = $("<input name='not_filter' class='input_filter' type='text' placeholder='Negative Filter' />");
+        if ($(this).val() == "---") {
+            if ($(this).parent().children("select").length == 2) {
+                $(this).parent().prev().append($(this));
+                $(this).parent().next().remove();
+            } else {
+                $(this).parent().remove();
+            }
+        } else if ($(this).val() == "and") {
+            if ($(this).next().length > 0) {
+                $(this).parent().toggleClass("not_filter and_filter");
+                $(this).next().attr("placeholder", "Filter");
+                return;
+            }
+            $(this).parent().after(
+                $("<div class='and_filter' />")
+                .append(andinput)
+                .append(selectelem)
+            );
+            $(this).parent().next().prepend($(this));
+        } else if ($(this).val() == "not") {
+            if ($(this).next().length > 0) {
+                $(this).parent().toggleClass("not_filter and_filter");
+                $(this).next().attr("placeholder", "Negative Filter");
+                return;
+            }
+            $(this).parent().after(
+                $("<div class='not_filter' />")
+                .append(notinput)
+                .append(selectelem)
+            );
+            $(this).parent().next().prepend($(this));
+        }
+    });
+    
+    $(".filter_group").live("click", function () {
         var ID = $(this).parents(".remote_setting").attr("id").split("feed_")[1];
-        var index = $(".filter", $(this).parent()).index($(this));
+        var index = $(".filter_group", $(this).parent()).index($(this));
         var c = confirm("Are you sure you want to remove this filter?");
         if (c) {
             socket.send("request=remove_rss_filter&ID=" + ID + "&index=" + index);
