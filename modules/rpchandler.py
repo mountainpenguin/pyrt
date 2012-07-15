@@ -216,9 +216,11 @@ class RPCHandler(object):
         
         #check size limits
         if sizelim[0] and sizelim[0] == 0:
-            size_lower = None
+            sizelim[0] = None
         if sizelim[1] and sizelim[1] == 0:
-            size_upper = None
+            sizelim[1] = None
+            
+        size_upper, size_lower = sizelim
             
         length = self._getTorrentSize(bencoded)
         if size_upper and length > size_upper:
@@ -231,7 +233,7 @@ class RPCHandler(object):
             prepend = "".join([random.choice(string.letters) for x in range(5)])
             filename = "%s-%s" % (prepend, filename)
         open("torrents/%s" % (filename), "wb").write(linkcontent)
-        self.ajax.load_from_rss(filename, alias, ID, start=False) #False for debugging purposes
+        self.ajax.load_from_rss(filename, alias, ID, start=True)
 
     def get_auth(self, msg):
         try:
