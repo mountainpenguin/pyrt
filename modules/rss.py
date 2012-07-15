@@ -75,7 +75,7 @@ class RSS(object):
                         newentries.append(e)
                 #self.RPC.RPCCommand("log","debug","%i new entries for feed (id: %s, alias: %s)", len(newentries), feed["id"], feed["alias"])
                 for e in newentries:
-                    for positive, negative in feed["filters"]:
+                    for positive, negative, sizelim in feed["filters"]:
                         contTrue = 0
                         for regex in [re.compile(x, re.I) for x in positive]:
                             if not regex.search(e.title):
@@ -85,6 +85,7 @@ class RSS(object):
                         if contTrue != len(feed["filters"]):
                             break
                         
+                        cont = True
                         for regex in [re.compile(y, re.I) for y in negative]:
                             if regex.search(e.title):
                                 cont = False
@@ -94,7 +95,7 @@ class RSS(object):
                                 
                         if not cont:
                             break
-                        self.RPC.RPCCommand("fetch_torrent_rss", ID=feed["id"], alias=feed["alias"], link=e.link)
+                        self.RPC.RPCCommand("fetch_torrent_rss", ID=feed["id"], alias=feed["alias"], link=e.link, sizelim=sizelim)
         
     def refreshRSS(self):
         feeds_req = self.RPC.RPCCommand("get_active_rss")

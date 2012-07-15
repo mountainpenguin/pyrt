@@ -70,8 +70,9 @@ class RPCHandler(object):
         filter_list = []
         for fi in self.storage.RSS[ID].filters:
             filter_list.append(
-                ([x.pattern for x in fi[0]],
-                 [y.pattern for y in fi[1]])
+                ([x.pattern for x in fi.positive],
+                 [y.pattern for y in fi.negative],
+                 fi.sizelim)
             )
         return filter_list
         
@@ -83,8 +84,9 @@ class RPCHandler(object):
                 fi_ = []
                 for fi in f["filters"]:
                     fi_.append(
-                        ([x.pattern for x in fi[0]],
-                         [y.pattern for y in fi[1]])
+                        ([x.pattern for x in fi.positive],
+                         [y.pattern for y in fi.negative],
+                         fi.sizelim)
                     )
                 f["filters"] = fi_
                 feeds.append(f)
@@ -102,8 +104,9 @@ class RPCHandler(object):
             except AttributeError:
                 f = []
             return json.dumps(
-                [([x.pattern for x in z[0]],
-                  [y.pattern for y in z[1]])
+                [([x.pattern for x in z.positive],
+                  [y.pattern for y in z.negative],
+                  z.sizelim)
                  for z in f
                 ]
             )
@@ -169,17 +172,32 @@ class RPCHandler(object):
         return json.dumps(respDict)
         # return respDict
 
-    def fetchTorrent(self, name, **kwargs):
+    def fetchTorrent(self, name, sizelim, **kwargs):
         site = remotes.getSiteMod(name)
         if site:
             s = site.Main(self.publog, self.ajax, self.storage)
-            filename, torrent = s.fetch(kwargs["torrentid"]) 
-            s.process(filename, torrent)
+            filename, torrent = s.fetch(kwargs["torrentid"])
+            if sizelim[0] and sizelim[0] == 0:
+                sizelim[0] = None
+            if sizelim[1] and sizelim[1] == 0:
+                sizelim[1] = None
+            s.process(filename, torrent, sizelim[0], sizelim[1])
             return "OK", None
         else:
             return "ERROR", "No such handler"
-            
-    def fetch_torrent_rss(self, ID, alias, link):
+    
+    def _getTorrentSize(self, bencoded):
+        if bencoded["info"].has_key("files"):
+            #multifile torrent
+            length = 0
+            for f in bencoded["info"]["files"]:
+                length += f["length"]
+        else:
+            #singlefile
+            length = bencoded["info"]["length"]
+        return length
+    
+    def fetch_torrent_rss(self, ID, alias, link, sizelim):
         lnk = urllib2.urlopen(link)
         #get filename if offered, else generate random filename
         try:
@@ -190,18 +208,30 @@ class RPCHandler(object):
         linkcontent = lnk.read()
         #check valid torrent file
         try:
-            bencode.bdecode(linkcontent)
+            bencoded = bencode.bdecode(linkcontent)
         except bencode.BTL.BTFailure:
             self.log("error", "Error downloading from RSS feed (id: %s, alias: %s) - not a valid bencoded string", ID, alias)
             open("rss.test.torrent","w").write(linkcontent)
             return
         
+        #check size limits
+        if sizelim[0] and sizelim[0] == 0:
+            size_lower = None
+        if sizelim[1] and sizelim[1] == 0:
+            size_upper = None
+            
+        length = self._getTorrentSize(bencoded)
+        if size_upper and length > size_upper:
+            return
+        elif size_lower and length < size_lower:
+            return
+        
         target_p = os.path.join("torrents", filename)
         if os.path.exists(target_p):
-            prepend = "".join(random.choice(string.letters) for x in range(5))
+            prepend = "".join([random.choice(string.letters) for x in range(5)])
             filename = "%s-%s" % (prepend, filename)
         open("torrents/%s" % (filename), "wb").write(linkcontent)
-        self.ajax.load_from_rss(filename, alias, ID, start=True)
+        self.ajax.load_from_rss(filename, alias, ID, start=False) #False for debugging purposes
 
     def get_auth(self, msg):
         try:

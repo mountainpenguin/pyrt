@@ -92,14 +92,22 @@ tbody > tr {
           min-width: 70%; }
         tbody > tr.remote_setting > td div.settings input[type=text].input_filter, tbody > tr.remote_setting > td div.filters input[type=text].input_filter {
           min-width: 265px; }
-      tbody > tr.remote_setting > td div.settings div.and_filter, tbody > tr.remote_setting > td div.settings div.not_filter, tbody > tr.remote_setting > td div.filters div.and_filter, tbody > tr.remote_setting > td div.filters div.not_filter {
+      tbody > tr.remote_setting > td div.settings div.and_filter, tbody > tr.remote_setting > td div.settings div.not_filter, tbody > tr.remote_setting > td div.settings div.size_filter, tbody > tr.remote_setting > td div.filters div.and_filter, tbody > tr.remote_setting > td div.filters div.not_filter, tbody > tr.remote_setting > td div.filters div.size_filter {
         padding-left: 150px;
         float: left;
         clear: right; }
-        tbody > tr.remote_setting > td div.settings div.and_filter input, tbody > tr.remote_setting > td div.settings div.not_filter input, tbody > tr.remote_setting > td div.filters div.and_filter input, tbody > tr.remote_setting > td div.filters div.not_filter input {
+        tbody > tr.remote_setting > td div.settings div.and_filter input[type="text"], tbody > tr.remote_setting > td div.settings div.not_filter input[type="text"], tbody > tr.remote_setting > td div.settings div.size_filter input[type="text"], tbody > tr.remote_setting > td div.filters div.and_filter input[type="text"], tbody > tr.remote_setting > td div.filters div.not_filter input[type="text"], tbody > tr.remote_setting > td div.filters div.size_filter input[type="text"] {
           float: left;
           margin-left: 10px; }
-        tbody > tr.remote_setting > td div.settings div.and_filter select, tbody > tr.remote_setting > td div.settings div.not_filter select, tbody > tr.remote_setting > td div.filters div.and_filter select, tbody > tr.remote_setting > td div.filters div.not_filter select {
+        tbody > tr.remote_setting > td div.settings div.and_filter input[type="number"], tbody > tr.remote_setting > td div.settings div.not_filter input[type="number"], tbody > tr.remote_setting > td div.settings div.size_filter input[type="number"], tbody > tr.remote_setting > td div.filters div.and_filter input[type="number"], tbody > tr.remote_setting > td div.filters div.not_filter input[type="number"], tbody > tr.remote_setting > td div.filters div.size_filter input[type="number"] {
+          float: left;
+          margin-left: 10px;
+          font-family: monospace;
+          color: blue;
+          width: 5em;
+          border: none;
+          background-color: #F8F8F8; }
+        tbody > tr.remote_setting > td div.settings div.and_filter select, tbody > tr.remote_setting > td div.settings div.not_filter select, tbody > tr.remote_setting > td div.settings div.size_filter select, tbody > tr.remote_setting > td div.filters div.and_filter select, tbody > tr.remote_setting > td div.filters div.not_filter select, tbody > tr.remote_setting > td div.filters div.size_filter select {
           float: left; }
       tbody > tr.remote_setting > td div.settings div.add_filter, tbody > tr.remote_setting > td div.filters div.add_filter {
         padding-left: 52px;

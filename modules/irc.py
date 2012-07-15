@@ -71,7 +71,7 @@ class _ModularBot(ircbot.SingleServerIRCBot):
                 newf = []
                 for f in unjsoned:
                     # f = ( [pos, pos, ...], [neg, neg, ...] )
-                    newf.append(([re.compile(x, re.I) for x in f[0]], [re.compile(y, re.I) for y in f[1]]))
+                    newf.append(([re.compile(x, re.I) for x in f[0]], [re.compile(y, re.I) for y in f[1]], f[2]))
                 self.config.filters = newf
             except:
                 self.RPC.RPCCommand("log", "error", "%s IRCBot (#%d): recieved filter list but not JSON-encoded (%r)", self.config.name, self.PID, response.__dict__)
@@ -125,7 +125,7 @@ class _ModularBot(ircbot.SingleServerIRCBot):
         self.update()
         self.RPC.RPCCommand("publicLog", "debug", "%s IRCBot (#%d): message %r", self.config.name, self.PID, event.arguments()[0].encode("string_escape"))
         try:
-            for pos, neg in self.config.filters:
+            for pos, neg, sizelim in self.config.filters:
                 contTrue = 0
                 #all filters have to match
                 for regex in pos:
@@ -137,6 +137,7 @@ class _ModularBot(ircbot.SingleServerIRCBot):
                     break
                 
                 #one match = ignore message
+                cont = True
                 for regex in neg:
                     if regex.search(event.arguments()[0]):
                         cont = False
@@ -151,7 +152,7 @@ class _ModularBot(ircbot.SingleServerIRCBot):
                 if idmatch:
                     torrentid = idmatch.group(1)
                     #self.RPC.RPCCommand("log", "debug", "%s IRCbot (#%d): got filter match in source handler '%s' for torrentid '%s'", self.config.name, self.PID, self.config.name, torrentid)
-                    self.RPC.RPCCommand("fetchTorrent", name=self.config.name, torrentid=torrentid)
+                    self.RPC.RPCCommand("fetchTorrent", name=self.config.name, torrentid=torrentid, sizelim=sizelim)
                     return
         except:
             pass
