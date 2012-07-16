@@ -83,11 +83,15 @@ class RPCHandler(object):
             for f in feeds_:
                 fi_ = []
                 for fi in f["filters"]:
-                    fi_.append(
-                        ([x.pattern for x in fi.positive],
-                         [y.pattern for y in fi.negative],
-                         fi.sizelim)
-                    )
+                    try:
+                        fi_.append(
+                            ([x.pattern for x in fi.positive],
+                             [y.pattern for y in fi.negative],
+                             fi.sizelim)
+                        )
+                    except:
+                        self.storage.reflowRSSFilters()
+                        
                 f["filters"] = fi_
                 feeds.append(f)
             return feeds
