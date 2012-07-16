@@ -510,7 +510,13 @@ class RemoteStorage(object):
 
     def reflowFilters(self):
         for name in self.STORE:
-            f = self.STORE[name].filters
+            try:
+                f = self.STORE[name].filters
+            except AttributeError:
+                if f.has_key("filters"):
+                    f = self.STORE[name]["filters"]
+                else:
+                    f = []
             # list of regexes, each is a single positive filter
             new_f = []
             for regex in f:
