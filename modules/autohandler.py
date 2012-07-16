@@ -144,7 +144,7 @@ class AutoHandler(object):
                     }
                 ]
                 idx += 1
-        except TypeError, AttributeError:
+        except (TypeError, AttributeError):
             self.STORE.reflowFilters()
             filters_fmtted = ["<div class='filter'>Refresh Page</div>"]
             
