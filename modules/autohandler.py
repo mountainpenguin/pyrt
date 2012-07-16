@@ -136,7 +136,11 @@ class AutoHandler(object):
         
         try:
             for f_obj in filters:
-                subfilters = self._fmt_subgroup(f_obj.positive, f_obj.negative, f_obj.sizelim)
+                try:
+                    subfilters = self._fmt_subgroup(f_obj.positive, f_obj.negative, f_obj.sizelim)
+                except:
+                    self.STORE.reflowFilters()
+                    subfilters = self._fmt_subgroup(["Refresh"], [], [None, None])
                 filters_fmtted += [
                     filter_templ % {
                         "count" : idx + 1,
