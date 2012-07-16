@@ -107,8 +107,6 @@ tbody > tr {
           width: 5em;
           border: none;
           background-color: #F8F8F8; }
-        tbody > tr.remote_setting > td div.settings div.and_filter select, tbody > tr.remote_setting > td div.settings div.not_filter select, tbody > tr.remote_setting > td div.settings div.size_filter select, tbody > tr.remote_setting > td div.filters div.and_filter select, tbody > tr.remote_setting > td div.filters div.not_filter select, tbody > tr.remote_setting > td div.filters div.size_filter select {
-          float: left; }
       tbody > tr.remote_setting > td div.settings div.add_filter, tbody > tr.remote_setting > td div.filters div.add_filter {
         padding-left: 52px;
         float: left;
@@ -116,8 +114,10 @@ tbody > tr {
         tbody > tr.remote_setting > td div.settings div.add_filter input, tbody > tr.remote_setting > td div.filters div.add_filter input {
           float: left;
           margin-left: 10px; }
-        tbody > tr.remote_setting > td div.settings div.add_filter select, tbody > tr.remote_setting > td div.filters div.add_filter select {
-          float: left; }
+      tbody > tr.remote_setting > td div.settings div select, tbody > tr.remote_setting > td div.filters div select {
+        float: left;
+        border-radius: 3px;
+        background-color: #F8F8F8; }
       tbody > tr.remote_setting > td div.settings button.submit_button, tbody > tr.remote_setting > td div.settings button.bot_button, tbody > tr.remote_setting > td div.filters button.submit_button, tbody > tr.remote_setting > td div.filters button.bot_button {
         border-radius: 5px;
         box-shadow: 0 2px 8px #888888;
@@ -228,7 +228,7 @@ div.fake_form {
     float: left;
     clear: left;
     min-width: 10em; }
-  div.fake_form > input[type="text"], div.fake_form select {
+  div.fake_form > input[type="text"] {
     float: left;
     /*clear: right;*/ }
   div.fake_form#submit_fake {

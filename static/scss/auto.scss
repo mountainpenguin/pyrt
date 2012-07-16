@@ -140,9 +140,6 @@ tbody > tr {
                             border: none;
                             background-color: #F8F8F8;
                         }
-                        select {
-                            float: left;
-                        }
                     }
                     div.add_filter {
                         padding-left: 52px;
@@ -152,8 +149,12 @@ tbody > tr {
                             float: left;
                             margin-left: 10px;
                         }
+                    }
+                    div {
                         select {
                             float: left;
+                            border-radius: 3px;
+                            background-color: #F8F8F8;
                         }
                     }
                     button.submit_button, button.bot_button {
@@ -316,7 +317,7 @@ div.fake_form {
         clear: left;
         min-width: 10em;
     }
-    &>input[type="text"], select {
+    &>input[type="text"] {
         float: left;
         /*clear: right;*/
     }
