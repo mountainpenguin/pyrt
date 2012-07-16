@@ -116,8 +116,13 @@ tbody > tr {
           margin-left: 10px; }
       tbody > tr.remote_setting > td div.settings div select, tbody > tr.remote_setting > td div.filters div select {
         float: left;
-        border-radius: 3px;
-        background-color: #F8F8F8; }
+        border-radius: 3px; }
+        tbody > tr.remote_setting > td div.settings div select:not(.size_select), tbody > tr.remote_setting > td div.filters div select:not(.size_select) {
+          border-color: #F8F8F8;
+          background-color: #F8F8F8; }
+        tbody > tr.remote_setting > td div.settings div select.size_select, tbody > tr.remote_setting > td div.filters div select.size_select {
+          border-color: white;
+          background-color: white; }
       tbody > tr.remote_setting > td div.settings button.submit_button, tbody > tr.remote_setting > td div.settings button.bot_button, tbody > tr.remote_setting > td div.filters button.submit_button, tbody > tr.remote_setting > td div.filters button.bot_button {
         border-radius: 5px;
         box-shadow: 0 2px 8px #888888;

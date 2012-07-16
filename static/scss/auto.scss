@@ -154,7 +154,14 @@ tbody > tr {
                         select {
                             float: left;
                             border-radius: 3px;
-                            background-color: #F8F8F8;
+                            &:not(.size_select) {
+                                border-color: #F8F8F8;
+                                background-color: #F8F8F8;
+                            }
+                            &.size_select {
+                                border-color: white;
+                                background-color: white;
+                            }
                         }
                     }
                     button.submit_button, button.bot_button {

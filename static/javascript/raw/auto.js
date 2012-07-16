@@ -43,14 +43,14 @@ $(document).ready( function () {
         var andinput = $("<input name='add_filter' class='input_filter positive' type='text' placeholder='Positive Filter' />");
         var notinput = $("<input name='not_filter' class='input_filter negative' type='text' placeholder='Negative Filter' />");
         var sizeinput = $("<input class='input_filter size lower' type='number' placeholder='Lower' min=0 /> \
-                                <select> \
+                                <select class='size_select'> \
                                     <option value=1073741824>GB</option> \
                                     <option value=1048576>MB</option> \
                                     <option value=1024>KB</option> \
                                     <option value=1>B</option> \
                                 </select> \
                             <input class='input_filter size upper' type='number' placeholder='Upper' min=0 /> \
-                                <select> \
+                                <select class='size_select'> \
                                     <option value=1073741824>GB</option> \
                                     <option value=1048576>MB</option> \
                                     <option value=1024>KB</option> \
