@@ -136,11 +136,7 @@ class AutoHandler(object):
         
         try:
             for f_obj in filters:
-                try:
-                    subfilters = self._fmt_subgroup(f_obj.positive, f_obj.negative, f_obj.sizelim)
-                except:
-                    self.STORE.reflowFilters()
-                    subfilters = self._fmt_subgroup(["Refresh"], [], [None, None])
+                subfilters = self._fmt_subgroup(f_obj.positive, f_obj.negative, f_obj.sizelim)
                 filters_fmtted += [
                     filter_templ % {
                         "count" : idx + 1,
@@ -148,7 +144,7 @@ class AutoHandler(object):
                     }
                 ]
                 idx += 1
-        except TypeError:
+        except TypeError, AttributeError:
             self.STORE.reflowFilters()
             filters_fmtted = ["<div class='filter'>Refresh Page</div>"]
             
