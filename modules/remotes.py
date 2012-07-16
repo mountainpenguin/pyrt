@@ -513,7 +513,7 @@ class RemoteStorage(object):
             try:
                 f = self.STORE[name].filters
             except AttributeError:
-                if f.has_key("filters"):
+                if self.STORE[name].has_key("filters"):
                     f = self.STORE[name]["filters"]
                 else:
                     f = []
