@@ -160,6 +160,7 @@ class AutoHandler(object):
                         <button class="add_filter_button">Add Filter</button>
                     </label>
                     <div class="add_filter">
+                        <input type="radio" class="regex_radio">
                         <input name="add_filter" class="input_filter" type="text" placeholder="Filter">
                         <select class="filter_select">
                             <option selected="selected">---</option>
