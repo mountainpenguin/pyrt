@@ -20,12 +20,16 @@
 
 $(document).ready( function () {
     $(".add_filter_button").live("click", function () {
+        var regex = true;
         var positivevals = new Array();
         var negativevals = new Array();
         var sizelims = null;
         var quickexit = null;
         $(this).closest(".add_filter_div").children().each( function () {
-            if (($(this).hasClass("add_filter") || $(this).hasClass("and_filter")) && $(this).children("input")[0].value !== "") {
+            if ($(this).hasClass("add_filter") && $(this).children("input[type=text]")[0].value !== "") {
+                regex = $(this).children("input[type=checkbox]")[0].checked;
+                positivevals.push( $(this).children("input[type='text']")[0].value );
+            } else if ($(this).hasClass("and_filter") && $(this).children("input")[0].value !== "") {
                 positivevals.push( $(this).children("input")[0].value );
             } else if ($(this).hasClass("not_filter") && $(this).children("input")[0].value !== "") {
                 negativevals.push( $(this).children("input")[0].value );
@@ -74,10 +78,12 @@ $(document).ready( function () {
         var name = $(this).closest(".remote_setting").attr("id").split("remote_settings_")[1];
         if (positivevals == "" && negativevals == "" && sizelims == "") {} else {
             var req = "request=add_filter&name=" + name;
+            req += "&regex=" + regex;
             req += "&positive=" + encodeURIComponent(positivevals);
             req += "&negative=" + encodeURIComponent(negativevals);
             req += "&sizelim=" + encodeURIComponent(sizelims);
-            socket.send(req);
+            console.log(req);
+            //socket.send(req);
         }
     });
     //$(".filter_select").live("change", function() {
