@@ -108,9 +108,11 @@ tbody > tr {
           border: none;
           background-color: #F8F8F8; }
       tbody > tr.remote_setting > td div.settings div.add_filter, tbody > tr.remote_setting > td div.filters div.add_filter {
-        padding-left: 52px;
+        /*padding-left: 52px;*/
         float: left;
-        clear: right; }
+        clear: right;
+        position: relative;
+        left: -13px; }
         tbody > tr.remote_setting > td div.settings div.add_filter input, tbody > tr.remote_setting > td div.filters div.add_filter input {
           float: left;
           margin-left: 13px; }
@@ -259,3 +261,11 @@ td.enabled.feed_enabled_True {
   background-color: green; }
 td.enabled.feed_enabled_False {
   background-color: red; }
+
+.regex_checkbox_parent {
+  float: left;
+  margin-right: 7px; }
+
+.regex_checkbox_label {
+  font-family: monospace;
+  float: left; }

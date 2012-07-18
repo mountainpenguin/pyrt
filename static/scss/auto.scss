@@ -142,9 +142,11 @@ tbody > tr {
                         }
                     }
                     div.add_filter {
-                        padding-left: 52px;
+                        /*padding-left: 52px;*/
                         float: left;
                         clear: right;
+                        position: relative;
+                        left: -13px;
                         input {
                             float: left;
                             margin-left: 13px;
@@ -363,4 +365,13 @@ td.enabled {
         background-color: red;
     }
     
+}
+
+.regex_checkbox_parent {
+    float: left;
+    margin-right: 7px;
+}
+.regex_checkbox_label {
+    font-family: monospace;
+    float: left;
 }

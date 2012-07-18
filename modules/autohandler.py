@@ -160,9 +160,9 @@ class AutoHandler(object):
                         <button class="add_filter_button">Add Filter</button>
                     </label>
                     <div class="add_filter">
-                        <div class="regex_radio_parent">
-                            <label>Regex?</label>
-                            <input type="radio" class="regex_radio" checked=1>
+                        <div class="regex_checkbox_parent">
+                            <span class="regex_checkbox_label">Regex?</span>
+                            <input type="checkbox" class="regex_checkbox" checked=1>
                         </div>
                         <input name="add_filter" class="input_filter" type="text" placeholder="Filter">
                         <select class="filter_select">
