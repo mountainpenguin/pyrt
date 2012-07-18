@@ -269,3 +269,6 @@ td.enabled.feed_enabled_False {
 .regex_checkbox_label {
   font-family: monospace;
   float: left; }
+
+.regex_checkbox {
+  margin-left: 0 !important; }
