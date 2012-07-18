@@ -27,7 +27,7 @@ $(document).ready( function () {
         var quickexit = null;
         $(this).closest(".add_filter_div").children().each( function () {
             if ($(this).hasClass("add_filter") && $(this).children("input[type=text]")[0].value !== "") {
-                regex = $(this).children("input[type=checkbox]")[0].checked;
+                regex = $(this).find("div > input[type=checkbox]")[0].checked;
                 positivevals.push( $(this).children("input[type='text']")[0].value );
             } else if ($(this).hasClass("and_filter") && $(this).children("input")[0].value !== "") {
                 positivevals.push( $(this).children("input")[0].value );
