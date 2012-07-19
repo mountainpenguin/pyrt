@@ -369,12 +369,12 @@ td.enabled {
 
 .regex_checkbox_parent {
     float: left;
-    margin-right: 7px;
+    margin-right: 3px;
 }
 .regex_checkbox_label {
-    font-family: monospace;
     float: left;
+    font-family: monospace;
 }
 .regex_checkbox {
-    margin-left: 0 !important;
+    vertical-align: middle;
 }
