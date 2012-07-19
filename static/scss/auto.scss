@@ -66,20 +66,32 @@ tbody > tr {
                         vertical-align: center;
                         border-bottom: 3px;
                     }
-                    div.filter {
+                    div.filter_group {
                         float: left;
                         clear: right;
+                        &:hover {
+                            border: 1px solid red !important;
+                            cursor: pointer;
+                            border-radius: 4px;
+                            background-color: rgba(255,0,0,0.5);
+                        }
+                        &:not(:hover) {
+                            border: 1px solid rgba(0,0,0,0);
+                        }
+                    }
+                    div.filter {
                         color: #4183C4;
+                        float: left;
+                        margin: 2px;
                         font-family: monospace;
                         border: 1px solid #EAEAEA;
-                        &:not(:hover) {
-                            background-color: #F8F8F8;
-                        }
                         padding: 0 5px;
                         border-radius: 3px;
-                        &:hover {
-                            background-color: red;
-                            cursor: pointer;
+                        &.filter_positive {
+                            background-color: #F8F8F8;
+                        }
+                        &.filter_negative {
+                            background-color: #FFCCCC;
                         }
                     }
                     div.add_filter_div {
@@ -101,10 +113,58 @@ tbody > tr {
                         font-family: monospace;
                         border: none;
                         float: left;
-                         clear: right;
+                        clear: right;
                         color: blue;
-                        min-width: 70%;
+                        &:not(.input_filter) {
+                            min-width: 70%;
+                        }
+                        &.input_filter {
+                            min-width: 265px;
+                        }
                         background-color: #F8F8F8;
+                    }
+                    div.and_filter, div.not_filter, div.size_filter {
+                        padding-left: 150px;
+                        float: left;
+                        clear: right;
+                        input[type="text"] {
+                            float: left;
+                            margin-left: 10px;
+                        }
+                        input[type="number"] {
+                            float: left;
+                            margin-left: 10px;
+                            font-family: monospace;
+                            color: blue;
+                            width: 5em;
+                            border: none;
+                            background-color: #F8F8F8;
+                        }
+                    }
+                    div.add_filter {
+                        /*padding-left: 52px;*/
+                        float: left;
+                        clear: right;
+                        position: relative;
+                        left: -16px;
+                        input {
+                            float: left;
+                            margin-left: 13px;
+                        }
+                    }
+                    div {
+                        select {
+                            float: left;
+                            border-radius: 3px;
+                            &:not(.size_select) {
+                                border-color: #F8F8F8;
+                                background-color: #F8F8F8;
+                            }
+                            &.size_select {
+                                border-color: white;
+                                background-color: white;
+                            }
+                        }
                     }
                     button.submit_button, button.bot_button {
                         border-radius: 5px;
@@ -266,7 +326,7 @@ div.fake_form {
         clear: left;
         min-width: 10em;
     }
-    &>input[type="text"], select {
+    &>input[type="text"] {
         float: left;
         /*clear: right;*/
     }
@@ -305,4 +365,18 @@ td.enabled {
         background-color: red;
     }
     
+}
+
+.regex_checkbox_parent {
+    float: left;
+    position: relative;
+    left: 3px;
+}
+.regex_checkbox_label {
+    float: left;
+    font-family: monospace;
+}
+.regex_checkbox {
+    margin-left: 4px !important;
+    vertical-align: middle;
 }

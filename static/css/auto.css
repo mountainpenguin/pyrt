@@ -47,19 +47,28 @@ tbody > tr {
         height: 20px;
         vertical-align: center;
         border-bottom: 3px; }
-      tbody > tr.remote_setting > td div.filters div.filter {
+      tbody > tr.remote_setting > td div.filters div.filter_group {
         float: left;
-        clear: right;
+        clear: right; }
+        tbody > tr.remote_setting > td div.filters div.filter_group:hover {
+          border: 1px solid red !important;
+          cursor: pointer;
+          border-radius: 4px;
+          background-color: rgba(255, 0, 0, 0.5); }
+        tbody > tr.remote_setting > td div.filters div.filter_group:not(:hover) {
+          border: 1px solid rgba(0, 0, 0, 0); }
+      tbody > tr.remote_setting > td div.filters div.filter {
         color: #4183C4;
+        float: left;
+        margin: 2px;
         font-family: monospace;
         border: 1px solid #EAEAEA;
         padding: 0 5px;
         border-radius: 3px; }
-        tbody > tr.remote_setting > td div.filters div.filter:not(:hover) {
+        tbody > tr.remote_setting > td div.filters div.filter.filter_positive {
           background-color: #F8F8F8; }
-        tbody > tr.remote_setting > td div.filters div.filter:hover {
-          background-color: red;
-          cursor: pointer; }
+        tbody > tr.remote_setting > td div.filters div.filter.filter_negative {
+          background-color: #FFCCCC; }
       tbody > tr.remote_setting > td div.filters div.add_filter_div {
         float: left;
         clear: left;
@@ -78,8 +87,44 @@ tbody > tr {
         float: left;
         clear: right;
         color: blue;
-        min-width: 70%;
         background-color: #F8F8F8; }
+        tbody > tr.remote_setting > td div.settings input[type=text]:not(.input_filter), tbody > tr.remote_setting > td div.filters input[type=text]:not(.input_filter) {
+          min-width: 70%; }
+        tbody > tr.remote_setting > td div.settings input[type=text].input_filter, tbody > tr.remote_setting > td div.filters input[type=text].input_filter {
+          min-width: 265px; }
+      tbody > tr.remote_setting > td div.settings div.and_filter, tbody > tr.remote_setting > td div.settings div.not_filter, tbody > tr.remote_setting > td div.settings div.size_filter, tbody > tr.remote_setting > td div.filters div.and_filter, tbody > tr.remote_setting > td div.filters div.not_filter, tbody > tr.remote_setting > td div.filters div.size_filter {
+        padding-left: 150px;
+        float: left;
+        clear: right; }
+        tbody > tr.remote_setting > td div.settings div.and_filter input[type="text"], tbody > tr.remote_setting > td div.settings div.not_filter input[type="text"], tbody > tr.remote_setting > td div.settings div.size_filter input[type="text"], tbody > tr.remote_setting > td div.filters div.and_filter input[type="text"], tbody > tr.remote_setting > td div.filters div.not_filter input[type="text"], tbody > tr.remote_setting > td div.filters div.size_filter input[type="text"] {
+          float: left;
+          margin-left: 10px; }
+        tbody > tr.remote_setting > td div.settings div.and_filter input[type="number"], tbody > tr.remote_setting > td div.settings div.not_filter input[type="number"], tbody > tr.remote_setting > td div.settings div.size_filter input[type="number"], tbody > tr.remote_setting > td div.filters div.and_filter input[type="number"], tbody > tr.remote_setting > td div.filters div.not_filter input[type="number"], tbody > tr.remote_setting > td div.filters div.size_filter input[type="number"] {
+          float: left;
+          margin-left: 10px;
+          font-family: monospace;
+          color: blue;
+          width: 5em;
+          border: none;
+          background-color: #F8F8F8; }
+      tbody > tr.remote_setting > td div.settings div.add_filter, tbody > tr.remote_setting > td div.filters div.add_filter {
+        /*padding-left: 52px;*/
+        float: left;
+        clear: right;
+        position: relative;
+        left: -16px; }
+        tbody > tr.remote_setting > td div.settings div.add_filter input, tbody > tr.remote_setting > td div.filters div.add_filter input {
+          float: left;
+          margin-left: 13px; }
+      tbody > tr.remote_setting > td div.settings div select, tbody > tr.remote_setting > td div.filters div select {
+        float: left;
+        border-radius: 3px; }
+        tbody > tr.remote_setting > td div.settings div select:not(.size_select), tbody > tr.remote_setting > td div.filters div select:not(.size_select) {
+          border-color: #F8F8F8;
+          background-color: #F8F8F8; }
+        tbody > tr.remote_setting > td div.settings div select.size_select, tbody > tr.remote_setting > td div.filters div select.size_select {
+          border-color: white;
+          background-color: white; }
       tbody > tr.remote_setting > td div.settings button.submit_button, tbody > tr.remote_setting > td div.settings button.bot_button, tbody > tr.remote_setting > td div.filters button.submit_button, tbody > tr.remote_setting > td div.filters button.bot_button {
         border-radius: 5px;
         box-shadow: 0 2px 8px #888888;
@@ -190,7 +235,7 @@ div.fake_form {
     float: left;
     clear: left;
     min-width: 10em; }
-  div.fake_form > input[type="text"], div.fake_form select {
+  div.fake_form > input[type="text"] {
     float: left;
     /*clear: right;*/ }
   div.fake_form#submit_fake {
@@ -216,3 +261,16 @@ td.enabled.feed_enabled_True {
   background-color: green; }
 td.enabled.feed_enabled_False {
   background-color: red; }
+
+.regex_checkbox_parent {
+  float: left;
+  position: relative;
+  left: 3px; }
+
+.regex_checkbox_label {
+  float: left;
+  font-family: monospace; }
+
+.regex_checkbox {
+  margin-left: 4px !important;
+  vertical-align: middle; }

@@ -22,6 +22,7 @@
 from __future__ import print_function
 from modules import irc
 from modules import remotes
+from modules import torrentHandler
 
 import urlparse
 import logging
@@ -38,6 +39,7 @@ class AutoHandler(object):
         self.LOGIN = login
         self.LOG = log
         self.STORE = remoteStorage
+        self.HANDLER = torrentHandler.Handler()
         self.METHODS = {
             "get_sources" : self.get_sources,
             "get_source_single" : self.get_source_single,
@@ -58,7 +60,6 @@ class AutoHandler(object):
             "get_rss_filters" : self.get_rss_filters,
         }
         
-
     def _response(self, name, request, response, error):
         return json.dumps({
             "name" : name,
@@ -66,7 +67,6 @@ class AutoHandler(object):
             "response" : response,
             "error" : error,
         })
-        
         
     def _fmt_source(self, name, desc, status):
         fmt = {
@@ -77,7 +77,6 @@ class AutoHandler(object):
         row_templ = "<tr class='remote_row' id='remote_name_%(name)s'><td class='name'>%(name)s</td><td class='desc'>%(desc)s</td><td class='status status-%(status)s status-%(name)s'>%(status)s</td></tr>"
         return row_templ % fmt
     
-
     def _fmt_keys(self, name, keys, filters, botcontrol):
         input_templ = "<label for='%(key)s'>%(key)s:</label><input type='text' name='%(key)s' placeholder='%(desc)s'>"
         fmt = {
@@ -106,13 +105,51 @@ class AutoHandler(object):
         """
         return row_templ % fmt
     
-
+    def _fmt_subgroup(self, pos, neg, sizelim):
+        filter_pos = "<div class='filter_positive filter'><code>%s</code></div>"
+        filter_neg = "<div class='filter_negative filter'><code>%s</code></div>"
+        filter_size = "<div class='filter_size filter'><code>%s</code></div>"
+        subfilters = []
+        for regex in pos:
+            subfilters += [filter_pos % regex.pattern]
+        for regex in neg:
+            subfilters += [filter_neg % regex.pattern]
+        if sizelim[0] or sizelim[1]:
+            if not sizelim[1]:
+                sizestring = ">%s" % self.HANDLER.humanSize(sizelim[0])
+            elif not sizelim[0]:
+                sizestring = "<%s" % self.HANDLER.humanSize(sizelim[1])
+            else:
+                sizestring = "%s - %s" % (self.HANDLER.humanSize(sizelim[0]), self.HANDLER.humanSize(sizelim[1]))
+            subfilters += [filter_size % sizestring]
+        return subfilters
+        
     def _fmt_filters(self, filters):
         filter_templ = """
-            <label for='filter%(count)d'>Filter:</label><div name='filter%(count)d' class='filter'><code>%(filter)s</code></div>
+            <label for='filter%(count)d'>Filter:</label>
+            <div name='filter%(count)d' class='filter_group'>
+                %(subfilters)s
+            </div>
         """
+        filters_fmtted = []
+        idx = 0
+        
+        try:
+            for f_obj in filters:
+                subfilters = self._fmt_subgroup(f_obj.positive, f_obj.negative, f_obj.sizelim)
+                filters_fmtted += [
+                    filter_templ % {
+                        "count" : idx + 1,
+                        "subfilters" : "".join(subfilters)
+                    }
+                ]
+                idx += 1
+        except (TypeError, AttributeError):
+            self.STORE.reflowFilters()
+            filters_fmtted = ["<div class='filter'>Refresh Page</div>"]
+            
         fmt = {
-            "filters" : "".join([ filter_templ % { "filter" : cgi.escape(x.pattern), "count": filters.index(x) + 1 } for x in filters]),
+            "filters" : "".join(filters_fmtted),
         }
         templ = """
             <div class="filters">
@@ -122,13 +159,24 @@ class AutoHandler(object):
                     <label for="add_filter">
                         <button class="add_filter_button">Add Filter</button>
                     </label>
-                    <input name="add_filter" id="add_filter" type="text" placeholder="Filter">
+                    <div class="add_filter">
+                        <div class="regex_checkbox_parent">
+                            <span class="regex_checkbox_label">Regex?</span>
+                            <input type="checkbox" class="regex_checkbox" checked=1>
+                        </div>
+                        <input name="add_filter" class="input_filter" type="text" placeholder="Filter">
+                        <select class="filter_select">
+                            <option selected="selected">---</option>
+                            <option value="and">and</option>
+                            <option value="not">not</option>
+                            <option value="size">size</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         """
         return templ % fmt
     
-
     def stop_bot(self, name):
         botpid = self.STORE.isBotActive(name)
         if botpid:
@@ -149,7 +197,6 @@ class AutoHandler(object):
         else:
             return self._response(name, "stop_bot", "ERROR", "Bot not active")
             
-
     def start_bot(self, name):
         auth = self.LOGIN.getRPCAuth()
         botpid = self.STORE.isBotActive(name)
@@ -171,7 +218,7 @@ class AutoHandler(object):
             return self._response(name, "start_bot", "ERROR", tb_line)
         else:
             return self._response(name, "start_bot", "OK", None)
-
+            
     def get_source_single(self, select):
         sources = remotes.searchSites()
         if sources:
@@ -220,7 +267,7 @@ class AutoHandler(object):
                     return self._response(name, "get_source_single", "ERROR", "IRC not specified as a valid method")
             return self._response(select, "get_source_single", "ERROR", "Remote name '%r' not known" % select)
         return self._response(select, "get_source_single", "ERROR", "No remotes defined")
-
+        
     def _get_status(self, name):
         botpid = self.STORE.isBotActive(name)
         if botpid:
@@ -228,7 +275,6 @@ class AutoHandler(object):
         else:
             return "off"
         
-
     def get_sources(self):
         sources = remotes.searchSites() 
         sites = []
@@ -275,7 +321,7 @@ class AutoHandler(object):
                         "req_row" : self._fmt_keys(name, req, filters, botcontrol),
                     })
         return self._response(None, "get_sources", sites, None)
-                
+        
     def get_filters(self, name, internal=False):
         s = self.STORE.getRemoteByName(name)
         if not s and not internal:
@@ -291,27 +337,67 @@ class AutoHandler(object):
         if not internal:
             return self._response(name, "get_filters", [x.pattern for x in f], None)
         else:
-            return f 
-
-    def add_filter(self, name, restring):
+            return f
+        
+    def _wildcardToRegex(self, restring):
+        """Converts a wildcard string into a valid regular expression
+        
+           e.g. ?atch* => .atch.*
+           e.g. .atch* => \.atch.*
+        """
+        escaped = re.escape(restring)
+        return re.compile(escaped.replace("\?", ".").replace("\*", ".*"), re.I)
+        
+    def add_filter(self, name, regex, positive=[], negative=[], sizelim=None):
+        regex = (regex[0] == "true")
         name = name[0]
-        restring = restring[0]
+        if positive:
+            positive = positive[0].split("||||||")
+        if negative:
+            negative = negative[0].split("||||||")
+        if sizelim:
+            try:
+                sizelim = [int(x) for x in sizelim[0].split("||||||")]
+            except:
+                return self._response(name, "add_filter", "ERROR", "Size limits must be integers")
+            else:
+                if sizelim[1] != 0 and sizelim[1] < sizelim[0]:
+                    return self._response(ID, "add_filter", "ERROR", "Upper size limit is less than the lower limit")
+        else:
+            sizelim = [None, None]
+            
         s = self.STORE.getRemoteByName(name)
         if not s:
             return self._response(name, "add_filter", "ERROR", "No store for name '%s'" % name)
 
         #attempt to compile the re string
-        try:
-            regex = re.compile(restring)
-        except:
-            return self._response(name, "add_filter", "ERROR", "Invalid regex")
+        positives = []
+        negatives = []
+        for restring in positive:
+            try:
+                if regex:
+                    regextest = re.compile(restring)
+                else:
+                    regextest = self._wildcardToRegex(restring)
+                positives.append(regextest)
+            except:
+                return self._response(name, "add_filter", "ERROR", "Invalid regex %r" % restring)
+                
+        for restring in negative:
+            try:
+                if regex:
+                    regextest = re.compile(restring)
+                else:
+                    regextest = self._wildcardToRegex(restring)
+                negatives.append(regextest)
+            except:
+                return self._response(name, "add_filter", "ERROR", "Invalid regex %r" % restring)
 
-        if self.STORE.addFilter(name, regex):
-            #send sigurg
+        if self.STORE.addFilter(name, positives, negatives, sizelim):
             return self._response(name, "add_filter", "OK", None)
         else:
             return self._response(name, "add_filter", "ERROR", "Unknown error")
-        
+            
     def remove_filter(self, name, index):
         name = name[0]
         try:
@@ -343,7 +429,7 @@ class AutoHandler(object):
         else:
             self.LOG.error("Error in adding remote: '%s'" % name)
             return self._response(name, "set_source", "ERROR", "Unknown error")
-
+            
     def _fmt_feed(self, feed):
         templ = """
             <tr class='remote_row' id='feed_id_%(id)s'>
@@ -352,8 +438,41 @@ class AutoHandler(object):
                 <td class='ttl'>%(ttl_str)s</td>
                 <td class='url' title='%(url)s'>%(url)s</td>
             </tr>""" % feed
-        filter_templ = """<label for='filter%(count)d'>Filter:</label><div name='filter%(count)d' class='filter'><code>%(filter)s</code></div>"""
-        feed["filters"] = "".join([ filter_templ % { "filter" : cgi.escape(x.pattern), "count": feed["filters"].index(x) + 1 } for x in feed["filters"]])
+        #filter_templ = """
+        #    <label for='filter%(count)d'>Filter:</label>
+        #    <div name='filter%(count)d' class='filter'>
+        #        <code>%(filter)s</code>
+        #    </div>"""
+        filter_pos = "<div class='filter_positive filter'><code>%s</code></div>"
+        filter_neg = "<div class='filter_negative filter'><code>%s</code></div>"
+        filter_templ = """
+            <label for='filter%(count)d'>Filter:</label>
+            <div name='filter%(count)d' class='filter_group'>
+                %(subfilters)s
+            </div>
+        """
+        
+        #check if filters is in correct format
+        
+        
+        filters_fmtted = []
+        idx = 0
+        try:
+            for f_obj in feed["filters"]:
+                subfilters = self._fmt_subgroup(f_obj.positive, f_obj.negative, f_obj.sizelim)
+                filters_fmtted += [
+                    filter_templ % {
+                        "count" : idx + 1,
+                        "subfilters" : "".join(subfilters)
+                    }
+                ]
+                idx += 1
+        except TypeError:
+            self.STORE.reflowRSSFilters()
+            filters_fmtted = ["<div class='filter'>Refresh Page</div>"]
+            
+        feed["filters"] = "".join(filters_fmtted)
+        
         sub_templ = """
             <tr class='hidden remote_setting' id='feed_%(id)s'>
                 <td colspan=10>
@@ -368,7 +487,19 @@ class AutoHandler(object):
                             <label for='add_filter'>
                                 <button class='add_filter_button'>Add Filter</button>
                             </label>
-                            <input name='add_filter' class='add_filter_input' type='text' placeholder='Filter'>
+                            <div class="add_filter">
+                                <div class="regex_checkbox_parent">
+                                    <span class="regex_checkbox_label">Regex?</span>
+                                    <input type="checkbox" class="regex_checkbox" checked=1>
+                                </div>
+                                <input name="add_filter" class="input_filter" type="text" placeholder="Filter">
+                                <select class="filter_select">
+                                    <option selected="selected">---</option>
+                                    <option value="and">and</option>
+                                    <option value="not">not</option>
+                                    <option value="size">size</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </td>
@@ -390,7 +521,7 @@ class AutoHandler(object):
             return self._response(ID, "get_rss_single", self._fmt_feed(resp), None)
         else:
             return self._response(ID, "get_rss_single", "ERROR", "No such RSS feed")
-        
+            
     def add_rss(self, alias=None, ttl=None, uri=None):
         if not alias or not ttl or not uri:
             raise remotes.UndefinedError("Insufficient arguments")
@@ -434,20 +565,53 @@ class AutoHandler(object):
             return self._response(ID, "enable_rss", "OK", None)
         else:
             return self._response(ID, "enable_rss", "ERROR", "No such RSS feed")
-    
-    def add_rss_filter(self, ID, restring):
-        ID = ID[0]
-        restring = restring[0]
-        try:
-            regex = re.compile(restring)
-        except:
-            return self._response(ID, "add_rss_filter", "ERROR", "Invalid regex")
             
-        resp = self.STORE.addRSSFilter(ID, regex)
-        if resp:
+    def add_rss_filter(self, ID, regex, positive=[], negative=[], sizelim=None):
+        regex = (regex[0] == "true")
+        ID = ID[0]
+        if positive:
+            positive = positive[0].split("||||||")
+        if negative:
+            negative = negative[0].split("||||||")
+        if sizelim:
+            try:
+                sizelim = [int(x) for x in sizelim[0].split("||||||")]
+            except:
+                return self._response(ID, "add_filter", "ERROR", "Size limits must be integers")
+            else:
+                if sizelim[1] != 0 and sizelim[1] < sizelim[0]:
+                    return self._response(ID, "add_filter", "ERROR", "Upper size limit is less than the lower limit")
+        else:
+            sizelim = [None, None]
+            
+        
+        positives = []
+        negatives = []
+        for restring in positive:
+            try:
+                if regex:
+                    regextest = re.compile(restring)
+                else:
+                    regextest = self._wildcardToRegex(restring)
+                positives.append(regextest)
+            except:
+                return self._response(ID, "add_rss_filter", "ERROR", "Invalid regex %r" % restring)
+        
+        for restring in negative:
+            try:
+                if regex:
+                    regextest = re.compile(restring)
+                else:
+                    regextest = self._wildcardToRegex(restring)
+                negatives.append(regextest)
+            except:
+                return self._response(ID, "add_rss_filter", "ERROR", "Invalid regex %r" % restring)
+                
+        
+        if self.STORE.addRSSFilter(ID, positives, negatives, sizelim):
             return self._response(ID, "add_rss_filter", "OK", None)
         else:
-            return self._response(ID, "add_rss_filter", "ERROR", "No such RSS feed")
+            return self._response(ID, "add_rss_filter", "ERROR", "Unknown Error")
             
     def remove_rss_filter(self, ID, index):
         ID = ID[0]
@@ -471,7 +635,7 @@ class AutoHandler(object):
             return self._response(ID, "get_rss_filters", resp, None)
         else:
             return self._response(ID, "get_rss_filters", "ERROR", "No such RSS feed")
-        
+            
     def handle_message(self, message):
         urlparams =  urlparse.parse_qs(message)
         request = urlparams.get("request") and urlparams.get("request")[0] or None
@@ -492,4 +656,3 @@ class AutoHandler(object):
             return self._response(None, request, "ERROR", "Request '%r' is not supported" % request)
         else:
             return self.METHODS[request](*arguments, **keywords)
-            

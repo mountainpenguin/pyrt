@@ -54,7 +54,11 @@ class Config:
     def __init__(self):
         #look for saved config file
         if os.path.exists(os.path.join("config",".pyrtconfig")):
-            self.CONFIG = pickle.load(open(os.path.join("config",".pyrtconfig")))
+            try:
+                self.CONFIG = pickle.load(open(os.path.join("config",".pyrtconfig")))
+            except:
+                os.remove(os.path.join("config", ".pyrtconfig"))
+                self.loadconfig()
         else:
             self.loadconfig()
     

@@ -51,8 +51,6 @@ class RPCHandler(object):
         self.publog = publog
         self.ajax = ajax
         self.storage = storage
-
-    
         
     def updatehash_rss(self, ID, h):
         #self.log("info", "Updated hash for feed %s", ID)
@@ -69,18 +67,38 @@ class RPCHandler(object):
         if ID not in self.storage.RSS:
             return json.dumps({"error" : "No such RSS feed"})
         
-        return [x.pattern for x in self.storage.RSS[ID].filters]
+        filter_list = []
+        for fi in self.storage.RSS[ID].filters:
+            filter_list.append(
+                ([x.pattern for x in fi.positive],
+                 [y.pattern for y in fi.negative],
+                 fi.sizelim)
+            )
+        return filter_list
         
     def get_active_rss(self):
         feeds_ = filter(lambda x: x["enabled"], self.storage.getRSSFeeds())
         feeds = []
-        for f in feeds_:
-            fi_ = []
-            for fi in f["filters"]:
-                fi_.append(fi.pattern)
-            f["filters"] = fi_
-            feeds.append(f)
-        return feeds
+        try:
+            for f in feeds_:
+                fi_ = []
+                for fi in f["filters"]:
+                    try:
+                        fi_.append(
+                            ([x.pattern for x in fi.positive],
+                             [y.pattern for y in fi.negative],
+                             fi.sizelim)
+                        )
+                    except:
+                        self.storage.reflowRSSFilters()
+                        
+                f["filters"] = fi_
+                feeds.append(f)
+            return feeds
+        
+        except TypeError:
+            self.storage.reflowRSSFilters()
+            
         
     def get_filters(self, name):
         s = self.storage.getRemoteByName(name)
@@ -89,7 +107,13 @@ class RPCHandler(object):
                 f = s.filters
             except AttributeError:
                 f = []
-            return json.dumps([x.pattern for x in f])
+            return json.dumps(
+                [([x.pattern for x in z.positive],
+                  [y.pattern for y in z.negative],
+                  z.sizelim)
+                 for z in f
+                ]
+            )
         else:
             return json.dumps({
                 "error" : "Not registered"
@@ -152,17 +176,32 @@ class RPCHandler(object):
         return json.dumps(respDict)
         # return respDict
 
-    def fetchTorrent(self, name, **kwargs):
+    def fetchTorrent(self, name, sizelim, **kwargs):
         site = remotes.getSiteMod(name)
         if site:
             s = site.Main(self.publog, self.ajax, self.storage)
-            filename, torrent = s.fetch(kwargs["torrentid"]) 
-            s.process(filename, torrent)
+            filename, torrent = s.fetch(kwargs["torrentid"])
+            if sizelim[0] and sizelim[0] == 0:
+                sizelim[0] = None
+            if sizelim[1] and sizelim[1] == 0:
+                sizelim[1] = None
+            s.process(filename, torrent, sizelim[0], sizelim[1])
             return "OK", None
         else:
             return "ERROR", "No such handler"
-            
-    def fetch_torrent_rss(self, ID, alias, link):
+    
+    def _getTorrentSize(self, bencoded):
+        if bencoded["info"].has_key("files"):
+            #multifile torrent
+            length = 0
+            for f in bencoded["info"]["files"]:
+                length += f["length"]
+        else:
+            #singlefile
+            length = bencoded["info"]["length"]
+        return length
+    
+    def fetch_torrent_rss(self, ID, alias, link, sizelim):
         lnk = urllib2.urlopen(link)
         #get filename if offered, else generate random filename
         try:
@@ -173,15 +212,29 @@ class RPCHandler(object):
         linkcontent = lnk.read()
         #check valid torrent file
         try:
-            bencode.bdecode(linkcontent)
+            bencoded = bencode.bdecode(linkcontent)
         except bencode.BTL.BTFailure:
             self.log("error", "Error downloading from RSS feed (id: %s, alias: %s) - not a valid bencoded string", ID, alias)
             open("rss.test.torrent","w").write(linkcontent)
             return
         
+        #check size limits
+        if sizelim[0] and sizelim[0] == 0:
+            sizelim[0] = None
+        if sizelim[1] and sizelim[1] == 0:
+            sizelim[1] = None
+            
+        size_upper, size_lower = sizelim
+            
+        length = self._getTorrentSize(bencoded)
+        if size_upper and length > size_upper:
+            return
+        elif size_lower and length < size_lower:
+            return
+        
         target_p = os.path.join("torrents", filename)
         if os.path.exists(target_p):
-            prepend = "".join(random.choice(string.letters) for x in range(5))
+            prepend = "".join([random.choice(string.letters) for x in range(5)])
             filename = "%s-%s" % (prepend, filename)
         open("torrents/%s" % (filename), "wb").write(linkcontent)
         self.ajax.load_from_rss(filename, alias, ID, start=True)

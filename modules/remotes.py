@@ -277,31 +277,49 @@ class Base(object):
            """
         return (False, False)
 
-    def process(self, filename, filecontent):
+    def _getTorrentSize(self, bencoded):
+        if bencoded["info"].has_key("files"):
+            #multifile torrent
+            length = 0
+            for f in bencoded["info"]["files"]:
+                length += f["length"]
+        else:
+            #singlefile
+            length = bencoded["info"]["length"]
+        return length
+        
+    def process(self, filename, filecontent, sizemin, sizemax):
         """Final processing for a remote fetch
 
             Steps involved in processing:
             1.  Verifies that 'filecontent' is a valid bencoded file
-            2.  Check that the path 'torrents/<filename>' doesn't exist
-            3.  Write file to path
-            4.  Tells rtorrent to load the file
+            2.  Checks that the size is correct
+            3.  Check that the path 'torrents/<filename>' doesn't exist
+            4.  Write file to path
+            5.  Tells rtorrent to load the file
 
             Errors / Resolution:
             1.  exit
             2.  renames file by prepending a random string ==> continue
         """
         try:
-            bencode.bdecode(filecontent)
+            bencoded = bencode.bdecode(filecontent)
         except bencode.BTL.BTFailure:
             self._log.error("Error in remote handler '%s': not a valid bencoded string", self.settings.name)
             logging.error("Error in remote handler '%s'\n%s", self.settings.name, traceback.format_exc())
             open("test.torrent","w").write(filecontent)
             return
+        
+        length = self._getTorrentSize(bencoded)
+        if sizemax and length > sizemax:
+            return
+        elif sizemin and length < sizemin:
+            return
 
         target_p = os.path.join("torrents", filename)
         if os.path.exists(target_p):
             #rename
-            prepend = "".join(random.choice(string.letters) for x in range(10))
+            prepend = "".join([random.choice(string.letters) for x in range(10)])
             filename = "%s-%s" % (prepend, filename)
         open("torrents/%s" % (filename), "wb").write(filecontent)
         self._ajax.load_from_remote(filename, self.settings.name, start=True)
@@ -334,7 +352,6 @@ class Base(object):
 
             Returns a urllib2 file-like object"""
         req_url = "%s?%s" % (url, urllib.urlencode(params))
-        print("req_url: %s" % req_url)
         return urllib2.urlopen(req_url)
 
     def POST(self, url, params):
@@ -346,6 +363,15 @@ class Base(object):
             Returns a urllib2 file-like object"""
         return urllib2.urlopen(req_url, urllib.urlencode(params))
 
+class Filter(object):
+    def __init__(self, positive, negative, sizelim):
+        self.positive = positive
+        self.negative = negative
+        self.sizelim = sizelim
+        self.lower = self.sizelim[0]
+        self.upper = self.sizelim[1]
+        
+    
 class RemoteStorage(object):
     """Class for storing remote 'source' settings
     
@@ -424,8 +450,7 @@ class RemoteStorage(object):
             return False
         self.SOCKETS[num] = assigned
         return True
-            
-        
+             
     def addRemote(self, name, **kwargs):
         """Add a 'source'
 
@@ -463,10 +488,10 @@ class RemoteStorage(object):
                     self._flush()
                     return True
 
-    def addFilter(self, name, f):
+    def addFilter(self, name, pos, neg, sizelim):
         """Adds a regex filter to a 'source' setting
 
-            input argument 'f' should be a compiled regular expression
+            input arguments 'pos' and 'neg' should be lists of compiled regular expressions
             These must be checked as valid regular expressions before submission
         """
         if name.upper() in self.STORE:
@@ -476,13 +501,37 @@ class RemoteStorage(object):
             except AttributeError:
                 filters = []
 
-            filters += [f]
+            filters += [Filter(pos, neg, sizelim)]
             #make sure everything is written back
             s.filters = filters
             self.STORE[name.upper()] = s
             self._flush()
             return True
 
+    def reflowFilters(self):
+        for name in self.STORE:
+            try:
+                f = self.STORE[name].filters
+            except AttributeError:
+                if self.STORE[name].has_key("filters"):
+                    f = self.STORE[name]["filters"]
+                else:
+                    f = []
+            # list of regexes, each is a single positive filter
+            new_f = []
+            for regex in f:
+                if type(regex) is tuple:
+                    if len(regex) == 2:
+                        new_f += [Filter(regex[0], regex[1], [None, None])]
+                    elif len(regex) == 3:
+                        new_f += [Filter(regex[0], regex[1], regex[2])]
+                elif type(regex) is Filter:
+                    new_f += [regex]
+                else:
+                    new_f += [Filter([regex], [], [None, None])]
+            self.STORE[name].filters = new_f
+        self._flush()
+        
     def deregisterBot(self, name, pid):
         if name.upper() in self.BOTS and self.BOTS[name.upper()] == int(pid):
             del self.BOTS[name.upper()]
@@ -577,13 +626,32 @@ class RemoteStorage(object):
             self._flushRSS()
             return True
         
-    def addRSSFilter(self, ID, regex):
+    def addRSSFilter(self, ID, pos, neg, sizelim):
         if ID not in self.RSS:
             return False
         else:
-            self.RSS[ID]["filters"].append(regex)
+            self.RSS[ID]["filters"].append(Filter(pos, neg, sizelim))
             self._flushRSS()
             return True
+        
+    def reflowRSSFilters(self):
+        for ID in self.RSS:
+            f = self.RSS[ID]["filters"]
+            # list of regexes, each is a single positive filter
+            new_f = []
+            for regex in f:
+                if type(regex) is tuple:
+                    #count num
+                    if len(regex) == 2:
+                        new_f += [Filter(regex[0], regex[1], [None, None])]
+                    elif len(regex) == 3:
+                        new_f += [Filter(regex[0], regex[1], regex[2])]
+                elif type(regex) is Filter:
+                    new_f += [regex]
+                else:
+                    new_f += [Filter([regex], [], [None, None])]
+            self.RSS[ID]["filters"] = new_f
+        self._flushRSS()
         
     def removeRSSFilter(self, ID, index):
         if ID not in self.RSS:
