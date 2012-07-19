@@ -137,6 +137,11 @@ body {
     vertical-align : bottom;
 }
 
+.download_files {
+    float: left;
+    clear: left;
+}
+
 .dragOverlay {
     position : absolute;
     left : 0;
