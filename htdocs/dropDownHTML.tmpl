@@ -17,12 +17,12 @@
                    <img alt="$tracker.root_url" title="$tracker.root_url" src="$tracker.favicon_url" width=16 height=16>
                  #end for
                 </div>
+                #if $percentage == "100"
+                    <a id="download_files_$torrent_id" class="download_files" href="#" title="Download Files">
+                        Download Files
+                    </a>
+                #end if
             </div>
-            #if $percentage == "100"
-                <a id="download_files_$torrent_id" class="download_files" href="#" title="Download Files">
-                    Download Files
-                </a>
-            #end if
         </li>
         <li>
             <h2 class="drop_down_h2"><span>Peers</span></h2>
