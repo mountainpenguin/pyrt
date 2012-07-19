@@ -112,7 +112,7 @@ tbody > tr {
         float: left;
         clear: right;
         position: relative;
-        left: -13px; }
+        left: -16px; }
         tbody > tr.remote_setting > td div.settings div.add_filter input, tbody > tr.remote_setting > td div.filters div.add_filter input {
           float: left;
           margin-left: 13px; }
@@ -264,11 +264,13 @@ td.enabled.feed_enabled_False {
 
 .regex_checkbox_parent {
   float: left;
-  margin-right: 3px; }
+  position: relative;
+  left: 3px; }
 
 .regex_checkbox_label {
   float: left;
   font-family: monospace; }
 
 .regex_checkbox {
+  margin-left: 4px !important;
   vertical-align: middle; }

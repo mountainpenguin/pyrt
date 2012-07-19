@@ -146,7 +146,7 @@ tbody > tr {
                         float: left;
                         clear: right;
                         position: relative;
-                        left: -13px;
+                        left: -16px;
                         input {
                             float: left;
                             margin-left: 13px;
@@ -369,12 +369,14 @@ td.enabled {
 
 .regex_checkbox_parent {
     float: left;
-    margin-right: 3px;
+    position: relative;
+    left: 3px;
 }
 .regex_checkbox_label {
     float: left;
     font-family: monospace;
 }
 .regex_checkbox {
+    margin-left: 4px !important;
     vertical-align: middle;
 }
