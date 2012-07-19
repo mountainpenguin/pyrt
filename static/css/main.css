@@ -110,7 +110,9 @@ body {
 
 .download_files {
   float: left;
-  clear: left; }
+  clear: left;
+  position: relative;
+  top: 130px; }
 
 .dragOverlay {
   position: absolute;
