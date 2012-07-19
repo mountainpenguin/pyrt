@@ -339,7 +339,17 @@ class AutoHandler(object):
         else:
             return f
         
-    def add_filter(self, name, positive=[], negative=[], sizelim=None):
+    def _wildcardToRegex(self, restring):
+        """Converts a wildcard string into a valid regular expression
+        
+           e.g. ?atch* => .atch.*
+           e.g. .atch* => \.atch.*
+        """
+        escaped = re.escape(restring)
+        return re.compile(escaped.replace("\?", ".").replace("\*", ".*"), re.I)
+        
+    def add_filter(self, name, regex, positive=[], negative=[], sizelim=None):
+        regex = (regex[0] == "true")
         name = name[0]
         if positive:
             positive = positive[0].split("||||||")
@@ -365,15 +375,21 @@ class AutoHandler(object):
         negatives = []
         for restring in positive:
             try:
-                regex = re.compile(restring)
-                positives.append(regex)
+                if regex:
+                    regextest = re.compile(restring)
+                else:
+                    regextest = self._wildcardToRegex(restring)
+                positives.append(regextest)
             except:
                 return self._response(name, "add_filter", "ERROR", "Invalid regex %r" % restring)
                 
         for restring in negative:
             try:
-                regex = re.compile(restring)
-                negatives.append(regex)
+                if regex:
+                    regextest = re.compile(restring)
+                else:
+                    regextest = self._wildcardToRegex(restring)
+                negatives.append(regextest)
             except:
                 return self._response(name, "add_filter", "ERROR", "Invalid regex %r" % restring)
 
@@ -550,7 +566,8 @@ class AutoHandler(object):
         else:
             return self._response(ID, "enable_rss", "ERROR", "No such RSS feed")
             
-    def add_rss_filter(self, ID, positive=[], negative=[], sizelim=None):
+    def add_rss_filter(self, ID, regex, positive=[], negative=[], sizelim=None):
+        regex = (regex[0] == "true")
         ID = ID[0]
         if positive:
             positive = positive[0].split("||||||")
@@ -572,15 +589,21 @@ class AutoHandler(object):
         negatives = []
         for restring in positive:
             try:
-                regex = re.compile(restring)
-                positives.append(regex)
+                if regex:
+                    regextest = re.compile(restring)
+                else:
+                    regextest = self._wildcardToRegex(restring)
+                positives.append(regextest)
             except:
                 return self._response(ID, "add_rss_filter", "ERROR", "Invalid regex %r" % restring)
         
         for restring in negative:
             try:
-                regex = re.compile(restring)
-                negatives.append(regex)
+                if regex:
+                    regextest = re.compile(restring)
+                else:
+                    regextest = self._wildcardToRegex(restring)
+                negatives.append(regextest)
             except:
                 return self._response(ID, "add_rss_filter", "ERROR", "Invalid regex %r" % restring)
                 

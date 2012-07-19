@@ -82,8 +82,7 @@ $(document).ready( function () {
             req += "&positive=" + encodeURIComponent(positivevals);
             req += "&negative=" + encodeURIComponent(negativevals);
             req += "&sizelim=" + encodeURIComponent(sizelims);
-            console.log(req);
-            //socket.send(req);
+            socket.send(req);
         }
     });
     //$(".filter_select").live("change", function() {
