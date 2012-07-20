@@ -248,6 +248,10 @@ $(document).ready(function () {
           command("delete_torrent", torrent_id);
           return false; 
      });
+     
+     $(".download_button").live("click", function (event) {
+          console.log($(this), "was clicked!");
+     })
 });
 function select_group_torrent(elem, e) {
      sel_index = SELECTED.indexOf(elem.id);
