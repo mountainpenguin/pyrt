@@ -250,8 +250,10 @@ $(document).ready(function () {
      });
      
      $(".download_button").live("click", function (event) {
-          console.log($(this), "was clicked!");
-     })
+          event.preventDefault();
+          var torrent_id = this.id.split("download_files_")[1];
+          
+     });
 });
 function select_group_torrent(elem, e) {
      sel_index = SELECTED.indexOf(elem.id);
