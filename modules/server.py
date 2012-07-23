@@ -646,6 +646,29 @@ class workerSocket(tornado.websocket.WebSocketHandler):
         logging.info("workerSocket successfully opened")
         self.socketID = self.application._pyrtSockets.add("workerSocket", self)
         
+    def _parse_message(self, message):
+        # object should look like:
+        # {
+        #    "request" : request-name,
+        #    "content" : [arg1, arg2, ...],
+        # }
+        try:
+            msg = json.loads(message)
+            msg = {}
+            if not msg.has_key("request"):
+                raise TypeError
+            if not msg.has_key("content"):
+                msg["content"] = None
+            return msg
+        except:
+            self.application._pyrtLog.error("Invalid message for workerSocket: ", message)
+            logging.error("Invalid message for workerSocket: ", message)
+            traceback.print_exc()
+            return {
+                "request" : None,
+                "content" : None,
+            }
+        
     def on_message(self, message):
         if not _check.socket(self):
             logging.error("%d %s (%s)", self.get_status(), "workerSocket denied", self.request.remote_ip)
@@ -656,7 +679,9 @@ class workerSocket(tornado.websocket.WebSocketHandler):
             }))
             self.close()
             return
+        
         logging.info("workerSocket message: %s", message)
+        parsed_message = self._parse_message(message)
         self.write_message(json.dumps({
             "request" : message,
             "response" : "All good",
