@@ -45,17 +45,26 @@ self.onmessage = function (event) {
     if (msg.command == "start_download") {
         var t_id = msg.content.torrent_id;
         parentSend("Worker got torrent_id: " + t_id);
-        sockSend(t_id);
+        initialise(t_id);
     }
+}
+
+function initialise(t_id) {
+    sockSend("prepare", [t_id]);
 }
 
 function parentSend(message) {
     self.postMessage(message);
 }
-function sockSend(message) {
+
+function sockSend(request, content) {
     if (SOCKOPEN) {
-        sock.send(message);
+        msgObj = {
+            "request" : request,
+            "content" : content,
+        }
+        sock.send(JSON.stringify(msgObj));
     } else {
-        setTimeout(sockSend, 1000, message);
+        setTimeout(sockSend, 1000, request, content);
     }
 }
