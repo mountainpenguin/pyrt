@@ -657,7 +657,7 @@ class workerSocket(tornado.websocket.WebSocketHandler):
         self.write_message(json.dumps({
             "request" : message,
             "response" : "All good",
-            "error" : None.
+            "error" : None,
         }))
             
     def on_close(self):
