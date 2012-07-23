@@ -116,6 +116,7 @@ class SocketStorage(object):
         self.AUTO = {}
         self.RPC = {}
         self.CREATE = {}
+        self.WORKER = {}
         self.lookup = {
             "logSocket" : self.LOG,
             "ajaxSocket" : self.AJAX,
@@ -124,6 +125,7 @@ class SocketStorage(object):
             "autoSocket" : self.AUTO,
             "rpcSocket" : self.RPC,
             "createSocket" : self.CREATE,
+            "workerSocket" : self.WORKER,
         }
 
     
@@ -638,6 +640,28 @@ class autoHandler(tornado.web.RequestHandler):
                 self.write(doc.read() % { "PERM_SALT" : self.application._pyrtL.getPermSalt() })
     post = get
     
+class workerSocket(tornado.websocket.WebSocketHandler):
+    socketID = None
+    def open(self):
+        logging.info("workerSocket successfully opened")
+        self.socketID = self.application._pyrtSockets.add("workerSocket", self)
+        
+    def on_message(self, message):
+        if not _check.socket(self):
+            logging.error("%d %s (%s)", self.get_status(), "workerSocket denied", self.request.remote_ip)
+            self.write_message(json.dumps({
+                "request" : message,
+                "response" : "ERROR",
+                "error" : "Permission denied",
+            }))
+            self.close()
+            return
+        logging.info("workerSocket message: %s", message)
+            
+    def on_close(self):
+        self.application._pyrtSockets.remove("workerSocket", self.socketID)
+        logging.info("%d workerSocket closed (%s)", self.get_status(), self.request.remote_ip)
+        
 class RPCSocket(tornado.websocket.WebSocketHandler):
     socketID = None
     def open(self):
@@ -761,6 +785,7 @@ class Main(object):
             (r"/create", createHandler),
             (r"/createsocket", createSocket),
             (r"/downloadcreation", downloadCreation),
+            (r"/workersocket", workerSocket),
             #(r"/test", test),
         ], **settings)
     

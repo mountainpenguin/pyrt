@@ -18,8 +18,12 @@
  *
  */
 
-var socket_protocol = location.protocol;
-//var sock = new WebSocket(socket_protocol + "//" + location.host + "/workersocket");
+if (location.protocol == "http:") {
+    var socket_protocol = "ws:";
+} else {
+    var socket_protocol = "wss:";
+}
+var sock = new WebSocket(socket_protocol + "//" + location.host + "/workersocket");
 
 
 self.onmessage = function (event) {
@@ -28,7 +32,7 @@ self.onmessage = function (event) {
     if (msg.command == "start_download") {
         var t_id = msg.content.torrent_id;
         self.postMessage("Worker got torrent_id: " + t_id);
-        self.postMessage("Worker protocol: " + socket_protocol);
+        sock.send(torrent_id);
     }
 }
  
