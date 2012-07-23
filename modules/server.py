@@ -643,6 +643,27 @@ class workerSocket(tornado.websocket.WebSocketHandler):
         logging.info("workerSocket successfully opened")
         self.socketID = self.application._pyrtSockets.add("workerSocket", self)
         
+    def _prepare(self, torrent_id):
+        files = self.application._pyrtRT.getFiles(torrent_id)
+        return files
+        
+        
+    def _handle_message(self, message):
+        req, args = self._parse_message(message)
+        if req == "prepare":
+            response = self._prepare(*args)
+            return self._response(req, args, response, None)
+        else:
+            return self._response(req, args, None, "Unknown")
+            
+    def _response(self, request=None, content=None, response=None, error=None):
+        return json.dumps({
+            "request" : request,
+            "content" : content,
+            "response" : response,
+            "error" : error,
+        })
+    
     def _parse_message(self, message):
         # object should look like:
         # {
@@ -651,39 +672,26 @@ class workerSocket(tornado.websocket.WebSocketHandler):
         # }
         try:
             msg = json.loads(message)
-            msg = {}
             if not msg.has_key("request"):
                 raise TypeError
             if not msg.has_key("content"):
                 msg["content"] = None
-            return msg
+            return msg["request"], msg["content"]
         except:
-            self.application._pyrtLog.error("Invalid message for workerSocket: ", message)
+            self.application._pyrtLog.error("Invalid message for workerSocket: %s", message)
             logging.error("Invalid message for workerSocket: ", message)
             traceback.print_exc()
-            return {
-                "request" : None,
-                "content" : None,
-            }
+            return None, None
         
     def on_message(self, message):
         if not _check.socket(self):
             logging.error("%d %s (%s)", self.get_status(), "workerSocket denied", self.request.remote_ip)
-            self.write_message(json.dumps({
-                "request" : message,
-                "response" : "ERROR",
-                "error" : "Permission denied",
-            }))
+            self.write_message(self._response(message, error="Permission Denied"))
             self.close()
             return
         
         logging.info("workerSocket message: %s", message)
-        parsed_message = self._parse_message(message)
-        self.write_message(json.dumps({
-            "request" : message,
-            "response" : "All good",
-            "error" : None,
-        }))
+        self.write_message(self._handle_message(message))
             
     def on_close(self):
         self.application._pyrtSockets.remove("workerSocket", self.socketID)
