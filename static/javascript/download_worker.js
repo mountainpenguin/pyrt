@@ -19,7 +19,6 @@
  */
 
 self.onmessage = function (event) {
-    console.log("Worker received message:", event);
+    self.postMessage("Worker received message: " + event.data);
 }
- 
  
