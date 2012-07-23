@@ -18,13 +18,9 @@
  *
  */
 
-//var sock = new WebSocket("://")
+var socket_protocol = location.protocol;
+//var sock = new WebSocket(socket_protocol + "//" + location.host + "/workersocket");
 
-if (window.document.location.protocol == "https:") {
-     var socket_protocol = "wss"
-} else {
-     var socket_protocol = "ws"
-}
 
 self.onmessage = function (event) {
     var msg = JSON.parse(event.data);
