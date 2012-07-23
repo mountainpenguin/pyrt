@@ -254,12 +254,14 @@ $(document).ready(function () {
           var torrent_id = this.id.split("download_files_")[1];
           var workerThread = new Worker("/javascript/download_worker.js");
           var instructions = {
-               "torrent_id" : torrent_id,
+               "content" : {
+                    "torrent_id" : torrent_id
+               },
                "command" : "start_download"
           }
           workerThread.postMessage(JSON.stringify(instructions));
           workerThread.onmessage = function (event) {
-               console.log("Received message from worker:", event);
+               console.log("Received message from worker:", event.data);
           }
      });
 });
