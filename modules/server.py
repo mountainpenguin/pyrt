@@ -657,6 +657,11 @@ class workerSocket(tornado.websocket.WebSocketHandler):
             self.close()
             return
         logging.info("workerSocket message: %s", message)
+        self.write_message(json.dumps({
+            "request" : message,
+            "response" : "All good",
+            "error" : None.
+        }))
             
     def on_close(self):
         self.application._pyrtSockets.remove("workerSocket", self.socketID)

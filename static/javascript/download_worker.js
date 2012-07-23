@@ -25,10 +25,19 @@ if (location.protocol == "http:") {
 }
 var sock = new WebSocket(socket_protocol + "//" + location.host + "/workersocket");
 var SOCKOPEN = false;
-sock.onmessage = onSockMessage;
-sock.onopen = onSockOpen;
-sock.onclose = onSockClose;
-sock.onerror = onSockError;
+
+sock.onmessage = function (event) {
+    parentSend("Worker got socket response: " + event.data);
+}
+sock.onopen = function (event) {
+    SOCKOPEN = true;
+}
+sock.onclose = function (event) {
+    SOCKOPEN = false;
+}
+sock.onerror = function (event) {
+    
+}
 
 self.onmessage = function (event) {
     var msg = JSON.parse(event.data);
@@ -36,11 +45,7 @@ self.onmessage = function (event) {
     if (msg.command == "start_download") {
         var t_id = msg.content.torrent_id;
         parentSend("Worker got torrent_id: " + t_id);
-        if (SOCKOPEN) {
-            sockSend(t_id);
-        } else {
-            setTimeout(sockSend, 1000, t_id);
-        }
+        sockSend(t_id);
     }
 }
 
@@ -48,17 +53,9 @@ function parentSend(message) {
     self.postMessage(message);
 }
 function sockSend(message) {
-    sock.send(message);
-}
-function onSockMessage(event) {
-    
-}
-function onSockOpen(event) {
-    SOCKOPEN = true;
-}
-function onSockClose(event) {
-    SOCKOPEN = false;
-}
-function onSockError(event) {
-    
+    if (SOCKOPEN) {
+        sock.send(message);
+    } else {
+        setTimeout(sockSend, 1000, message);
+    }
 }
