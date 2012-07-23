@@ -18,12 +18,21 @@
  *
  */
 
+//var sock = new WebSocket("://")
+
+if (window.document.location.protocol == "https:") {
+     var socket_protocol = "wss"
+} else {
+     var socket_protocol = "ws"
+}
+
 self.onmessage = function (event) {
     var msg = JSON.parse(event.data);
     self.postMessage("Worker received command: " + msg.command);
     if (msg.command == "start_download") {
         var t_id = msg.content.torrent_id;
         self.postMessage("Worker got torrent_id: " + t_id);
+        self.postMessage("Worker protocol: " + socket_protocol);
     }
 }
  
