@@ -237,6 +237,9 @@ class Handler:
         if root_keys[0] == ".":
             fileObj = fileDict[fileStruct["."]["___files"][0]]
             fileName = os.path.basename(fileObj.abs_path)
+            print fileStruct
+            print fileDict
+            print fileObj.__dict__
             return """
                 <ul id="files_list" class="filetree">
                     %s
