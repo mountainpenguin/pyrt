@@ -28,6 +28,16 @@ var SOCKOPEN = false;
 
 sock.onmessage = function (event) {
     parentSend("Worker got socket response: " + event.data);
+    var r = JSON.parse(event.data);
+    if (r.error) {
+        parentSend("Worker encountered an error! " + r.error);
+        return false;
+    }
+    var request = r.request;
+    var response = r.response;
+    if (request == "prepare") {
+        onPrepare(response);
+    }
 }
 sock.onopen = function (event) {
     SOCKOPEN = true;
@@ -51,6 +61,10 @@ self.onmessage = function (event) {
 
 function initialise(t_id) {
     sockSend("prepare", [t_id]);
+}
+
+function onPrepare(response) {
+    parentSend("Worker has file list, first file path: " + response[0].abs_path);
 }
 
 function parentSend(message) {
