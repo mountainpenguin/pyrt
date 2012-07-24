@@ -645,7 +645,7 @@ class workerSocket(tornado.websocket.WebSocketHandler):
         
     def _prepare(self, torrent_id):
         files = self.application._pyrtRT.getFiles(torrent_id)
-        return files
+        return [x.__dict__ for x in files]
         
         
     def _handle_message(self, message):
