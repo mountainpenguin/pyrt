@@ -182,7 +182,7 @@ class Handler:
         """
 
         DOCUMENT_DIV = """
-            <li><span class="file %s">%s<span class="fullpath">%s</span></span></li>
+            <li><span class="file %s">%s<span class="fullpath">%s</span><span class="download%s">TEST TEST</span></span></li>
         """
 
         DIRECTORY_DIV = """
@@ -196,7 +196,13 @@ class Handler:
             for file in files:
                 # html += DOCUMENT_DIV % (HIDDEN, os.path.basename(fileDict[file].abs_path), self.humanSize(fileDict[file].size))
                 fileName = os.path.basename(fileDict[file].abs_path)
-                html += DOCUMENT_DIV % (_getFileType(fileName), fileName, fileDict[file].abs_path)
+                fileProgress = fileDict[file].percent_complete
+                if fileProgress == 100:
+                    allowed = " allowed"
+                else:
+                    allowed = ""
+                    
+                html += DOCUMENT_DIV % (_getFileType(fileName), fileName, fileDict[file].abs_path, allowed)
             return html
             
         def _getDirs(level):
@@ -237,14 +243,17 @@ class Handler:
         if root_keys[0] == ".":
             fileObj = fileDict[fileStruct["."]["___files"][0]]
             fileName = os.path.basename(fileObj.abs_path)
-            print fileStruct
-            print fileDict
-            print fileObj.__dict__
+            fileProgress = fileObj.percentage_complete
+            if fileProgress == 100:
+                # insert download icon
+                allowed = " allowed"
+            else:
+                allowed = ""
             return """
                 <ul id="files_list" class="filetree">
                     %s
                 </ul>
-                """ % (DOCUMENT_DIV % (_getFileType(fileName), fileName, fileObj.abs_path))
+                """ % (DOCUMENT_DIV % (_getFileType(fileName), fileName, fileObj.abs_path, allowed))
                 # % (DOCUMENT_DIV % ("", os.path.basename(fileObj.abs_path), self.humanSize(fileObj.size)))
         else:
             #walk through dictionary
