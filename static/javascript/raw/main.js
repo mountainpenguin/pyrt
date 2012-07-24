@@ -249,21 +249,21 @@ $(document).ready(function () {
           return false; 
      });
      
-     $(".download_button").live("click", function (event) {
-          event.preventDefault();
-          var torrent_id = this.id.split("download_files_")[1];
-          var workerThread = new Worker("/javascript/download_worker.js");
-          var instructions = {
-               "content" : {
-                    "torrent_id" : torrent_id
-               },
-               "command" : "start_download"
-          }
-          workerThread.postMessage(JSON.stringify(instructions));
-          workerThread.onmessage = function (event) {
-               console.log("Received message from worker:", event.data);
-          }
-     });
+     //$(".download_button").live("click", function (event) {
+     //     event.preventDefault();
+     //     var torrent_id = this.id.split("download_files_")[1];
+     //     var workerThread = new Worker("/javascript/download_worker.js");
+     //     var instructions = {
+     //          "content" : {
+     //               "torrent_id" : torrent_id
+     //          },
+     //          "command" : "start_download"
+     //     }
+     //     workerThread.postMessage(JSON.stringify(instructions));
+     //     workerThread.onmessage = function (event) {
+     //          console.log("Received message from worker:", event.data);
+     //     }
+     //});
 });
 function select_group_torrent(elem, e) {
      sel_index = SELECTED.indexOf(elem.id);
