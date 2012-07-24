@@ -196,7 +196,7 @@ class Handler:
             for file in files:
                 # html += DOCUMENT_DIV % (HIDDEN, os.path.basename(fileDict[file].abs_path), self.humanSize(fileDict[file].size))
                 fileName = os.path.basename(fileDict[file].abs_path)
-                fileProgress = fileDict[file].percent_complete
+                fileProgress = fileDict[file].percentage_complete
                 if fileProgress == 100:
                     allowed = " allowed"
                 else:
