@@ -108,6 +108,14 @@ body {
   border: none;
   vertical-align: bottom; }
 
+.download:not(.allowed) {
+  display: none;
+  visibility: hidden; }
+.download.allowed {
+  padding-left: 5px;
+  background-image: url(../images/download.png);
+  background-repeat: no-repeat; }
+
 .download_files {
   float: left;
   clear: left;
