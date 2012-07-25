@@ -12,4 +12,5 @@ config/*.key
 *.log
 *.pid
 tmp/*.torrent
-.DS_STORE
+*.DS_STORE
+*.DS_Store
