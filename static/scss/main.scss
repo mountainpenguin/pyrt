@@ -145,11 +145,11 @@ body {
     &.allowed {
         padding: {
             left: 5px;
-            right: 5px;
         }
         background-image: url(../images/download.png);
         background-repeat: no-repeat;
         background-size: 18px 18px;
+        background-position-y: -2px;
         width: 18px;
         height: 18px;
         display: inline-block;
