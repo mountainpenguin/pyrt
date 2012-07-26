@@ -248,7 +248,12 @@ $(document).ready(function () {
           command("delete_torrent", torrent_id);
           return false; 
      });
-     
+     $(".download.allowed").live("click", function (event) {
+          var fullpath = $(this).next().next().text();
+          console.log("fullpath:", fullpath)
+          var t_id = $(this).closest("drop_down_container").attr("id").split("drop_down_container_")[1];
+          console.log("torrent ID:", t_id);
+     });
      //$(".download_button").live("click", function (event) {
      //     event.preventDefault();
      //     var torrent_id = this.id.split("download_files_")[1];
