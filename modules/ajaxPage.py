@@ -116,9 +116,11 @@ class Ajax:
         return self.public_commands[commandstr.lower()].run(*r_args, **o_args)
     
     def downloadGen(self, torrentID, path):
-        self.log.debug("Got torrentID: ", torrentID)
-        self.log.debug("Got path: ", path)
-        return "OK"
+        files = self.RT.getFiles(torrentID)
+        for f in files:
+            if f.abs_path == path:
+                return self._downloadAuth()
+        return False
         
     def mbtob(self, value):
         """
