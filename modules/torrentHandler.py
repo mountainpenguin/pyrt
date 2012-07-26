@@ -182,7 +182,7 @@ class Handler:
         """
 
         DOCUMENT_DIV = """
-            <li><span class="file %s">%s<span class="fullpath">%s</span><span class="download%s"></span></span></li>
+            <li><span class="file %(type)s">%(name)s<span class="download%(allowed)s" title="Download %(name)s"></span><span class="fullpath">%(fullpath)s</span></span></li>
         """
 
         DIRECTORY_DIV = """
@@ -202,7 +202,14 @@ class Handler:
                 else:
                     allowed = ""
                     
-                html += DOCUMENT_DIV % (_getFileType(fileName), fileName, fileDict[file].abs_path, allowed)
+                # html += DOCUMENT_DIV % (_getFileType(fileName), fileName, allowed, fileDict[file].abs_path)
+                html += DOCUMENT_DIV % {
+                    "type": _getFileType(fileName),
+                    "name": fileName,
+                    "allowed": allowed,
+                    "fullpath": fileDict[file].abs_path,
+                }
+                
             return html
             
         def _getDirs(level):
@@ -253,7 +260,13 @@ class Handler:
                 <ul id="files_list" class="filetree">
                     %s
                 </ul>
-                """ % (DOCUMENT_DIV % (_getFileType(fileName), fileName, fileObj.abs_path, allowed))
+                """ % {
+                    "type": _getFileType(fileName),
+                    "name": fileName,
+                    "allowed": allowed,
+                    "fullpath": fileObj.abs_path,
+                }
+                # % (DOCUMENT_DIV % (_getFileType(fileName), fileName, allowed, fileObj.abs_path))
                 # % (DOCUMENT_DIV % ("", os.path.basename(fileObj.abs_path), self.humanSize(fileObj.size)))
         else:
             #walk through dictionary
