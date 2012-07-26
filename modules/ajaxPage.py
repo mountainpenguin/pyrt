@@ -83,7 +83,8 @@ class Ajax:
             "verify_conf_value" : Handle(self.verify_conf_value, ["key", "value"]),
             "set_config_multiple" : Handle(self.set_config_multiple, ["keys","values"]),
             "get_refresh_rate" : Handle(self.getRefreshRate),
-            "move_tracker" : Handle(self.moveTracker, ["url", "target_alias"])
+            "move_tracker" : Handle(self.moveTracker, ["url", "target_alias"]),
+            "download_file" : Handle(self.downloadGen, ["torrentID", "path"]),
         }
         
     def has_command(self, commandstr):
@@ -114,6 +115,11 @@ class Ajax:
                 
         return self.public_commands[commandstr.lower()].run(*r_args, **o_args)
     
+    def downloadGen(self, torrentID, path):
+        self.log.debug("Got torrentID: ", torrentID)
+        self.log.debug("Got path: ", path)
+        return "OK"
+        
     def mbtob(self, value):
         """
             Converts MiB to B

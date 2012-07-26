@@ -250,25 +250,9 @@ $(document).ready(function () {
      });
      $(".download.allowed").live("click", function (event) {
           var fullpath = $(this).next().next().text();
-          console.log("fullpath:", fullpath)
-          var t_id = $(this).closest("drop_down_container").attr("id").split("drop_down_container_")[1];
-          console.log("torrent ID:", t_id);
+          var t_id = $(this).closest(".drop_down_container").attr("id").split("drop_down_container_")[1];
+          ws.send("request=download_file&torrentID=" + t_id + "&path=" + encodeURIComponent(fullpath));
      });
-     //$(".download_button").live("click", function (event) {
-     //     event.preventDefault();
-     //     var torrent_id = this.id.split("download_files_")[1];
-     //     var workerThread = new Worker("/javascript/download_worker.js");
-     //     var instructions = {
-     //          "content" : {
-     //               "torrent_id" : torrent_id
-     //          },
-     //          "command" : "start_download"
-     //     }
-     //     workerThread.postMessage(JSON.stringify(instructions));
-     //     workerThread.onmessage = function (event) {
-     //          console.log("Received message from worker:", event.data);
-     //     }
-     //});
 });
 function select_group_torrent(elem, e) {
      sel_index = SELECTED.indexOf(elem.id);
@@ -805,6 +789,9 @@ function messageHandler(evt) {
           } else {
                console.log("Command Failed with reason: " + resp);
           }
+     } else if (d.request == "download_file") {
+          console.log("Response:", d);
+     }
      } else {
           console.log("Unknown request");
      }
