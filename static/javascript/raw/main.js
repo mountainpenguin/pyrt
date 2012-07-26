@@ -791,7 +791,6 @@ function messageHandler(evt) {
           }
      } else if (d.request == "download_file") {
           console.log("Response:", d);
-     }
      } else {
           console.log("Unknown request");
      }
