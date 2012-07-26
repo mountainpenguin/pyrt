@@ -182,7 +182,7 @@ class Handler:
         """
 
         DOCUMENT_DIV = """
-            <li><span class="file %(type)s">%(name)s<span class="download%(allowed)s" title="Download %(name)s"></span><span class="fullpath">%(fullpath)s</span></span></li>
+            <li><span class="file %(type)s"><span class="download%(allowed)s" title="Download %(name)s"></span><span class="file_name">%(name)s</span><span class="fullpath">%(fullpath)s</span></span></li>
         """
 
         DIRECTORY_DIV = """
