@@ -37,6 +37,9 @@ import socket
 import traceback
 import logging
 import thread
+import random
+import string
+import hashlib
 
 from modules.Cheetah.Template import Template
 from modules import rtorrent, torrentHandler, login
@@ -115,6 +118,10 @@ class Ajax:
                 
         return self.public_commands[commandstr.lower()].run(*r_args, **o_args)
     
+    def _downloadAuth(self, torrentID, path):
+        auth = hashlib.sha512(hashlib.sha512(hashlib.sha512("".join([random.choice(string.letters+string.digits) for x in range(30)])).hexdigest() + torrentID).hexdigest() + path).hexdigest()
+        return auth
+        
     def downloadGen(self, torrentID, path):
         files = self.RT.getFiles(torrentID)
         for f in files:
