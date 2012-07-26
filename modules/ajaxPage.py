@@ -126,7 +126,7 @@ class Ajax:
         files = self.RT.getFiles(torrentID)
         for f in files:
             if f.abs_path == path:
-                return self._downloadAuth()
+                return self._downloadAuth(torrentID, path)
         return False
         
     def mbtob(self, value):
