@@ -52,7 +52,7 @@ class Handle(object):
         self.opt_args = opt_args
         
 class Ajax:
-    def __init__(self, conf=config.Config(), RT=None, Log=None, Sockets=None, Aliases=None):
+    def __init__(self, conf=config.Config(), RT=None, Log=None, Sockets=None, Aliases=None, DLHandler=None):
         self.config = conf
         if not RT:
             self.RT = rtorrent.rtorrent(self.config.get("rtorrent_socket"))
@@ -63,6 +63,7 @@ class Ajax:
         self.log = Log
         self.sockets = Sockets
         self.aliases = Aliases
+        self.downloadHandler = DLHandler
         self.public_commands = {
             "get_torrent_info" : Handle(self.get_torrent_info, ["torrent_id"], ["html"]),
             "get_info_multi" : Handle(self.get_info_multi, ["view"], ["sortby", "reverse", "drop_down_ids"]),
@@ -119,7 +120,12 @@ class Ajax:
         return self.public_commands[commandstr.lower()].run(*r_args, **o_args)
     
     def _downloadAuth(self, torrentID, path):
-        auth = hashlib.sha512(hashlib.sha512(hashlib.sha512("".join([random.choice(string.letters+string.digits) for x in range(30)])).hexdigest() + torrentID).hexdigest() + path).hexdigest()
+        randstring = hashlib.sha512("".join([random.choice(string.letters+string.digits) for x in range(30)])).hexdigest()
+        plusTid = hashlib.sha512(randstring + torrentID).hexdigest()
+        auth = hashlib.sha512(plusTid + path).hexdigest()
+        # associate auth token with specified path
+        self.downloadHandler.addToken(auth, path)
+        
         return auth
         
     def downloadGen(self, torrentID, path):

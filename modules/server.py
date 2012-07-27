@@ -30,6 +30,7 @@ from modules import create
 from modules import rss
 from modules import torrentHandler
 from modules import aliases
+from modules import downloadHandler
 from modules.Cheetah.Template import Template
 
 from modules import indexPage
@@ -847,7 +848,8 @@ class Main(object):
         application._pyrtL = login.Login(conf=c, log=application._pyrtLog)
         application._pyrtINDEX = indexPage.Index(conf=c, RT=application._pyrtRT)
         application._pyrtAliasStorage = aliases.AliasStore(application._pyrtLog, application._pyrtRT)
-        application._pyrtAJAX = ajaxPage.Ajax(conf=c, RT=application._pyrtRT, Log=application._pyrtLog, Sockets=application._pyrtSockets, Aliases=application._pyrtAliasStorage)
+        application._pyrtDownloadHandler = downloadHandler.downloadHandler(application._pyrtLog)
+        application._pyrtAJAX = ajaxPage.Ajax(conf=c, RT=application._pyrtRT, Log=application._pyrtLog, Sockets=application._pyrtSockets, Aliases=application._pyrtAliasStorage, DLHandler=application._pyrtDownloadHandler)
         application._pyrtOPTIONS = optionsPage.Options(conf=c, RT=application._pyrtRT, aliases=application._pyrtAliasStorage)
         application._pyrtSTATS = statsPage.Index(conf=c, RT=application._pyrtRT, aliases=application._pyrtAliasStorage)
         application._pyrtRemoteStorage = remotes.RemoteStorage(log=application._pyrtLog)
