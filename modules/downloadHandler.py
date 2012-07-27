@@ -61,11 +61,11 @@ class authStore(object):
             timenow = time.time()
             # check timediff
             if time.time() - token.timestamp > EXPIRES:
-                raise TokenError("Token %r expired" % tokenval)
+                raise TokenExpired("Token %r expired" % tokenval)
             else:
                 return token.path
         else:
-            raise TokenError("No such token %r" % tokenval)
+            raise NoSuchToken("No such token %r" % tokenval)
     
     def _clean(self):
         cleanout = []
