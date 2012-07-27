@@ -639,7 +639,7 @@ class download(tornado.web.RequestHandler):
         else:
             if os.path.exists(path):
                 #self.set_header("Content-Type", "application/x-bittorrent")
-                self.set_header("Content-Disposition", "attachment; filename=%s" % filename)
+                self.set_header("Content-Disposition", "attachment; filename=%s" % os.path.basename(path))
                 with open(path) as fd:
                     self.write(fd.read())
             else:
