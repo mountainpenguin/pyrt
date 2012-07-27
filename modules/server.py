@@ -641,12 +641,10 @@ class download(tornado.web.RequestHandler):
             raise tornado.web.HTTPError(410, log_message="Error: Token expired")
         else:
             if os.path.exists(path):
-                length = os.stat(path).st_size
-                rd = 0
+                #self.set_header("Content-Type", "application/x-bittorrent")
+                self.set_header("Content-Disposition", "attachment; filename=%s" % filename)
                 with open(path) as fd:
-                    while rd < length:
-                        self.write(fd.read(1024))
-                        rd += 1024
+                    self.write(fd.read())
             else:
                 raise tornado.web.HTTPError(404, log_message="Error: No such file")
             
