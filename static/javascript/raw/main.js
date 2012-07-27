@@ -790,7 +790,13 @@ function messageHandler(evt) {
                console.log("Command Failed with reason: " + resp);
           }
      } else if (d.request == "download_file") {
-          console.log("Response:", d);
+          if (d.error) {
+               alert("Error in download handler: " + d.error);
+               return;
+          }
+          var authkey = d.response;
+          console.log("Authkey is: " + authkey);
+          window.open("/download?auth=" + authkey);
      } else {
           console.log("Unknown request");
      }
