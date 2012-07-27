@@ -24,7 +24,15 @@ import time
 
 EXPIRES = 10 #Êtime for a token to be unusable (tokens should be used immediately, this should prevent hotlinking, etc.)
 
-class TokenError(Exception):
+class TokenExpired(Exception):
+    def __init__(self, value):
+        self.param = value
+    def __str__(self):
+        return repr(self.param)
+    def __repr__(self):
+        return "TokenError: %s" % self.param
+    
+class NoSuchToken(Exception):
     def __init__(self, value):
         self.param = value
     def __str__(self):

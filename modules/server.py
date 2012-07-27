@@ -620,6 +620,37 @@ class autoSocket(tornado.websocket.WebSocketHandler):
         self.application._pyrtSockets.remove("autoSocket", self.socketID)
         logging.info("%d autoSocket closed (%s)", self.get_status(), self.request.remote_ip)
 
+class download(tornado.web.RequestHandler):
+    def get(self):
+        chk = _check.web(self)
+        if not chk[0]:
+            raise tornado.web.HTTPError(403, log_message="Error: Access Denied")
+        
+        auth = self.get_argument("auth", None)
+        if not auth:
+            raise tornado.web.HTTPError(400, log_message="Error: No auth defined")
+        
+        try:
+            path = self.application._pyrtDownloadHandler.getPath(auth)
+        except downloadHandler.NoSuchToken:
+            raise tornado.web.HTTPError(404, log_message="Error: No such token")
+        except downloadHandler.TokenExpired:
+            raise tornado.web.HTTPError(410, log_message="Error: Token expired")
+        else:
+            if os.path.exists(path):
+                length = os.stat(path).st_size
+                rd = 0
+                with open(path) as fd:
+                    while rd < length:
+                        self.write(fd.read(1024))
+                        rd += 1024
+            else:
+                raise tornado.web.HTTPError(404, log_message="Error: No such file")
+            
+        
+    def post(self):
+        raise tornado.web.HTTPError(405, log_message="Error: POST when GET expected")
+    
 class autoHandler(tornado.web.RequestHandler):
     def get(self):
         chk = _check.web(self)
@@ -637,80 +668,6 @@ class autoHandler(tornado.web.RequestHandler):
             with open("htdocs/autoRSSHTML.tmpl") as doc:
                 self.write(doc.read() % { "PERM_SALT" : self.application._pyrtL.getPermSalt() })
     post = get
-    
-#class workerSocket(tornado.websocket.WebSocketHandler):
-#    socketID = None
-#    def open(self):
-#        logging.info("workerSocket successfully opened")
-#        self.socketID = self.application._pyrtSockets.add("workerSocket", self)
-#        
-#    def _prepare(self, torrent_id):
-#        files = self.application._pyrtRT.getFiles(torrent_id)
-#        return [x.__dict__ for x in files]
-#        
-#    def _fetch(self, path, index=0, chunksize=1024*100): # 100 KiB chunks
-#        if os.path.exists(path):
-#            with open(path, "r") as fd:
-#                fd.seek(index)
-#                content = fd.read(chunksize)
-#                return {
-#                    "start" : index,
-#                    "end" : fd.tell(),
-#                    "length" : len(content),
-#                    "content" : content
-#                }
-#    
-#    def _handle_message(self, message):
-#        req, args = self._parse_message(message)
-#        if req == "prepare":
-#            response = self._prepare(*args)
-#            return self._response(req, args, response, None)
-#        elif req == "fetch":
-#            response = self._fetch(*args)
-#            return self._response(req, args, response, None)
-#        else:
-#            return self._response(req, args, None, "Unknown")
-#            
-#    def _response(self, request=None, content=None, response=None, error=None):
-#        return json.dumps({
-#            "request" : request,
-#            "content" : content,
-#            "response" : response,
-#            "error" : error,
-#        })
-#    
-#    def _parse_message(self, message):
-#        # object should look like:
-#        # {
-#        #    "request" : request-name,
-#        #    "content" : [arg1, arg2, ...],
-#        # }
-#        try:
-#            msg = json.loads(message)
-#            if not msg.has_key("request"):
-#                raise TypeError
-#            if not msg.has_key("content"):
-#                msg["content"] = None
-#            return msg["request"], msg["content"]
-#        except:
-#            self.application._pyrtLog.error("Invalid message for workerSocket: %s", message)
-#            logging.error("Invalid message for workerSocket: ", message)
-#            traceback.print_exc()
-#            return None, None
-#        
-#    def on_message(self, message):
-#        if not _check.socket(self):
-#            logging.error("%d %s (%s)", self.get_status(), "workerSocket denied", self.request.remote_ip)
-#            self.write_message(self._response(message, error="Permission Denied"))
-#            self.close()
-#            return
-#        
-#        logging.info("workerSocket message: %s", message)
-#        self.write_message(self._handle_message(message))
-#            
-#    def on_close(self):
-#        self.application._pyrtSockets.remove("workerSocket", self.socketID)
-#        logging.info("%d workerSocket closed (%s)", self.get_status(), self.request.remote_ip)
         
 class RPCSocket(tornado.websocket.WebSocketHandler):
     socketID = None
@@ -835,6 +792,7 @@ class Main(object):
             (r"/create", createHandler),
             (r"/createsocket", createSocket),
             (r"/downloadcreation", downloadCreation),
+            (r"/download", download),
             #(r"/workersocket", workerSocket),
             #(r"/test", test),
         ], **settings)
