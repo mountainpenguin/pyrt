@@ -796,7 +796,7 @@ function messageHandler(evt) {
           }
           var authkey = d.response;
           console.log("Authkey is: " + authkey);
-          window.open("/download?auth=" + authkey);
+          window.open("/download?auth=" + authkey, "downloadPage");
      } else {
           console.log("Unknown request");
      }
