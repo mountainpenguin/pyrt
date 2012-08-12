@@ -32,7 +32,6 @@ from modules import torrentHandler
 from modules import aliases
 from modules.Cheetah.Template import Template
 
-from modules import indexPage
 from modules import ajaxPage
 from modules import optionsPage
 from modules import statsPage
@@ -154,8 +153,6 @@ class SocketStorage(object):
 class index(tornado.web.RequestHandler):
     """Default page handler for /
     
-        Writes indexPage.Index.index() if user is logged in
-        else writes login page
     """
     def get(self):
         chk = _check.web(self)
@@ -768,7 +765,6 @@ class Main(object):
         application._pyrtLog = weblog.Logger(sockets=application._pyrtSockets)
         application._pyrtRT = rtorrent.rtorrent(c.get("rtorrent_socket"))    
         application._pyrtL = login.Login(conf=c, log=application._pyrtLog)
-        application._pyrtINDEX = indexPage.Index(conf=c, RT=application._pyrtRT)
         application._pyrtAliasStorage = aliases.AliasStore(application._pyrtLog, application._pyrtRT)
         application._pyrtAJAX = ajaxPage.Ajax(conf=c, RT=application._pyrtRT, Log=application._pyrtLog, Sockets=application._pyrtSockets, Aliases=application._pyrtAliasStorage)
         application._pyrtOPTIONS = optionsPage.Options(conf=c, RT=application._pyrtRT, aliases=application._pyrtAliasStorage)
@@ -776,7 +772,6 @@ class Main(object):
         application._pyrtRemoteStorage = remotes.RemoteStorage(log=application._pyrtLog)
         application._pyrtGLOBALS = {
             "login" : application._pyrtL,
-            "indexPage" : application._pyrtINDEX,
             "ajaxPage" : application._pyrtAJAX,
             "optionsPage" : application._pyrtOPTIONS,
             "statsPage" : application._pyrtSTATS,
