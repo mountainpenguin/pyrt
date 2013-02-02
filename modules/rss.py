@@ -82,10 +82,11 @@ class RSS(object):
                                 break
                             else:
                                 contTrue += 1
-                        if contTrue != len(feed["filters"]):
-                            break
+                        if contTrue != len(positive):
+                            continue
                         
                         cont = True
+
                         for regex in [re.compile(y, re.I) for y in negative]:
                             if regex.search(e.title):
                                 cont = False
@@ -94,7 +95,8 @@ class RSS(object):
                                 cont = True
                                 
                         if not cont:
-                            break
+                            continue
+
                         self.RPC.RPCCommand("fetch_torrent_rss", ID=feed["id"], alias=feed["alias"], link=e.link, sizelim=sizelim)
         
     def refreshRSS(self):

@@ -224,7 +224,7 @@ class RPCHandler(object):
         if sizelim[1] and sizelim[1] == 0:
             sizelim[1] = None
             
-        size_upper, size_lower = sizelim
+        size_lower, size_upper = sizelim
             
         length = self._getTorrentSize(bencoded)
         if size_upper and length > size_upper:
