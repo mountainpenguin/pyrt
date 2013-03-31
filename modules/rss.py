@@ -33,7 +33,7 @@ import traceback
 from modules import websocket
 from modules import rpc
 from modules import feedparser
-from modules import posthandler
+#from modules import posthandler
         
 class RSS(object):
     def __init__(self, l, log, s, websocketURI=".sockets/rss.interface"):
