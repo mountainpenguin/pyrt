@@ -483,6 +483,9 @@ class rtorrent:
         #edit .rtorrent.rc?
         return self.conn.set_directory(path)
         
+    def setGlobalPostHook(self):
+        return self.conn.system.method.set_key("event.download.finished", "post_hook_pyrt", "execute=pyrt/posthook,$d.get_base_path=")
+
     def setGlobalMoveTo(self, path):
         #set method 'move_complete_pyrt'
         return self.conn.system.method.set_key("event.download.finished","move_complete_pyrt","d.set_directory=%(path)s; execute=mv,-u,$d.get_base_path=,%(path)s" % {"path" : path})
