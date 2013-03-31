@@ -129,25 +129,30 @@ class _ModularBot(ircbot.SingleServerIRCBot):
                 contTrue = 0
                 #all filters have to match
                 for regex in pos:
+                    #self.RPC.RPCCommand("publicLog", "debug", "%s IRCBot (#%d): checking +ve filter [%s]", self.config.name, self.PID, regex.pattern)
                     if not regex.search(event.arguments()[0]):
+                        #self.RPC.RPCCommand("publicLog","debug", "%s IRCBot (#%d): +ve filter [%s] didn't match", self.config.name, self.PID, regex.pattern)
                         break
                     else:
                         contTrue += 1
                 if contTrue != len(pos):
-                    break
+                    continue
                 
                 #one match = ignore message
                 cont = True
                 for regex in neg:
+                    #self.RPC.RPCCommand("publicLog", "debug", "%s IRCBot (#%d): checking -ve filter [%s]", self.config.name, self.PID, regex.pattern)
                     if regex.search(event.arguments()[0]):
+                        #self.RPC.RPCCommand("publicLog","debug", "%s IRCBot (#%d): negative filter [%s] matched", self.config.name, self.PID, regex.pattern)
                         cont = False
                         break
                     else:
                         cont = True
                 
                 if not cont:
-                    break
+                    continue
                 
+                #self.RPC.RPCCommand("publicLog", "debug", "%s IRCBot (#%d): checking matcher [%s]", self.config.name, self.PID, self.config.matcher.pattern)
                 idmatch = self.config.matcher.search(event.arguments()[0])
                 if idmatch:
                     torrentid = idmatch.group(1)
@@ -155,6 +160,7 @@ class _ModularBot(ircbot.SingleServerIRCBot):
                     self.RPC.RPCCommand("fetchTorrent", name=self.config.name, torrentid=torrentid, sizelim=sizelim)
                     return
         except:
+            traceback.print_exc()
             pass
 
     def on_ctcp(self, connection, event):
