@@ -35,7 +35,7 @@ METHODS = ["IRC"]
 IRC_NETWORK = "irc.what-network.net"
 IRC_PORT = 6667
 IRC_CHANNEL = "#what.cd-announce"
-IRC_MATCH = re.compile("http:\/\/what\.cd\/torrents\.php\?action=download\&id=(\d+)")
+IRC_MATCH = re.compile("https:\/\/what\.cd\/torrents\.php\?action=download\&id=(\d+)")
     
 IRC_COMMANDS = [
     "PRIVMSG Drone :ENTER " + IRC_CHANNEL + " %(settings.username)s %(settings.irckey)s"
