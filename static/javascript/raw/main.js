@@ -381,6 +381,7 @@ function parse_content(response, repeat) {
        $("#global_load15").html(system.load15);
        $("#global_uptime").html(system.uptime);
        $("#global_cpuusage").html(system.cpuusage + "%");
+       $("title").html("PyRT :: webUI :: Up " + system.uprate + "/s" + " :: Down " + system.downrate + "/s");
        
      // data has structure:
          //{
