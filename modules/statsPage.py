@@ -45,7 +45,7 @@ class Index(object):
             loadavg = os.getloadavg()[0]
             memusage = system.mem()
             memperc = int((float(memusage[0]) / memusage[1])*100)
-            hdusage = system.hdd()
+            hdusage = system.hdd(self.Config.get("root_directory"))
             hdperc = int((float(hdusage[0]) / hdusage[1])*100)
             return json.dumps({
                 "type" : "global",
@@ -77,16 +77,20 @@ class Index(object):
             for t in torrentList:
                 tracker_url = t.trackers[0].root_url
                 #get alias
-                alias = self.aliases.getAliasGroup(tracker_url)
-                alias_url = alias.alias
-                if alias_url in tDict:
-                    tDict[alias_url]["up_total"] += t.up_total
-                    tDict[alias_url]["down_total"] += t.down_total
+                try:
+                    alias = self.aliases.getAliasGroup(tracker_url)
+                except:
+                    pass
                 else:
-                    tDict[alias_url] = {}
-                    tDict[alias_url]["favicon"] = alias.favicon
-                    tDict[alias_url]["up_total"] = t.up_total
-                    tDict[alias_url]["down_total"] = t.down_total
+                    alias_url = alias.alias
+                    if alias_url in tDict:
+                        tDict[alias_url]["up_total"] += t.up_total
+                        tDict[alias_url]["down_total"] += t.down_total
+                    else:
+                        tDict[alias_url] = {}
+                        tDict[alias_url]["favicon"] = alias.favicon
+                        tDict[alias_url]["up_total"] = t.up_total
+                        tDict[alias_url]["down_total"] = t.down_total
                 upTotal += t.up_total
                 downTotal += t.down_total
 
