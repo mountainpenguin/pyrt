@@ -454,7 +454,8 @@ class Ajax:
             files = self.RT.getFiles(torrent_id)
             if len(files) == 1:
                 #single file
-                if files[0].base_path == self.RT.getRootDir():
+                rootDir = os.path.abspath(os.path.expanduser(os.path.expandvars(self.RT.getRootDir())))
+                if files[0].base_path == rootDir:
                     delete = files[0].abs_path
                 else:
                     delete = files[0].base_path
