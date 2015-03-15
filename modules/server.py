@@ -31,6 +31,7 @@ from modules import rss
 from modules import torrentHandler
 from modules import aliases
 from modules import downloadHandler
+from modules import xmlrpc2scgi
 from modules.Cheetah.Template import Template
 
 from modules import ajaxPage
@@ -51,6 +52,7 @@ import sys
 import urlparse
 import json
 import base64
+import hashlib
 import logging
 import signal
 import traceback
@@ -59,6 +61,7 @@ import string
 import socket
 import time
 import multiprocessing
+import re
 
 class null(object):
     @staticmethod
@@ -667,6 +670,100 @@ class autoHandler(tornado.web.RequestHandler):
                 self.write(doc.read() % { "PERM_SALT" : self.application._pyrtL.getPermSalt() })
     post = get
         
+class SCGIHandler(tornado.web.RequestHandler):
+    def post(self):
+        c = self.application._pyrtGLOBALS["config"]
+        # authenticate
+        authenticated = False
+        if self.request.headers.has_key("Authorization"):
+            authorization = self.request.headers.get("Authorization")
+            if c.get("scgi_method") == "Basic":
+                encoded = authorization.split("Basic ")[1]
+                decoded = base64.b64decode(encoded)
+                username, passwd = decoded.split(":")
+                if username != c.get("scgi_username") or passwd != c.get("scgi_password"):
+                    self.set_status(401)
+                    self.set_header("WWW-Authenticate", "Basic realm=\"%s\"" % c.get("host"))
+                    authenticated = False
+                else:
+                    authenticated = True
+            else:
+                # use Digest method
+                params = authorization.split("Digest ")[1].split(",")
+                op = lambda x: x.strip().replace("\"","").split("=")
+                params = dict([op(y) for y in params])
+                client_username = params["username"]
+                client_response = params["response"]
+                client_nonce = params["nonce"]
+                client_nc = params["nc"]
+                client_cnonce = params["cnonce"]
+                client_qop = params["qop"]
+
+                digest_user = c.get("scgi_username")
+                digest_pass = c.get("scgi_password")
+                digest_realm = c.get("host")
+
+                digest_A1 = "%s:%s@%s:%s" % (
+                    digest_user, digest_user, digest_realm, digest_pass
+                )
+
+                digest_A2 = "%s:%s" % (
+                    self.request.method,
+                    self.request.uri
+                )
+
+                digest_KD = hashlib.md5("%s:%s" % (
+                    hashlib.md5(digest_A1).hexdigest(),
+                    "%s:%s:%s:%s:%s" % (
+                        client_nonce,
+                        client_nc,
+                        client_cnonce,
+                        client_qop,
+                        hashlib.md5(digest_A2).hexdigest()
+                    )
+                )).hexdigest()
+
+                if digest_KD == client_response:
+                    authenticated = True
+
+
+        if authenticated:
+            xml = self.request.body
+            req = xmlrpc2scgi.SCGIRequest(c.get("rtorrent_socket"))
+            resp = req.send(xml)
+            if not self._finished:
+                self.finish(resp)
+        else:
+            self.set_status(401)
+            if c.get("scgi_method") == "Basic":
+                self.set_header("WWW-Authenticate", "Basic realm=\"%s\"" % c.get("host"))
+            else:
+                digest_realm = c.get("host") 
+                digest_user = c.get("scgi_username")
+
+                digest_nonce = hashlib.md5(
+                    "%d:%s" % (time.time(), digest_realm)
+                ).hexdigest()
+                digest_opaque = hashlib.md5(
+                    "".join([random.choice(string.letters) for x in range(20)])
+                ).hexdigest()
+
+                digest_header = (
+                    "Digest realm=\"%(user)s@%(realm)s\", " 
+                    "nonce=\"%(nonce)s\", "
+                    "algorithm=\"MD5\", "
+                    "qop=\"auth\", "
+                    "opaque=\"%(opaque)s\""
+                ) % {
+                    "user": digest_user,
+                    "realm": digest_realm,
+                    "nonce": digest_nonce,
+                    "opaque": digest_opaque,
+                }
+                self.set_header("WWW-Authenticate", digest_header)
+
+    get = post
+
 class RPCSocket(tornado.websocket.WebSocketHandler):
     socketID = None
     def open(self):
@@ -791,6 +888,7 @@ class Main(object):
             (r"/createsocket", createSocket),
             (r"/downloadcreation", downloadCreation),
             (r"/download", download),
+            (r"/scgi", SCGIHandler),
             #(r"/workersocket", workerSocket),
             #(r"/test", test),
         ], **settings)

@@ -45,6 +45,16 @@
     ## OPTIONAL
     #"refresh" : 10,
 
+    ## the username and password to use for SCGI authentication
+    ## OPTIONAL
+    #"scgi_username" : "pyrt_user",
+    #"scgi_password" : "password",
+
+    ## the scgi authentication method
+    ## either Basic or Digest
+    ## if you don't know what this is, leave commented out
+    #"scgi_method" : "Digest",
+
     ## hashed password that pyrt will use
     ## plaintext is hashed twice, the second iteration with a random salt 
     ## you can use the provided mkpasswd utility to generate a hashed password

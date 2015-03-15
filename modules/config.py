@@ -37,7 +37,7 @@ class ConfigError(Exception):
         return self.__repr__()
         
 class ConfigStore(object):
-    def __init__(self, sockpath, serverhost, serverport, password, ssl_certificate=None, ssl_private_key=None, ca_certs = None, root_directory="/", logfile="pyrt.log", refresh=10):
+    def __init__(self, sockpath, serverhost, serverport, password, ssl_certificate=None, ssl_private_key=None, ca_certs = None, root_directory="/", logfile="pyrt.log", refresh=10, scgi_username=None, scgi_password=None, scgi_method="Digest"):
         self.rtorrent_socket = sockpath
         self.host = serverhost
         self.port = serverport
@@ -48,6 +48,9 @@ class ConfigStore(object):
         self.root_directory = root_directory
         self.logfile = logfile
         self.refresh = refresh
+        self.scgi_username = scgi_username
+        self.scgi_password = scgi_password
+        self.scgi_method = scgi_method
         
         
 class Config:
@@ -116,6 +119,21 @@ class Config:
                 refresh = int(configfile["refresh"])
             except:
                 refresh = 10
+
+            if "scgi_username" in configfile:
+                scgi_username = configfile["scgi_username"]
+            else:
+                scgi_username = None
+            if "scgi_password" in configfile:
+                scgi_password = configfile["scgi_password"]
+            else:
+                scgi_password = None
+
+            if "scgi_method" in configfile:
+                scgi_method = configfile["scgi_method"]
+            else:
+                scgi_method = "Digest"
+
             self.CONFIG = ConfigStore(
                         sockpath = configfile["rtorrent_socket"],
                         serverhost = configfile["host"],
@@ -127,6 +145,9 @@ class Config:
                         root_directory = root_dir,
                         logfile = logfile,
                         refresh = refresh,
+                        scgi_username = scgi_username,
+                        scgi_password = scgi_password,
+                        scgi_method = scgi_method,
                         )
             self._flush()
         except KeyError:
