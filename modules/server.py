@@ -102,6 +102,18 @@ class _check(object):
         else:
             return True
 
+class WebSocketHandler(tornado.websocket.WebSocketHandler):
+    def check_origin(self, origin):
+        parsed_origin = urlparse.urlparse(origin)
+        origin = parsed_origin.netloc
+        origin = origin.lower()
+        if not origin:
+            return True
+
+        host = self.request.headers.get("Host")
+        return origin == host
+
+
 class Socket(object):
     def __init__(self, socketID, socketType, socketObject, session, callback):
         self.socketID = socketID
@@ -319,7 +331,7 @@ class logHandler(tornado.web.RequestHandler):
 
     post = get
         
-class ajaxSocket(tornado.websocket.WebSocketHandler):
+class ajaxSocket(WebSocketHandler):
     socketID = None
     def open(self):
         if not _check.socket(self):
@@ -396,7 +408,7 @@ class ajaxSocket(tornado.websocket.WebSocketHandler):
         self.application._pyrtSockets.remove("ajaxSocket", self.socketID)
         logging.info("%d %s (%s)", self.get_status(), "ajaxSocket closed", self.request.remote_ip)
    
-class logSocket(tornado.websocket.WebSocketHandler):
+class logSocket(WebSocketHandler):
     socketID = None
     def open(self):
         if not _check.socket(self):
@@ -440,7 +452,7 @@ class logSocket(tornado.websocket.WebSocketHandler):
         self.application._pyrtSockets.remove("logSocket", self.socketID)
         logging.info("%d %s (%s)", self.get_status(), "logSocket closed", self.request.remote_ip)
 
-class fileSocket(tornado.websocket.WebSocketHandler):
+class fileSocket(WebSocketHandler):
     socketID = None
     def open(self):
         if not _check.socket(self):
@@ -488,7 +500,7 @@ class fileSocket(tornado.websocket.WebSocketHandler):
         self.application._pyrtSockets.remove("fileSocket", self.socketID) 
         logging.info("%d %s (%s)", self.get_status(), "fileSocket closed", self.request.remote_ip)
 
-class statSocket(tornado.websocket.WebSocketHandler):
+class statSocket(WebSocketHandler):
     socketID = None
     def open(self):
         if not _check.socket(self):
@@ -555,7 +567,7 @@ class stats(tornado.web.RequestHandler):
             self.write(doc.read())
     post=get
 
-class createSocket(tornado.websocket.WebSocketHandler):
+class createSocket(WebSocketHandler):
     socketID = None
     def open(self):
         if not _check.socket(self):
@@ -589,7 +601,7 @@ class createSocket(tornado.websocket.WebSocketHandler):
         logging.info("%d createSocket closed (%s)", self.get_status(), self.request.remote_ip)
         
             
-class autoSocket(tornado.websocket.WebSocketHandler):
+class autoSocket(WebSocketHandler):
     socketID = None
     def open(self):
         if not _check.socket(self):
@@ -764,7 +776,7 @@ class SCGIHandler(tornado.web.RequestHandler):
 
     get = post
 
-class RPCSocket(tornado.websocket.WebSocketHandler):
+class RPCSocket(WebSocketHandler):
     socketID = None
     def open(self):
         logging.info("RPCsocket successfully opened")
