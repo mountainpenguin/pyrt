@@ -180,7 +180,7 @@ class RPCHandler(object):
         site = remotes.getSiteMod(name)
         if site:
             s = site.Main(self.publog, self.ajax, self.storage)
-            filename, torrent = s.fetch(kwargs["torrentid"])
+            filename, torrent = s.fetch(kwargs["torrentdata"])
             if sizelim[0] and sizelim[0] == 0:
                 sizelim[0] = None
             if sizelim[1] and sizelim[1] == 0:

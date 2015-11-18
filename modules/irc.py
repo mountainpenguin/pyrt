@@ -30,6 +30,8 @@ import signal
 import json
 import re
 import traceback
+import time
+
 
 class IRCError(Exception):
     def __init__(self, value):
@@ -117,6 +119,19 @@ class _ModularBot(ircbot.SingleServerIRCBot):
                             fmt["settings.%s" % (repl)] = self.config[repl]
                         cmd = cmd % fmt
                     connection.send_raw(cmd)
+                    self.RPC.RPCCommand(
+                        "publicLog", "debug",
+                        "%s IRCbot (#%d): sent startup command '%s'",
+                        self.config.name, self.PID, cmd.split()[0]
+                    )
+                    self.RPC.RPCCommand(
+                        "privateLog",
+                        "debug",
+                        "%s IRCbot (#%d): sent startup command '%s'",
+                        self.config.name, self.PID, cmd
+                    )
+                    if self.config.startup_delay:
+                        time.sleep(self.config.startup_delay)
                 except:
                     self.RPC.RPCCommand("publicLog", "warning", "%s IRCbot (#%d): command failed", self.config.name, self.PID)
                     self.RPC.RPCCommand("privateLog", "warning", "%s IRCbot (#%d): command '%s' failed\n%s", self.config.name, self.PID, cmd, traceback.format_exc())
@@ -155,9 +170,9 @@ class _ModularBot(ircbot.SingleServerIRCBot):
                 #self.RPC.RPCCommand("publicLog", "debug", "%s IRCBot (#%d): checking matcher [%s]", self.config.name, self.PID, self.config.matcher.pattern)
                 idmatch = self.config.matcher.search(event.arguments()[0])
                 if idmatch:
-                    torrentid = idmatch.group(1)
+                    torrentdata = idmatch.groups()
                     #self.RPC.RPCCommand("log", "debug", "%s IRCbot (#%d): got filter match in source handler '%s' for torrentid '%s'", self.config.name, self.PID, self.config.name, torrentid)
-                    self.RPC.RPCCommand("fetchTorrent", name=self.config.name, torrentid=torrentid, sizelim=sizelim)
+                    self.RPC.RPCCommand("fetchTorrent", name=self.config.name, torrentdata=torrentdata, sizelim=sizelim)
                     return
         except:
             traceback.print_exc()
@@ -196,14 +211,20 @@ class Irc(object):
             startup = siteMod.IRC_COMMANDS
         else:
             startup = []
+
+        if hasattr(siteMod, "IRC_DELAY"):
+            delay = siteMod.IRC_DELAY
+        else:
+            delay = 0
         self.name = "pyrt"
         self.log = log
         self.options = store
         self.options.startup = startup
+        self.options.startup_delay = delay
         self.options.websocketURI = websocketURI
         self.options.auth = auth
         self.options.matcher = matcher
-        
+
     def startbot(self):
         bot = _ModularBot([(self.network, self.port)], self.nick, self.name, channel=self.channel, config=self.options)
         bot.start()

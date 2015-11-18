@@ -10,13 +10,16 @@ try:
     from modules import posthandler
 except ImportError:
     logme = ">>> ImportError"
-    fh = open("/home/torrent/pyrt/pyrt.log", "a")
+    fh = open("/home/mp-torrent/pyrt/pyrt.log", "a")
     fh.write("\n%s\n" % logme)
     fh.close()
 
 if __name__ == "__main__":
+    logme = ""
     try:
-        filepath = os.path.join("/home/torrent/torrents/downloading/", os.path.basename(sys.argv[1]))
+        filepath = sys.argv[1]
+        if not os.path.exists(filepath):
+            filepath = os.path.join("/home/mp-torrent/torrents/downloading/", os.path.basename(sys.argv[1]))
         if not os.path.exists(filepath):
             logme = ">>> posthook: <%s> doesn't exist" % filepath
         else:
@@ -29,6 +32,6 @@ if __name__ == "__main__":
     except:
         logme += "\n%s" % traceback.format_exc()
 
-    fh = open("/home/torrent/pyrt/pyrt.log", "a")
+    fh = open("/home/mp-torrent/pyrt/pyrt.log", "a")
     fh.write("\n%s\n" % logme)
     fh.close()

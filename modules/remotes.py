@@ -22,6 +22,7 @@
 from __future__ import print_function
 import urllib
 import urllib2
+import requests
 import re
 import os
 import logging
@@ -277,8 +278,8 @@ class Base(object):
                 }
                 req = self.GET(url, params)
                 # check if server sent a filename to use, if not, use torrentid.torrent as filename
-                filename = self.getFilename(req.info()) or "%s.torrent" % torrentid
-                filecontent = req.read()
+                filename = self.getFilename(req.headers) or "%s.torrent" % torrentid
+                filecontent = req.content
                 return (filename, filecontent)
 
 
@@ -350,16 +351,19 @@ class Base(object):
         else:
             return None
 
-
-    def GET(self, url, params):
+    def GET(self, url, params=None):
         """Performs a GET request on 'url' encoding 'params'
 
             'url' can optionally be a urllib2.Request object
             (e.g. if cookies are an issue)
 
-            Returns a urllib2 file-like object"""
-        req_url = "%s?%s" % (url, urllib.urlencode(params))
-        return urllib2.urlopen(req_url)
+            Returns a urllib2 filem-like object"""
+        if params:
+            req_url = "%s?%s" % (url, urllib.urlencode(params))
+        else:
+            req_url = url
+        return requests.get(req_url)
+        # return urllib2.urlopen(req_url)
 
     def POST(self, url, params):
         """Performs a POST request on 'url', encoding 'params'
@@ -368,7 +372,9 @@ class Base(object):
             (e.g. if cookies are an issue)
 
             Returns a urllib2 file-like object"""
-        return urllib2.urlopen(req_url, urllib.urlencode(params))
+        return requests.post(url, params)
+        # return urllib2.urlopen(url, urllib.urlencode(params))
+
 
 class Filter(object):
     def __init__(self, positive, negative, sizelim):
