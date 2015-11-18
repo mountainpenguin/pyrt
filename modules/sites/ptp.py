@@ -2,7 +2,7 @@
 
 """ Copyright (C) 2012 mountainpenguin (pinguino.de.montana@googlemail.com)
     <http://github.com/mountainpenguin/pyrt>
-    
+
     This file is part of pyRT.
 
     pyRT is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ DESCRIPTION = "Pass the Popcorn"
 
 # REQUIRED_KEYS should always be set
 REQUIRED_KEYS = [
-    ("username", "PTP username"), 
+    ("username", "PTP username"),
     ("authkey", "authkey"),
     ("torrent_pass", "torrent_pass"),
     ("irckey", "irckey"),
@@ -49,7 +49,7 @@ IRC_CHANNEL = "#ptp-announce"
 # an announce message as the first matched group
 IRC_MATCH = re.compile("http://passthepopcorn\.me/torrents\.php\?id=\d+&torrentid=(\d+)")
 
-# if special IRC authentication is required, you can define 
+# if special IRC authentication is required, you can define
 # commands to send sequentially on connect here
 IRC_COMMANDS = [
     "PRIVMSG Hummingbird :ENTER %(settings.username)s %(settings.irckey)s " + IRC_CHANNEL,
@@ -69,17 +69,17 @@ class Main(remotes.Base):
         self.settings.authkey = self.settings._required_keys.authkey
         self.settings.torrent_pass = self.settings._required_keys.torrent_pass
 
-    def fetch(self, torrentid):
+    def fetch(self, torrentdata):
         url = urlparse.urljoin(self.settings.base_url, "torrents.php")
         params = {
             "action" : "download",
-            "id" : torrentid,
+            "id" : torrentdata[0],
             "authkey" : self.settings.authkey,
             "torrent_pass" : self.settings.torrent_pass,
         }
         req = self.GET(url, params)
-        filename = self.getFilename(req.info()) or "%s.torrent" % torrentid
-        filecontent = req.read()
+        filename = self.getFilename(req.headers) or "%s.torrent" % torrentdata[0]
+        filecontent = req.content
         return (filename, filecontent)
 
-        
+

@@ -2,7 +2,7 @@
 
 """ Copyright (C) 2012 mountainpenguin (pinguino.de.montana@googlemail.com)
     <http://github.com/mountainpenguin/pyrt>
-    
+
     This file is part of pyRT.
 
     pyRT is free software: you can redistribute it and/or modify
@@ -30,6 +30,8 @@ import signal
 import json
 import re
 import traceback
+import time
+
 
 class IRCError(Exception):
     def __init__(self, value):
@@ -38,7 +40,7 @@ class IRCError(Exception):
         return repr(self.val)
     def __repr__(self):
         return "IRCError: %s" % self.val
-    
+
 class SettingsError(Exception):
     def __init__(self, value):
         self.val = value
@@ -85,7 +87,7 @@ class _ModularBot(ircbot.SingleServerIRCBot):
         self.name = name
         self.config = config
         self.config.channel = kwargs["channel"]
-        sock = websocket.create_connection(self.config.websocketURI)  
+        sock = websocket.create_connection(self.config.websocketURI)
         self.PID = os.getpid()
         self.RPC = rpc.RPC(self.config.auth, self.config.name, sock)
         open("proc/bots/%d.pid" % self.PID, "w").write(str(self.PID))
@@ -117,6 +119,19 @@ class _ModularBot(ircbot.SingleServerIRCBot):
                             fmt["settings.%s" % (repl)] = self.config[repl]
                         cmd = cmd % fmt
                     connection.send_raw(cmd)
+                    self.RPC.RPCCommand(
+                        "publicLog", "debug",
+                        "%s IRCbot (#%d): sent startup command '%s'",
+                        self.config.name, self.PID, cmd.split()[0]
+                    )
+                    self.RPC.RPCCommand(
+                        "privateLog",
+                        "debug",
+                        "%s IRCbot (#%d): sent startup command '%s'",
+                        self.config.name, self.PID, cmd
+                    )
+                    if self.config.startup_delay:
+                        time.sleep(self.config.startup_delay)
                 except:
                     self.RPC.RPCCommand("publicLog", "warning", "%s IRCbot (#%d): command failed", self.config.name, self.PID)
                     self.RPC.RPCCommand("privateLog", "warning", "%s IRCbot (#%d): command '%s' failed\n%s", self.config.name, self.PID, cmd, traceback.format_exc())
@@ -137,7 +152,7 @@ class _ModularBot(ircbot.SingleServerIRCBot):
                         contTrue += 1
                 if contTrue != len(pos):
                     continue
-                
+
                 #one match = ignore message
                 cont = True
                 for regex in neg:
@@ -148,16 +163,16 @@ class _ModularBot(ircbot.SingleServerIRCBot):
                         break
                     else:
                         cont = True
-                
+
                 if not cont:
                     continue
-                
+
                 #self.RPC.RPCCommand("publicLog", "debug", "%s IRCBot (#%d): checking matcher [%s]", self.config.name, self.PID, self.config.matcher.pattern)
                 idmatch = self.config.matcher.search(event.arguments()[0])
                 if idmatch:
-                    torrentid = idmatch.group(1)
+                    torrentdata = idmatch.groups()
                     #self.RPC.RPCCommand("log", "debug", "%s IRCbot (#%d): got filter match in source handler '%s' for torrentid '%s'", self.config.name, self.PID, self.config.name, torrentid)
-                    self.RPC.RPCCommand("fetchTorrent", name=self.config.name, torrentid=torrentid, sizelim=sizelim)
+                    self.RPC.RPCCommand("fetchTorrent", name=self.config.name, torrentdata=torrentdata, sizelim=sizelim)
                     return
         except:
             traceback.print_exc()
@@ -196,14 +211,20 @@ class Irc(object):
             startup = siteMod.IRC_COMMANDS
         else:
             startup = []
+
+        if hasattr(siteMod, "IRC_DELAY"):
+            delay = siteMod.IRC_DELAY
+        else:
+            delay = 0
         self.name = "pyrt"
         self.log = log
         self.options = store
         self.options.startup = startup
+        self.options.startup_delay = delay
         self.options.websocketURI = websocketURI
         self.options.auth = auth
         self.options.matcher = matcher
-        
+
     def startbot(self):
         bot = _ModularBot([(self.network, self.port)], self.nick, self.name, channel=self.channel, config=self.options)
         bot.start()
@@ -217,7 +238,7 @@ class Irc(object):
             return p
         else:
             raise IRCError("A bot has already been started!")
-        
+
     def report(self, signalnum, stackframe):
         procs = self.STORAGE.getAllProcs()
         remove = []

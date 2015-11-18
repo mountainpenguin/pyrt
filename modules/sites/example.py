@@ -2,7 +2,7 @@
 
 """ Copyright (C) 2012 mountainpenguin (pinguino.de.montana@googlemail.com)
     <http://github.com/mountainpenguin/pyrt>
-    
+
     This file is part of pyRT.
 
     pyRT is free software: you can redistribute it and/or modify
@@ -48,16 +48,17 @@ class Main(remotes.Base):
         self.settings.long_name = "Example Handler"
         self.settings.base_url = "http://example.tld"
 
-    def fetch(self, torrentid):
+    def fetch(self, torrentdata):
+        # torrentdata contains the matched groups from IRC_MATCH
         return None, None
         #url = urlparse.urljoin(self.settings.base_url, "torrents.php")
         #params = {
         #    "action" : "download",
-        #    "id" : torrentid,
+        #    "id" : torrentdata[0],
         #    "authkey" : self.settings.authkey,
         #    "torrent_pass" : self.settings.torrent_pass,
         #}
         #req = self.GET(url, params)
-        #filename = self.getFilename(req.info()) or "%s.torrent" % torrentid
-        #filecontent = req.read()
+        #filename = self.getFilename(req.headers) or "%s.torrent" % torrentdata[0]
+        #filecontent = req.content
         #return (filename, filecontent)
