@@ -2,7 +2,7 @@
 
 """ Copyright (C) 2012 mountainpenguin (pinguino.de.montana@googlemail.com)
     <http://github.com/mountainpenguin/pyrt>
-    
+
     This file is part of pyRT.
 
     pyRT is free software: you can redistribute it and/or modify
@@ -51,22 +51,22 @@ class RPCHandler(object):
         self.publog = publog
         self.ajax = ajax
         self.storage = storage
-        
+
     def updatehash_rss(self, ID, h):
         #self.log("info", "Updated hash for feed %s", ID)
         return self.storage.updateHashRSSFeed(ID, h)
-        
+
     def disable_rss(self, ID):
         return self.storage.disableRSSFeed(ID)
-        
+
     def update_rss(self, ID, timestamp):
         #self.log("info", "Updated feed %s", ID)
         return self.storage.updateRSSFeed(ID, timestamp)
-        
+
     def get_rss_filters(self, ID):
         if ID not in self.storage.RSS:
             return json.dumps({"error" : "No such RSS feed"})
-        
+
         filter_list = []
         for fi in self.storage.RSS[ID].filters:
             filter_list.append(
@@ -75,7 +75,7 @@ class RPCHandler(object):
                  fi.sizelim)
             )
         return filter_list
-        
+
     def get_active_rss(self):
         feeds_ = filter(lambda x: x["enabled"], self.storage.getRSSFeeds())
         feeds = []
@@ -91,15 +91,15 @@ class RPCHandler(object):
                         )
                     except:
                         self.storage.reflowRSSFilters()
-                        
+
                 f["filters"] = fi_
                 feeds.append(f)
             return feeds
-        
+
         except TypeError:
             self.storage.reflowRSSFilters()
-            
-        
+
+
     def get_filters(self, name):
         s = self.storage.getRemoteByName(name)
         if s:
@@ -189,7 +189,7 @@ class RPCHandler(object):
             return "OK", None
         else:
             return "ERROR", "No such handler"
-    
+
     def _getTorrentSize(self, bencoded):
         if bencoded["info"].has_key("files"):
             #multifile torrent
@@ -200,7 +200,7 @@ class RPCHandler(object):
             #singlefile
             length = bencoded["info"]["length"]
         return length
-    
+
     def fetch_torrent_rss(self, ID, alias, link, sizelim):
         lnk = urllib2.urlopen(link)
         #get filename if offered, else generate random filename
@@ -208,7 +208,7 @@ class RPCHandler(object):
             filename = lnk.info()['Content-Disposition'].split("filename=\"")[1][:-1]
         except:
             filename = "".join([random.choice(string.letters) for x in range(20)]) + ".torrent"
-            
+
         linkcontent = lnk.read()
         #check valid torrent file
         try:
@@ -217,21 +217,21 @@ class RPCHandler(object):
             self.log("error", "Error downloading from RSS feed (id: %s, alias: %s) - not a valid bencoded string", ID, alias)
             open("rss.test.torrent","w").write(linkcontent)
             return
-        
+
         #check size limits
         if sizelim[0] and sizelim[0] == 0:
             sizelim[0] = None
         if sizelim[1] and sizelim[1] == 0:
             sizelim[1] = None
-            
+
         size_lower, size_upper = sizelim
-            
+
         length = self._getTorrentSize(bencoded)
         if size_upper and length > size_upper:
             return
         elif size_lower and length < size_lower:
             return
-        
+
         target_p = os.path.join("torrents", filename)
         if os.path.exists(target_p):
             prepend = "".join([random.choice(string.letters) for x in range(5)])
@@ -297,5 +297,5 @@ class RPCHandler(object):
             self.publicLog("error", "RPC: %s" % tb.strip().split("\n")[-1])
             self.privateLog("error", "RPC: traceback: %s" % tb)
             error = "005: %s" % tb.strip().split("\n")[-1]
-            
-        return self._respond(command, response, error) 
+
+        return self._respond(command, response, error)

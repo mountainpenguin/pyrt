@@ -2,7 +2,7 @@
 
 """ Copyright (C) 2012 mountainpenguin (pinguino.de.montana@googlemail.com)
     <http://github.com/mountainpenguin/pyrt>
-    
+
     This file is part of pyRT.
 
     pyRT is free software: you can redistribute it and/or modify

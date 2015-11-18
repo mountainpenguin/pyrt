@@ -2,7 +2,7 @@
 
 """ Copyright (C) 2012 mountainpenguin (pinguino.de.montana@googlemail.com)
     <http://github.com/mountainpenguin/pyrt>
-    
+
     This file is part of pyRT.
 
     pyRT is free software: you can redistribute it and/or modify
@@ -25,7 +25,6 @@ import sys
 import signal
 import time
 import multiprocessing
-import os
 import hashlib
 import re
 import traceback
@@ -42,26 +41,26 @@ class RSS(object):
         self.STORE = s
         self.websocketURI = websocketURI
         self.authkey = self.LOGIN.getRPCAuth()
-        
+
     def shutdownRSS(self, *args, **kwargs):
         logging.info("RSS exiting")
         sys.exit(0)
-        
+
     def processFeed(self, feed):
         try:
             f = feedparser.parse(feed["url"])
         except:
-            self.RPC.RPCCommand("log","error","Invalid RSS feed (id: %s, alias: %s), disabling", feed["id"], feed["alias"])
+            self.RPC.RPCCommand("log", "error", "Invalid RSS feed (id: %s, alias: %s), disabling", feed["id"], feed["alias"])
             self.RPC.RPCCommand("disable_rss", feed["id"])
         else:
             if len(f.entries) == 0:
-                self.RPC.RPCCommand("log","warning", "RSS feed (id: %s, alias: %s) is empty", feed["id"], feed["alias"])
+                self.RPC.RPCCommand("log", "warning", "RSS feed (id: %s, alias: %s) is empty", feed["id"], feed["alias"])
                 return
-            
+
             lasthash = hashlib.sha256(f.entries[0].link).hexdigest()
             if lasthash == feed["lasthash"]:
-                #no new entries
-                #self.RPC.RPCCommand("log", "debug", "No new entries for feed (id: %s, alias: %s)", feed["id"], feed["alias"])
+                # no new entries
+                # self.RPC.RPCCommand("log", "debug", "No new entries for feed (id: %s, alias: %s)", feed["id"], feed["alias"])
                 pass
             else:
                 self.RPC.RPCCommand("updatehash_rss", feed["id"], lasthash)
@@ -72,7 +71,7 @@ class RSS(object):
                         break
                     else:
                         newentries.append(e)
-                #self.RPC.RPCCommand("log","debug","%i new entries for feed (id: %s, alias: %s)", len(newentries), feed["id"], feed["alias"])
+                # self.RPC.RPCCommand("log", "debug", "%i new entries for feed (id: %s, alias: %s)", len(newentries), feed["id"], feed["alias"])
                 for e in newentries:
                     for positive, negative, sizelim in feed["filters"]:
                         contTrue = 0
@@ -83,7 +82,7 @@ class RSS(object):
                                 contTrue += 1
                         if contTrue != len(positive):
                             continue
-                        
+
                         cont = True
 
                         for regex in [re.compile(y, re.I) for y in negative]:
@@ -92,37 +91,37 @@ class RSS(object):
                                 break
                             else:
                                 cont = True
-                                
+
                         if not cont:
                             continue
 
                         self.RPC.RPCCommand("fetch_torrent_rss", ID=feed["id"], alias=feed["alias"], link=e.link, sizelim=sizelim)
-        
+
     def refreshRSS(self):
         feeds_req = self.RPC.RPCCommand("get_active_rss")
         if not feeds_req or feeds_req.response == "True":
             return
-        
+
         if feeds_req.error:
             self.RPC.RPCCommand("log", "error", "Error in RSS process: %s", feeds_req.error)
             return
-        
+
         timestamp = time.time()
         if not feeds_req.response:
             return
-        
+
         for feed in feeds_req.response:
             timediff = timestamp - feed["updated"]
             if timediff > feed["ttl_sec"]:
                 args = [feed["id"], timestamp]
                 self.RPC.RPCCommand("update_rss", *args)
                 self.processFeed(feed)
-        
+
     def startRSS(self):
         sock = websocket.create_connection(self.websocketURI)
         self.RPC = rpc.RPC(self.authkey, "RSS", sock)
         signal.signal(signal.SIGTERM, self.shutdownRSS)
-        self.RPC.RPCCommand("log","info", "RSS started in the background")
+        self.RPC.RPCCommand("log", "info", "RSS started in the background")
         while True:
             try:
                 self.refreshRSS()
@@ -131,7 +130,7 @@ class RSS(object):
                 self.RPC.RPCCommand("publicLog", "error", "ERROR in RSS process: %s", tb.strip().split("\n")[-1])
                 self.RPC.RPCCommand("privateLog", "error", "ERROR in RSS process:\n%s", tb)
             time.sleep(10)
-    
+
     def start(self):
         p = multiprocessing.Process(target=self.startRSS)
         p.daemon = True

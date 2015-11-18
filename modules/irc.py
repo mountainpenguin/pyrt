@@ -2,7 +2,7 @@
 
 """ Copyright (C) 2012 mountainpenguin (pinguino.de.montana@googlemail.com)
     <http://github.com/mountainpenguin/pyrt>
-    
+
     This file is part of pyRT.
 
     pyRT is free software: you can redistribute it and/or modify
@@ -38,7 +38,7 @@ class IRCError(Exception):
         return repr(self.val)
     def __repr__(self):
         return "IRCError: %s" % self.val
-    
+
 class SettingsError(Exception):
     def __init__(self, value):
         self.val = value
@@ -85,7 +85,7 @@ class _ModularBot(ircbot.SingleServerIRCBot):
         self.name = name
         self.config = config
         self.config.channel = kwargs["channel"]
-        sock = websocket.create_connection(self.config.websocketURI)  
+        sock = websocket.create_connection(self.config.websocketURI)
         self.PID = os.getpid()
         self.RPC = rpc.RPC(self.config.auth, self.config.name, sock)
         open("proc/bots/%d.pid" % self.PID, "w").write(str(self.PID))
@@ -137,7 +137,7 @@ class _ModularBot(ircbot.SingleServerIRCBot):
                         contTrue += 1
                 if contTrue != len(pos):
                     continue
-                
+
                 #one match = ignore message
                 cont = True
                 for regex in neg:
@@ -148,10 +148,10 @@ class _ModularBot(ircbot.SingleServerIRCBot):
                         break
                     else:
                         cont = True
-                
+
                 if not cont:
                     continue
-                
+
                 #self.RPC.RPCCommand("publicLog", "debug", "%s IRCBot (#%d): checking matcher [%s]", self.config.name, self.PID, self.config.matcher.pattern)
                 idmatch = self.config.matcher.search(event.arguments()[0])
                 if idmatch:
@@ -217,7 +217,7 @@ class Irc(object):
             return p
         else:
             raise IRCError("A bot has already been started!")
-        
+
     def report(self, signalnum, stackframe):
         procs = self.STORAGE.getAllProcs()
         remove = []
