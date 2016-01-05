@@ -54,19 +54,19 @@ class PostHandler(object):
         archive.extractall(filepath)
 
         new_contents = os.listdir(filepath)
-        fn = None 
+        fn = None
         for c in new_contents:
             if c not in dir_contents:
-                fn = c 
-        
+                fn = c
+
         renameTo = "%s.%s" % (os.path.basename(filepath), fn.split(".")[-1])
         os.rename(os.path.join(filepath, fn), os.path.join(filepath, renameTo))
 
-        #archive = UnRAR2.RarFile(arcpath)
-        #fn = archive.infolist()[0].filename
-        #renameTo = "%s.%s" % (os.path.basename(filepath), fn.split(".")[-1])
-        #archive.extract([0], filepath)
-        #os.rename(os.path.join(filepath, fn), os.path.join(filepath, renameTo))
+        # archive = UnRAR2.RarFile(arcpath)
+        # fn = archive.infolist()[0].filename
+        # renameTo = "%s.%s" % (os.path.basename(filepath), fn.split(".")[-1])
+        # archive.extract([0], filepath)
+        # os.rename(os.path.join(filepath, fn), os.path.join(filepath, renameTo))
         return os.path.join(filepath, renameTo)
 
     def link(self, filepath, path):

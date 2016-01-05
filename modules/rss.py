@@ -32,8 +32,13 @@ import traceback
 from modules import websocket
 from modules import rpc
 from modules import feedparser
-#from modules import posthandler
-        
+
+# for debugging purposes
+import shelve
+_DEBUG = False
+# end debugging
+
+
 class RSS(object):
     def __init__(self, l, log, s, websocketURI=".sockets/rss.interface"):
         self.LOGIN = l
@@ -53,6 +58,12 @@ class RSS(object):
             self.RPC.RPCCommand("log", "error", "Invalid RSS feed (id: %s, alias: %s), disabling", feed["id"], feed["alias"])
             self.RPC.RPCCommand("disable_rss", feed["id"])
         else:
+            if _DEBUG:
+                _debugstore = shelve.open("feed.debug.rss")
+                for x, y in f.iteritems():
+                    _debugstore[x] = y
+                _debugstore.sync()
+                _debugstore.close()
             if len(f.entries) == 0:
                 self.RPC.RPCCommand("log", "warning", "RSS feed (id: %s, alias: %s) is empty", feed["id"], feed["alias"])
                 return
