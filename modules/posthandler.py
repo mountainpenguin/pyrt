@@ -28,7 +28,14 @@ class PostHandler(object):
                 response = self.unrar(filepath)
                 logMe += ", unrar-ed to %s" % os.path.basename(response)
             elif proc == "link":
-                path = self.link(response, path) 
+                if "response" not in locals():
+                    potentials = glob.glob(os.path.join(filepath, "*.mkv"))
+                    if not potentials:
+                        logMe += ", couldn't find an appropriate linkable file"
+                        return logMe
+                    else:
+                        response = potentials[0]
+                path = self.link(response, path)
                 logMe += ", linked to %s" % path
         return logMe
 
