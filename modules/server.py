@@ -929,7 +929,7 @@ class Main(object):
         }
 
 
-        http_server = tornado.httpserver.HTTPServer(application, ssl_options=ssl_options)
+        http_server = tornado.httpserver.HTTPServer(application, ssl_options=ssl_options, xheaders=True)
         logging.info("Starting webserver on http%s://%s:%i with PID %d", (ssl_options and "s" or ""), global_config["server.socket_host"], global_config["server.socket_port"], os.getpid())
         self._pyrtPID = os.getpid()
 
