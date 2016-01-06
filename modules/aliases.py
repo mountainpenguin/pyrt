@@ -59,6 +59,11 @@ class AliasStore(object):
         
         if os.path.exists(".aliases.pickle"):
             self.STORE = pickle.load(open(".aliases.pickle"))
+            # remove preceding / from all favicon paths
+            for k, v in self.STORE.iteritems():
+                if v.favicon.startswith("/"):
+                    v.favicon = v.favicon[1:]
+            self._flush()
         else:
             self.STORE = self._init()
             self._flush()
@@ -174,7 +179,7 @@ class AliasStore(object):
         
     def getTrackers(self):
         currTrackers = self.RT.getCurrentTrackers()
-        knownTrackers = dict([(os.path.basename(x.split(".ico")[0]), rtorrent.TrackerSimple(os.path.basename(x.split(".ico")[0]), "/favicons/%s" % os.path.basename(x))) for x in glob.glob("static/favicons/*.ico")])
+        knownTrackers = dict([(os.path.basename(x.split(".ico")[0]), rtorrent.TrackerSimple(os.path.basename(x.split(".ico")[0]), "favicons/%s" % os.path.basename(x))) for x in glob.glob("static/favicons/*.ico")])
         #merge dictionaries
         for t_url, t in currTrackers.iteritems():
             if t_url not in knownTrackers:

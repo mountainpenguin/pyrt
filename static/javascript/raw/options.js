@@ -21,13 +21,6 @@
 var tabView = null;
 
 $(document).ready( function () {
-   $("#tab_main").bind(
-      "click",
-      function () {
-         window.location = "/?view=main";
-      }
-   );
-   
    // check for hash fragment
    if (window.location.hash) {
       showoptions(window.location.hash.substring(1).split("show-")[1]);
@@ -91,7 +84,7 @@ $(document).ready( function () {
       }
       if (keys.length > 0) {
          $.ajax({
-            url: "/ajax?request=set_config_multiple&keys=" + keys + "&values=" + encodeURIComponent(values),
+            url: "ajax?request=set_config_multiple&keys=" + keys + "&values=" + encodeURIComponent(values),
             success: function (data) {
                //$("#" + e.target.id.split("-")[0] + "-status").html(data);
                refresh_page();
@@ -120,7 +113,7 @@ function drop(e) {
    var data = e.dataTransfer.getData("Text");
    //console.log("Dropped on " + realtarget.attr("id") + ", with data: " + data);
    $.ajax({
-      url: "/ajax?request=move_tracker&url=" + data + "&target_alias=" + realtarget.attr("id").split("tracker-")[1],
+      url: "ajax?request=move_tracker&url=" + data + "&target_alias=" + realtarget.attr("id").split("tracker-")[1],
       success: function (data) {
          if (data == "OK") {
             refresh_page();
@@ -161,7 +154,7 @@ function dropInfo(e) {
    });
    var data = e.dataTransfer.getData("Text");
    $.ajax({
-      url: "/ajax?request=move_tracker&url=" + data + "&target_alias=" + null,
+      url: "ajax?request=move_tracker&url=" + data + "&target_alias=" + null,
       success: function (data) {
          if (data == "OK") {
             refresh_page();
@@ -191,7 +184,7 @@ function showoptions(nam) {
 
 function verify(key, value) {
    $.ajax({
-      url: "/ajax?request=verify_conf_value&key=" + key + "&value=" + encodeURIComponent(value),
+      url: "ajax?request=verify_conf_value&key=" + key + "&value=" + encodeURIComponent(value),
       success: function (data) {
          verif = data.substr(0,8);
          respo = data.substr(9,2);
