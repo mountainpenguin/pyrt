@@ -3,8 +3,9 @@
 import os
 import glob
 import re
-#import UnRAR2 
+# import UnRAR2
 import pyunpack
+
 
 class PostHandler(object):
     def __init__(self):
@@ -17,10 +18,9 @@ class PostHandler(object):
     def checkNewFile(self, filepath):
         for regex, instructions in self.PATHS.iteritems():
             if re.search(regex, os.path.basename(filepath), re.I):
-                #match!
                 logme = self.process(filepath, instructions[0], instructions[1])
                 return logme
-    
+
     def process(self, filepath, processes, path):
         logMe = "Processed %s" % os.path.basename(filepath)
         for proc in processes:
