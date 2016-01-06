@@ -28,7 +28,10 @@ if (window.document.location.protocol == "https:") {
 var hiddenclasstypes = new Array();
 
 $(document).ready(function () {
-    ls = new window.WebSocket(socket_protocol + "://" + window.document.location.host + "/logsocket");
+    var pn = window.location.pathname;
+    ls = new window.WebSocket(
+        socket_protocol + "://" + window.location.host + pn.substring(0, pn.lastIndexOf("/") + 1) + "logsocket"
+    );
     ls.onmessage = onMessage;
     ls.onerror = function (evt) {
         console.log("logSocket error", evt, ls);
