@@ -28,7 +28,11 @@ if (window.document.location.protocol == "https:") {
 }
 
 $(document).ready( function () {
-    socket = new window.WebSocket(socket_protocol + "://" + window.document.location.host + "/autosocket");
+    var pn = window.location.pathname;
+    socket = new window.WebSocket(
+        socket_protocol + "://" + window.location.host + pn.substring(0, pn.lastIndexOf("/") + 1) + "autosocket"
+    );
+
     socket.onmessage = onMessage; // defined in auto-irc.js or auto-rss.js
     socket.onerror = function (evt) {
         console.log("autoSocket error", evt, socket);

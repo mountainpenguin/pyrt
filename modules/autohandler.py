@@ -93,7 +93,7 @@ class AutoHandler(object):
                             %(form)s
                         <div class="submit_buttons">
                             <button type="submit" class="submit_button" id="submit_%(name)s">
-                                <img src="/images/submit.png" width=20 height=20>
+                                <img src="images/submit.png" width=20 height=20>
                                 <span>Submit</span>
                             </button>
                             %(botbutton)s
@@ -250,7 +250,7 @@ class AutoHandler(object):
                         filters = self._fmt_filters(filters)
                         botcontrol = """
                             <button class="bot_button" id="%(startstop)s_%(name)s">
-                                <img src="/images/%(statusimage)s" width=20 height=20>
+                                <img src="images/%(statusimage)s" width=20 height=20>
                                 <span>%(startstopmsg)s</span>
                             </button>
                         """ % { "statusimage" : statusimage, "startstop" : startstop, "startstopmsg" : startstopmsg, "name" : name }
@@ -307,7 +307,7 @@ class AutoHandler(object):
                         filters = self._fmt_filters(filters)
                         botcontrol = """
                             <button class="bot_button" id="%(startstop)s_%(name)s">
-                                <img src="/images/%(statusimage)s" width=20 height=20>
+                                <img src="images/%(statusimage)s" width=20 height=20>
                                 <span>%(startstopmsg)s</span>
                             </button>
                         """ % { "statusimage" : statusimage, "startstop" : startstop, "startstopmsg" : startstopmsg, "name" : name }
@@ -478,7 +478,7 @@ class AutoHandler(object):
                 <td colspan=10>
                     <div class='rss_controls'>
                         <img class='rss_%(enabled_str)s rss_status' src='%(enabled_image)s' alt='%(enabled_str)s' title='%(enabled_str)s' width=48 height=48>
-                        <img class='rss_delete' src='/images/delete48.png' alt='delete' title='Delete' width=48 height=48'>
+                        <img class='rss_delete' src='images/delete48.png' alt='delete' title='Delete' width=48 height=48'>
                     </div>
                     <div class='filters'>
                         <h4>Filters</h4>
