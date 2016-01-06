@@ -77,6 +77,7 @@ def _checkRepo():
 def _updateRepo():
     #update remote
     os.system("git pull")
+    open(".uncache", "a").close()
 
 def start(update=True):
     if _searchPID():
