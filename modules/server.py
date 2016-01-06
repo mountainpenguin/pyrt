@@ -817,7 +817,14 @@ class RPCSocket(WebSocketHandler):
 class manifest(tornado.web.RequestHandler):
     """Fake static file handler for serving static/cache.manifest"""
     def get(self):
-        manifest = open("static/cache.manifest").read()
+        if os.path.exists(".uncache"):
+            manifest = "CACHE MANIFEST"
+            if hasattr(self.application, "_UNCACHE") and self.application._UNCACHE:
+                os.remove(".uncache")
+            else:
+                self.application._UNCACHE = True
+        else:
+            manifest = open("static/cache.manifest").read()
         self.write(manifest)
         self.set_header("Content-Type", "text/cache-manifest")
         self.set_status(200)

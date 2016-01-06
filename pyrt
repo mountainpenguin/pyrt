@@ -190,8 +190,12 @@ if __name__ == "__main__":
     parser.add_argument("action", choices=("start","stop","restart","status","mkpasswd","update"), help="Control the webUI daemon")
     parser.add_argument("-n", "--noupdate", help="Don't check for updates", action="store_false")
     parser.add_argument("-f", "--force", help="Force the webUI to stop", action="store_true")
+    parser.add_argument("-u", "--uncache", help="Aggressively uncache for the next two refreshes", action="store_true")
     args = parser.parse_args()
-    
+
+    if args.uncache:
+        open(".uncache", "a").close()
+
     if args.action == "start":
         start(args.noupdate)
     elif args.action == "stop":
