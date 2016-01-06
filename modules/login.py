@@ -30,6 +30,7 @@ import time
 import math
 import logging
 import traceback
+from modules.Cheetah.Template import Template
 
 
 class User(object):
@@ -147,29 +148,15 @@ class Login:
         return "$%s$%s" % (salt_encoded, hash_2)
 
     def loginHTML(self, msg=""):
-        return """
-        <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-        <html>
-            <head>
-                <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-                <title>rTorrent - webUI Login</title>
-                <link rel="stylesheet" href="/css/main.css">
-                <script type="text/javascript" src="/javascript/jquery-1.7.min.js"></script>
-                <script type="text/javascript" src="/javascript/login-combined.min.js"></script>
-            </head>
-            <body>
-                <input type="hidden" id="permanent_salt" value="%(PERM_SALT)s">
-                <div id="login_div">
-                    <div class="notice">%(msg)s</div>
-                    <h1>Login to your rTorrent webUI</h1>
-                    <form method="POST" action="" id="login_form">
-                        <label>Enter Password: </label>
-                        <input type="password" id="password_input">
-                    </form>
-                </div>
-            </body>
-        </html>
-        """ % {"PERM_SALT": self.PERM_SALT, "msg": msg}
+        searchList = {
+            "PERM_SALT": self.PERM_SALT,
+            "msg": msg
+        }
+        HTML = Template(
+            file="htdocs/loginHTML.tmpl",
+            searchList=searchList
+        ).respond()
+        return HTML
 
     def sendCookie(self, ipaddr):
         randstring = "".join([random.choice(string.letters + string.digits) for i in range(20)])
