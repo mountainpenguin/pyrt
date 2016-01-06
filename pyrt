@@ -2,7 +2,7 @@
 
 """ Copyright (C) 2012 mountainpenguin (pinguino.de.montana@googlemail.com)
     <http://github.com/mountainpenguin/pyrt>
-    
+
     This file is part of pyRT.
 
     pyRT is free software: you can redistribute it and/or modify
@@ -48,7 +48,7 @@ def _searchBotPID():
     for PIDFile in PIDFiles:
         with open(PIDFile) as doc:
             pids.append(int(doc.read().strip()))
-    
+
     return pids
 
 def _isGitRepo():
@@ -56,7 +56,7 @@ def _isGitRepo():
         return True
     else:
         return False
-    
+
 def _checkRepo():
     p = subprocess.Popen(["git remote update"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     print("Checking for updates...")
@@ -73,16 +73,16 @@ def _checkRepo():
         else:
             print("Repository is up-to-date")
             return False
-    
+
 def _updateRepo():
     #update remote
     os.system("git pull")
-    
+
 def start(update=True):
     if _searchPID():
         print("pyRT has already been started")
         return
-    
+
     if update:
         runUpdate()
 
@@ -93,7 +93,7 @@ def start(update=True):
     print("Loading pyRT configuration from %s" % os.path.join(os.getcwd(), "config/.pyrtrc"))
     c = config.Config()
     c.loadconfig()
-    
+
     print("Starting daemon with log file %s" % c.get("logfile"))
     STDOUT=open(c.get("logfile"), "a")
     with daemon.DaemonContext(stdout=STDOUT, stderr=STDOUT, working_directory=os.getcwd()):
@@ -106,7 +106,7 @@ def stop(force=False):
     if not _searchPID():
         print("pyRT is not running")
         return
-    
+
     if force:
         signum = signal.SIGKILL
         signame = "SIGKILL"
@@ -125,7 +125,7 @@ def stop(force=False):
                 os.remove("proc/bots/%d.pid" % p)
         except:
             traceback.print_exc()
-        
+
     count = 0
     while count < 3:
         bots = _searchBotPID()
@@ -156,14 +156,14 @@ def stop(force=False):
         if os.path.exists(pth):
             print("Removing RPC IRC socket file <%s>" % pth)
             os.remove(pth)
-    
+
 
 def status():
     if _searchPID():
         print("pyRT is running with PID: %i" % _searchPID())
     else:
         print("pyRT is not running")
-        
+
 def runUpdate():
     if _isGitRepo():
         updateready = _checkRepo()
@@ -185,7 +185,7 @@ if __name__ == "__main__":
     print("This program comes with ABSOLUTELY NO WARRANTY")
     print("This is free software, and you are welcome to redistribute it under certain conditions")
     print("See LICENCE for details", end="\n\n")
-    
+
     parser = argparse.ArgumentParser(description="PyRT rtorrent webUI")
     parser.add_argument("action", choices=("start","stop","restart","status","mkpasswd","update"), help="Control the webUI daemon")
     parser.add_argument("-n", "--noupdate", help="Don't check for updates", action="store_false")
