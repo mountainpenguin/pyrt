@@ -24,13 +24,17 @@ import glob
 import cPickle as pickle
 from modules import rtorrent
 
+
 class AliasError(Exception):
     def __init__(self, value):
         self.param = value
+
     def __str__(self):
         return repr(self.param)
+
     def __repr__(self):
         return "AliasError: %s" % self.param
+
 
 class AliasGroup(object):
     def __init__(self, alias, favicon, members):
@@ -48,6 +52,7 @@ class AliasGroup(object):
             self.urls = []
         self.members = members
         self.favicon = favicon
+
 
 class AliasStore(object):
     """Class for storing tracker aliases / favicons
@@ -123,7 +128,7 @@ class AliasStore(object):
         if url in self.REVERSE_LOOKUP:
             alias = self.REVERSE_LOOKUP[url]
 
-            #remove from old group
+            # remove from old group
             group = self.STORE[alias]
             idx = group.urls.index(url)
             oldurls = group.urls
@@ -133,32 +138,32 @@ class AliasStore(object):
             oldmembers = group.members
             thismember = oldmembers.pop(idx)
             group.members = oldmembers
-            #change favicon
-            #remove group if empty
+            # change favicon
+            # remove group if empty
             if len(oldurls) == 0:
-                #delete group
+                # delete group
                 del self.STORE[alias]
             else:
                 del self.STORE[alias]
                 newfavicon = group.members[0].favicon
                 newname = group.members[0].url
                 group.favicon = newfavicon
-                #rename alias to first member
+                # rename alias to first member
                 group.alias = newname
                 self.STORE[newname] = group
                 for i in group.members:
                     self.REVERSE_LOOKUP[i.url] = newname
 
-            #remove url from REVERSE_LOOKUP
+            # remove url from REVERSE_LOOKUP
             del self.REVERSE_LOOKUP[url]
 
-            #create new group
+            # create new group
             if not newalias or newalias == "null":
                 newalias = url
 
             if newalias in self.REVERSE_LOOKUP:
                 grp = self.STORE[self.REVERSE_LOOKUP[newalias]]
-                #add to group
+                # add to group
                 oldurls = grp.urls
                 oldmembers = grp.members
                 oldurls += [thismember.url]
@@ -170,7 +175,7 @@ class AliasStore(object):
 
             self.STORE[newalias] = grp
 
-            #deal with REVERSE_LOOKUP
+            # deal with REVERSE_LOOKUP
             self.REVERSE_LOOKUP[url] = newalias
 
             self._flush()
@@ -180,7 +185,7 @@ class AliasStore(object):
     def getTrackers(self):
         currTrackers = self.RT.getCurrentTrackers()
         knownTrackers = dict([(os.path.basename(x.split(".ico")[0]), rtorrent.TrackerSimple(os.path.basename(x.split(".ico")[0]), "favicons/%s" % os.path.basename(x))) for x in glob.glob("static/favicons/*.ico")])
-        #merge dictionaries
+        # merge dictionaries
         for t_url, t in currTrackers.iteritems():
             if t_url not in knownTrackers:
                 knownTrackers[t_url] = t
@@ -203,4 +208,4 @@ class AliasStore(object):
                 self._flush()
 
     def _flush(self):
-        pickle.dump(self.STORE, open(".aliases.pickle","w"))
+        pickle.dump(self.STORE, open(".aliases.pickle", "w"))

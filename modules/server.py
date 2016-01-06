@@ -60,13 +60,13 @@ import random
 import string
 import socket
 import time
-import multiprocessing
-import re
+
 
 class null(object):
     @staticmethod
     def func(*args, **kwargs):
         return None
+
 
 class _check(object):
     @staticmethod
@@ -79,7 +79,7 @@ class _check(object):
         elif not cCheck and passw:
             pCheck = obj.application._pyrtL.checkPassword(passw, obj.request.remote_ip)
             if pCheck:
-                return (True, True) # set cookie
+                return (True, True)  # set cookie
             else:
                 return (False, "Incorrect Password")
         else:
@@ -102,6 +102,7 @@ class _check(object):
         else:
             return True
 
+
 class WebSocketHandler(tornado.websocket.WebSocketHandler):
     def check_origin(self, origin):
         parsed_origin = urlparse.urlparse(origin)
@@ -122,6 +123,7 @@ class Socket(object):
         self.session = session
         self.callback = callback
 
+
 class SocketStorage(object):
     def __init__(self):
         self.LOG = {}
@@ -133,16 +135,15 @@ class SocketStorage(object):
         self.CREATE = {}
         self.WORKER = {}
         self.lookup = {
-            "logSocket" : self.LOG,
-            "ajaxSocket" : self.AJAX,
-            "fileSocket" : self.FILE,
-            "statSocket" : self.STAT,
-            "autoSocket" : self.AUTO,
-            "rpcSocket" : self.RPC,
-            "createSocket" : self.CREATE,
-            "workerSocket" : self.WORKER,
+            "logSocket": self.LOG,
+            "ajaxSocket": self.AJAX,
+            "fileSocket": self.FILE,
+            "statSocket": self.STAT,
+            "autoSocket": self.AUTO,
+            "rpcSocket": self.RPC,
+            "createSocket": self.CREATE,
+            "workerSocket": self.WORKER,
         }
-
 
     def add(self, socketType, socketObject, session=None, callback=null.func):
         if socketType in self.lookup:
@@ -157,7 +158,7 @@ class SocketStorage(object):
     def getType(self, socketType, session=None):
         if session:
             if socketType in self.lookup:
-                return filter(lambda x: x.session==session, self.lookup[socketType].values())
+                return filter(lambda x: x.session == session, self.lookup[socketType].values())
         else:
             if socketType in self.lookup:
                 return self.lookup[socketType].values()
@@ -166,7 +167,8 @@ class SocketStorage(object):
         allSocks = []
         for x in self.lookup.values():
             allSocks.extend(x.values())
-        return filter(lambda x: x.session==session, allSocks)
+        return filter(lambda x: x.session == session, allSocks)
+
 
 class index(tornado.web.RequestHandler):
     """Default page handler for /
@@ -184,7 +186,7 @@ class index(tornado.web.RequestHandler):
         sortby = self.get_argument("sortby", None)
         reverse = self.get_argument("reverse", None)
 
-        if not view or view not in ["main","started","stopped","complete","incomplete","hashing","seeding","active"]:
+        if not view or view not in ["main", "started", "stopped", "complete", "incomplete", "hashing", "seeding", "active"]:
             view = "main"
         if not sortby:
             sortby = "none"
@@ -197,6 +199,7 @@ class index(tornado.web.RequestHandler):
 
     post = get
 
+
 class createHandler(tornado.web.RequestHandler):
     """Page handler for creating torrents"""
     def get(self):
@@ -208,12 +211,13 @@ class createHandler(tornado.web.RequestHandler):
             self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
 
         searchList = [{
-            "ROOT_DIR" : self.application._pyrtRT.getGlobalRootPath()
+            "ROOT_DIR": self.application._pyrtRT.getGlobalRootPath()
         }]
         HTML = Template(file="htdocs/createHTML.tmpl", searchList=searchList).respond()
         self.write(HTML)
 
     post = get
+
 
 class downloadCreation(tornado.web.RequestHandler):
     """Page handler for downloading temp torrents"""
@@ -239,6 +243,7 @@ class downloadCreation(tornado.web.RequestHandler):
 
     post = get
 
+
 class ajax(tornado.web.RequestHandler):
     """Handler for ajax queries (/ajax)
 
@@ -253,7 +258,6 @@ class ajax(tornado.web.RequestHandler):
         if not chk[0]:
             self.write("Session Ended")
             return
-
 
         if not self.application._pyrtAJAX.has_command(request):
             raise tornado.web.HTTPError(400, log_message="Error Invalid Method")
@@ -271,6 +275,7 @@ class ajax(tornado.web.RequestHandler):
 
     post = get
 
+
 class options(tornado.web.RequestHandler):
     """Handler for options page view (/options)
 
@@ -286,31 +291,10 @@ class options(tornado.web.RequestHandler):
         elif chk[0] and chk[1]:
             self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
 
-        #test = self.get_argument("test", False)
-        #if not test:
-        #    try:
-        #        link = self.request.headers["Referer"]
-        #    except KeyError:
-        #        link = "/index"
-        #    self.write("""
-        #                <html>
-        #                    <head>
-        #                        <title>Options</title>
-        #                        <link rel="stylesheet" type="text/css" href="/css/main.css">
-        #                    </head>
-        #                    <body>
-        #                        <div style="background-color : white; padding : 2em;">
-        #                            <div>Nothing here yet</div>
-        #                            Go back to <a style="color:black;" href="%(link)s">%(link)s</a>
-        #                        </div>
-        #                    </body>
-        #                </html>
-        #               """ % {"link" : link})
-        #    return
-        #else:
         self.write(self.application._pyrtOPTIONS.index())
 
     post = get
+
 
 class logHandler(tornado.web.RequestHandler):
     def get(self):
@@ -331,8 +315,10 @@ class logHandler(tornado.web.RequestHandler):
 
     post = get
 
+
 class ajaxSocket(WebSocketHandler):
     socketID = None
+
     def open(self):
         if not _check.socket(self):
             logging.error("%d %s %.2fms", self.get_status(), "ajaxSocket denied", 1000*self.request.request_time())
@@ -344,9 +330,9 @@ class ajaxSocket(WebSocketHandler):
 
     def _respond(self, request, response, error=None, **kwargs):
         resp = {
-            "request" : request,
-            "response" : response,
-            "error" : error,
+            "request": request,
+            "response": response,
+            "error": error,
         }
         resp.update(kwargs)
         self.write_message(json.dumps(resp))
@@ -357,15 +343,15 @@ class ajaxSocket(WebSocketHandler):
             self.close()
             return
 
-        #parse out get query
-        #q = urlparse.parse_qs(message)
-        #request = q.get("request", [None])[0]
-        #view = q.get("view", [None])[0]
-        #sortby = q.get("sortby", [None])[0]
-        #reverse = q.get("reverse", [None])[0]
-        #drop_down_ids = q.get("drop_down_ids", [None])[0]
-        #if request == "get_info_multi" and view:
-        #    self.write_message(self.application._pyrtAJAX.get_info_multi(view, sortby, reverse, drop_down_ids))
+#        parse out get query
+#        q = urlparse.parse_qs(message)
+#        request = q.get("request", [None])[0]
+#        view = q.get("view", [None])[0]
+#        sortby = q.get("sortby", [None])[0]
+#        reverse = q.get("reverse", [None])[0]
+#        drop_down_ids = q.get("drop_down_ids", [None])[0]
+#        if request == "get_info_multi" and view:
+#            self.write_message(self.application._pyrtAJAX.get_info_multi(view, sortby, reverse, drop_down_ids))
 
         qs = urlparse.parse_qs(message)
         request = qs.get("request", [None])[0]
@@ -373,7 +359,7 @@ class ajaxSocket(WebSocketHandler):
             logging.info("%d %s (%s)", self.get_status(), "ajaxSocket request %s" % request, self.request.remote_ip)
         if not request:
             logging.error("%d %s (%s)", self.get_status(), "ajaxSocket error - no request specified", self.request.remote_ip)
-            #self.write_message("ERROR/No request specified")
+#            self.write_message("ERROR/No request specified")
             self._respond(None, "ERROR", "No request specified")
             return
 
@@ -408,20 +394,21 @@ class ajaxSocket(WebSocketHandler):
         self.application._pyrtSockets.remove("ajaxSocket", self.socketID)
         logging.info("%d %s (%s)", self.get_status(), "ajaxSocket closed", self.request.remote_ip)
 
+
 class logSocket(WebSocketHandler):
     socketID = None
+
     def open(self):
         if not _check.socket(self):
             logging.error("%d %s (%s)", self.get_status(), "logSocket denied", self.request.remote_ip)
             self.write_message("ERROR/Permission denied")
             self.close()
             return
-        self.socketID = self.application._pyrtSockets.add("logSocket", self,
-                                                          self.cookies.get("sess_id").value
-                                                         )
+        self.socketID = self.application._pyrtSockets.add(
+            "logSocket",
+            self, self.cookies.get("sess_id").value
+        )
         logging.info("%d %s (%s)", self.get_status(), "logSocket opened", self.request.remote_ip)
-
-
 
     def on_message(self, message):
         if not _check.socket(self):
@@ -452,8 +439,10 @@ class logSocket(WebSocketHandler):
         self.application._pyrtSockets.remove("logSocket", self.socketID)
         logging.info("%d %s (%s)", self.get_status(), "logSocket closed", self.request.remote_ip)
 
+
 class fileSocket(WebSocketHandler):
     socketID = None
+
     def open(self):
         if not _check.socket(self):
             logging.error("%d %s (%s)", self.get_status(), "fileSocket denied", self.request.remote_ip)
@@ -471,27 +460,27 @@ class fileSocket(WebSocketHandler):
             self.close()
             return
 
-        #parse message
-        #FILENAME@@@<filename>:::CONTENT@@@<content>
+        # parse message
+        # FILENAME@@@<filename>:::CONTENT@@@<content>
         try:
             filename_ = message.split(":::")[0]
             id__ = message.split(":::")[1]
-            content_ = message.split(":::",2)[2]
+            content_ = message.split(":::", 2)[2]
         except:
             logging.error("%d %s (%s)", self.get_status(), "fileSocket error - invalid message format", self.request.remote_ip)
             self.write_message("ERROR/invalid message format")
         else:
-            filename = filename_.split("@@@",1)[1]
-            id_ = id__.split("@@@",1)[1]
-            content = base64.b64decode(content_.split("@@@",1)[1].split("base64,",1)[1])
+            filename = filename_.split("@@@", 1)[1]
+            id_ = id__.split("@@@", 1)[1]
+            content = base64.b64decode(content_.split("@@@", 1)[1].split("base64,", 1)[1])
 
             logging.info("%d %s (%s)", self.get_status(), "fileSocket message - id: %s, filename: %s, size: %i" % (id_, filename, len(content)), self.request.remote_ip)
-            obj = {"torrent" : [{"filename" : filename, "content" : content}]}
+            obj = {"torrent": [{"filename": filename, "content": content}]}
             resp = self.application._pyrtAJAX.handle("upload_torrent_socket", obj)
             response = {
-                "filename" : filename,
-                "id" : id_,
-                "response" : resp,
+                "filename": filename,
+                "id": id_,
+                "response": resp,
             }
 
             self.write_message(json.dumps(response))
@@ -500,8 +489,10 @@ class fileSocket(WebSocketHandler):
         self.application._pyrtSockets.remove("fileSocket", self.socketID)
         logging.info("%d %s (%s)", self.get_status(), "fileSocket closed", self.request.remote_ip)
 
+
 class statSocket(WebSocketHandler):
     socketID = None
+
     def open(self):
         if not _check.socket(self):
             logging.error("%d %s (%s)", self.get_status(), "statSocket denied", self.request.remote_ip)
@@ -529,10 +520,10 @@ class statSocket(WebSocketHandler):
             resp = self.application._pyrtSTATS.handle_request(request)
             self.write_message(resp)
 
-
     def on_close(self):
         self.application._pyrtSockets.remove("statSocket", self.socketID)
         logging.info("%d %s (%s)", self.get_status(), "statSocket closed", self.request.remote_ip)
+
 
 class test(tornado.web.RequestHandler):
     def get(self):
@@ -565,10 +556,12 @@ class stats(tornado.web.RequestHandler):
 
         with open("htdocs/statHTML.tmpl") as doc:
             self.write(doc.read())
-    post=get
+    post = get
+
 
 class createSocket(WebSocketHandler):
     socketID = None
+
     def open(self):
         if not _check.socket(self):
             logging.error("%d %s (%s)", self.get_status(), "createSocket denied", self.request.remote_ip)
@@ -587,8 +580,8 @@ class createSocket(WebSocketHandler):
         resp = create.handle_message(message, writeback=self)
         if resp:
             jsonResp = {
-                "request" : resp[0],
-                "response" : resp[1],
+                "request": resp[0],
+                "response": resp[1],
             }
             if len(resp) > 2:
                 jsonResp["output"] = resp[2]
@@ -603,6 +596,7 @@ class createSocket(WebSocketHandler):
 
 class autoSocket(WebSocketHandler):
     socketID = None
+
     def open(self):
         if not _check.socket(self):
             logging.error("%d %s (%s)", self.get_status(), "autoSocket denied", self.request.remote_ip)
@@ -625,15 +619,16 @@ class autoSocket(WebSocketHandler):
             self.write_message(resp)
         else:
             self.write_message(json.dumps({
-                "name" : None,
-                "request" : message,
-                "response" : "ERROR",
-                "error" : "No response",
+                "name": None,
+                "request": message,
+                "response": "ERROR",
+                "error": "No response",
             }))
 
     def on_close(self):
         self.application._pyrtSockets.remove("autoSocket", self.socketID)
         logging.info("%d autoSocket closed (%s)", self.get_status(), self.request.remote_ip)
+
 
 class download(tornado.web.RequestHandler):
     def get(self):
@@ -653,16 +648,15 @@ class download(tornado.web.RequestHandler):
             raise tornado.web.HTTPError(410, log_message="Error: Token expired")
         else:
             if os.path.exists(path):
-                #self.set_header("Content-Type", "application/x-bittorrent")
                 self.set_header("Content-Disposition", "attachment; filename=%s" % os.path.basename(path))
                 with open(path) as fd:
                     self.write(fd.read())
             else:
                 raise tornado.web.HTTPError(404, log_message="Error: No such file")
 
-
     def post(self):
         raise tornado.web.HTTPError(405, log_message="Error: POST when GET expected")
+
 
 class autoHandler(tornado.web.RequestHandler):
     def get(self):
@@ -676,18 +670,19 @@ class autoHandler(tornado.web.RequestHandler):
         which = self.get_argument("which", None)
         if not which or which.upper() == "IRC":
             with open("htdocs/autoIRCHTML.tmpl") as doc:
-                self.write(doc.read() % { "PERM_SALT" : self.application._pyrtL.getPermSalt() })
+                self.write(doc.read() % {"PERM_SALT": self.application._pyrtL.getPermSalt()})
         else:
             with open("htdocs/autoRSSHTML.tmpl") as doc:
-                self.write(doc.read() % { "PERM_SALT" : self.application._pyrtL.getPermSalt() })
+                self.write(doc.read() % {"PERM_SALT": self.application._pyrtL.getPermSalt()})
     post = get
+
 
 class SCGIHandler(tornado.web.RequestHandler):
     def post(self):
         c = self.application._pyrtGLOBALS["config"]
         # authenticate
         authenticated = False
-        if self.request.headers.has_key("Authorization"):
+        if "Authorization" in self.request.headers:
             authorization = self.request.headers.get("Authorization")
             if c.get("scgi_method") == "Basic":
                 encoded = authorization.split("Basic ")[1]
@@ -702,9 +697,11 @@ class SCGIHandler(tornado.web.RequestHandler):
             else:
                 # use Digest method
                 params = authorization.split("Digest ")[1].split(",")
-                op = lambda x: x.strip().replace("\"","").split("=")
+
+                def op(x): x.strip().replace("\"", "").split("=")
+
                 params = dict([op(y) for y in params])
-                client_username = params["username"]
+#                client_username = params["username"]
                 client_response = params["response"]
                 client_nonce = params["nonce"]
                 client_nc = params["nc"]
@@ -737,7 +734,6 @@ class SCGIHandler(tornado.web.RequestHandler):
 
                 if digest_KD == client_response:
                     authenticated = True
-
 
         if authenticated:
             xml = self.request.body
@@ -776,20 +772,22 @@ class SCGIHandler(tornado.web.RequestHandler):
 
     get = post
 
+
 class RPCSocket(WebSocketHandler):
     socketID = None
+
     def open(self):
         logging.info("RPCsocket successfully opened")
         self.socketID = self.application._pyrtSockets.add("rpcSocket", self)
         self._RPChandler = rpchandler.RPCHandler(self.application._pyrtLog, self.application._pyrtAJAX, self.application._pyrtRemoteStorage)
 
     def on_message(self, message):
-        #logging.info("RPCsocket message: %s", message)
+#        logging.info("RPCsocket message: %s", message)
         auth = self._RPChandler.get_auth(message)
         if not _check.rpc(self, auth):
             self.application._pyrtLog.error("RPC: message denied - invalid auth key")
             logging.error("rpcSocket message denied - invalid auth key")
-            self.write_message(json.dumps({"response":None,"error":"Invalid Auth"}))
+            self.write_message(json.dumps({"response": None, "error": "Invalid Auth"}))
             try:
                 msg = json.loads(message)
                 _pid = msg["PID"]
@@ -829,6 +827,7 @@ class manifest(tornado.web.RequestHandler):
         self.set_header("Content-Type", "text/cache-manifest")
         self.set_status(200)
 
+
 class manifesthack(tornado.web.RequestHandler):
     """Prevent dynamic index from being cached"""
     def get(self):
@@ -845,6 +844,7 @@ class manifesthack(tornado.web.RequestHandler):
         """
         self.write(html)
 
+
 class Main(object):
     def __init__(self):
         pass
@@ -859,8 +859,8 @@ class Main(object):
         signal.signal(signal.SIGTERM, self.shutdown)
 
         global_config = {
-            "server.socket_host" : str(c.get("host")),
-            "server.socket_port" : c.get("port"),
+            "server.socket_host": str(c.get("host")),
+            "server.socket_port": c.get("port"),
         }
 
         ssl_certificate = c.get("ssl_certificate")
@@ -868,9 +868,9 @@ class Main(object):
         ssl_ca_certs = c.get("ssl_ca_certs")
         if ssl_certificate and ssl_keyfile:
             ssl_options = {
-                "certfile" : ssl_certificate,
-                "keyfile" : ssl_keyfile,
-                "ca_certs" : ssl_ca_certs,
+                "certfile": ssl_certificate,
+                "keyfile": ssl_keyfile,
+                "ca_certs": ssl_ca_certs,
             }
         else:
             ssl_options = None
@@ -880,14 +880,14 @@ class Main(object):
         if os.path.exists(".user.pickle"):
             os.remove(".user.pickle")
         settings = {
-            "static_path" : os.path.join(os.getcwd(), "static"),
-            "gzip" : True,
+            "static_path": os.path.join(os.getcwd(), "static"),
+            "gzip": True,
         }
         application = tornado.web.Application([
-            (r"/css/(.*)", tornado.web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/css/")}),
-            (r"/javascript/(.*)", tornado.web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/javascript/")}),
-            (r"/images/(.*)", tornado.web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/images/") }),
-            (r"/favicons/(.*)", tornado.web.StaticFileHandler, {"path" : os.path.join(os.getcwd(), "static/favicons/") }),
+            (r"/css/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.getcwd(), "static/css/")}),
+            (r"/javascript/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.getcwd(), "static/javascript/")}),
+            (r"/images/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.getcwd(), "static/images/")}),
+            (r"/favicons/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.getcwd(), "static/favicons/")}),
             (r"/cache\.manifest", manifest),
             (r"/manifest-hack", manifesthack),
             (r"/", index),
@@ -908,8 +908,6 @@ class Main(object):
             (r"/downloadcreation", downloadCreation),
             (r"/download", download),
             (r"/scgi", SCGIHandler),
-            #(r"/workersocket", workerSocket),
-            #(r"/test", test),
         ], **settings)
 
         application._pyrtSockets = SocketStorage()
@@ -923,25 +921,23 @@ class Main(object):
         application._pyrtSTATS = statsPage.Index(conf=c, RT=application._pyrtRT, aliases=application._pyrtAliasStorage)
         application._pyrtRemoteStorage = remotes.RemoteStorage(log=application._pyrtLog)
         application._pyrtGLOBALS = {
-            "login" : application._pyrtL,
-            "ajaxPage" : application._pyrtAJAX,
-            "optionsPage" : application._pyrtOPTIONS,
-            "statsPage" : application._pyrtSTATS,
-            "log" : application._pyrtLog,
-            "RT" : application._pyrtRT,
-            "config" : c,
-            "sockets" : application._pyrtSockets,
-            "remoteStorage" : application._pyrtRemoteStorage,
-            "aliasStorage" : application._pyrtAliasStorage,
+            "login": application._pyrtL,
+            "ajaxPage": application._pyrtAJAX,
+            "optionsPage": application._pyrtOPTIONS,
+            "statsPage": application._pyrtSTATS,
+            "log": application._pyrtLog,
+            "RT": application._pyrtRT,
+            "config": c,
+            "sockets": application._pyrtSockets,
+            "remoteStorage": application._pyrtRemoteStorage,
+            "aliasStorage": application._pyrtAliasStorage,
         }
-
 
         http_server = tornado.httpserver.HTTPServer(application, ssl_options=ssl_options, xheaders=True)
         logging.info("Starting webserver on http%s://%s:%i with PID %d", (ssl_options and "s" or ""), global_config["server.socket_host"], global_config["server.socket_port"], os.getpid())
         self._pyrtPID = os.getpid()
 
-        #start listening on 10 UNIX sockets + the dedicated RSS socket
-        sockets = []
+        # start listening on 10 UNIX sockets + the dedicated RSS socket
         s_rss = tornado.netutil.bind_unix_socket(".sockets/rss.interface")
         logging.info("Starting UNIX websocket on .sockets/rss.interface")
         http_server.add_socket(s_rss)

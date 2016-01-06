@@ -2,7 +2,7 @@
 
 """ Copyright (C) 2012 mountainpenguin (pinguino.de.montana@googlemail.com)
     <http://github.com/mountainpenguin/pyrt>
-    
+
     This file is part of pyRT.
 
     pyRT is free software: you can redistribute it and/or modify
@@ -26,15 +26,18 @@ import re
 import system
 from modules.Cheetah.Template import Template
 
+
 class Handler:
     """
         handler class for various reusable sundry operations
     """
     def __init__(self):
-        self.SORT_METHODS = ["name","size","ratio","uprate","uptotal","downrate","downtotal",
-                        "leechs","leechs_connected","leechs_total","seeds",
-                        "seeds_connected","seeds_total", "peers","peers_connected",
-                        "peers_total","priority","status", "tracker","created"]
+        self.SORT_METHODS = [
+            "name", "size", "ratio", "uprate", "uptotal", "downrate", "downtotal",
+            "leechs", "leechs_connected", "leechs_total", "seeds",
+            "seeds_connected", "seeds_total",  "peers", "peers_connected",
+            "peers_total", "priority", "status",  "tracker", "created"
+        ]
 
     def humanTimeDiff(self, secs):
         time_str = ""
@@ -50,11 +53,11 @@ class Handler:
         secs -= hrs * (60 * 60)
         mins = secs / 60
         secs -= mins * 60
-        
+
         time_str += "%02ih %02i:%02i" % (hrs, mins, secs)
-        
+
         return time_str
-        
+
     def humanSize(self, bytes):
         """
             takes a int/float value of <bytes>
@@ -96,7 +99,7 @@ class Handler:
         else:
             status = t.status
         return status
-    
+
     def HTMLredirect(self, url, refresh=0, body=""):
         return """
         <!DOCTYPE HTML>
@@ -112,34 +115,32 @@ class Handler:
             </body>
         </html>
         """ % (refresh, url, body)
-    
+
     def getFileStructure(self, files, rtorrent_root):
         folder = {}
         files_dict = {}
-        priorites = {"high" : 2, "normal" : 1, "off" : 0}
         for file in files:
             random_id = "".join([random.choice(string.letters + string.digits) for i in range(10)])
             files_dict[random_id] = file
             if file.base_path == rtorrent_root:
-                folder["."] = {"___files" : [random_id]}
+                folder["."] = {"___files": [random_id]}
                 break
             else:
                 if os.path.basename(file.base_path) not in folder.keys():
-                    #create folder entry
+                    # create folder entry
                     folder[os.path.basename(file.base_path)] = {
-                        "___files" : [],
-                        "___size" : 0,
-                        "___priority" : [file.priority],
-                        "___completion" : 0,
+                        "___files": [],
+                        "___size": 0,
+                        "___priority": [file.priority],
+                        "___completion": 0,
                     }
-                    
+
                 for index in range(len(file.path_components)):
                     base = os.path.basename(file.base_path)
-                    component = file.path_components[index]
                     if (index + 1) == len(file.path_components):
-                        #it's a file
-                        #last elem
-                        #create entry
+                        # it's a file
+                        # last elem
+                        # create entry
                         branch = folder[base]
                         rec_index = 0
                         while rec_index < index:
@@ -155,22 +156,22 @@ class Handler:
                             branch["___priority"] += [file.priority]
                         branch["___completion"] = int((float(branch["___completion"]) + file.percentage_complete) / 2)
                     else:
-                        #it's a dir
-                        #count index up
+                        # it's a dir
+                        # count index up
                         rec_index = 0
                         branch = folder[base]
                         while rec_index <= index:
                             if file.path_components[rec_index] not in branch.keys():
-                                #create folder entry
+                                # create folder entry
                                 branch[file.path_components[rec_index]] = {
-                                    "___files" : [],
-                                    "___size" : 0,
-                                    "___priority" : [],
-                                    "___completion" : 0,
+                                    "___files": [],
+                                    "___size": 0,
+                                    "___priority": [],
+                                    "___completion": 0,
                                 }
                             branch = branch[file.path_components[rec_index]]
                             rec_index += 1
-                            
+
         return (folder, files_dict)
 
     def fileTreeHTML(self, fileList, RTROOT):
@@ -188,11 +189,11 @@ class Handler:
         DIRECTORY_DIV = """
             <li><span class="folder">%s</span><ul>
         """
-        
+
         def _getFiles(level):
             html = ""
-            files = sorted(level["___files"], key=lambda x:os.path.basename(fileDict[x].abs_path))
-            
+            files = sorted(level["___files"], key=lambda x: os.path.basename(fileDict[x].abs_path))
+
             for file in files:
                 # html += DOCUMENT_DIV % (HIDDEN, os.path.basename(fileDict[file].abs_path), self.humanSize(fileDict[file].size))
                 fileName = os.path.basename(fileDict[file].abs_path)
@@ -201,7 +202,7 @@ class Handler:
                     allowed = " allowed"
                 else:
                     allowed = ""
-                    
+
                 # html += DOCUMENT_DIV % (_getFileType(fileName), fileName, allowed, fileDict[file].abs_path)
                 html += DOCUMENT_DIV % {
                     "type": _getFileType(fileName),
@@ -209,9 +210,9 @@ class Handler:
                     "allowed": allowed,
                     "fullpath": fileDict[file].abs_path,
                 }
-                
+
             return html
-            
+
         def _getDirs(level):
             level_keys = []
             for _key in level.keys():
@@ -227,7 +228,7 @@ class Handler:
                 html += _getFiles(subLevel)
                 html += "</ul></li>"
             return html
-            
+
         def _getFileType(fileName):
             fileType = "file_unknown"
             if fileName.lower().endswith(".avi") or fileName.lower().endswith(".mkv"):
@@ -243,7 +244,7 @@ class Handler:
             elif "." in fileName and fileName.lower().split(".")[-1] in ["mp3", "aac", "flac", "m4a", "ogg"]:
                 fileType = "file_music"
             return fileType
-                
+
         fileStruct, fileDict = self.getFileStructure(fileList, RTROOT)
         root_keys = fileStruct.keys()
         root_keys.sort()
@@ -260,26 +261,26 @@ class Handler:
                 <ul id="files_list" class="filetree">
                     %s
                 </ul>
-                """ % {
-                    "type": _getFileType(fileName),
-                    "name": fileName,
-                    "allowed": allowed,
-                    "fullpath": fileObj.abs_path,
-                }
-                # % (DOCUMENT_DIV % (_getFileType(fileName), fileName, allowed, fileObj.abs_path))
-                # % (DOCUMENT_DIV % ("", os.path.basename(fileObj.abs_path), self.humanSize(fileObj.size)))
+            """ % {
+                "type": _getFileType(fileName),
+                "name": fileName,
+                "allowed": allowed,
+                "fullpath": fileObj.abs_path,
+            }
+            # % (DOCUMENT_DIV % (_getFileType(fileName), fileName, allowed, fileObj.abs_path))
+            # % (DOCUMENT_DIV % ("", os.path.basename(fileObj.abs_path), self.humanSize(fileObj.size)))
         else:
-            #walk through dictionary
-            #should only ever be one root_key, "." or the base directory
+            # walk through dictionary
+            # should only ever be one root_key, "." or the base directory
             html = "<ul class=\"filetree\">"
             root = fileStruct[root_keys[0]]
-            #html += DIRECTORY_DIV % ("", root_keys[0], self.humanSize(root["___size"]))
+            # html += DIRECTORY_DIV % ("", root_keys[0], self.humanSize(root["___size"]))
             html += DIRECTORY_DIV % (root_keys[0])
             html += _getDirs(root)
             html += _getFiles(root)
             html += "</ul></li></ul>"
             return html
-        
+
     def sortTorrents(self, torrentList, sort=None, reverse=False):
         if sort not in self.SORT_METHODS:
             sort = None
@@ -287,65 +288,65 @@ class Handler:
         if not sort:
             torrentList.reverse()
         elif sort == "name":
-            torrentList = sorted(torrentList, key=lambda x:x.name)
+            torrentList = sorted(torrentList, key=lambda x: x.name)
         elif sort == "size":
-            torrentList = sorted(torrentList, key=lambda x:x.size)
+            torrentList = sorted(torrentList, key=lambda x: x.size)
         elif sort == "ratio":
-            torrentList = sorted(torrentList, key=lambda x:x.ratio)
+            torrentList = sorted(torrentList, key=lambda x: x.ratio)
         elif sort == "uprate":
-            torrentList = sorted(torrentList, key=lambda x:x.up_rate)
+            torrentList = sorted(torrentList, key=lambda x: x.up_rate)
             torrentList.reverse()
         elif sort == "downrate":
-            torrentList = sorted(torrentList, key=lambda x:x.down_rate)
+            torrentList = sorted(torrentList, key=lambda x: x.down_rate)
         elif sort == "uptotal":
-            torrentList = sorted(torrentList, key=lambda x:x.up_total)
+            torrentList = sorted(torrentList, key=lambda x: x.up_total)
         elif sort == "downtotal":
-            torrentList = sorted(torrentList, key=lambda x:x.down_total)
+            torrentList = sorted(torrentList, key=lambda x: x.down_total)
         elif sort == "leechs" or sort == "leechs_connected":
-            torrentList = sorted(torrentList, key=lambda x:x.peers_connected)
+            torrentList = sorted(torrentList, key=lambda x: x.peers_connected)
         elif sort == "leechs_total":
-            torrentList = sorted(torrentList, key=lambda x:x.peers_total)
+            torrentList = sorted(torrentList, key=lambda x: x.peers_total)
         elif sort == "seeds" or sort == "seeds_connected":
-            torrentList = sorted(torrentList, key=lambda x:x.seeds_connected)
+            torrentList = sorted(torrentList, key=lambda x: x.seeds_connected)
         elif sort == "seeds_total":
-            torrentList = sorted(torrentList, key=lambda x:x.seeds_total)
+            torrentList = sorted(torrentList, key=lambda x: x.seeds_total)
         elif sort == "peers" or sort == "peers_connected":
-            torrentList = sorted(torrentList, key=lambda x:x.peers_connected + x.seeds_connected)
+            torrentList = sorted(torrentList, key=lambda x: x.peers_connected + x.seeds_connected)
         elif sort == "peers_total":
-            torrentList = sorted(torrentList, key=lambda x:x.peers_total + x.seeds_total)
+            torrentList = sorted(torrentList, key=lambda x: x.peers_total + x.seeds_total)
         elif sort == "priority":
-            torrentList = sorted(torrentList, key=lambda x:x.priority)
+            torrentList = sorted(torrentList, key=lambda x: x.priority)
         elif sort == "status":
-            torrentList = sorted(torrentList, key=lambda x:x.status)
+            torrentList = sorted(torrentList, key=lambda x: x.status)
         elif sort == "tracker":
-            #sort by the first listed tracker only
-            torrentList = sorted(torrentList, key=lambda x:x.trackers[0].url)
+            # sort by the first listed tracker only
+            torrentList = sorted(torrentList, key=lambda x: x.trackers[0].url)
         elif sort == "created":
-            torrentList = sorted(torrentList, key=lambda x:x.created)
-      
+            torrentList = sorted(torrentList, key=lambda x: x.created)
+
         if reverse:
             torrentList.reverse()
-            
+
         return torrentList
-        
+
     def torrentHTML(self, torrentList, sort, view, reverse=None):
         """
             Sorts a list of torrent_ids with default information
             Arguments:
-                torrentList = list : rtorrent.Torrent objects
-                sort = str : value to sort on
-                reverse = boolean : reverse or not
+                torrentList = list: rtorrent.Torrent objects
+                sort = str: value to sort on
+                reverse = boolean: reverse or not
             Sort Options:
                 name, size, ratio, uprate, uptotal,
                 downrate, downtotal, leechs, leechs_connected,
                 leechs_total, seeds, seeds_connected,
                 seeds_total, peers, peers_connected,
                 peers_total, priority, status, tracker, created
-                
-                leechs, seeds, and peers are shorthand for leechs_connected, 
+
+                leechs, seeds, and peers are shorthand for leechs_connected,
                 seeds_connected and peers_connected respectively
         """
-        
+
         torrentList = self.sortTorrents(torrentList, sort, reverse)
         updated_torrentList = []
         for t in torrentList:
@@ -357,16 +358,16 @@ class Handler:
             t.t_downrate = self.humanSize(t.down_rate)
             t.t_percentage = int((float(t.completed_bytes) / t.size) * 100)
             updated_torrentList += [t]
-        
+
         searchList = [{
-            "global" : system.get_global(),
-            "torrent_list" : updated_torrentList,
-            "this_view" : view,
-            "this_sort" : sort,
-            "this_reverse" : reverse,
-            "self" : self,
-            
+            "global": system.get_global(),
+            "torrent_list": updated_torrentList,
+            "this_view": view,
+            "this_sort": sort,
+            "this_reverse": reverse,
+            "self": self,
+
         }]
-        
+
         HTML = Template(file="htdocs/torrentHTML.tmpl", searchList=searchList).respond()
         return HTML

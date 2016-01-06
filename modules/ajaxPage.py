@@ -3,7 +3,7 @@
 
 """ Copyright (C) 2012 mountainpenguin (pinguino.de.montana@googlemail.com)
     <http://github.com/mountainpenguin/pyrt>
-    
+
     This file is part of pyRT.
 
     pyRT is free software: you can redistribute it and/or modify
@@ -21,11 +21,9 @@
 """
 
 from __future__ import print_function
-import cgi
 import json
 import time
 import os
-import sys
 import shutil
 import bencode
 import base64
@@ -43,14 +41,16 @@ import hashlib
 
 from modules.Cheetah.Template import Template
 from modules import rtorrent, torrentHandler, login
-from modules import config, system, weblog
+from modules import config, system
+
 
 class Handle(object):
     def __init__(self, handler, need_args=[], opt_args=[]):
         self.run = handler
         self.need_args = need_args
         self.opt_args = opt_args
-        
+
+
 class Ajax:
     def __init__(self, conf=config.Config(), RT=None, Log=None, Sockets=None, Aliases=None, DLHandler=None):
         self.config = conf
@@ -65,48 +65,47 @@ class Ajax:
         self.aliases = Aliases
         self.downloadHandler = DLHandler
         self.public_commands = {
-            "get_torrent_info" : Handle(self.get_torrent_info, ["torrent_id"], ["html"]),
-            "get_info_multi" : Handle(self.get_info_multi, ["view"], ["sortby", "reverse", "drop_down_ids"]),
-            "get_torrent_row" : Handle(self.get_torrent_row, ["torrent_id"]),
-            "pause_torrent" : Handle(self.pause_torrent, ["torrent_id"]),
-            "stop_torrent" : Handle(self.stop_torrent, ["torrent_id"]),
-            "start_torrent" : Handle(self.start_torrent, ["torrent_id"]),
-            "remove_torrent" : Handle(self.remove_torrent, ["torrent_id"]),
-            "delete_torrent" : Handle(self.delete_torrent, ["torrent_id"]),
-            "hash_torrent" : Handle(self.hash_torrent, ["torrent_id"]),
-            "get_file" : Handle(self.get_file, ["torrent_id", "filepath"]),
-            "upload_torrent_socket" : Handle(self.upload_torrent_socket, ["torrent"], ["start"]),
-            "upload_torrent" : Handle(self.upload_torrent, [], ["torrent", "start"]),
-            "get_feeds" : Handle(self.get_feeds),
-            "start_batch" : Handle(self.start_batch, ["torrentIDs"]),
-            "pause_batch" : Handle(self.pause_batch, ["torrentIDs"]),
-            "stop_batch" : Handle(self.stop_batch, ["torrentIDs"]),
-            "remove_batch" : Handle(self.remove_batch, ["torrentIDs"]),
-            "delete_batch" : Handle(self.delete_batch, ["torrentIDs"]),
-            "get_tracker_favicon" : Handle(self.get_tracker_favicon, ["torrent_id"]),
-            "verify_conf_value" : Handle(self.verify_conf_value, ["key", "value"]),
-            "set_config_multiple" : Handle(self.set_config_multiple, ["keys","values"]),
-            "get_refresh_rate" : Handle(self.getRefreshRate),
-            "move_tracker" : Handle(self.moveTracker, ["url", "target_alias"]),
-            "download_file" : Handle(self.downloadGen, ["torrentID", "path"]),
+            "get_torrent_info": Handle(self.get_torrent_info, ["torrent_id"], ["html"]),
+            "get_info_multi": Handle(self.get_info_multi, ["view"], ["sortby", "reverse", "drop_down_ids"]),
+            "get_torrent_row": Handle(self.get_torrent_row, ["torrent_id"]),
+            "pause_torrent": Handle(self.pause_torrent, ["torrent_id"]),
+            "stop_torrent": Handle(self.stop_torrent, ["torrent_id"]),
+            "start_torrent": Handle(self.start_torrent, ["torrent_id"]),
+            "remove_torrent": Handle(self.remove_torrent, ["torrent_id"]),
+            "delete_torrent": Handle(self.delete_torrent, ["torrent_id"]),
+            "hash_torrent": Handle(self.hash_torrent, ["torrent_id"]),
+            "get_file": Handle(self.get_file, ["torrent_id", "filepath"]),
+            "upload_torrent_socket": Handle(self.upload_torrent_socket, ["torrent"], ["start"]),
+            "upload_torrent": Handle(self.upload_torrent, [], ["torrent", "start"]),
+            "get_feeds": Handle(self.get_feeds),
+            "start_batch": Handle(self.start_batch, ["torrentIDs"]),
+            "pause_batch": Handle(self.pause_batch, ["torrentIDs"]),
+            "stop_batch": Handle(self.stop_batch, ["torrentIDs"]),
+            "remove_batch": Handle(self.remove_batch, ["torrentIDs"]),
+            "delete_batch": Handle(self.delete_batch, ["torrentIDs"]),
+            "get_tracker_favicon": Handle(self.get_tracker_favicon, ["torrent_id"]),
+            "verify_conf_value": Handle(self.verify_conf_value, ["key", "value"]),
+            "set_config_multiple": Handle(self.set_config_multiple, ["keys", "values"]),
+            "get_refresh_rate": Handle(self.getRefreshRate),
+            "move_tracker": Handle(self.moveTracker, ["url", "target_alias"]),
+            "download_file": Handle(self.downloadGen, ["torrentID", "path"]),
         }
-        
+
     def has_command(self, commandstr):
         if commandstr.lower() in self.public_commands:
             return True
         else:
             self.log.error("AJAX: unknown command '%s'", commandstr)
             return False
-        
+
     def validate_command(self, commandstr, parsed_queries):
         req_args = self.public_commands[commandstr.lower()].need_args
-        opt_args = self.public_commands[commandstr.lower()].opt_args
         for r_a in req_args:
             if r_a not in parsed_queries or not parsed_queries[r_a]:
                 self.log.error("AJAX: too few arguments for request '%s'", commandstr)
                 return False
         return True
-            
+
     def handle(self, commandstr, qs):
         req_args = self.public_commands[commandstr.lower()].need_args
         opt_args = self.public_commands[commandstr.lower()].opt_args
@@ -114,67 +113,67 @@ class Ajax:
         o_args = {}
         for x in opt_args:
             y = qs.get(x, "nosucharg")
-            if y != "nosucharg": #allow None, False, 0, etc.
+            if y != "nosucharg":  # allow None, False, 0, etc.
                 o_args[x] = y
-                
+
         return self.public_commands[commandstr.lower()].run(*r_args, **o_args)
-    
+
     def _downloadAuth(self, torrentID, path):
         randstring = hashlib.sha512("".join([random.choice(string.letters+string.digits) for x in range(30)])).hexdigest()
         plusTid = hashlib.sha512(randstring + torrentID).hexdigest()
         auth = hashlib.sha512(plusTid + path).hexdigest()
         # associate auth token with specified path
         self.downloadHandler.addToken(auth, path)
-        
+
         return auth
-        
+
     def downloadGen(self, torrentID, path):
         files = self.RT.getFiles(torrentID)
         for f in files:
             if f.abs_path == path:
                 return self._downloadAuth(torrentID, path)
         return False
-        
+
     def mbtob(self, value):
         """
             Converts MiB to B
         """
         return int(value)*1024*1024
-        
+
     def kbtob(self, value):
         """
             Converts KiB to B
         """
         return int(value)*1024
-        
+
     def throttleUp(self, value):
         self.log.info("AJAX: global upload throttle set to %s", value)
         return self.RT.setGlobalUpThrottle(self.kbtob(value))
-        
+
     def throttleDown(self, value):
         self.log.info("AJAX: global download throttle set to %s", value)
         return self.RT.setGlobalDownThrottle(self.kbtob(value))
-        
+
     def maxFileSize(self, value):
         self.log.info("AJAX: global max file size set to %s", value)
         return self.RT.setGlobalMaxFileSize(self.mbtob(value))
-        
+
     def mem(self, value):
         self.log.info("AJAX: global max memory usage set to %s", value)
         return self.RT.setGlobalMaxMemoryUsage(self.mbtob(value))
-        
+
     def rBuffer(self, value):
         self.log.info("AJAX: global receive buffer size set to %sB (%sKiB)", self.kbtob(value), value)
         return self.RT.setGlobalReceiveBufferSize(self.kbtob(value))
-        
+
     def sBuffer(self, value):
         self.log.info("AJAX: global send buffer size set to %sB (%sKiB)", self.kbtob(value), value)
         return self.RT.setGlobalSendBufferSize(self.kbtob(value))
-        
+
     def readahead(self, value):
         self.log.info("AJAX: global hash readahead size set to %sB (%sMiB)", self.mbtob(value), value)
         return self.RT.setGlobalHashReadAhead(self.mbtob(value))
-        
+
     def set_config_multiple(self, keys, values):
         """
             pyrt-oldpass
@@ -202,33 +201,32 @@ class Ajax:
             performance-sendbuffer
             performance-readahead
         """
-        
+
         actions = {
-            #key : function
-            "pyrt-refreshrate" : self._setRefreshRate,
-            #"pyrt-port" : ,
-            "general-dir" : self.RT.setGlobalRootPath,
-            "general-moveto" : self.RT.setGlobalMoveTo,
-            "general-movecheck" : self.RT.removeGlobalMoveTo,
-            "throttle-up" : self.throttleUp,
-            "throttle-down" : self.throttleDown,
-            "network-simuluploads" : self.RT.setGlobalMaxUploads,
-            "network-simuldownloads" : self.RT.setGlobalMaxDownloads,
-            "network-maxpeers" : self.RT.setGlobalMaxPeers,
-            "network-maxpeersseed" : self.RT.setGlobalMaxPeersSeed,
-            "network-maxopensockets" : self.RT.setGlobalMaxOpenSockets,
-            "network-maxopenhttp" : self.RT.setGlobalMaxOpenHttp,
-            "performance-maxmemory" : self.mem,
-            "performance-maxfilesize" : self.maxFileSize,
-            "performance-maxopenfiles" : self.RT.setGlobalMaxOpenFiles,
-            "performance-receivebuffer" : self.rBuffer,
-            "performance-sendbuffer" : self.sBuffer,
-            "performance-readahead" : self.RT.setGlobalHashReadAhead,
+            # key: function
+            "pyrt-refreshrate": self._setRefreshRate,
+            "general-dir": self.RT.setGlobalRootPath,
+            "general-moveto": self.RT.setGlobalMoveTo,
+            "general-movecheck": self.RT.removeGlobalMoveTo,
+            "throttle-up": self.throttleUp,
+            "throttle-down": self.throttleDown,
+            "network-simuluploads": self.RT.setGlobalMaxUploads,
+            "network-simuldownloads": self.RT.setGlobalMaxDownloads,
+            "network-maxpeers": self.RT.setGlobalMaxPeers,
+            "network-maxpeersseed": self.RT.setGlobalMaxPeersSeed,
+            "network-maxopensockets": self.RT.setGlobalMaxOpenSockets,
+            "network-maxopenhttp": self.RT.setGlobalMaxOpenHttp,
+            "performance-maxmemory": self.mem,
+            "performance-maxfilesize": self.maxFileSize,
+            "performance-maxopenfiles": self.RT.setGlobalMaxOpenFiles,
+            "performance-receivebuffer": self.rBuffer,
+            "performance-sendbuffer": self.sBuffer,
+            "performance-readahead": self.RT.setGlobalHashReadAhead,
         }
-        #"pyrt-refreshrate": "unknown", "pyrt-newpass": "unknown", "pyrt-newpassconf": "unknown", "pyrt-oldpass": "unknown", "pyrt-port": "unknown"
-        
+        # "pyrt-refreshrate": "unknown", "pyrt-newpass": "unknown", "pyrt-newpassconf": "unknown", "pyrt-oldpass": "unknown", "pyrt-port": "unknown"
+
         responses = {}
-        
+
         ks = keys.split(",")
         vs = values.split(",")
         kvdict = dict([(ks[i], urllib.unquote(vs[i])) for i in range(len(ks))])
@@ -247,7 +245,7 @@ class Ajax:
                 else:
                     responses[k] = "error required: pyrt-oldpass, pyrt-newpass"
             elif k == "network-portto":
-                #require network-portto & network-portfrom
+                # require network-portto & network-portfrom
                 if "network-portto" in ks and "network-portfrom" in ks:
                     responses["network-port"] = self.RT.setGlobalPortRange("%s-%s" % (kvdict["network-portfrom"], kvdict["network-portto"]))
                 else:
@@ -261,46 +259,43 @@ class Ajax:
             else:
                 responses[k] = "unknown"
         return json.dumps(responses)
-            
+
     def _setRefreshRate(self, val):
         returnval = self.config.set("refresh", int(val))
         if returnval == int(val):
             sockets = self.sockets.getType("ajaxSocket")
             for sock in sockets:
                 resp = {
-                    "request" : "get_refresh_rate",
-                    "response" : returnval,
-                    "error" : None,
+                    "request": "get_refresh_rate",
+                    "response": returnval,
+                    "error": None,
                 }
                 sock.socketObject.write_message(json.dumps(resp))
-                
-        #resp = {
-        #    "request" : request,
-        #    "response" : response,
-        #    "error" : error,
-        #}
-        #resp.update(kwargs)
-        #self.write_message(json.dumps(resp))
-        
+
+#        resp = {
+#            "request": request,
+#            "response": response,
+#            "error": error,
+#        }
+#        resp.update(kwargs)
+        self.write_message(json.dumps(resp))
+
     def getRefreshRate(self):
         return self.config.get("refresh")
-    
+
     def verify_conf_value(self, key, value):
         if key == "pyrt-oldpass":
             if self.login.checkPassword(value):
                 return "RESPONSE/OK/OK"
             else:
-                currpass = self.config.get("password")
-                salt = base64.b64decode(currpass.split("$")[1])
                 return "RESPONSE/NO/Incorrect Password"
         elif key in ["pyrt-refreshrate", "throttle-up", "throttle-down", "network-simuluploads",
-                     "network-simuldownloads","network-maxpeers","network-maxpeersseed",
-                     "network-maxopensockets","network-maxopenhttp","performance-maxmemory",
-                     "performance-maxfilesize","performance-maxopenfiles",
-                     "performance-receivebuffer","performance-sendbuffer",
-                     "performance-readahead","general-stopat"]:
+                     "network-simuldownloads", "network-maxpeers", "network-maxpeersseed",
+                     "network-maxopensockets", "network-maxopenhttp", "performance-maxmemory",
+                     "performance-maxfilesize", "performance-maxopenfiles",
+                     "performance-receivebuffer", "performance-sendbuffer",
+                     "performance-readahead", "general-stopat"]:
             try:
-                test = int(value)
                 return "RESPONSE/OK/OK"
             except ValueError:
                 return "RESPONSE/NO/Value must be an integer"
@@ -329,7 +324,7 @@ class Ajax:
                     return "RESPONSE/NO/Restricted port"
                 else:
                     return "RESPONSE/OK/OK"
-        elif key in ["general-dir","general-moveto"]:
+        elif key in ["general-dir", "general-moveto"]:
             if os.path.exists(value):
                 if not os.path.isdir(value):
                     return "RESPONSE/NO/Not a directory"
@@ -341,10 +336,10 @@ class Ajax:
                 return "RESPONSE/NO/No such path"
         else:
             return "RESPONSE/NO/Unknown key"
-        
+
     def get_feeds(self):
         return "Nothing yet!"
-    
+
     def _peerProcess(self, peer):
         peer.dlrate = self.handler.humanSize(peer.down_rate)
         peer.dltot = self.handler.humanSize(peer.down_total)
@@ -354,7 +349,7 @@ class Ajax:
         peer.total = self.handler.humanSize(peer.peer_total)
         return peer.__dict__
 
-    def get_torrent_info(self, torrent_id, html=None ):
+    def get_torrent_info(self, torrent_id, html=None):
         c = time.localtime(self.RT.getCreationDate(torrent_id))
         created = time.strftime("%d/%m/%Y %H:%M:%S", c)
         size = self.RT.getSizeBytes(torrent_id)
@@ -365,36 +360,36 @@ class Ajax:
             completed = False
         peers = self.RT.getPeers(torrent_id)
         jsonObject = {
-            "name" : self.RT.getNameByID(torrent_id),
-            "uploaded" : self.handler.humanSize(self.RT.getUploadBytes(torrent_id)),
-            "downloaded" : self.handler.humanSize(self.RT.getDownloadBytes(torrent_id)),
-            "peers" : len(peers),
-            "torrent_id" : torrent_id,
-            "created" : created,
-            "size" : self.handler.humanSize(size),
-            "ratio" : "%.02f" % (float(self.RT.getRatio(torrent_id))/1000),
-            "percentage" : "%i" % ((float(self.RT.getCompletedBytes(torrent_id)) / size) * 100),
-            "completed" : completed,
-            "trackers" : [x.__dict__ for x in self.RT.getTrackers(torrent_id)],
-            "peer_details" : [self._peerProcess(x) for x in peers],
-            "file_tree" : self.handler.fileTreeHTML(self.RT.getFiles(torrent_id), self.RT.getRootDir()),
+            "name": self.RT.getNameByID(torrent_id),
+            "uploaded": self.handler.humanSize(self.RT.getUploadBytes(torrent_id)),
+            "downloaded": self.handler.humanSize(self.RT.getDownloadBytes(torrent_id)),
+            "peers": len(peers),
+            "torrent_id": torrent_id,
+            "created": created,
+            "size": self.handler.humanSize(size),
+            "ratio": "%.02f" % (float(self.RT.getRatio(torrent_id))/1000),
+            "percentage": "%i" % ((float(self.RT.getCompletedBytes(torrent_id)) / size) * 100),
+            "completed": completed,
+            "trackers": [x.__dict__ for x in self.RT.getTrackers(torrent_id)],
+            "peer_details": [self._peerProcess(x) for x in peers],
+            "file_tree": self.handler.fileTreeHTML(self.RT.getFiles(torrent_id), self.RT.getRootDir()),
         }
         if not html:
             return json.dumps(jsonObject)
         else:
             return Template(file="htdocs/dropDownHTML.tmpl", searchList=jsonObject).respond()
-        
+
     def pause_torrent(self, torrent_id):
         try:
             self.RT.pause(torrent_id)
         except:
             self.log.error("AJAX: torrent pause error (ID: %s)", torrent_id)
-            logging.error("%s %s","AJAX error - torrent could not be paused", traceback.format_exc())
+            logging.error("%s %s", "AJAX error - torrent could not be paused", traceback.format_exc())
             return "ERROR"
         else:
             self.log.info("AJAX: torrent paused (ID: %s)", torrent_id)
             return "OK"
-    
+
     def stop_torrent(self, torrent_id):
         try:
             self.RT.stop(torrent_id)
@@ -405,7 +400,7 @@ class Ajax:
         else:
             self.log.info("AJAX: torrent stopped (ID: %s)", torrent_id)
             return "OK"
-        
+
     def start_torrent(self, torrent_id):
         try:
             self.RT.resume(torrent_id)
@@ -416,7 +411,7 @@ class Ajax:
         else:
             self.log.info("AJAX: torrent resumed (ID: %s)", torrent_id)
             return "OK"
-        
+
     def remove_torrent(self, torrent_id):
         try:
             self.RT.remove(torrent_id)
@@ -438,7 +433,7 @@ class Ajax:
         else:
             self.log.info("AJAX: torrent rehash started (ID: %s)", torrent_id)
             return "OK"
-            
+
     def _remove_files(self, torrent_id, path):
         if os.path.isfile(path):
             os.remove(path)
@@ -446,14 +441,13 @@ class Ajax:
             shutil.rmtree(path)
         self.log.info("AJAX: torrent deleted (ID: %s)", torrent_id)
         self.remove_torrent(torrent_id)
-            
-        
+
     def delete_torrent(self, torrent_id):
         response = self.stop_torrent(torrent_id)
         if response == "OK":
             files = self.RT.getFiles(torrent_id)
             if len(files) == 1:
-                #single file
+                # single file
                 rootDir = os.path.abspath(os.path.expanduser(os.path.expandvars(self.RT.getRootDir())))
                 if files[0].base_path == rootDir:
                     delete = files[0].abs_path
@@ -461,7 +455,7 @@ class Ajax:
                     delete = files[0].base_path
             else:
                 delete = files[0].base_path
-            
+
             if not os.path.exists(delete):
                 self.log.error("AJAX: torrent delete error - no such file '%s' (ID: %s)", delete, torrent_id)
                 return "ERROR/no such file"
@@ -486,32 +480,31 @@ class Ajax:
             return "ERROR/File not complete"
         fileContents = open(filepath).read()
         return fileContents
-    
+
     def load_from_remote(self, filename, remotename, start=True):
         """Loads a torrent from a file that has been fetched by a remote method"""
-        #self.log.debug("File load request from remote handler %s (filename %s)", remotename, filename)
+#        self.log.debug("File load request from remote handler %s (filename %s)", remotename, filename)
         if start:
             self.RT.start_from_file(os.path.join(os.getcwd(), "torrents/%s" % filename))
         else:
             self.RT.load_from_file(os.path.join(os.getcwd(), "torrents/%s" % filename))
         self.log.info("AJAX: '%s' (downloaded via remote '%s') loaded%s successfully", filename, remotename, (start and " and started" or ""))
         return "OK"
-    
+
     def load_from_rss(self, filename, rss_alias, rss_id, start=True):
         """Loads a torrent from a file that has been fetched from an RSS feed"""
-        #self.log.debug("File load request from RSS feed (id: %s, alias: %s), filename: %s", rss_id, rss_alias, filename)
+#        self.log.debug("File load request from RSS feed (id: %s, alias: %s), filename: %s", rss_id, rss_alias, filename)
         if start:
             self.RT.start_from_file(os.path.join(os.getcwd(), "torrents/%s" % filename))
         else:
             self.RT.load_from_file(os.path.join(os.getcwd(), "torrents/%s" % filename))
         self.log.info("AJAX: '%s' (downloaded via RSS feed [id: %s, alias: %s]) loaded%s successfully", filename, rss_id, rss_alias, (start and " and started" or ""))
-        
 
     def upload_torrent_socket(self, torrent, start=True):
         fileName = torrent["filename"]
         inFile = torrent["content"]
         try:
-            decoded = bencode.bdecode(inFile)
+            bencode.bdecode(inFile)
         except:
             self.log.error("AJAX: '%s' (uploaded through fileSocket) is not a valid torrent file", fileName)
             return "ERROR/Invalid torrent file"
@@ -525,24 +518,24 @@ class Ajax:
                 self.RT.load_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
             self.log.info("AJAX: '%s' (uploaded through fileSocket) loaded%s successfully", fileName, (start and " and started" or ""))
             return "OK"
-        
+
     def upload_torrent(self, torrent=None, start=None):
         if type(torrent) is list:
             torrent = torrent[0]
         fileName = unicode(torrent["filename"])
         inFile = torrent["body"]
         try:
-            decoded = bencode.bdecode(inFile)
+            bencode.bdecode(inFile)
         except:
-            #Invalid torrent
+            # Invalid torrent
             self.log.error("AJAX: '%s' (uploaded via /ajax) is not a valid torrent file", fileName)
             return "ERROR/Invalid torrent file"
         else:
-            #save file in /torrents
+            # save file in /torrents
             newFile = open("torrents/%s" % (fileName.encode("utf-8")), "wb")
             newFile.write(inFile)
             newFile.close()
-            #add file to rtorrent
+            # add file to rtorrent
             if start:
                 self.RT.start_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
             else:
@@ -559,18 +552,17 @@ class Ajax:
                 drop_down_ids = drop_down_ids[0].split(",")
             for t_id in drop_down_ids:
                 drop_downs[t_id] = self.get_torrent_info(t_id, html="yes please")
-            
-        #wanted:
+
+        # wanted:
         #   system info
         #   ratio, dl speed, ul speed, status
         torrentList = self.handler.sortTorrents(self.RT.getTorrentList2(view), sortby, reverse)
         returnDict = {
-            "torrents" : {},
-            "system" : system.get_global(encode_json=True),
-            #"system" : base64.b64encode(system.generalHTML()),
-            "torrent_index" : [x.torrent_id for x in torrentList],
-            "drop_downs" : drop_downs,
-            "drop_down_keys" : drop_downs.keys(),
+            "torrents": {},
+            "system": system.get_global(encode_json=True),
+            "torrent_index": [x.torrent_id for x in torrentList],
+            "drop_downs": drop_downs,
+            "drop_down_keys": drop_downs.keys(),
         }
         for t in torrentList:
             if t.completed_bytes >= t.size:
@@ -580,23 +572,23 @@ class Ajax:
                 completed = False
                 perc = int((float(t.completed_bytes) / t.size)*100)
             returnDict["torrents"][t.torrent_id] = {
-                "ratio" : "%.02f" % (float(t.ratio)/1000),
-                "uprate" : self.handler.humanSize(t.up_rate),
-                "downrate" : self.handler.humanSize(t.down_rate),
-                "status" : self.handler.getState(t),
-                "name" : t.name,
-                "size" : self.handler.humanSize(t.size),
-                "up_total" : self.handler.humanSize(t.up_total),
-                "down_total" : self.handler.humanSize(t.down_total),
-                "completed" : completed,
-                "percentage" : perc,
+                "ratio": "%.02f" % (float(t.ratio)/1000),
+                "uprate": self.handler.humanSize(t.up_rate),
+                "downrate": self.handler.humanSize(t.down_rate),
+                "status": self.handler.getState(t),
+                "name": t.name,
+                "size": self.handler.humanSize(t.size),
+                "up_total": self.handler.humanSize(t.up_total),
+                "down_total": self.handler.humanSize(t.down_total),
+                "completed": completed,
+                "percentage": perc,
             }
         return json.dumps(returnDict)
-        
+
     def get_torrent_row(self, torrent_id):
         torrentObj = self.RT.getTorrentObj_less(torrent_id)
         return self.handler.getTorrentRow(torrentObj)
-        
+
     def start_batch(self, torrentListStr):
         torrentList = torrentListStr.split(",")
         respList = []
@@ -604,28 +596,28 @@ class Ajax:
             r = self.start_torrent(torrent_id)
             respList.append(r)
         return json.dumps(respList)
-            
+
     def pause_batch(self, torrentListStr):
         torrentList = torrentListStr.split(",")
         respList = []
         for torrent_id in torrentList:
             respList.append(self.pause_torrent(torrent_id))
         return json.dumps(respList)
-            
+
     def stop_batch(self, torrentListStr):
         torrentList = torrentListStr.split(",")
         respList = []
         for torrent_id in torrentList:
             respList.append(self.stop_torrent(torrent_id))
         return json.dumps(respList)
-            
+
     def remove_batch(self, torrentListStr):
         torrentList = torrentListStr.split(",")
         respList = []
         for torrent_id in torrentList:
             respList.append(self.remove_torrent(torrent_id))
         return json.dumps(respList)
-            
+
     def delete_batch(self, torrentListStr):
         torrentList = torrentListStr.split(",")
         respList = []
@@ -656,4 +648,3 @@ class Ajax:
         except:
             print(traceback.print_exc())
             return "NO"
-        

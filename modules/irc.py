@@ -19,7 +19,6 @@
     along with pyRT.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from modules.irclib import irclib
 from modules.irclib import ircbot
 from modules import websocket
 from modules import remotes
@@ -31,29 +30,36 @@ import json
 import re
 import traceback
 import time
+import sys
 
 
 class IRCError(Exception):
     def __init__(self, value):
         self.val = value
+
     def __str__(self):
         return repr(self.val)
+
     def __repr__(self):
         return "IRCError: %s" % self.val
+
 
 class SettingsError(Exception):
     def __init__(self, value):
         self.val = value
+
     def __str__(self):
         return repr(self.val)
+
     def __repr__(self):
         return "SettingsError: %s" % self.val
+
 
 class _ModularBot(ircbot.SingleServerIRCBot):
     def shutdown(self, signalnum, stackframe):
         self.RPC.RPCCommand("log", "info", "IRCbot #%d: shutting down", self.PID)
-        #if self.IS_REGISTERED:
-        #    self.RPC.RPCCommand("deregister", self.config.name, self.PID)
+#        if self.IS_REGISTERED:
+#            self.RPC.RPCCommand("deregister", self.config.name, self.PID)
         try:
             os.remove("proc/bots/%d.pid" % self.PID)
         except:
@@ -142,23 +148,23 @@ class _ModularBot(ircbot.SingleServerIRCBot):
         try:
             for pos, neg, sizelim in self.config.filters:
                 contTrue = 0
-                #all filters have to match
+                # all filters have to match
                 for regex in pos:
-                    #self.RPC.RPCCommand("publicLog", "debug", "%s IRCBot (#%d): checking +ve filter [%s]", self.config.name, self.PID, regex.pattern)
+#                    self.RPC.RPCCommand("publicLog", "debug", "%s IRCBot (#%d): checking +ve filter [%s]", self.config.name, self.PID, regex.pattern)
                     if not regex.search(event.arguments()[0]):
-                        #self.RPC.RPCCommand("publicLog","debug", "%s IRCBot (#%d): +ve filter [%s] didn't match", self.config.name, self.PID, regex.pattern)
+#                        self.RPC.RPCCommand("publicLog","debug", "%s IRCBot (#%d): +ve filter [%s] didn't match", self.config.name, self.PID, regex.pattern)
                         break
                     else:
                         contTrue += 1
                 if contTrue != len(pos):
                     continue
 
-                #one match = ignore message
+                # one match = ignore message
                 cont = True
                 for regex in neg:
-                    #self.RPC.RPCCommand("publicLog", "debug", "%s IRCBot (#%d): checking -ve filter [%s]", self.config.name, self.PID, regex.pattern)
+#                    self.RPC.RPCCommand("publicLog", "debug", "%s IRCBot (#%d): checking -ve filter [%s]", self.config.name, self.PID, regex.pattern)
                     if regex.search(event.arguments()[0]):
-                        #self.RPC.RPCCommand("publicLog","debug", "%s IRCBot (#%d): negative filter [%s] matched", self.config.name, self.PID, regex.pattern)
+#                        self.RPC.RPCCommand("publicLog","debug", "%s IRCBot (#%d): negative filter [%s] matched", self.config.name, self.PID, regex.pattern)
                         cont = False
                         break
                     else:
@@ -167,11 +173,11 @@ class _ModularBot(ircbot.SingleServerIRCBot):
                 if not cont:
                     continue
 
-                #self.RPC.RPCCommand("publicLog", "debug", "%s IRCBot (#%d): checking matcher [%s]", self.config.name, self.PID, self.config.matcher.pattern)
+#                self.RPC.RPCCommand("publicLog", "debug", "%s IRCBot (#%d): checking matcher [%s]", self.config.name, self.PID, self.config.matcher.pattern)
                 idmatch = self.config.matcher.search(event.arguments()[0])
                 if idmatch:
                     torrentdata = idmatch.groups()
-                    #self.RPC.RPCCommand("log", "debug", "%s IRCbot (#%d): got filter match in source handler '%s' for torrentid '%s'", self.config.name, self.PID, self.config.name, torrentid)
+#                    self.RPC.RPCCommand("log", "debug", "%s IRCbot (#%d): got filter match in source handler '%s' for torrentid '%s'", self.config.name, self.PID, self.config.name, torrentid)
                     self.RPC.RPCCommand("fetchTorrent", name=self.config.name, torrentdata=torrentdata, sizelim=sizelim)
                     return
         except:
@@ -181,18 +187,19 @@ class _ModularBot(ircbot.SingleServerIRCBot):
     def on_ctcp(self, connection, event):
         pass
 
+
 class Irc(object):
     def __init__(self, name, log, storage, websocketURI, auth):
         self.STORAGE = storage
         self.NAME = name
-        #search for storage settings
+        # search for storage settings
         store = storage.getRemoteByName(name)
         siteMod = remotes.getSiteMod(name)
         if not store or not siteMod:
             raise SettingsError("Nothing is stored for name '%s'" % name)
 
-        #network, channel, and port should be stored in 'siteMod'
-        #nick should be stored in 'store'
+        # network, channel, and port should be stored in 'siteMod'
+        # nick should be stored in 'store'
 
         try:
             self.network = siteMod.IRC_NETWORK

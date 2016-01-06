@@ -2,7 +2,7 @@
 
 """ Copyright (C) 2012 mountainpenguin (pinguino.de.montana@googlemail.com)
     <http://github.com/mountainpenguin/pyrt>
-    
+
     This file is part of pyRT.
 
     pyRT is free software: you can redistribute it and/or modify
@@ -19,23 +19,21 @@
     along with pyRT.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-#rtorrent class
 import xmlrpc2scgi as xmlrpc
 import xmlrpclib
 import time
-import sys
 import os
-import itertools
-import base64
 import urllib2
 import urlparse
 import re
+
 
 class TrackerSimple(object):
     def __init__(self, root_url, favicon):
         self.url = self.root_url = root_url
         self.favicon = favicon
-    
+
+
 class Tracker(object):
     def __init__(self, url, type, interval, seeds, leechs, enabled, favicon, root_url):
         self.url = url
@@ -47,6 +45,8 @@ class Tracker(object):
         self.favicon_url = favicon
         self.favicon = "favicons/%s.ico" % root_url
         self.root_url = root_url
+
+
 class File(object):
     def __init__(self, abs_path, base_path, path_components, completed_chunks, priority, size, chunks, chunk_size):
         self.abs_path = abs_path
@@ -54,7 +54,7 @@ class File(object):
         self.path_components = path_components
         self.completed_chunks = completed_chunks
         self.priority_int = priority
-        self.priority = {0 : "off", 1 : "normal", 2 : "high"}[priority]
+        self.priority = {0: "off", 1: "normal", 2: "high"}[priority]
         self.size = size
         self.chunks = chunks
         self.chunk_size = chunk_size
@@ -62,6 +62,7 @@ class File(object):
             self.percentage_complete = 100 * (float(self.completed_chunks) / self.chunks)
         except:
             self.percentage_complete = 100.0
+
 
 class Peer(object):
     def __init__(self, address, client_version, completed_percent, down_rate, down_total, up_rate, up_total, port, peer_rate, peer_total):
@@ -75,6 +76,7 @@ class Peer(object):
         self.port = port
         self.peer_rate = peer_rate
         self.peer_total = peer_total
+
 
 class Torrent(object):
     def __init__(self, id=None, name=None, base_path=None, size_chunks=None, chunk_size=None, completed_bytes=None, creation_date=None, down_rate=None, up_rate=None, peers_connected=None, peers_total=None, seeders_connected=None, seeders_total=None, priority=None, ratio=None, size=None, up_total=None, down_total=None, status=None, private=None, trackers=None):
@@ -94,7 +96,7 @@ class Torrent(object):
         self.seeds_total = seeders_total
         self.priority = priority
         if self.priority:
-            self.priority_str = {-1 : None, 0:"off", 1:"low", 2:"normal", 3:"high"}[priority]
+            self.priority_str = {-1:  None, 0: "off", 1: "low", 2: "normal", 3: "high"}[priority]
         else:
             self.priority_str = None
         self.ratio = ratio
@@ -104,14 +106,15 @@ class Torrent(object):
         self.private = bool(private)
         self.trackers = trackers
 
+
 class rtorrent:
     def __init__(self, port):
         if type(port) == int:
             self.port = port
-        #test connection
+            # test connection
             self.conn = xmlrpc.RTorrentXMLRPCClient("scgi://localhost:%i" % self.port)
         else:
-            #path defined
+            # path defined
             self.conn = xmlrpc.RTorrentXMLRPCClient(port)
         self.availableMethods = self.conn.system.listMethods()
         self.newAliases = []
@@ -119,12 +122,12 @@ class rtorrent:
     def getTorrentList(self):
         """
             Gets the 'main' rtorrent view
-            
+
             Inputs:
                 None
             Outputs:
                 dictionary with torrent names indexed by torrent ids
-                { ID : NAME }
+                { ID: NAME }
         """
         torrentlist = self.conn.download_list()
         torrentdict = {}
@@ -132,8 +135,8 @@ class rtorrent:
             name = self.getNameByID(i)
             torrentdict[i] = name
         return torrentdict
-    
-    def getTorrentStats(self,view="main"):
+
+    def getTorrentStats(self, view="main"):
         """Returns information required for making /stats infographic pie charts
 
             returns a list of Torrent objects with attributes:
@@ -152,11 +155,11 @@ class rtorrent:
             trackers = self.getTrackers(t[0])
             torrentL += [
                 Torrent(
-                    name = t[1],
-                    up_total = t[2],
-                    down_total = t[3],
-                    ratio = t[4],
-                    trackers = trackers,
+                    name=t[1],
+                    up_total=t[2],
+                    down_total=t[3],
+                    ratio=t[4],
+                    trackers=trackers,
                 )
             ]
         return torrentL
@@ -169,16 +172,16 @@ class rtorrent:
             for t in trackers:
                 trackerdict[t.root_url] = TrackerSimple(t.root_url, t.favicon)
         return trackerdict
-        
-    def getTorrentList2(self,view="main"):
+
+    def getTorrentList2(self, view="main"):
         """
             More developed version of getTorrentList
             Gets any of the rtorrent views, for each torrent it gets the following attributes:
-                
+
                 hash, name, base_path, size_chunks, chunk_size, completed_bytes,
                 creation_date, down_rate, up_rate, priority, ratio, size_bytes,
                 up_total, down_total, is_private, peers_complete, peers_accounted
-            
+
             Additionally it retrieves tracker information
             It returns this information in the form of a list of Torrent objects
         """
@@ -204,11 +207,11 @@ class rtorrent:
         )
         torrentList = []
         for tor in torrentlist:
-            #deal with peers
+            # deal with peers
             trackers = self.getTrackers(tor[0])
             peers_total = sum([i.leechs for i in trackers])
             seeds_total = sum([i.seeds for i in trackers])
-            #deal with status
+            # deal with status
             status = self.getStateStr(tor[0])
             torrentList += [
                 Torrent(
@@ -240,22 +243,19 @@ class rtorrent:
 #            9 "d.get_priority=","d.get_ratio=","d.get_size_bytes=","d.get_up_total=","d.get_down_total=", 13
 #           14 "d.is_private=","d.get_peers_complete=","d.get_peers_accounted=", 16
         return torrentList
-#id, name, base_path, size_chunks, chunk_size, completed_bytes, creation_date, down_rate, up_rate, peers_connected, peers_total, seeders_connected, seeders_total, priority, ratio, size, up_total, down_total, status, private
 
-
-    
     def getTorrentInfo(self, id):
-        #this is slower than the alternative
+        # this is slower than the alternative
         allTorrents = self.getTorrentList2("main")
         for t in allTorrents:
             if t.torrent_id == id:
                 return t
-                
+
     def getTorrentObj_less(self, id):
         """
             returns a 'summarised' torrent object
             the torrent object returned by this function has attributes:
-                torrent_id, name, up_rate, up_total, 
+                torrent_id, name, up_rate, up_total,
                 down_rate, down_total, ratio, size, status
             i.e. only information required by torrentHandler.getTorrentRow
         """
@@ -299,11 +299,11 @@ class rtorrent:
             name = self.getNameByID(i)
             downloaddict[i] = name
         return downloaddict
-        
+
     def getRatio(self, id):
         ratio = self.conn.d.get_ratio(id)
         return ratio
-    
+
     def getSizeBytes(self, id):
         size = self.conn.d.get_size_bytes(id)
         return size
@@ -327,18 +327,18 @@ class rtorrent:
             return new
         else:
             return []
-        
+
     def getTrackers(self, id):
         trackers = []
         resp = self.conn.t.multicall(
             id,
             "",
-            "t.get_url=",               #tracker url
-            "t.get_type=",              #tracker type, {1:"http", 2:"udp", 3:"dht"
-            "t.get_normal_interval=",   #default announce interval
-            "t.get_scrape_complete=",   #seeders registered on the tracker
-            "t.get_scrape_incomplete=", #leechers registered on the tracker
-            "t.is_enabled=",            #{0:"disabled", 1:"enabled"}
+            "t.get_url=",                # tracker url
+            "t.get_type=",               # tracker type, {1:"http", 2:"udp", 3:"dht"
+            "t.get_normal_interval=",    # default announce interval
+            "t.get_scrape_complete=",    # seeders registered on the tracker
+            "t.get_scrape_incomplete=",  # leechers registered on the tracker
+            "t.is_enabled=",             # {0:"disabled", 1:"enabled"}
         )
         for track_resp in resp:
             url = track_resp[0]
@@ -357,17 +357,17 @@ class rtorrent:
                         fav_icon_url = "%s://%s/favicon.ico" % (url_parsed.scheme, root_url)
                         try:
                             fav_icon = urllib2.urlopen(fav_icon_url, timeout=2).read()
-                            open("static/favicons/%s.ico" % (root_url),"wb").write(fav_icon)
+                            open("static/favicons/%s.ico" % (root_url), "wb").write(fav_icon)
                             self.newAliases.append(TrackerSimple(root_url, "favicons/%s.ico" % (root_url)))
                         except:
                             fav_icon_url2 = "%s://%s/favicon.ico" % (url_parsed.scheme, ".".join(root_url.split(".")[1:]))
                             try:
                                 fav_icon = urllib2.urlopen(fav_icon_url2, timeout=2).read()
-                                open("static/favicons/%s.ico" % (root_url),"wb").write(fav_icon)
+                                open("static/favicons/%s.ico" % (root_url), "wb").write(fav_icon)
                                 self.newAliases.append(TrackerSimple(root_url, "favicons/%s.ico" % (root_url)))
                             except:
                                 fav_icon = None
-                if fav_icon == None:
+                if fav_icon is None:
                     try:
                         os.symlink("default.ico", "static/favicons/%s.ico" % root_url)
                         self.newAliases.append(TrackerSimple(root_url, "favicons/%s.ico" % (root_url)))
@@ -377,7 +377,6 @@ class rtorrent:
                 else:
                     faviconurl = "favicons/%s.ico" % root_url
             trackers += [Tracker(track_resp[0], track_resp[1], track_resp[2], track_resp[3], track_resp[4], bool(track_resp[5]), faviconurl, root_url)]
-#url, type, interval, seeds, leechs, enabled
         return trackers
 
     def getPeers(self, id):
@@ -406,7 +405,6 @@ class rtorrent:
                          element[7], element[1],
                          element[8], element[9],)
                 ]
-#address, client_version, completed_percent, down_rate, down_total, up_rate, up_total, port, peer_rate, peer_total
         return peers
 
     def getFiles(self, id):
@@ -432,19 +430,18 @@ class rtorrent:
             absolute_path = os.path.join(base_path, rel_path)
             files += [File(absolute_path, base_path, path_split, completed_chunks, priority, size_bytes, size_chunks, chunk_size)]
         return files
-#abs_path, base_path, path_components, completed_chunks, priority, size, chunks, chunk_size
 
-    #def getCreationDate(self, id):
-    #    dat = self.conn.d.get_creation_date(id)
-    #    dat_time = time.localtime(dat)
-    #    return "%02i/%02i/%i %02i:%02i:%02i" % (
-    #        dat_time.tm_mday,
-    #        dat_time.tm_mon,
-    #        dat_time.tm_year,
-    #        dat_time.tm_hour,
-    #        dat_time.tm_min,
-    #        dat_time.tm_sec,
-    #    )
+#    def getCreationDate(self, id):
+#        dat = self.conn.d.get_creation_date(id)
+#        dat_time = time.localtime(dat)
+#        return "%02i/%02i/%i %02i:%02i:%02i" % (
+#            dat_time.tm_mday,
+#            dat_time.tm_mon,
+#            dat_time.tm_year,
+#            dat_time.tm_hour,
+#            dat_time.tm_min,
+#            dat_time.tm_sec,
+#        )
 
     def getPath(self, id):
         return self.conn.d.get_directory(id)
@@ -456,7 +453,6 @@ class rtorrent:
         act = self.conn.d.is_active(id)
         has = self.conn.d.is_hash_checking(id)
         ope = self.conn.d.is_open(id)
-        #~ return "act:%s has:%s ope:%s" % (act, has, ope)
         if not ope and not act and not has:
             return "Stopped"
         elif ope and not act and not has:
@@ -468,30 +464,30 @@ class rtorrent:
 
     def getCreationDate(self, id):
         return self.conn.d.get_creation_date(id)
-        
+
     def getCompletedBytes(self, id):
         return self.conn.d.get_completed_bytes(id)
-        
-    ### START 'GLOBAL' FUNCTIONS ###
+
+    # START 'GLOBAL' FUNCTIONS #
     def getRootDir(self):
         return self.conn.get_directory()
-        
+
     def getGlobalRootPath(self):
         return self.conn.get_directory()
-        
+
     def setGlobalRootPath(self, path):
-        #edit .rtorrent.rc?
+        # edit .rtorrent.rc?
         return self.conn.set_directory(path)
-        
+
     def setGlobalPostHook(self):
         return self.conn.system.method.set_key("event.download.finished", "post_hook_pyrt", "execute=pyrt/posthook,$d.get_base_path=")
 
     def setGlobalMoveTo(self, path):
-        #set method 'move_complete_pyrt'
-        return self.conn.system.method.set_key("event.download.finished","move_complete_pyrt","d.set_directory=%(path)s; execute=mv,-u,$d.get_base_path=,%(path)s" % {"path" : path})
-        
+        # set method 'move_complete_pyrt'
+        return self.conn.system.method.set_key("event.download.finished", "move_complete_pyrt", "d.set_directory=%(path)s; execute=mv,-u,$d.get_base_path=,%(path)s" % {"path": path})
+
     def getGlobalMoveTo(self):
-        if self.conn.system.method.has_key("event.download.finished","move_complete_pyrt"):
+        if "event.download.finished" in self.conn.system.method:
             try:
                 cmd = self.conn.system.method.get("event.download.finished")["move_complete_pyrt"]
                 "d.set_directory=%(path)s; execute=mv,-u,$d.get_base_path=,%(path)s"
@@ -501,129 +497,129 @@ class rtorrent:
                 return (True, None)
         else:
             return (False, None)
-            
+
     def removeGlobalMoveTo(self, arg):
-        if arg == "false" and self.conn.system.method.has_key("event.download.finished","move_complete_pyrt"):
-            return self.conn.system.method.set_key("event.download.finished","move_complete_pyrt")
-        
+        if arg == "false" and "event.download.finished" in self.conn.system.method:
+            return self.conn.system.method.set_key("event.download.finished", "move_complete_pyrt")
+
     def getGlobalPortRange(self):
         return self.conn.get_port_range()
-        
+
     def setGlobalPortRange(self, range):
         return self.conn.set_port_range(range)
 
     def getGlobalUpBytes(self):
         return self.conn.get_up_total()
-    
+
     def getGlobalDownBytes(self):
         return self.conn.get_down_total()
-    
+
     def getGlobalUpRate(self):
         return self.conn.get_up_rate()
-    
+
     def getGlobalDownRate(self):
         return self.conn.get_down_rate()
-        
+
     def getGlobalUpThrottle(self):
         return self.conn.get_upload_rate()
-        
+
     def setGlobalUpThrottle(self, throttle):
-        #throttle must be in bytes
+        # throttle must be in bytes
         return self.conn.set_upload_rate(throttle)
-        
+
     def getGlobalDownThrottle(self):
         return self.conn.get_download_rate()
-        
+
     def setGlobalDownThrottle(self, throttle):
         return self.conn.set_download_rate(throttle)
-        
+
     def getGlobalMaxMemoryUsage(self):
         return self.conn.get_max_memory_usage()
-        
+
     def setGlobalMaxMemoryUsage(self, mem):
-        #mem in bytes
-        #convert to str to allow large values
+        # mem in bytes
+        # convert to str to allow large values
         return self.conn.set_max_memory_usage(str(mem))
 
     def getGlobalSendBufferSize(self):
         return self.conn.get_send_buffer_size()
-        
+
     def setGlobalSendBufferSize(self, buffer):
-        #buffer in bytes -> converted to str
+        # buffer in bytes -> converted to str
         return self.conn.set_send_buffer_size(str(buffer))
-        
+
     def getGlobalReceiveBufferSize(self):
         return self.conn.get_receive_buffer_size()
-        
+
     def setGlobalReceiveBufferSize(self, buffer):
         return self.conn.set_receive_buffer_size(str(buffer))
-        
+
     def getGlobalHashReadAhead(self):
         return self.conn.get_hash_read_ahead()
-        
+
     def setGlobalHashReadAhead(self, readahead):
         return self.conn.set_hash_read_ahead(str(readahead))
-        
+
     def getGlobalMaxDownloads(self):
         return self.conn.get_max_downloads_global()
-        
+
     def setGlobalMaxDownloads(self, max):
         return self.conn.set_max_downloads_global(max)
-    
+
     def getGlobalMaxUploads(self):
         return self.conn.get_max_uploads_global()
-        
+
     def setGlobalMaxUploads(self, max):
         return self.conn.set_max_uploads_global(max)
-        
+
     def getGlobalMaxPeers(self):
         return self.conn.get_max_peers()
-        
+
     def setGlobalMaxPeers(self, peers):
         return self.conn.set_max_peers(peers)
-        
+
     def getGlobalMaxPeersSeed(self):
         return self.conn.get_max_peers_seed()
-        
+
     def setGlobalMaxPeersSeed(self, peers):
         return self.conn.set_max_peers_seed(peers)
-        
+
     def getGlobalMaxOpenSockets(self):
         return self.conn.get_max_open_sockets()
-        
+
     def setGlobalMaxOpenSockets(self, sockets):
         if "set_max_open_sockets" in self.availableMethods:
             return self.conn.set_max_open_sockets(sockets)
         elif "network.max_open_sockets.set" in self.availableMethods:
             return self.conn.network.max_open_sockets.set("", sockets)
-        
+
     def getGlobalMaxOpenHttp(self):
         return self.conn.get_max_open_http()
-    
+
     def setGlobalMaxOpenHttp(self, http):
         return self.conn.set_max_open_http(http)
-        
+
     def getGlobalMaxFileSize(self):
         return self.conn.get_max_file_size()
-        
+
     def setGlobalMaxFileSize(self, size):
-        #size must be in bytes
-        #converting size to a str to avoid XML-RPC complaining about long ints
+        # size must be in bytes
+        # converting size to a str to avoid XML-RPC complaining about long ints
         return self.conn.set_max_file_size(str(size))
-        
+
     def getGlobalMaxOpenFiles(self):
         return self.conn.get_max_open_files()
-        
+
     def setGlobalMaxOpenFiles(self, files):
         return self.conn.set_max_open_files(files)
-        
-    ### END 'GLOBAL' FUNCTIONS ###
-    def wait_completed(self, Id):
+
+    # END 'GLOBAL' FUNCTIONS #
+    def wait_completed(self, id):
         time.sleep(2)
-        
+
         while True:
             try:
-                name = self.conn.d.get_name(id)
+                self.conn.d.get_name(id)
             except xmlrpclib.Fault:
                 id = self.getIDByName(id)
             completed = self.conn.d.get_complete(id)
@@ -637,28 +633,27 @@ class rtorrent:
                 print "100%"
                 return True
 
-                    
-    def remove(self,id):
+    def remove(self, id):
         self.conn.d.erase(id)
-        
+
     def pause(self, id):
         self.conn.d.pause(id)
-        
+
     def resume(self, id):
         if self.conn.d.is_open(id):
             self.conn.d.resume(id)
         else:
             self.conn.d.start(id)
-        
+
     def stop(self, id):
         self.conn.d.stop(id)
         self.conn.d.close(id)
-        
+
     def rehash(self, id):
         self.conn.d.check_hash(id)
-        
+
     def start_from_file(self, filepath):
         self.conn.load_start_verbose(filepath)
-        
+
     def load_from_file(self, filepath):
         self.conn.load_verbose(filepath)

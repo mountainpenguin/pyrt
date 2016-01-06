@@ -21,7 +21,6 @@
 
 from __future__ import print_function
 import urllib
-import urllib2
 import requests
 import re
 import os

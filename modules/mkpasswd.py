@@ -2,7 +2,7 @@
 
 """ Copyright (C) 2012 mountainpenguin (pinguino.de.montana@googlemail.com)
     <http://github.com/mountainpenguin/pyrt>
-    
+
     This file is part of pyRT.
 
     pyRT is free software: you can redistribute it and/or modify
@@ -25,13 +25,15 @@ import os
 import base64
 import getpass
 
+
 def hashPassword(pw):
     salt = os.urandom(6)
     salt_encoded = base64.b64encode(salt)
     hash_1 = hashlib.sha256(pw).hexdigest()
     hash_2 = hashlib.sha256(hash_1 + salt_encoded).hexdigest()
     return "$%s$%s" % (salt_encoded, hash_2)
-    
+
+
 def main():
     print("mkpasswd utility for pyrt")
     while True:
@@ -42,6 +44,6 @@ def main():
         else:
             break
     print(hashPassword(password1))
-    
+
 if __name__ == "__main__":
     main()

@@ -2,7 +2,7 @@
 
 """ Copyright (C) 2012 mountainpenguin (pinguino.de.montana@googlemail.com)
     <http://github.com/mountainpenguin/pyrt>
-    
+
     This file is part of pyRT.
 
     pyRT is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ from modules import torrentHandler
 from modules import system
 import os
 import json
-import random
+
 
 class Index(object):
     def __init__(self, conf=config.Config(), RT=None, aliases=None):
@@ -48,27 +48,27 @@ class Index(object):
             hdusage = system.hdd(self.Config.get("root_directory"))
             hdperc = int((float(hdusage[0]) / hdusage[1])*100)
             return json.dumps({
-                "type" : "global",
-                "uprate" : uprate,
-                "downrate" : downrate,
-                "loadavg" : loadavg,
-                "uprate_str" : self.handler.humanSize(uprate),
-                "downrate_str" : self.handler.humanSize(downrate),
-                "memusage" : memusage[0],
-                "memmax" : memusage[1],
-                "memperc" : memperc,
-                "memusage_human" : self.handler.humanSize(memusage[0]),
-                "memmax_human" : self.handler.humanSize(memusage[1]),
-                "hdperc" : hdperc,
-                "hdusage" : hdusage[0],
-                "hdmax" : hdusage[1],
-                "hdusage_human" : self.handler.humanSize(hdusage[0]),
-                "hdmax_human" : self.handler.humanSize(hdusage[1]),
+                "type": "global",
+                "uprate": uprate,
+                "downrate": downrate,
+                "loadavg": loadavg,
+                "uprate_str": self.handler.humanSize(uprate),
+                "downrate_str": self.handler.humanSize(downrate),
+                "memusage": memusage[0],
+                "memmax": memusage[1],
+                "memperc": memperc,
+                "memusage_human": self.handler.humanSize(memusage[0]),
+                "memmax_human": self.handler.humanSize(memusage[1]),
+                "hdperc": hdperc,
+                "hdusage": hdusage[0],
+                "hdmax": hdusage[1],
+                "hdusage_human": self.handler.humanSize(hdusage[0]),
+                "hdmax_human": self.handler.humanSize(hdusage[1]),
             })
         elif request == "trackers":
-            #calculate up/down totals for each torrent
-            #sort according to tracker
-            #determine percentage of total up / down for each tracker
+            # calculate up/down totals for each torrent
+            # sort according to tracker
+            # determine percentage of total up / down for each tracker
             torrentList = self.RT.getTorrentStats(view="main")
             tDict = {}
             upTotal = 0
@@ -76,7 +76,7 @@ class Index(object):
             ratioTotal = 0
             for t in torrentList:
                 tracker_url = t.trackers[0].root_url
-                #get alias
+                # get alias
                 try:
                     alias = self.aliases.getAliasGroup(tracker_url)
                 except:
@@ -118,8 +118,8 @@ class Index(object):
                 tDict[t]["up_total"] = self.handler.humanSize(tDict[t]["up_total"])
                 tDict[t]["down_total"] = self.handler.humanSize(tDict[t]["down_total"])
             return json.dumps({
-                "type" : "trackers",
-                "data" : tDict,
+                "type": "trackers",
+                "data": tDict,
             })
         else:
             return "ERROR/no such method"

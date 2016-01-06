@@ -3,7 +3,7 @@
 
 """ Copyright (C) 2012 mountainpenguin (pinguino.de.montana@googlemail.com)
     <http://github.com/mountainpenguin/pyrt>
-    
+
     This file is part of pyRT.
 
     pyRT is free software: you can redistribute it and/or modify
@@ -22,43 +22,50 @@
 
 import time
 
-EXPIRES = 10 #Êtime for a token to be unusable (tokens should be used immediately, this should prevent hotlinking, etc.)
+EXPIRES = 10  # time for a token to be unusable (tokens should be used immediately, this should prevent hotlinking, etc.)
+
 
 class TokenExpired(Exception):
     def __init__(self, value):
         self.param = value
+
     def __str__(self):
         return repr(self.param)
+
     def __repr__(self):
         return "TokenError: %s" % self.param
-    
+
+
 class NoSuchToken(Exception):
     def __init__(self, value):
         self.param = value
+
     def __str__(self):
         return repr(self.param)
+
     def __repr__(self):
         return "TokenError: %s" % self.param
-    
+
+
 class Token(object):
     def __init__(self, value, path):
         self.value = value
         self.path = path
         self.timestamp = time.time()
-        
+
+
 class authStore(object):
     def __init__(self):
         self.STORE = {}
-        
+
     def add(self, value, path):
         token = Token(value, path)
         self.STORE[value] = token
-        
+
     def get(self, tokenval):
         self._clean()
         if tokenval in self.STORE:
             token = self.STORE[tokenval]
-            timenow = time.time()
             # check timediff
             if time.time() - token.timestamp > EXPIRES:
                 raise TokenExpired("Token %r expired" % tokenval)
@@ -66,7 +73,7 @@ class authStore(object):
                 return token.path
         else:
             raise NoSuchToken("No such token %r" % tokenval)
-    
+
     def _clean(self):
         cleanout = []
         for tok_val in self.STORE.keys():
@@ -75,15 +82,15 @@ class authStore(object):
                 cleanout.append(tok_val)
         for val in cleanout:
             del self.STORE[val]
-                
-    
+
+
 class downloadHandler(object):
     def __init__(self, log):
         self.log = log
         self.authStore = authStore()
-        
+
     def addToken(self, auth, path):
         self.authStore.add(auth, path)
-        
+
     def getPath(self, auth):
         return self.authStore.get(auth)

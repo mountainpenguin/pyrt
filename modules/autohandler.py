@@ -28,7 +28,6 @@ import urlparse
 import logging
 import json
 import re
-import cgi
 import traceback
 import os
 import signal
@@ -41,38 +40,38 @@ class AutoHandler(object):
         self.STORE = remoteStorage
         self.HANDLER = torrentHandler.Handler()
         self.METHODS = {
-            "get_sources" : self.get_sources,
-            "get_source_single" : self.get_source_single,
-            "set_source" : self.set_source,
-            "start_bot" : self.start_bot,
-            "stop_bot" : self.stop_bot,
-            "get_filters" : self.get_filters,
-            "add_filter" : self.add_filter,
-            "remove_filter" : self.remove_filter,
-            "get_rss" : self.get_rss,
-            "add_rss" : self.add_rss,
-            "remove_rss" : self.remove_rss,
-            "enable_rss" : self.enable_rss,
-            "disable_rss" : self.disable_rss,
-            "add_rss_filter" : self.add_rss_filter,
-            "remove_rss_filter" : self.remove_rss_filter,
-            "get_rss_single" : self.get_rss_single,
-            "get_rss_filters" : self.get_rss_filters,
+            "get_sources": self.get_sources,
+            "get_source_single": self.get_source_single,
+            "set_source": self.set_source,
+            "start_bot": self.start_bot,
+            "stop_bot": self.stop_bot,
+            "get_filters": self.get_filters,
+            "add_filter": self.add_filter,
+            "remove_filter": self.remove_filter,
+            "get_rss": self.get_rss,
+            "add_rss": self.add_rss,
+            "remove_rss": self.remove_rss,
+            "enable_rss": self.enable_rss,
+            "disable_rss": self.disable_rss,
+            "add_rss_filter": self.add_rss_filter,
+            "remove_rss_filter": self.remove_rss_filter,
+            "get_rss_single": self.get_rss_single,
+            "get_rss_filters": self.get_rss_filters,
         }
 
     def _response(self, name, request, response, error):
         return json.dumps({
-            "name" : name,
-            "request" : request,
-            "response" : response,
-            "error" : error,
+            "name": name,
+            "request": request,
+            "response": response,
+            "error": error,
         })
 
     def _fmt_source(self, name, desc, status):
         fmt = {
-            "name" : name,
-            "desc" : desc,
-            "status" : status,
+            "name": name,
+            "desc": desc,
+            "status": status,
         }
         row_templ = "<tr class='remote_row' id='remote_name_%(name)s'><td class='name'>%(name)s</td><td class='desc'>%(desc)s</td><td class='status status-%(status)s status-%(name)s'>%(status)s</td></tr>"
         return row_templ % fmt
@@ -80,10 +79,10 @@ class AutoHandler(object):
     def _fmt_keys(self, name, keys, filters, botcontrol):
         input_templ = "<label for='%(key)s'>%(key)s:</label><input type='text' name='%(key)s' placeholder='%(desc)s'>"
         fmt = {
-            "name" : name,
-            "form" : "".join([ input_templ % { "key": x[0], "desc" : x[1] } for x in keys]),
-            "filters" : filters,
-            "botbutton" : botcontrol,
+            "name": name,
+            "form": "".join([input_templ % {"key": x[0], "desc": x[1]} for x in keys]),
+            "filters": filters,
+            "botbutton": botcontrol,
         }
         row_templ = """
             <tr class='is_hidden remote_setting' id='remote_settings_%(name)s'>
@@ -139,8 +138,8 @@ class AutoHandler(object):
                 subfilters = self._fmt_subgroup(f_obj.positive, f_obj.negative, f_obj.sizelim)
                 filters_fmtted += [
                     filter_templ % {
-                        "count" : idx + 1,
-                        "subfilters" : "".join(subfilters)
+                        "count": idx + 1,
+                        "subfilters": "".join(subfilters)
                     }
                 ]
                 idx += 1
@@ -149,7 +148,7 @@ class AutoHandler(object):
             filters_fmtted = ["<div class='filter'>Refresh Page</div>"]
 
         fmt = {
-            "filters" : "".join(filters_fmtted),
+            "filters": "".join(filters_fmtted),
         }
         templ = """
             <div class="filters">
@@ -180,7 +179,7 @@ class AutoHandler(object):
     def stop_bot(self, name):
         botpid = self.STORE.isBotActive(name)
         if botpid:
-            #release socket
+            # release socket
             socknum = self.STORE.assigneeSocket(name)
             if self.STORE.releaseSocket(socknum, name):
                 self.LOG.info("Released RPC socket number %i" % socknum)
@@ -188,7 +187,7 @@ class AutoHandler(object):
                 self.LOG.error("Could not release RPC socket number %i" % socknum)
             try:
                 os.kill(botpid, signal.SIGTERM)
-                #deregister bot
+                # deregister bot
                 self.STORE.deregisterBot(name, botpid)
                 return self._response(name, "stop_bot", "OK", None)
             except OSError:
@@ -203,7 +202,7 @@ class AutoHandler(object):
         if botpid:
             return self._response(name, "start_bot", "ERROR", "Bot already active")
         try:
-            #get websocketURI
+            # get websocketURI
             socknum = self.STORE.getFreeSocket()
             ircobj = irc.Irc(name, self.LOG, self.STORE, websocketURI=".sockets/rpc%i.interface" % (socknum), auth=auth)
             p = ircobj.start()
@@ -225,7 +224,7 @@ class AutoHandler(object):
             for name, desc, req, methods in sources:
                 if name.upper() != select.upper():
                     continue
-                #determine if bot is running
+                # determine if bot is running
                 if "IRC" in methods:
                     status = self._get_status(name)
                     if status == "off":
@@ -242,7 +241,7 @@ class AutoHandler(object):
                         req_ = []
                         for r in req:
                             if r[0] in s.keys():
-                                req_.append( (r[0], s[r[0]]) )
+                                req_.append((r[0], s[r[0]]))
                             else:
                                 req_.append(r)
                         req = req_
@@ -253,15 +252,15 @@ class AutoHandler(object):
                                 <img src="images/%(statusimage)s" width=20 height=20>
                                 <span>%(startstopmsg)s</span>
                             </button>
-                        """ % { "statusimage" : statusimage, "startstop" : startstop, "startstopmsg" : startstopmsg, "name" : name }
+                        """ % {"statusimage": statusimage, "startstop": startstop, "startstopmsg": startstopmsg, "name": name}
                     else:
                         filters = ""
                         botcontrol = ""
 
                     return self._response(name, "get_source_single", {
-                        "row" : self._fmt_source(name, desc, status),
-                        "requirements" : req,
-                        "req_row" : self._fmt_keys(name, req, filters, botcontrol),
+                        "row": self._fmt_source(name, desc, status),
+                        "requirements": req,
+                        "req_row": self._fmt_keys(name, req, filters, botcontrol),
                     }, None)
                 else:
                     return self._response(name, "get_source_single", "ERROR", "IRC not specified as a valid method")
@@ -280,7 +279,7 @@ class AutoHandler(object):
         sites = []
         if sources:
             for name, desc, req, methods in sources:
-                #determine if bot is running
+                # determine if bot is running
                 if "IRC" in methods:
                     status = self._get_status(name)
                     if status == "off":
@@ -293,13 +292,13 @@ class AutoHandler(object):
                         startstopmsg = "Stop IRC"
                         startstop = "stop"
 
-                    #fetch filters
+                    # fetch filters
                     s = self.STORE.getRemoteByName(name)
                     if s:
                         req_ = []
                         for r in req:
                             if r[0] in s.keys():
-                                req_.append( (r[0], s[r[0]]) )
+                                req_.append((r[0], s[r[0]]))
                             else:
                                 req_.append(r)
                         req = req_
@@ -310,15 +309,15 @@ class AutoHandler(object):
                                 <img src="images/%(statusimage)s" width=20 height=20>
                                 <span>%(startstopmsg)s</span>
                             </button>
-                        """ % { "statusimage" : statusimage, "startstop" : startstop, "startstopmsg" : startstopmsg, "name" : name }
+                        """ % {"statusimage": statusimage, "startstop": startstop, "startstopmsg": startstopmsg, "name": name}
                     else:
                         filters = ""
                         botcontrol = ""
 
                     sites.append({
-                        "row" : self._fmt_source(name, desc, status),
-                        "requirements" : req,
-                        "req_row" : self._fmt_keys(name, req, filters, botcontrol),
+                        "row": self._fmt_source(name, desc, status),
+                        "requirements": req,
+                        "req_row": self._fmt_keys(name, req, filters, botcontrol),
                     })
         return self._response(None, "get_sources", sites, None)
 
@@ -362,7 +361,7 @@ class AutoHandler(object):
                 return self._response(name, "add_filter", "ERROR", "Size limits must be integers")
             else:
                 if sizelim[1] != 0 and sizelim[1] < sizelim[0]:
-                    return self._response(ID, "add_filter", "ERROR", "Upper size limit is less than the lower limit")
+                    return self._response(name, "add_filter", "ERROR", "Upper size limit is less than the lower limit")
         else:
             sizelim = [None, None]
 
@@ -370,7 +369,7 @@ class AutoHandler(object):
         if not s:
             return self._response(name, "add_filter", "ERROR", "No store for name '%s'" % name)
 
-        #attempt to compile the re string
+        # attempt to compile the re string
         positives = []
         negatives = []
         for restring in positive:
@@ -438,13 +437,6 @@ class AutoHandler(object):
                 <td class='ttl'>%(ttl_str)s</td>
                 <td class='url' title='%(url)s'>%(url)s</td>
             </tr>""" % feed
-        #filter_templ = """
-        #    <label for='filter%(count)d'>Filter:</label>
-        #    <div name='filter%(count)d' class='filter'>
-        #        <code>%(filter)s</code>
-        #    </div>"""
-        filter_pos = "<div class='filter_positive filter'><code>%s</code></div>"
-        filter_neg = "<div class='filter_negative filter'><code>%s</code></div>"
         filter_templ = """
             <label for='filter%(count)d'>Filter:</label>
             <div name='filter%(count)d' class='filter_group'>
@@ -452,8 +444,7 @@ class AutoHandler(object):
             </div>
         """
 
-        #check if filters is in correct format
-
+        # check if `filters` is in correct format
 
         filters_fmtted = []
         idx = 0
@@ -462,8 +453,8 @@ class AutoHandler(object):
                 subfilters = self._fmt_subgroup(f_obj.positive, f_obj.negative, f_obj.sizelim)
                 filters_fmtted += [
                     filter_templ % {
-                        "count" : idx + 1,
-                        "subfilters" : "".join(subfilters)
+                        "count": idx + 1,
+                        "subfilters": "".join(subfilters)
                     }
                 ]
                 idx += 1
@@ -505,7 +496,7 @@ class AutoHandler(object):
                 </td>
             </tr>
         """ % feed
-        return [templ.replace("\t","").replace("\n",""), sub_templ.replace("\t","").replace("\n","")]
+        return [templ.replace("\t", "").replace("\n", ""), sub_templ.replace("\t", "").replace("\n", "")]
 
     def get_rss(self, **kwargs):
         feeds_ = self.STORE.getRSSFeeds()
@@ -584,7 +575,6 @@ class AutoHandler(object):
         else:
             sizelim = [None, None]
 
-
         positives = []
         negatives = []
         for restring in positive:
@@ -607,7 +597,6 @@ class AutoHandler(object):
             except:
                 return self._response(ID, "add_rss_filter", "ERROR", "Invalid regex %r" % restring)
 
-
         if self.STORE.addRSSFilter(ID, positives, negatives, sizelim):
             return self._response(ID, "add_rss_filter", "OK", None)
         else:
@@ -623,9 +612,9 @@ class AutoHandler(object):
         resp = self.STORE.removeRSSFilter(ID, index)
         if resp:
             return self._response(ID, "remove_rss_filter", "OK", None)
-        elif resp == False:
+        elif resp is False:
             return self._response(ID, "remove_rss_filter", "ERROR", "No such RSS feed")
-        elif resp == None:
+        elif resp is None:
             return self._response(ID, "remove_rss_filter", "ERROR", "No such filter index")
 
     def get_rss_filters(self, ID):
@@ -637,17 +626,18 @@ class AutoHandler(object):
             return self._response(ID, "get_rss_filters", "ERROR", "No such RSS feed")
 
     def handle_message(self, message):
-        urlparams =  urlparse.parse_qs(message)
+        urlparams = urlparse.parse_qs(message)
         request = urlparams.get("request") and urlparams.get("request")[0] or None
         arguments = urlparams.get("arguments") or []
-        #parse for keywords (not 'request', and not 'arguments')
+        # parse for keywords (not 'request', and not 'arguments')
+
         def _miniCheck(arg):
             if arg[0] == "request" or arg[0] == "arguments":
                 return False
             else:
                 return True
 
-        keywords = dict( filter( _miniCheck, urlparams.items()))
+        keywords = dict(filter(_miniCheck, urlparams.items()))
         if not request:
             logging.info("autoSocket: no request specified")
             return self._response(None, message, "ERROR", "No request specified")

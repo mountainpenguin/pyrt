@@ -29,43 +29,44 @@ import os
 from modules import remotes
 from modules import bencode
 
+
 class RPCHandler(object):
     def __init__(self, publog, ajax, storage):
         self.METHODS = {
-            "listMethods" : self.listMethods,
-            "privateLog" : self.privateLog,
-            "publicLog" : self.publicLog,
-            "log" : self.log,
-            "test" : self.test,
-            "fetchTorrent" : self.fetchTorrent,
+            "listMethods": self.listMethods,
+            "privateLog": self.privateLog,
+            "publicLog": self.publicLog,
+            "log": self.log,
+            "test": self.test,
+            "fetchTorrent": self.fetchTorrent,
             "register": self.register,
-            "deregister" : self.deregister,
-            "get_filters" : self.get_filters,
-            "get_rss_filters" : self.get_rss_filters,
-            "get_active_rss" : self.get_active_rss,
-            "update_rss" : self.update_rss,
-            "disable_rss" : self.disable_rss,
-            "updatehash_rss" : self.updatehash_rss,
-            "fetch_torrent_rss" : self.fetch_torrent_rss,
+            "deregister": self.deregister,
+            "get_filters": self.get_filters,
+            "get_rss_filters": self.get_rss_filters,
+            "get_active_rss": self.get_active_rss,
+            "update_rss": self.update_rss,
+            "disable_rss": self.disable_rss,
+            "updatehash_rss": self.updatehash_rss,
+            "fetch_torrent_rss": self.fetch_torrent_rss,
         }
         self.publog = publog
         self.ajax = ajax
         self.storage = storage
 
     def updatehash_rss(self, ID, h):
-        #self.log("info", "Updated hash for feed %s", ID)
+#        self.log("info", "Updated hash for feed %s", ID)
         return self.storage.updateHashRSSFeed(ID, h)
 
     def disable_rss(self, ID):
         return self.storage.disableRSSFeed(ID)
 
     def update_rss(self, ID, timestamp):
-        #self.log("info", "Updated feed %s", ID)
+#        self.log("info", "Updated feed %s", ID)
         return self.storage.updateRSSFeed(ID, timestamp)
 
     def get_rss_filters(self, ID):
         if ID not in self.storage.RSS:
-            return json.dumps({"error" : "No such RSS feed"})
+            return json.dumps({"error": "No such RSS feed"})
 
         filter_list = []
         for fi in self.storage.RSS[ID].filters:
@@ -99,7 +100,6 @@ class RPCHandler(object):
         except TypeError:
             self.storage.reflowRSSFilters()
 
-
     def get_filters(self, name):
         s = self.storage.getRemoteByName(name)
         if s:
@@ -107,18 +107,15 @@ class RPCHandler(object):
                 f = s.filters
             except AttributeError:
                 f = []
-            return json.dumps(
-                [([x.pattern for x in z.positive],
-                  [y.pattern for y in z.negative],
-                  z.sizelim)
-                 for z in f
-                ]
-            )
+            return json.dumps([(
+                [x.pattern for x in z.positive],
+                [y.pattern for y in z.negative],
+                z.sizelim
+            ) for z in f])
         else:
             return json.dumps({
-                "error" : "Not registered"
+                "error": "Not registered"
             })
-
 
     def listMethods(self):
         return json.dumps(self.METHODS.keys())
@@ -169,9 +166,9 @@ class RPCHandler(object):
 
     def _respond(self, request, response, error):
         respDict = {
-            "request":request,
+            "request": request,
             "response": response,
-            "error" : error
+            "error": error
         }
         return json.dumps(respDict)
         # return respDict
@@ -191,34 +188,34 @@ class RPCHandler(object):
             return "ERROR", "No such handler"
 
     def _getTorrentSize(self, bencoded):
-        if bencoded["info"].has_key("files"):
-            #multifile torrent
+        if "files" in bencoded["info"]:
+            # multifile torrent
             length = 0
             for f in bencoded["info"]["files"]:
                 length += f["length"]
         else:
-            #singlefile
+            # singlefile
             length = bencoded["info"]["length"]
         return length
 
     def fetch_torrent_rss(self, ID, alias, link, sizelim):
         lnk = urllib2.urlopen(link)
-        #get filename if offered, else generate random filename
+        # get filename if offered, else generate random filename
         try:
             filename = lnk.info()['Content-Disposition'].split("filename=\"")[1][:-1]
         except:
             filename = "".join([random.choice(string.letters) for x in range(20)]) + ".torrent"
 
         linkcontent = lnk.read()
-        #check valid torrent file
+        # check valid torrent file
         try:
             bencoded = bencode.bdecode(linkcontent)
         except bencode.BTL.BTFailure:
             self.log("error", "Error downloading from RSS feed (id: %s, alias: %s) - not a valid bencoded string", ID, alias)
-            open("rss.test.torrent","w").write(linkcontent)
+            open("rss.test.torrent", "w").write(linkcontent)
             return
 
-        #check size limits
+        # check size limits
         if sizelim[0] and sizelim[0] == 0:
             sizelim[0] = None
         if sizelim[1] and sizelim[1] == 0:
@@ -257,7 +254,7 @@ class RPCHandler(object):
         response = None
         # structure must be:
         # {
-        #   "command" : <string>,
+        #   "command": <string>,
         #   "arguments": <list>,
         #   "keywords": <dict>
         # }
@@ -275,7 +272,7 @@ class RPCHandler(object):
 
         req = ["command", "arguments", "keywords", "auth", "PID", "name"]
         for r in req:
-            if not jsonified.has_key(r):
+            if r not in jsonified:
                 self.log("error", "RPC: call has invalid syntax, missing key %r", r)
                 error = "003 - invalid syntax, missing key %r" % r
                 return self._respond(response, error)
