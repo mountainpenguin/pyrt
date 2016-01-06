@@ -45,7 +45,7 @@ class Tracker(object):
         self.leechs = leechs
         self.enabled = enabled
         self.favicon_url = favicon
-        self.favicon = "/favicons/%s.ico" % root_url
+        self.favicon = "favicons/%s.ico" % root_url
         self.root_url = root_url
 class File(object):
     def __init__(self, abs_path, base_path, path_components, completed_chunks, priority, size, chunks, chunk_size):
@@ -343,7 +343,7 @@ class rtorrent:
         for track_resp in resp:
             url = track_resp[0]
             if url == "dht://":
-                faviconurl = "/favicons/dht.ico"
+                faviconurl = "favicons/dht.ico"
                 root_url = "DHT"
             else:
                 url_parsed = urlparse.urlparse(url)
@@ -358,24 +358,24 @@ class rtorrent:
                         try:
                             fav_icon = urllib2.urlopen(fav_icon_url, timeout=2).read()
                             open("static/favicons/%s.ico" % (root_url),"wb").write(fav_icon)
-                            self.newAliases.append(TrackerSimple(root_url, "/favicons/%s.ico" % (root_url)))
+                            self.newAliases.append(TrackerSimple(root_url, "favicons/%s.ico" % (root_url)))
                         except:
                             fav_icon_url2 = "%s://%s/favicon.ico" % (url_parsed.scheme, ".".join(root_url.split(".")[1:]))
                             try:
                                 fav_icon = urllib2.urlopen(fav_icon_url2, timeout=2).read()
                                 open("static/favicons/%s.ico" % (root_url),"wb").write(fav_icon)
-                                self.newAliases.append(TrackerSimple(root_url, "/favicons/%s.ico" % (root_url)))
+                                self.newAliases.append(TrackerSimple(root_url, "favicons/%s.ico" % (root_url)))
                             except:
                                 fav_icon = None
                 if fav_icon == None:
                     try:
                         os.symlink("default.ico", "static/favicons/%s.ico" % root_url)
-                        self.newAliases.append(TrackerSimple(root_url, "/favicons/%s.ico" % (root_url)))
+                        self.newAliases.append(TrackerSimple(root_url, "favicons/%s.ico" % (root_url)))
                     except:
                         pass
-                    faviconurl = "/favicons/default.ico"
+                    faviconurl = "favicons/default.ico"
                 else:
-                    faviconurl = "/favicons/%s.ico" % root_url
+                    faviconurl = "favicons/%s.ico" % root_url
             trackers += [Tracker(track_resp[0], track_resp[1], track_resp[2], track_resp[3], track_resp[4], bool(track_resp[5]), faviconurl, root_url)]
 #url, type, interval, seeds, leechs, enabled
         return trackers

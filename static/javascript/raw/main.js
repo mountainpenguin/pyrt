@@ -663,7 +663,7 @@ function drop_down(elem) {
      newrow.id = "newrow_torrent_id_" + torrent_id;
      newrow.className += "drop_down";
      newcell.id = "newcell_torrent_id_" + torrent_id;
-     newcell.innerHTML = "<img src='/images/loading.gif'> <span style='color:red;'>Loading</span>";
+     newcell.innerHTML = "<img src='images/loading.gif'> <span style='color:red;'>Loading</span>";
      newcell.colSpan = "7";
      var params = "request=get_torrent_info&html=yesplease&torrent_id=" + torrent_id;
      //ws.onmessage = function (e) {
@@ -797,7 +797,7 @@ function messageHandler(evt) {
           }
           var authkey = d.response;
           console.log("Authkey is: " + authkey);
-          window.open("/download?auth=" + authkey, "downloadPage");
+          window.open("download?auth=" + authkey, "downloadPage");
      } else {
           console.log("Unknown request");
      }
