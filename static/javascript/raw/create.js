@@ -26,7 +26,10 @@ if (window.document.location.protocol == "https:") {
 }
 
 $(document).ready( function () {
-    sock = new window.WebSocket(socket_protocol + "://" + window.document.location.host + "/createsocket");
+    var pn = window.location.pathname;
+    sock = new window.WebSocket(
+        socket_protocol + "://" + window.location.host + pn.substring(0, pn.lastIndexOf("/") + 1) + "createsocket"
+    );
     sock.onmessage = handleMessage;
     sock.onerror = function (evt) {
         console.log("socket error", evt, sock);
@@ -158,8 +161,8 @@ function handleMessage(evt) {
 
 function constructTorrent(output) {
     var newdiv = $("<div />").addClass("downloadme");
-    var newimage = $("<img />").attr("src", "/images/document.png").attr("title", "Download torrent");
-    var newlink = $("<a href='/downloadcreation?filename=" + output + "' />").append(newimage);
+    var newimage = $("<img />").attr("src", "images/document.png").attr("title", "Download torrent");
+    var newlink = $("<a href='downloadcreation?filename=" + output + "' />").append(newimage);
     newdiv.append(newlink)
     $("#progressbar").parent().append(newdiv)
 }

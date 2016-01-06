@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# 06.01.2016.14:59:93ee4c02b0b80ea77936765842e53d5274ebfd1a
+# 06.01.2016.16:18:abd5af30f8f71be0bfeb29e0d6333fa8ba4651d7
 # dd.mm.yyyy.HH:MM:last-commit
 
 CACHE:
@@ -55,7 +55,7 @@ css/jquery.treeview.css
 javascript/auto-combined.min.js
 javascript/auto-irc.min.js
 javascript/auto-rss.min.js
-javascript/create-combined.min.js
+javascript/create.min.js
 javascript/index-combined.min.js
 javascript/jquery-1.7.min.js
 javascript/jquery-ui-1.8.17.custom.min.js

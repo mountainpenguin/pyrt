@@ -548,8 +548,8 @@ class Ajax:
             else:
                 self.RT.load_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
             self.log.info("AJAX: '%s' (uploaded via /ajax) loaded%s successfully", fileName, (start and " and started" or ""))
-            return self.handler.HTMLredirect("/")
-            
+            return self.handler.HTMLredirect(".")
+
     def get_info_multi(self, view, sortby=None, reverse=None, drop_down_ids=None):
         drop_downs = {}
         if drop_down_ids:
