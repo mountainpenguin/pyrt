@@ -101,7 +101,8 @@ $(document).ready(function () {
           var files = e.originalEvent.dataTransfer.files;
           var filerecord = new Array();
           if (files.length > 0) {
-               fs = new window.WebSocket(socket_protocol + "://" + window.document.location.host + "/filesocket");
+
+               fs = new window.WebSocket(socket_protocol + "://" + window.document.location.host + window.document.location.pathname + "filesocket");
                fs.onmessage = function(ev) {
                     // format json: filename: <filename>, response: <response>
                     resp = JSON.parse(ev.data);
