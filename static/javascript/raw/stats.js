@@ -53,7 +53,10 @@ if (window.document.location.protocol == "https:") {
 }
 
 $(document).ready(function() {
-    StatSocket = new WebSocket(socket_protocol + "://" + window.document.location.host + "/statsocket");
+    var pn = window.location.pathname;
+    StatSocket = new WebSocket(
+        socket_protocol + "://" + window.location.host + pn.substring(0, pn.lastIndexOf("/") + 1) + "statsocket"
+    );
     StatSocket.onmessage = onMessage;
     StatSocket.onopen = onOpen;
     StatSocket.onclose = onClose;
@@ -261,7 +264,7 @@ function pieToolTip(shape, instruct) {
         tiplayer.add(image);
         tiplayer.draw();
     }
-    close.src = "/images/remove.png";
+    close.src = "images/remove.png";
 
     // populate rectangle
     // corners:
@@ -294,7 +297,7 @@ function pieToolTip(shape, instruct) {
         tiplayer.add(image);
         tiplayer.draw();
     }
-    upImg.src = "/images/up_icon.gif";
+    upImg.src = "images/up_icon.gif";
 
     var downImg = new Image();
     downImg.onload = function() {
@@ -308,7 +311,7 @@ function pieToolTip(shape, instruct) {
         tiplayer.add(image);
         tiplayer.draw();
     }
-    downImg.src = "/images/down_icon.gif";
+    downImg.src = "images/down_icon.gif";
 
     var ratioImg = new Image();
     ratioImg.onload = function() {
@@ -322,7 +325,7 @@ function pieToolTip(shape, instruct) {
         tiplayer.add(image);
         tiplayer.draw();
     }
-    ratioImg.src = "/images/ratio.jpg";
+    ratioImg.src = "images/ratio.jpg";
 
     var titleText = new Kinetic.Text({
         text: "Stats for " + instruct.tracker,
