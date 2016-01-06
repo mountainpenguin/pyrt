@@ -39,7 +39,7 @@ $(document).ready(function () {
           refresh_content("yes");
      }, refresh_rate);
 
-     ws = new window.WebSocket(socket_protocol + "://" + window.document.location.host + "/ajaxsocket");
+     ws = new window.WebSocket(socket_protocol + "://" + window.document.location.host + window.document.location.pathname + "ajaxsocket");
      ws.onmessage = messageHandler
      ws.onclose = function(e) {
      }
