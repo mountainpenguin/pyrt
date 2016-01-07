@@ -487,7 +487,7 @@ class rtorrent:
         return self.conn.system.method.set_key("event.download.finished", "move_complete_pyrt", "d.set_directory=%(path)s; execute=mv,-u,$d.get_base_path=,%(path)s" % {"path": path})
 
     def getGlobalMoveTo(self):
-        if "event.download.finished" in self.conn.system.method:
+        if self.conn.system.method.has_key("event.download.finished", "move_complete_pyrt"):
             try:
                 cmd = self.conn.system.method.get("event.download.finished")["move_complete_pyrt"]
                 "d.set_directory=%(path)s; execute=mv,-u,$d.get_base_path=,%(path)s"
@@ -499,7 +499,7 @@ class rtorrent:
             return (False, None)
 
     def removeGlobalMoveTo(self, arg):
-        if arg == "false" and "event.download.finished" in self.conn.system.method:
+        if arg == "false" and self.conn.system.method.has_key("event.download.finished", "move_complete_pyrt"):
             return self.conn.system.method.set_key("event.download.finished", "move_complete_pyrt")
 
     def getGlobalPortRange(self):

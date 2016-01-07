@@ -278,7 +278,7 @@ class Ajax:
 #            "error": error,
 #        }
 #        resp.update(kwargs)
-        self.write_message(json.dumps(resp))
+#        self.write_message(json.dumps(resp))
 
     def getRefreshRate(self):
         return self.config.get("refresh")
