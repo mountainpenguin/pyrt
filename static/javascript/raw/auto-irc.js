@@ -232,6 +232,10 @@ function runSocketInit() {
 
 function runSocketPostInit() {
      $(".bot_button").live("click", function () {
+        if ($(this).is(":disabled")) {
+            return;
+        }
+
         if ($(this).attr("id").indexOf("start_") !== -1) {
             var name = $(this).attr("id").split("start_")[1];
             socket.send("request=start_bot&arguments=" + name);
@@ -239,6 +243,10 @@ function runSocketPostInit() {
             var name = $(this).attr("id").split("stop_")[1];
             socket.send("request=stop_bot&arguments=" + name);
         }
+
+        // disable button and replace icon with loading gif
+        $(this).attr("disabled", true)
+               .find("img").attr("src", "images/loading.gif");
     });
 }
 

@@ -31,7 +31,7 @@ from modules import bencode
 
 
 class RPCHandler(object):
-    def __init__(self, publog, ajax, storage):
+    def __init__(self, app):
         self.METHODS = {
             "listMethods": self.listMethods,
             "privateLog": self.privateLog,
@@ -49,9 +49,10 @@ class RPCHandler(object):
             "updatehash_rss": self.updatehash_rss,
             "fetch_torrent_rss": self.fetch_torrent_rss,
         }
-        self.publog = publog
-        self.ajax = ajax
-        self.storage = storage
+        self.ajax = app._pyrtAJAX
+        self.storage = app._pyrtRemoteStorage
+        self.publog = app._pyrtLog
+        self.app = app
 
     def updatehash_rss(self, ID, h):
 #        self.log("info", "Updated hash for feed %s", ID)
@@ -157,8 +158,27 @@ class RPCHandler(object):
         if not resp:
             self.log("error", "%s bot tried to deregister, but no record", name)
 
+        autosocks = self.app._pyrtSockets.getType("autoSocket")
+        for autosock in autosocks:
+            autosock.socketObject.write_message(json.dumps({
+                "name": name,
+                "request": "stop_bot",
+                "response": "OK",
+                "error": None
+            }))
+
     def register(self, pid, name):
         resp = self.storage.registerBot(pid, name)
+        # send refresh to auto page if open
+        autosocks = self.app._pyrtSockets.getType("autoSocket")
+        for autosock in autosocks:
+            autosock.socketObject.write_message(json.dumps({
+                "name": name,
+                "request": "start_bot",
+                "response": "OK",
+                "error": None
+            }))
+
         if resp:
             return "OK"
         else:

@@ -804,7 +804,7 @@ class RPCSocket(WebSocketHandler):
     def open(self):
         logging.info("RPCsocket successfully opened")
         self.socketID = self.application._pyrtSockets.add("rpcSocket", self)
-        self._RPChandler = rpchandler.RPCHandler(self.application._pyrtLog, self.application._pyrtAJAX, self.application._pyrtRemoteStorage)
+        self._RPChandler = rpchandler.RPCHandler(self.application)
 
     def on_message(self, message):
 #        logging.info("RPCsocket message: %s", message)
