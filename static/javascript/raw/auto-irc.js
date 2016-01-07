@@ -248,6 +248,9 @@ function onOpen (evt) {
 }
 
 function onMessage (evt) {
+     if (evt.data == "pong") {
+         return;
+     }
      if (evt.data.indexOf("ERROR") === 0) {
         console.log(evt.data);
         socket.close();

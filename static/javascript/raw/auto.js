@@ -42,6 +42,12 @@ $(document).ready( function () {
         console.log("autoSocket closed", evt, socket);
     }
 
+    var socketrefresh = setInterval(
+        function(){
+            socket.send("ping")
+        }, 1000 * 40
+    );
+
     $(".filter_select").live("change", function() {
         var selectelem = $("<select class='filter_select'><option selected='selected'>---</option><option>and</option><option>not</option><option>size</option></select>");
         var andinput = $("<input name='add_filter' class='input_filter positive' type='text' placeholder='Positive Filter' />");

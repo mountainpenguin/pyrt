@@ -43,6 +43,11 @@ $(document).ready(function () {
         console.log("logSocket closed", evt, ls);
     }
 
+    var lsrefresh = setInterval(
+        function () {ls.send("ping")},
+        1000 * 40
+    );
+
     // bind to changes in "selection" buttons
     $(".log_control").bind("click", function(e) {
         if ($(this).hasClass("selected")) {

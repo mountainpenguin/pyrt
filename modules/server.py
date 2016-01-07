@@ -114,6 +114,11 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         host = self.request.headers.get("Host")
         return origin == host
 
+    def check_ping(self, message):
+        if message == "ping":
+            self.write_message("pong")
+            return True
+
 
 class Socket(object):
     def __init__(self, socketID, socketType, socketObject, session, callback):
@@ -343,6 +348,9 @@ class ajaxSocket(WebSocketHandler):
             self.close()
             return
 
+        if self.check_ping(message):
+            return
+
 #        parse out get query
 #        q = urlparse.parse_qs(message)
 #        request = q.get("request", [None])[0]
@@ -417,6 +425,9 @@ class logSocket(WebSocketHandler):
             self.close()
             return
 
+        if self.check_ping(message):
+            return
+
         try:
             args = urlparse.parse_qs(message)
             request = args["request"][0]
@@ -458,6 +469,9 @@ class fileSocket(WebSocketHandler):
             logging.error("%d %s (%s)", self.get_status(), "fileSocket message denied", self.request.remote_ip)
             self.write_message("ERROR/Permission denied")
             self.close()
+            return
+
+        if self.check_ping(message):
             return
 
         # parse message
@@ -508,6 +522,9 @@ class statSocket(WebSocketHandler):
 
             self.write_message("ERROR/Permission denied")
             self.close()
+            return
+
+        if self.check_ping(message):
             return
 
         try:
@@ -576,6 +593,10 @@ class createSocket(WebSocketHandler):
             self.write_message("ERROR/Permission denied")
             self.close()
             return
+
+        if self.check_ping(message):
+            return
+
         logging.info("createSocket message: %s", message)
         resp = create.handle_message(message, writeback=self)
         if resp:
@@ -613,6 +634,10 @@ class autoSocket(WebSocketHandler):
             self.write_message("ERROR/Permission denied")
             self.close()
             return
+
+        if self.check_ping(message):
+            return
+
         logging.info("autoSocket message: %s", message)
         resp = self._autoHandler.handle_message(message)
         if resp:
@@ -783,6 +808,10 @@ class RPCSocket(WebSocketHandler):
 
     def on_message(self, message):
 #        logging.info("RPCsocket message: %s", message)
+
+        if self.check_ping(message):
+            return
+
         auth = self._RPChandler.get_auth(message)
         if not _check.rpc(self, auth):
             self.application._pyrtLog.error("RPC: message denied - invalid auth key")

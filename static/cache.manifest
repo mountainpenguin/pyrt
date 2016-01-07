@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# 06.01.2016.17:38:b35c752766929818f4a4216acac37c2e44dcb306
+# 07.01.2016.22:43:2969b0b9bb1ec1c0f76651458dc5d66a7a442c0c
 # dd.mm.yyyy.HH:MM:last-commit
 
 CACHE:
@@ -58,14 +58,19 @@ javascript/auto-rss.min.js
 javascript/create.min.js
 javascript/index-combined.min.js
 javascript/jquery-1.7.min.js
+javascript/jquery.contextmenu.r2.js
+javascript/jquery.cookie.js
+javascript/jquery-sliderow.js
+javascript/jquery.treeview.js
 javascript/jquery-ui-1.8.17.custom.min.js
 javascript/kinetic-v3.9.5.min.js
-javascript/log.min.js
+javascript/liteaccordion.jquery.min.js
 javascript/login-combined.min.js
+javascript/log.min.js
+javascript/main.min.js
 javascript/options.min.js
-javascript/stats.min.js
 javascript/startup.min.js
-
+javascript/stats.min.js
 
 NETWORK:
 cache.manifest

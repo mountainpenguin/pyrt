@@ -49,6 +49,13 @@ $(document).ready(function () {
      ws.onerror = function(e) {
         console.log("WebSocket error", ws, e);
      }
+     if (refresh_rate < 60000) {
+         setInterval(
+            function () {
+                ws.send("ping");
+            }, 40 * 1000
+         );
+     }
      
      $("#add-torrent-button").click(function(){
           $("#add_torrent").dialog("open");
@@ -768,6 +775,9 @@ function destroyDragOverlay() {
 }
 
 function messageHandler(evt) {
+     if (evt.data == "pong") {
+         return;
+     }
      d = JSON.parse(evt.data);
      if (d.request == "get_info_multi") {
           return parse_content(d.response, "yes");

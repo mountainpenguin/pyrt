@@ -61,6 +61,11 @@ $(document).ready(function() {
     StatSocket.onopen = onOpen;
     StatSocket.onclose = onClose;
     StatSocket.onerror = onError;
+    setInterval(
+        function () {
+            StatSocket.send("ping");
+        }, 40 * 1000
+    );
 });
 
 function mainLoop() {
@@ -597,6 +602,7 @@ function onMessage(e) {
                "StatSocket ERROR: " + e.data.split("ERROR/")[1]
           );
           return false;
+     } else if (e.data == "pong") {
      } else {
           data = JSON.parse(e.data);
           if (data.type == "trackers") {

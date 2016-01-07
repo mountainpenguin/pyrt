@@ -40,6 +40,11 @@ $(document).ready( function () {
     sock.onclose = function (evt) {
         console.log("socket closed", evt, sock);
     }
+    var sockrefresh = setInterval(
+        function() {
+            sock.send("ping")
+        }, 1000 * 40
+    );
     $("#path").keyup( function (e) {
         sock.send("request=exists&path=" + $(this).val());
     });
@@ -127,6 +132,7 @@ function submitForm() {
 function handleMessage(evt) {
     if (evt.data.indexOf("ERROR") == 0) {
         console.log("socket error:", evt.data);
+    } else if (evt.data == "pong") {
     } else {
         var data = JSON.parse(evt.data);
         var req = data.request;
