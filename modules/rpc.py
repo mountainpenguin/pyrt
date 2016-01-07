@@ -58,17 +58,7 @@ class RPC(object):
         return self._ssend(json.dumps(obj))
 
     def _ssend(self, thing, json_encoded=False):
-        if not json_encoded:
-            try:
-                jsoned = json.dumps(thing)
-            except ValueError:
-                # don't raise error here, transfer it on to the main loop
-                jsoned = thing
-        else:
-            jsoned = thing
-
-#        self.socket.send(thing)
-        self.socket.send(jsoned)
+        self.socket.send(thing)
         # block for reply
         try:
             resp = self.socket.recv()
