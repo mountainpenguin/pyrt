@@ -30,7 +30,7 @@ import time
 import subprocess
 import argparse
 import signal
-
+from psutil import pid_exists
 
 __AUTHOR__ = "mountainpenguin (pinguino.de.montana@googlemail.com)"
 __SITE__ = "http://github.com/mountainpenguin/pyrt"
@@ -39,7 +39,11 @@ __LICENSE__ = "GPLv3"
 
 def _searchPID():
     if os.path.exists("proc/pyrt.pid"):
-        return int(open("proc/pyrt.pid").read().strip())
+        PID = int(open("proc/pyrt.pid").read().strip())
+        # TODO: Find a way to check that PID belongs to Pyrt, if there exist a program with the same PID,
+        # because if the Pyrt crash (does not remove the PID file) and another program starts and gets the
+        # same PID, then _searchPID will think that Pyrt is already running.
+        return pid_exists(PID)
 
 def _searchBotPID():
     PIDFiles = glob.glob("proc/bots/*.pid")
@@ -80,7 +84,7 @@ def _updateRepo():
     
 def start(update=True):
     if _searchPID():
-        print("pyRT has already been started")
+        print("pyRT has already been started and is running")
         return
     
     if update:
