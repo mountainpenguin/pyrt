@@ -21,6 +21,7 @@ Likely not to function with python 3.0 or higher
 
 ### Server dependencies
 `tornado` version 2.2.1 (http://www.tornadoweb.org/)
+`psutil` (https://github.com/giampaolo/psutil)
 
 ### Client-side dependencies (major dependencies)
 Javascript-enabled browser which supports the following features:
@@ -57,6 +58,13 @@ tar xvzf tornado-2.2.1.tar.gz
 cd tornado-2.2.1
 python setup.py install
 ```
+
+### Install psutil
+*Debian* `apt-get install python-psutil`
+
+*Gentoo/Funtoo* `emerge -av dev-python/psutil`
+
+or *using pip* `pip2 install psutil`
 
 ### Configure pyRT
 Copy example config `cp config/pyrtrc.example config/.pyrtrc`
