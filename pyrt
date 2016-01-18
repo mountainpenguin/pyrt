@@ -21,10 +21,9 @@
 
 from __future__ import print_function
 from modules import mkpasswd
-#move imports to start() to speed up other functions
+# move imports to start() to speed up other functions
 import os
 import traceback
-import sys
 import glob
 import time
 import subprocess
@@ -36,6 +35,7 @@ __AUTHOR__ = "mountainpenguin (pinguino.de.montana@googlemail.com)"
 __SITE__ = "http://github.com/mountainpenguin/pyrt"
 __VERSION__ = "1.0.0"
 __LICENSE__ = "GPLv3"
+
 
 def _searchPID():
     if os.path.exists("proc/pyrt.pid"):
@@ -60,7 +60,7 @@ def _searchPID():
 
 def _searchBotPID():
     PIDFiles = glob.glob("proc/bots/*.pid")
-    #e.g. proc/bots/12345.pid
+    # e.g. proc/bots/12345.pid
     pids = []
     for PIDFile in PIDFiles:
         with open(PIDFile) as doc:
@@ -68,11 +68,13 @@ def _searchBotPID():
 
     return pids
 
+
 def _isGitRepo():
     if os.path.exists(".git"):
         return True
     else:
         return False
+
 
 def _checkRepo():
     p = subprocess.Popen(["git remote update"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -91,10 +93,12 @@ def _checkRepo():
             print("Repository is up-to-date")
             return False
 
+
 def _updateRepo():
-    #update remote
+    # update remote
     os.system("git pull")
     open(".uncache", "a").close()
+
 
 def start(update=True):
     if _searchPID():
@@ -113,12 +117,13 @@ def start(update=True):
     c.loadconfig()
 
     print("Starting daemon with log file %s" % c.get("logfile"))
-    STDOUT=open(c.get("logfile"), "a")
+    STDOUT = open(c.get("logfile"), "a")
     with daemon.DaemonContext(stdout=STDOUT, stderr=STDOUT, working_directory=os.getcwd()):
         serv = server.Main()
         PID = os.getpid()
-        open("proc/pyrt.pid","w").write(str(PID))
+        open("proc/pyrt.pid", "w").write(str(PID))
         serv.main(c)
+
 
 def stop(force=False):
     if not _searchPID():
@@ -182,6 +187,7 @@ def status():
     else:
         print("pyRT is not running")
 
+
 def runUpdate():
     if _isGitRepo():
         updateready = _checkRepo()
@@ -205,7 +211,7 @@ if __name__ == "__main__":
     print("See LICENCE for details", end="\n\n")
 
     parser = argparse.ArgumentParser(description="PyRT rtorrent webUI")
-    parser.add_argument("action", choices=("start","stop","restart","status","mkpasswd","update"), help="Control the webUI daemon")
+    parser.add_argument("action",  choices=("start", "stop", "restart", "status", "mkpasswd", "update"),  help="Control the webUI daemon")
     parser.add_argument("-n", "--noupdate", help="Don't check for updates", action="store_false")
     parser.add_argument("-f", "--force", help="Force the webUI to stop", action="store_true")
     parser.add_argument("-u", "--uncache", help="Aggressively uncache for the next two refreshes", action="store_true")
