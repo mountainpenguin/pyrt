@@ -111,4 +111,4 @@ def get_global(encode_json=False):
     if not encode_json:
         return Global(**data)
     else:
-        return json.dumps(Global(**data))
+        return json.dumps(Global(**data).__dict__)
