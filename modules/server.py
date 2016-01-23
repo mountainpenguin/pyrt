@@ -68,42 +68,11 @@ class null(object):
         return None
 
 
-class _check(object):
-    @staticmethod
-    def web(obj):
-        passw = obj.get_argument("password", None)
-        cookie = obj.cookies
-        cCheck = obj.application._pyrtL.checkLogin(cookie, obj.request.remote_ip)
-        if not cCheck and not passw:
-            return (False, "")
-        elif not cCheck and passw:
-            pCheck = obj.application._pyrtL.checkPassword(passw, obj.request.remote_ip)
-            if pCheck:
-                return (True, True)  # set cookie
-            else:
-                return (False, "Incorrect Password")
-        else:
-            return (True, False)
-
-    @staticmethod
-    def socket(obj):
-        cookie = obj.cookies
-        cCheck = obj.application._pyrtL.checkLogin(cookie, obj.request.remote_ip)
-        if not cCheck:
-            return False
-        else:
-            return True
-
-    @staticmethod
-    def rpc(obj, auth):
-        check = obj.application._pyrtL.checkRPCAuth(auth)
-        if not check:
-            return False
-        else:
-            return True
-
-
 class WebSocketHandler(tornado.websocket.WebSocketHandler):
+    def get_current_user(self):
+        if self.application._pyrtL.checkLogin(self.get_secure_cookie("sess_id"), self.request.remote_ip):
+            return True
+
     def check_origin(self, origin):
         parsed_origin = urlparse.urlparse(origin)
         origin = parsed_origin.netloc
@@ -175,18 +144,36 @@ class SocketStorage(object):
         return filter(lambda x: x.session == session, allSocks)
 
 
-class index(tornado.web.RequestHandler):
+class BaseHandler(tornado.web.RequestHandler):
+    def get_current_user(self):
+        if self.application._pyrtL.checkLogin(self.get_secure_cookie("sess_id"), self.request.remote_ip):
+            return True
+
+
+class loginHandler(BaseHandler):
+    def get(self):
+        if self.current_user:
+            self.redirect("./")
+        else:
+            self.write(self.application._pyrtL.loginHTML())
+
+    def post(self):
+        passw = self.get_argument("password", None)
+        pCheck = self.application._pyrtL.checkPassword(passw, self.request.remote_ip)
+        if pCheck:
+            # set cookie
+            self.set_secure_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
+            self.redirect("./")
+        else:
+            self.write(self.application._pyrtL.loginHTML("Incorrect Password"))
+
+
+class index(BaseHandler):
     """Default page handler for /
 
     """
+    @tornado.web.authenticated
     def get(self):
-        chk = _check.web(self)
-        if not chk[0]:
-            self.write(self.application._pyrtL.loginHTML(chk[1]))
-            return
-        elif chk[0] and chk[1]:
-            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
-
         view = self.get_argument("view", None)
         sortby = self.get_argument("sortby", None)
         reverse = self.get_argument("reverse", None)
@@ -205,16 +192,10 @@ class index(tornado.web.RequestHandler):
     post = get
 
 
-class createHandler(tornado.web.RequestHandler):
+class createHandler(BaseHandler):
     """Page handler for creating torrents"""
+    @tornado.web.authenticated
     def get(self):
-        chk = _check.web(self)
-        if not chk[0]:
-            self.write(self.application._pyrtL.loginHTML(chk[1]))
-            return
-        elif chk[0] and chk[1]:
-            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
-
         searchList = [{
             "ROOT_DIR": self.application._pyrtRT.getGlobalRootPath()
         }]
@@ -224,16 +205,10 @@ class createHandler(tornado.web.RequestHandler):
     post = get
 
 
-class downloadCreation(tornado.web.RequestHandler):
+class downloadCreation(BaseHandler):
     """Page handler for downloading temp torrents"""
+    @tornado.web.authenticated
     def get(self):
-        chk = _check.web(self)
-        if not chk[0]:
-            self.write(self.application._pyrtL.loginHTML(chk[1]))
-            return
-        elif chk[0] and chk[1]:
-            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
-
         filename = self.get_argument("filename", None)
         if not filename:
             raise tornado.web.HTTPError(400, log_message="Error, no filename specified")
@@ -249,20 +224,19 @@ class downloadCreation(tornado.web.RequestHandler):
     post = get
 
 
-class ajax(tornado.web.RequestHandler):
+class ajax(BaseHandler):
     """Handler for ajax queries (/ajax)
 
     """
     def get(self):
+        if not self.current_user:
+            self.write("Session Ended")
+            return
+
         qs = self.request.arguments
         request = qs.get("request", [None])[0]
         if not request:
             raise tornado.web.HTTPError(400, log_message="Error, no request specified")
-
-        chk = _check.web(self)
-        if not chk[0]:
-            self.write("Session Ended")
-            return
 
         if not self.application._pyrtAJAX.has_command(request):
             raise tornado.web.HTTPError(400, log_message="Error Invalid Method")
@@ -281,35 +255,23 @@ class ajax(tornado.web.RequestHandler):
     post = get
 
 
-class options(tornado.web.RequestHandler):
+class options(BaseHandler):
     """Handler for options page view (/options)
 
             *** Currently a work in progress ***
             Can only be viewed if "test" is passed as an argument.
             If it is, writes optionsPage.Options.index()
     """
+    @tornado.web.authenticated
     def get(self):
-        chk = _check.web(self)
-        if not chk[0]:
-            self.write(self.application._pyrtL.loginHTML(chk[1]))
-            return
-        elif chk[0] and chk[1]:
-            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
-
         self.write(self.application._pyrtOPTIONS.index())
 
     post = get
 
 
-class logHandler(tornado.web.RequestHandler):
+class logHandler(BaseHandler):
+    @tornado.web.authenticated
     def get(self):
-        chk = _check.web(self)
-        if not chk[0]:
-            self.write(self.application._pyrtL.loginHTML(chk[1]))
-            return
-        elif chk[0] and chk[1]:
-            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
-
         logHTML = self.application._pyrtLog.html()
         with open("htdocs/logHTML.tmpl") as template:
             self.write(template.read() % {"logHTML": logHTML})
@@ -320,13 +282,9 @@ class logHandler(tornado.web.RequestHandler):
 class ajaxSocket(WebSocketHandler):
     socketID = None
 
+    @tornado.web.authenticated
     def open(self):
-        if not _check.socket(self):
-            logging.error("%d %s %.2fms", self.get_status(), "ajaxSocket denied", 1000*self.request.request_time())
-            self.close()
-            return
-
-        self.socketID = self.application._pyrtSockets.add("ajaxSocket", self, self.cookies.get("sess_id").value)
+        self.socketID = self.application._pyrtSockets.add("ajaxSocket", self, self.get_secure_cookie("sess_id"))
         logging.info("%d %s (%s)", self.get_status(), "ajaxSocket opened", self.request.remote_ip)
 
     def _respond(self, request, response, error=None, **kwargs):
@@ -338,12 +296,8 @@ class ajaxSocket(WebSocketHandler):
         resp.update(kwargs)
         self.write_message(json.dumps(resp))
 
+    @tornado.web.authenticated
     def on_message(self, message):
-        if not _check.socket(self):
-            logging.error("%d %s %.2fms", self.get_status(), "ajaxSocket message denied", 1000*self.request.request_time())
-            self.close()
-            return
-
         if self.check_ping(message):
             return
 
@@ -402,25 +356,16 @@ class ajaxSocket(WebSocketHandler):
 class logSocket(WebSocketHandler):
     socketID = None
 
+    @tornado.web.authenticated
     def open(self):
-        if not _check.socket(self):
-            logging.error("%d %s (%s)", self.get_status(), "logSocket denied", self.request.remote_ip)
-            self.write_message("ERROR/Permission denied")
-            self.close()
-            return
         self.socketID = self.application._pyrtSockets.add(
             "logSocket",
-            self, self.cookies.get("sess_id").value
+            self, self.get_secure_cookie("sess_id")
         )
         logging.info("%d %s (%s)", self.get_status(), "logSocket opened", self.request.remote_ip)
 
+    @tornado.web.authenticated
     def on_message(self, message):
-        if not _check.socket(self):
-            logging.error("%d %s (%s)", self.get_status(), "logSocket message denied", self.request.remote_ip)
-            self.write_message("ERROR/Permission denied")
-            self.close()
-            return
-
         if self.check_ping(message):
             return
 
@@ -450,23 +395,13 @@ class logSocket(WebSocketHandler):
 class fileSocket(WebSocketHandler):
     socketID = None
 
+    @tornado.web.authenticated
     def open(self):
-        if not _check.socket(self):
-            logging.error("%d %s (%s)", self.get_status(), "fileSocket denied", self.request.remote_ip)
-            self.write_message("ERROR/Permission denied")
-            self.close()
-            return
-
-        self.socketID = self.application._pyrtSockets.add("fileSocket", self, self.cookies.get("sess_id").value)
+        self.socketID = self.application._pyrtSockets.add("fileSocket", self, self.get_secure_cookie("sess_id"))
         logging.info("%d %s (%s)", self.get_status(), "fileSocket opened", self.request.remote_ip)
 
+    @tornado.web.authenticated
     def on_message(self, message):
-        if not _check.socket(self):
-            logging.error("%d %s (%s)", self.get_status(), "fileSocket message denied", self.request.remote_ip)
-            self.write_message("ERROR/Permission denied")
-            self.close()
-            return
-
         if self.check_ping(message):
             return
 
@@ -503,23 +438,13 @@ class fileSocket(WebSocketHandler):
 class statSocket(WebSocketHandler):
     socketID = None
 
+    @tornado.web.authenticated
     def open(self):
-        if not _check.socket(self):
-            logging.error("%d %s (%s)", self.get_status(), "statSocket denied", self.request.remote_ip)
-            self.write_message("ERROR/Permission denied")
-            self.close()
-            return
-        self.socketID = self.application._pyrtSockets.add("statSocket", self, self.cookies.get("sess_id").value)
+        self.socketID = self.application._pyrtSockets.add("statSocket", self, self.get_secure_cookie("sess_id"))
         logging.info("%d %s (%s)", self.get_status(), "statSocket opened", self.request.remote_ip)
 
+    @tornado.web.authenticated
     def on_message(self, message):
-        if not _check.socket(self):
-            logging.error("%d %s (%s)", self.get_status(), "statSocket message denied", self.request.remote_ip)
-
-            self.write_message("ERROR/Permission denied")
-            self.close()
-            return
-
         if self.check_ping(message):
             return
 
@@ -538,35 +463,9 @@ class statSocket(WebSocketHandler):
         logging.info("%d %s (%s)", self.get_status(), "statSocket closed", self.request.remote_ip)
 
 
-class test(tornado.web.RequestHandler):
+class stats(BaseHandler):
+    @tornado.web.authenticated
     def get(self):
-        store = self.application._pyrtRemoteStorage
-        self.write("""<!DOCTYPE html>
-                   <html>
-                    <body>
-                        <div>
-                            <pre>
-                                <code>
-                                    %s
-                                </code>
-                            </pre>
-                        </div>
-                    </body>
-                   </html>
-                   """ % repr(store.SOCKETS))
-
-    post = get
-
-
-class stats(tornado.web.RequestHandler):
-    def get(self):
-        chk = _check.web(self)
-        if not chk[0]:
-            self.write(self.application._pyrtL.loginHTML(chk[1]))
-            return
-        elif chk[0] and chk[1]:
-            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
-
         with open("htdocs/statHTML.tmpl") as doc:
             self.write(doc.read())
     post = get
@@ -575,21 +474,12 @@ class stats(tornado.web.RequestHandler):
 class createSocket(WebSocketHandler):
     socketID = None
 
+    @tornado.web.authenticated
     def open(self):
-        if not _check.socket(self):
-            logging.error("%d %s (%s)", self.get_status(), "createSocket denied", self.request.remote_ip)
-            self.write_message("ERROR/Permission denied")
-            self.close()
-            return
-        self.socketID = self.application._pyrtSockets.add("createSocket", self, self.cookies.get("sess_id").value)
+        self.socketID = self.application._pyrtSockets.add("createSocket", self, self.get_secure_cookie("sess_id"))
 
+    @tornado.web.authenticated
     def on_message(self, message):
-        if not _check.socket(self):
-            logging.error("%d createSocket message denied (%s)", self.get_status(), self.request.remote_ip)
-            self.write_message("ERROR/Permission denied")
-            self.close()
-            return
-
         if self.check_ping(message):
             return
 
@@ -614,23 +504,14 @@ class createSocket(WebSocketHandler):
 class autoSocket(WebSocketHandler):
     socketID = None
 
+    @tornado.web.authenticated
     def open(self):
-        if not _check.socket(self):
-            logging.error("%d %s (%s)", self.get_status(), "autoSocket denied", self.request.remote_ip)
-            self.write_message("ERROR/Permission denied")
-            self.close()
-            return
-        self.socketID = self.application._pyrtSockets.add("autoSocket", self, self.cookies.get("sess_id").value)
+        self.socketID = self.application._pyrtSockets.add("autoSocket", self, self.get_secure_cookie("sess_id"))
         self._autoHandler = autohandler.AutoHandler(login=self.application._pyrtL, log=self.application._pyrtLog, remoteStorage=self.application._pyrtRemoteStorage)
         logging.info("%d autoSocket opened (%s)", self.get_status(), self.request.remote_ip)
 
+    @tornado.web.authenticated
     def on_message(self, message):
-        if not _check.socket(self):
-            logging.error("%d autoSocket message denied (%s)", self.get_status(), self.request.remote_ip)
-            self.write_message("ERROR/Permission denied")
-            self.close()
-            return
-
         if self.check_ping(message):
             return
 
@@ -651,12 +532,9 @@ class autoSocket(WebSocketHandler):
         logging.info("%d autoSocket closed (%s)", self.get_status(), self.request.remote_ip)
 
 
-class download(tornado.web.RequestHandler):
+class download(BaseHandler):
+    @tornado.web.authenticated
     def get(self):
-        chk = _check.web(self)
-        if not chk[0]:
-            raise tornado.web.HTTPError(403, log_message="Error: Access Denied")
-
         auth = self.get_argument("auth", None)
         if not auth:
             raise tornado.web.HTTPError(400, log_message="Error: No auth defined")
@@ -675,19 +553,14 @@ class download(tornado.web.RequestHandler):
             else:
                 raise tornado.web.HTTPError(404, log_message="Error: No such file")
 
+    @tornado.web.authenticated
     def post(self):
         raise tornado.web.HTTPError(405, log_message="Error: POST when GET expected")
 
 
-class autoHandler(tornado.web.RequestHandler):
+class autoHandler(BaseHandler):
+    @tornado.web.authenticated
     def get(self):
-        chk = _check.web(self)
-        if not chk[0]:
-            self.write(self.application._pyrtL.loginHTML(chk[1]))
-            return
-        elif chk[0] and chk[1]:
-            self.set_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
-
         which = self.get_argument("which", None)
         if not which or which.upper() == "IRC":
             with open("htdocs/autoIRCHTML.tmpl") as doc:
@@ -809,7 +682,7 @@ class RPCSocket(WebSocketHandler):
             return
 
         auth = self._RPChandler.get_auth(message)
-        if not _check.rpc(self, auth):
+        if not self.application._pyrtL.checkRPCAuth(auth):
             self.application._pyrtLog.error("RPC: message denied - invalid auth key")
             logging.error("rpcSocket message denied - invalid auth key")
             self.write_message(json.dumps({"response": None, "error": "Invalid Auth"}))
@@ -837,8 +710,9 @@ class RPCSocket(WebSocketHandler):
         logging.info("RPCsocket closed")
 
 
-class manifest(tornado.web.RequestHandler):
+class manifest(BaseHandler):
     """Fake static file handler for serving static/cache.manifest"""
+    @tornado.web.authenticated
     def get(self):
         if os.path.exists(".uncache"):
             manifest = "CACHE MANIFEST"
@@ -853,8 +727,9 @@ class manifest(tornado.web.RequestHandler):
         self.set_status(200)
 
 
-class manifesthack(tornado.web.RequestHandler):
+class manifesthack(BaseHandler):
     """Prevent dynamic index from being cached"""
+    @tornado.web.authenticated
     def get(self):
         html = """
         <!DOCTYPE html>
@@ -907,6 +782,10 @@ class Main(object):
         settings = {
             "static_path": os.path.join(os.getcwd(), "static"),
             "gzip": True,
+            "cookie_secret": "".join([
+                random.choice(string.printable) for x in range(50)
+            ]),
+            "login_url": "./login",
         }
         application = tornado.web.Application([
             (r"/css/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.getcwd(), "static/css/")}),
@@ -916,6 +795,7 @@ class Main(object):
             (r"/cache\.manifest", manifest),
             (r"/manifest-hack", manifesthack),
             (r"/", index),
+            (r"/login", loginHandler),
             (r"/index", index),
             (r"/ajax", ajax),
             (r"/options", options),

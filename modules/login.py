@@ -114,9 +114,8 @@ class Login:
             self.Log.warning("LOGIN: Attempted login from %s failed (invalid password)", ip)
             return False
 
-    def checkLogin(self, cookies, ipaddr):
+    def checkLogin(self, session_id, ipaddr):
         try:
-            session_id = cookies.get("sess_id").value
             salt = session_id.split("$")[1]
 
             h1 = hashlib.sha256(self.USER.sess_id).hexdigest()
