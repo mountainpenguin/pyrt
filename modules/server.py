@@ -279,6 +279,184 @@ class logHandler(BaseHandler):
     post = get
 
 
+class stats(BaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        with open("htdocs/statHTML.tmpl") as doc:
+            self.write(doc.read())
+    post = get
+
+
+class download(BaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        auth = self.get_argument("auth", None)
+        if not auth:
+            raise tornado.web.HTTPError(400, log_message="Error: No auth defined")
+
+        try:
+            path = self.application._pyrtDownloadHandler.getPath(auth)
+        except downloadHandler.NoSuchToken:
+            raise tornado.web.HTTPError(404, log_message="Error: No such token")
+        except downloadHandler.TokenExpired:
+            raise tornado.web.HTTPError(410, log_message="Error: Token expired")
+        else:
+            if os.path.exists(path):
+                self.set_header("Content-Disposition", "attachment; filename=%s" % os.path.basename(path))
+                with open(path) as fd:
+                    self.write(fd.read())
+            else:
+                raise tornado.web.HTTPError(404, log_message="Error: No such file")
+
+    @tornado.web.authenticated
+    def post(self):
+        raise tornado.web.HTTPError(405, log_message="Error: POST when GET expected")
+
+
+class autoHandler(BaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        which = self.get_argument("which", None)
+        if not which or which.upper() == "IRC":
+            with open("htdocs/autoIRCHTML.tmpl") as doc:
+                self.write(doc.read() % {"PERM_SALT": self.application._pyrtL.getPermSalt()})
+        else:
+            with open("htdocs/autoRSSHTML.tmpl") as doc:
+                self.write(doc.read() % {"PERM_SALT": self.application._pyrtL.getPermSalt()})
+    post = get
+
+
+class SCGIHandler(tornado.web.RequestHandler):
+    def post(self):
+        c = self.application._pyrtGLOBALS["config"]
+        # authenticate
+        authenticated = False
+        if "Authorization" in self.request.headers:
+            authorization = self.request.headers.get("Authorization")
+            if c.get("scgi_method") == "Basic":
+                encoded = authorization.split("Basic ")[1]
+                decoded = base64.b64decode(encoded)
+                username, passwd = decoded.split(":")
+                if username != c.get("scgi_username") or passwd != c.get("scgi_password"):
+                    self.set_status(401)
+                    self.set_header("WWW-Authenticate", "Basic realm=\"%s\"" % c.get("host"))
+                    authenticated = False
+                else:
+                    authenticated = True
+            else:
+                # use Digest method
+                params = authorization.split("Digest ")[1].split(",")
+
+                def op(x): x.strip().replace("\"", "").split("=")
+
+                params = dict([op(y) for y in params])
+#                client_username = params["username"]
+                client_response = params["response"]
+                client_nonce = params["nonce"]
+                client_nc = params["nc"]
+                client_cnonce = params["cnonce"]
+                client_qop = params["qop"]
+
+                digest_user = c.get("scgi_username")
+                digest_pass = c.get("scgi_password")
+                digest_realm = c.get("host")
+
+                digest_A1 = "%s:%s@%s:%s" % (
+                    digest_user, digest_user, digest_realm, digest_pass
+                )
+
+                digest_A2 = "%s:%s" % (
+                    self.request.method,
+                    self.request.uri
+                )
+
+                digest_KD = hashlib.md5("%s:%s" % (
+                    hashlib.md5(digest_A1).hexdigest(),
+                    "%s:%s:%s:%s:%s" % (
+                        client_nonce,
+                        client_nc,
+                        client_cnonce,
+                        client_qop,
+                        hashlib.md5(digest_A2).hexdigest()
+                    )
+                )).hexdigest()
+
+                if digest_KD == client_response:
+                    authenticated = True
+
+        if authenticated:
+            xml = self.request.body
+            req = xmlrpc2scgi.SCGIRequest(c.get("rtorrent_socket"))
+            resp = req.send(xml)
+            if not self._finished:
+                self.finish(resp)
+        else:
+            self.set_status(401)
+            if c.get("scgi_method") == "Basic":
+                self.set_header("WWW-Authenticate", "Basic realm=\"%s\"" % c.get("host"))
+            else:
+                digest_realm = c.get("host")
+                digest_user = c.get("scgi_username")
+
+                digest_nonce = hashlib.md5(
+                    "%d:%s" % (time.time(), digest_realm)
+                ).hexdigest()
+                digest_opaque = hashlib.md5(
+                    "".join([random.choice(string.letters) for x in range(20)])
+                ).hexdigest()
+
+                digest_header = (
+                    "Digest realm=\"%(user)s@%(realm)s\", "
+                    "nonce=\"%(nonce)s\", "
+                    "algorithm=\"MD5\", "
+                    "qop=\"auth\", "
+                    "opaque=\"%(opaque)s\""
+                ) % {
+                    "user": digest_user,
+                    "realm": digest_realm,
+                    "nonce": digest_nonce,
+                    "opaque": digest_opaque,
+                }
+                self.set_header("WWW-Authenticate", digest_header)
+
+    get = post
+
+
+class manifest(BaseHandler):
+    """Fake static file handler for serving static/cache.manifest"""
+    @tornado.web.authenticated
+    def get(self):
+        if os.path.exists(".uncache"):
+            manifest = "CACHE MANIFEST"
+            if hasattr(self.application, "_UNCACHE") and self.application._UNCACHE:
+                os.remove(".uncache")
+            else:
+                self.application._UNCACHE = True
+        else:
+            manifest = open("static/cache.manifest").read()
+        self.write(manifest)
+        self.set_header("Content-Type", "text/cache-manifest")
+        self.set_status(200)
+
+
+class manifesthack(BaseHandler):
+    """Prevent dynamic index from being cached"""
+    @tornado.web.authenticated
+    def get(self):
+        html = """
+        <!DOCTYPE html>
+        <html manifest="cache.manifest">
+            <head>
+                <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+                <script type="text/javascript" src="javascript/jquery-1.7.min.js"></script>
+                <script type="text/javascript" src="javascript/startup.min.js"></script>
+            </head>
+            <body></body>
+        </html>
+        """
+        self.write(html)
+
+
 class ajaxSocket(WebSocketHandler):
     socketID = None
 
@@ -463,14 +641,6 @@ class statSocket(WebSocketHandler):
         logging.info("%d %s (%s)", self.get_status(), "statSocket closed", self.request.remote_ip)
 
 
-class stats(BaseHandler):
-    @tornado.web.authenticated
-    def get(self):
-        with open("htdocs/statHTML.tmpl") as doc:
-            self.write(doc.read())
-    post = get
-
-
 class createSocket(WebSocketHandler):
     socketID = None
 
@@ -532,141 +702,6 @@ class autoSocket(WebSocketHandler):
         logging.info("%d autoSocket closed (%s)", self.get_status(), self.request.remote_ip)
 
 
-class download(BaseHandler):
-    @tornado.web.authenticated
-    def get(self):
-        auth = self.get_argument("auth", None)
-        if not auth:
-            raise tornado.web.HTTPError(400, log_message="Error: No auth defined")
-
-        try:
-            path = self.application._pyrtDownloadHandler.getPath(auth)
-        except downloadHandler.NoSuchToken:
-            raise tornado.web.HTTPError(404, log_message="Error: No such token")
-        except downloadHandler.TokenExpired:
-            raise tornado.web.HTTPError(410, log_message="Error: Token expired")
-        else:
-            if os.path.exists(path):
-                self.set_header("Content-Disposition", "attachment; filename=%s" % os.path.basename(path))
-                with open(path) as fd:
-                    self.write(fd.read())
-            else:
-                raise tornado.web.HTTPError(404, log_message="Error: No such file")
-
-    @tornado.web.authenticated
-    def post(self):
-        raise tornado.web.HTTPError(405, log_message="Error: POST when GET expected")
-
-
-class autoHandler(BaseHandler):
-    @tornado.web.authenticated
-    def get(self):
-        which = self.get_argument("which", None)
-        if not which or which.upper() == "IRC":
-            with open("htdocs/autoIRCHTML.tmpl") as doc:
-                self.write(doc.read() % {"PERM_SALT": self.application._pyrtL.getPermSalt()})
-        else:
-            with open("htdocs/autoRSSHTML.tmpl") as doc:
-                self.write(doc.read() % {"PERM_SALT": self.application._pyrtL.getPermSalt()})
-    post = get
-
-
-class SCGIHandler(tornado.web.RequestHandler):
-    def post(self):
-        c = self.application._pyrtGLOBALS["config"]
-        # authenticate
-        authenticated = False
-        if "Authorization" in self.request.headers:
-            authorization = self.request.headers.get("Authorization")
-            if c.get("scgi_method") == "Basic":
-                encoded = authorization.split("Basic ")[1]
-                decoded = base64.b64decode(encoded)
-                username, passwd = decoded.split(":")
-                if username != c.get("scgi_username") or passwd != c.get("scgi_password"):
-                    self.set_status(401)
-                    self.set_header("WWW-Authenticate", "Basic realm=\"%s\"" % c.get("host"))
-                    authenticated = False
-                else:
-                    authenticated = True
-            else:
-                # use Digest method
-                params = authorization.split("Digest ")[1].split(",")
-
-                def op(x): x.strip().replace("\"", "").split("=")
-
-                params = dict([op(y) for y in params])
-#                client_username = params["username"]
-                client_response = params["response"]
-                client_nonce = params["nonce"]
-                client_nc = params["nc"]
-                client_cnonce = params["cnonce"]
-                client_qop = params["qop"]
-
-                digest_user = c.get("scgi_username")
-                digest_pass = c.get("scgi_password")
-                digest_realm = c.get("host")
-
-                digest_A1 = "%s:%s@%s:%s" % (
-                    digest_user, digest_user, digest_realm, digest_pass
-                )
-
-                digest_A2 = "%s:%s" % (
-                    self.request.method,
-                    self.request.uri
-                )
-
-                digest_KD = hashlib.md5("%s:%s" % (
-                    hashlib.md5(digest_A1).hexdigest(),
-                    "%s:%s:%s:%s:%s" % (
-                        client_nonce,
-                        client_nc,
-                        client_cnonce,
-                        client_qop,
-                        hashlib.md5(digest_A2).hexdigest()
-                    )
-                )).hexdigest()
-
-                if digest_KD == client_response:
-                    authenticated = True
-
-        if authenticated:
-            xml = self.request.body
-            req = xmlrpc2scgi.SCGIRequest(c.get("rtorrent_socket"))
-            resp = req.send(xml)
-            if not self._finished:
-                self.finish(resp)
-        else:
-            self.set_status(401)
-            if c.get("scgi_method") == "Basic":
-                self.set_header("WWW-Authenticate", "Basic realm=\"%s\"" % c.get("host"))
-            else:
-                digest_realm = c.get("host")
-                digest_user = c.get("scgi_username")
-
-                digest_nonce = hashlib.md5(
-                    "%d:%s" % (time.time(), digest_realm)
-                ).hexdigest()
-                digest_opaque = hashlib.md5(
-                    "".join([random.choice(string.letters) for x in range(20)])
-                ).hexdigest()
-
-                digest_header = (
-                    "Digest realm=\"%(user)s@%(realm)s\", "
-                    "nonce=\"%(nonce)s\", "
-                    "algorithm=\"MD5\", "
-                    "qop=\"auth\", "
-                    "opaque=\"%(opaque)s\""
-                ) % {
-                    "user": digest_user,
-                    "realm": digest_realm,
-                    "nonce": digest_nonce,
-                    "opaque": digest_opaque,
-                }
-                self.set_header("WWW-Authenticate", digest_header)
-
-    get = post
-
-
 class RPCSocket(WebSocketHandler):
     socketID = None
 
@@ -708,41 +743,6 @@ class RPCSocket(WebSocketHandler):
     def on_close(self):
         self.application._pyrtSockets.remove("rpcSocket", self.socketID)
         logging.info("RPCsocket closed")
-
-
-class manifest(BaseHandler):
-    """Fake static file handler for serving static/cache.manifest"""
-    @tornado.web.authenticated
-    def get(self):
-        if os.path.exists(".uncache"):
-            manifest = "CACHE MANIFEST"
-            if hasattr(self.application, "_UNCACHE") and self.application._UNCACHE:
-                os.remove(".uncache")
-            else:
-                self.application._UNCACHE = True
-        else:
-            manifest = open("static/cache.manifest").read()
-        self.write(manifest)
-        self.set_header("Content-Type", "text/cache-manifest")
-        self.set_status(200)
-
-
-class manifesthack(BaseHandler):
-    """Prevent dynamic index from being cached"""
-    @tornado.web.authenticated
-    def get(self):
-        html = """
-        <!DOCTYPE html>
-        <html manifest="cache.manifest">
-            <head>
-                <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-                <script type="text/javascript" src="javascript/jquery-1.7.min.js"></script>
-                <script type="text/javascript" src="javascript/startup.min.js"></script>
-            </head>
-            <body></body>
-        </html>
-        """
-        self.write(html)
 
 
 class Main(object):
@@ -792,27 +792,29 @@ class Main(object):
             (r"/javascript/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.getcwd(), "static/javascript/")}),
             (r"/images/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.getcwd(), "static/images/")}),
             (r"/favicons/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.getcwd(), "static/favicons/")}),
-            (r"/cache\.manifest", manifest),
-            (r"/manifest-hack", manifesthack),
-            (r"/", index),
+
             (r"/login", loginHandler),
+            (r"/", index),
             (r"/index", index),
+            (r"/create", createHandler),
+            (r"/downloadcreation", downloadCreation),
             (r"/ajax", ajax),
             (r"/options", options),
-            (r"/stats", stats),
             (r"/log", logHandler),
+            (r"/stats", stats),
+            (r"/download", download),
+            (r"/auto", autoHandler),
+            (r"/scgi", SCGIHandler),
+            (r"/cache\.manifest", manifest),
+            (r"/manifest-hack", manifesthack),
+
             (r"/ajaxsocket", ajaxSocket),
+            (r"/logsocket", logSocket),
             (r"/filesocket", fileSocket),
             (r"/statsocket", statSocket),
-            (r"/logsocket", logSocket),
-            (r"/auto", autoHandler),
+            (r"/createsocket", createSocket),
             (r"/autosocket", autoSocket),
             (r"/RPCSocket", RPCSocket),
-            (r"/create", createHandler),
-            (r"/createsocket", createSocket),
-            (r"/downloadcreation", downloadCreation),
-            (r"/download", download),
-            (r"/scgi", SCGIHandler),
         ], **settings)
 
         application._pyrtSockets = SocketStorage()
