@@ -20,19 +20,14 @@
 """
 
 import config
-from modules.Cheetah.Template import Template
-from modules import rtorrent
 
 
 class Options:
-    def __init__(self, conf=config.Config(), RT=None, aliases=None):
+    def __init__(self, conf=config.Config(), app=None):
         self.C = conf
-        if not RT:
-            self.RT = rtorrent.rtorrent(self.C.get("rtorrent_socket"))
-        else:
-            self.RT = RT
-
-        self.ALIASES = aliases
+        self.RT = app._pyrtRT
+        self.ALIASES = app._pyrtAliasStorage
+        self.application = app
 
     def index(self):
         # PyRT:
@@ -86,8 +81,7 @@ class Options:
             "networkmaxopensockets": self.RT.getGlobalMaxOpenSockets(),
             "networkmaxopenhttp": self.RT.getGlobalMaxOpenHttp(),
         }
-        HTML = Template(file="htdocs/optionsHTML.tmpl", searchList=definitions).respond()
-
+        HTML = self.application._pyrtTemplate.load("optionsHTML.tmpl").generate(**definitions)
         return HTML
 
 """

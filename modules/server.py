@@ -831,7 +831,7 @@ class Main(object):
         application._pyrtAliasStorage = aliases.AliasStore(application._pyrtLog, application._pyrtRT)
         application._pyrtDownloadHandler = downloadHandler.downloadHandler(application._pyrtLog)
         application._pyrtAJAX = ajaxPage.Ajax(conf=c, app=application)
-        application._pyrtOPTIONS = optionsPage.Options(conf=c, RT=application._pyrtRT, aliases=application._pyrtAliasStorage)
+        application._pyrtOPTIONS = optionsPage.Options(conf=c, app=application)
         application._pyrtSTATS = statsPage.Index(conf=c, RT=application._pyrtRT, aliases=application._pyrtAliasStorage)
         application._pyrtRemoteStorage = remotes.RemoteStorage(log=application._pyrtLog)
         application._pyrtGLOBALS = {

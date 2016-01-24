@@ -23,36 +23,36 @@
                     <div id="sidebar">
                         <ol class="sidebar-list">
                             <li id="pyrt-tab">PyRT</li>
-                            ##password
-                            ##animations
-                            ##refresh rate
-                            ##port
+                            {% comment password %}
+                            {% comment animations %}
+                            {% comment refresh rate %}
+                            {% comment port %}
                             <li id="general-tab">General</li>
                             <li id="throttle-tab">Throttle</li>
-                            ##global
+                            {% comment global %}
                             <li id="network-tab">Network</li>
-                            ##port range
-                            ##dl dir
-                            ##move on complete
+                            {% comment port range %}
+                            {% comment dl dir %}
+                            {% comment move on complete %}
                             <!--<li id="priority-tab">Priority</li>-->
-                            ##on_ratio - set priorities
-                            ##trackers - set priorities
+                            {% comment on_ratio - set priorities %}
+                            {% comment trackers - set priorities %}
                             <li id="performance-tab">Performance</li>
-                            ##max memory usage
-                            ##hash read ahead
-                            ##send_buffer_size
-                            ##receive_buffer_size
-                            ##max simultaneous uploads
-                            ##max simultaneous downloads
-                            ##max peers
-                            ##max peers seed
-                            ##max file size
-                            ##max open files
-                            ##max open sockets
-                            ##max open http
+                            {% comment max memory usage %}
+                            {% comment hash read ahead %}
+                            {% comment send_buffer_size %}
+                            {% comment receive_buffer_size %}
+                            {% comment max simultaneous uploads %}
+                            {% comment max simultaneous downloads %}
+                            {% comment max peers %}
+                            {% comment max peers seed %}
+                            {% comment max file size %}
+                            {% comment max open files %}
+                            {% comment max open sockets %}
+                            {% comment max open http %}
                             <li id="trackers-tab">Trackers</li>
-                            ##show cached favicons
-                            ##allow changing
+                            {% comment show cached favicons %}
+                            {% comment allow changing %}
                         </ol>
                     </div>
                     <div class="options-wrapper">
@@ -72,14 +72,14 @@
                             </div>-->
                             <div id="pyrt-refresh" class="options-box">
                                 <h3>Refresh rate</h3>
-                                <input type="text" id="pyrt-refreshrate" class="small pyrt-config" placeholder="$config.refresh">
+                                <input type="text" id="pyrt-refreshrate" class="small pyrt-config" placeholder="{{ config.refresh }}">
                                 <span id="forpyrt-refreshrate" class="after-text">seconds</span>
                                 <span id="pyrt-refreshrateerror" class="inputerror"></span>
                             </div>
 <!--                            <div id="pyrtport" class="options-box error">
                                 <h3>PyRT Port</h3>
-                                <label for="pyrt-port" id="forpyrt-port">$config.host : </label>
-                                <input type="text" id="pyrt-port" class="small pyrt-config" placeholder="$config.port">
+                                <label for="pyrt-port" id="forpyrt-port">{{ config.host }} : </label>
+                                <input type="text" id="pyrt-port" class="small pyrt-config" placeholder="{{ config.port }}">
                                 <span id="pyrt-porterror" class="inputerror"></span>
                             </div>-->
                             <button id="pyrt-submit" class="submit-box">
@@ -93,7 +93,7 @@
                             <div id="general-dldir" class="options-box">
                                 <h3>Download directory</h3>
                                 <div>
-                                    <input type="text" id="general-dir" placeholder="$generaldir" class="general-config">
+                                    <input type="text" id="general-dir" placeholder="{{ generaldir }}" class="general-config">
                                     <div id="general-direrror" class="inputerror"></div>
                                     <!--<div id="general-dir-note" class="note">* Note: this will reset if rTorrent is restarted</div>-->
                                 </div>
@@ -102,10 +102,10 @@
                                 <h3>Move on complete</h3>
                                 <div>
                                     <label for="general-movecheck" id="forgeneral-movecheck">Enable</label>
-                                    <input type="checkbox" id="general-movecheck" $generalmovecheckbool class="general-config">
+                                    <input type="checkbox" id="general-movecheck" {{ generalmovecheckbool }} class="general-config">
                                 </div>
                                 <div>
-                                    <input type="text" id="general-moveto" class="general-moveto $generalmovecheckhidden general-config" value="$generalmovecheckvalue">
+                                    <input type="text" id="general-moveto" class="general-moveto {{ generalmovecheckhidden }} general-config" value="{{ generalmovecheckvalue }}">
                                     <div id="general-movetoerror" class="inputerror"></div>
                                 </div>
                             </div>
@@ -134,13 +134,13 @@
                                 <h3>Global Throttle</h3>
                                 <div>
                                     <label for="throttle-up" id="forthrottle-up">Up:</label>
-                                    <input type="text" id="throttle-up" class="smaller throttle-config" placeholder="$throttleup">
+                                    <input type="text" id="throttle-up" class="smaller throttle-config" placeholder="{{ throttleup }}">
                                     <span id="forthrottle-up-text" class="after-text">KB/s</span>
                                     <span id="throttle-uperror" class="inputerror"></span>
                                 </div>
                                 <div>
                                     <label for="throttle-down" id="forthrottle-down">Down:</label>
-                                    <input type="text" id="throttle-down" class="smaller throttle-config" placeholder="$throttledown">
+                                    <input type="text" id="throttle-down" class="smaller throttle-config" placeholder="{{ throttledown }}">
                                     <span id="forthrottle-down-text" class="after-text">KB/s</span>
                                     <span id="throttle-downerror" class="inputerror"></span>
                                 </div>
@@ -156,9 +156,9 @@
                             <div id="network-portrange" class="options-box">
                                 <h3>Port range</h3>
                                 <div>
-                                    <input type="text" id="network-portfrom" class="network-port small network-config" placeholder="$networkportfrom">
+                                    <input type="text" id="network-portfrom" class="network-port small network-config" placeholder="{{ networkportfrom }}">
                                     <span>-</span>
-                                    <input type="text" id="network-portto" class="network-port small network-config" placeholder="$networkportto">
+                                    <input type="text" id="network-portto" class="network-port small network-config" placeholder="{{ networkportto }}">
                                     <span id="network-porttoerror" class="inputerror"></span>
                                     <div id="network-portfromerror" class="inputerror"></div>
                                 </div>
@@ -168,32 +168,32 @@
                                 <div>
                                     <div>
                                         <label for="network-simuluploads" id="fornetwork-simuluploads">Simultaneous upload slots</label>
-                                        <input type="text" id="network-simuluploads" class="small network-config" placeholder="$networksimuluploads">
+                                        <input type="text" id="network-simuluploads" class="small network-config" placeholder="{{ networksimuluploads }}">
                                         <span id="network-simuluploadserror" class="inputerror"></span>
                                     </div>
                                     <div>
                                         <label for="network-simuldownloads" id="fornetwork-simuldownloads">Simultaneous download slots</label>
-                                        <input type="text" id="network-simuldownloads" class="small network-config" placeholder="$networksimuldownloads">
+                                        <input type="text" id="network-simuldownloads" class="small network-config" placeholder="{{ networksimuldownloads }}">
                                         <span id="network-simuldownloadserror" class="inputerror"></span>
                                     </div>
                                     <div>
                                         <label for="network-maxpeers" id="fornetwork-maxpeers">Max peers</label>
-                                        <input type="text" id="network-maxpeers" class="small network-config" placeholder="$networkmaxpeers">
+                                        <input type="text" id="network-maxpeers" class="small network-config" placeholder="{{ networkmaxpeers }}">
                                         <span id="network-maxpeerserror" class="inputerror"></span>
                                     </div>
                                     <div>
                                         <label for="network-maxpeersseed" id="fornetwork-maxpeersseed">Max peers (seeding)</label>
-                                        <input type="text" id="network-maxpeersseed" class="small network-config" placeholder="$networkmaxpeersseed">
+                                        <input type="text" id="network-maxpeersseed" class="small network-config" placeholder="{{ networkmaxpeersseed }}">
                                         <span id="network-maxpeersseederror" class="inputerror"></span>
                                     </div>
                                     <div>
                                         <label for="network-maxopensockets" id="fornetwork-maxopensockets">Max open sockets</label>
-                                        <input type="text" id="network-maxopensockets" class="small network-config" placeholder="$networkmaxopensockets">
+                                        <input type="text" id="network-maxopensockets" class="small network-config" placeholder="{{ networkmaxopensockets }}">
                                         <span id="network-maxopensocketserror" class="inputerror"></span>
                                     </div>
                                     <div>
                                         <label for="network-maxopenhttp" id="fornetwork-maxopenhttp">Max open http</label>
-                                        <input type="text" id="network-maxopenhttp" class="small network-config" placeholder="$networkmaxopenhttp">
+                                        <input type="text" id="network-maxopenhttp" class="small network-config" placeholder="{{ networkmaxopenhttp }}">
                                         <span id="network-maxopenhttperror" class="inputerror"></span>
                                     </div>
                                 </div>
@@ -218,29 +218,29 @@
                     </div>
                     <div class="options-wrapper">
                         <div id="performance" class="options">
-                            ##max open sockets
-                            ##max open http
+                            {% comment max open sockets %}
+                            {% comment max open http %}
                             <div id="performance-memory" class="options-box">
                                 <h3>Memory</h3>
                                 <div>
                                     <!--<h3>Refresh rate</h3>-->
-                                    <!--<input type="text" id="refreshrate" placeholder="$config.refresh">-->
+                                    <!--<input type="text" id="refreshrate" placeholder="{{ config.refresh }}">-->
                                     <!--<span id="forrefreshrate" class="after-text">seconds</span>-->
                                     <!--<span id="refreshrateerror" class="inputerror"></span>-->
                                     <label id="forperformance-maxmemory" for="performance-maxmemory">Max memory usage</label>
-                                    <input type="text" id="performance-maxmemory" class="small performance-config" placeholder="$performancemaxmemory">
+                                    <input type="text" id="performance-maxmemory" class="small performance-config" placeholder="{{ performancemaxmemory }}">
                                     <span class="after-text">MB</span>
                                     <span id="performance-maxmemoryerror" class="inputerror"></span>
                                 </div>
                                 <div>
                                     <label id="forperformance-maxfilesize" for="performance-maxfilesize">Max file size</label>
-                                    <input type="text" id="performance-maxfilesize" class="small performance-config" placeholder="$performancemaxfilesize">
+                                    <input type="text" id="performance-maxfilesize" class="small performance-config" placeholder="{{ performancemaxfilesize }}">
                                     <span class="after-text">MB</span>
                                     <span id="performance-maxfilesizeerror" class="inputerror"></span>
                                 </div>
                                 <div>
                                     <label id="forperformance-maxopenfiles" for="performance-maxopenfiles">Max open files</label>
-                                    <input type="text" id="performance-maxopenfiles" class="small performance-config" placeholder="$performancemaxopenfiles">
+                                    <input type="text" id="performance-maxopenfiles" class="small performance-config" placeholder="{{ performancemaxopenfiles }}">
                                     <span id="performance-maxopenfileserror" class="inputerror"></span>
                                 </div>
                             </div>
@@ -249,19 +249,19 @@
                                 <div>
                                     <div>
                                         <label for="performance-receivebuffer" id="forperformance-receivebuffer">Receive</label>
-                                        <input type="text" id="performance-receivebuffer" class="small performance-config" placeholder="$performancereceivebuffer">
+                                        <input type="text" id="performance-receivebuffer" class="small performance-config" placeholder="{{ performancereceivebuffer }}">
                                         <span class="after-text">KB</span>
                                         <span id="performance-receivebuffererror" class="inputerror"></span>
                                     </div>
                                     <div>
                                         <label for="performance-sendbuffer" id="forperformance-sendbuffer">Send</label>
-                                        <input type="text" id="performance-sendbuffer" class="small performance-config" placeholder="$performancesendbuffer">
+                                        <input type="text" id="performance-sendbuffer" class="small performance-config" placeholder="{{ performancesendbuffer }}">
                                         <span class="after-text">KB</span>
                                         <span id="performance-sendbuffererror" class="inputerror"></span>
                                     </div>
 <!--                                    <div>
                                         <label for="performance-readahead" id="forperformance-readahead">Hash read-ahead</label>
-                                        <input type="text" id="performance-readahead" class="small performance-config" placeholder="$performancereadahead">
+                                        <input type="text" id="performance-readahead" class="small performance-config" placeholder="{{ performancereadahead }}">
                                         <span class="after-text">MB</span>
                                         <span id="performance-readaheaderror" class="inputerror"></span>
                                     </div>-->
@@ -279,14 +279,14 @@
                                 <h3>Tracker icons</h3>
                                 <div class="info" id="tracker-info" droppable="true" ondragover="dragoverInfo(event);" ondrop="dropInfo(event);" ondragleave="dragleaveInfo(event);">Drag to group icons</div>
                                 <div>
-                                    #for $alias, $group in sorted($aliases.items())
-                                    <div id="tracker-$alias" droppable=true ondrop="drop(event);" ondragover="dragover(event);" class="tracker-div">
-                                        <img draggable=false width=16 height=16 alt="$alias icon" class="trackericon" src="$group.favicon">
-                                        #for $trackerurl in $group.urls
-                                        <div draggable=true ondragstart="dragstart(event);" ondragend="dragend(event)" class="tracker">$trackerurl</div>
-                                        #end for
+                                    {% for alias, group in sorted(aliases.items()) %}
+                                    <div id="tracker-{{ alias }}" droppable=true ondrop="drop(event);" ondragover="dragover(event);" class="tracker-div">
+                                        <img draggable=false width=16 height=16 alt="{{ alias }} icon" class="trackericon" src="{{ group.favicon }}">
+                                        {% for trackerurl in group.urls %}
+                                        <div draggable=true ondragstart="dragstart(event);" ondragend="dragend(event)" class="tracker">{{ trackerurl }}</div>
+                                        {% end %}
                                     </div>
-                                    #end for
+                                    {% end %}
                                 </div>
                             </div>
                         </div>
