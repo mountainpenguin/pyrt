@@ -24,14 +24,14 @@ import string
 import os
 import re
 import system
-from modules.Cheetah.Template import Template
 
 
 class Handler:
     """
         handler class for various reusable sundry operations
     """
-    def __init__(self):
+    def __init__(self, application=None):
+        self.application = application
         self.SORT_METHODS = [
             "name", "size", "ratio", "uprate", "uptotal", "downrate", "downtotal",
             "leechs", "leechs_connected", "leechs_total", "seeds",
@@ -357,17 +357,29 @@ class Handler:
             t.t_uprate = self.humanSize(t.up_rate)
             t.t_downrate = self.humanSize(t.down_rate)
             t.t_percentage = int((float(t.completed_bytes) / t.size) * 100)
+            if t.status == "Active":
+                if t.completed_bytes == t.size:
+                    if t.peers_connected > 0:
+                        t.status = "Seeding"
+                    elif t.peers_connected == 0:
+                        t.status = "Seeding (idle)"
+                elif t.completed_bytes != t.size:
+                    if t.seeds_connected > 0 or t.peers_connected > 0:
+                        t.status = "Leeching"
+                    elif t.seeds_connected == 0 and t.peers_connected == 0:
+                        t.status = "Leeching (idle)"
+
             updated_torrentList += [t]
 
-        searchList = [{
-            "global": system.get_global(),
+        searchList = {
+            "global_stats": system.get_global(),
             "torrent_list": updated_torrentList,
             "this_view": view,
             "this_sort": sort,
             "this_reverse": reverse,
-            "self": self,
+        }
 
-        }]
-
-        HTML = Template(file="htdocs/torrentHTML.tmpl", searchList=searchList).respond()
+        HTML = self.application._pyrtTemplate.load("torrentHTML.tmpl").generate(
+            **searchList
+        )
         return HTML

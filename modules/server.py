@@ -32,7 +32,6 @@ from modules import torrentHandler
 from modules import aliases
 from modules import downloadHandler
 from modules import xmlrpc2scgi
-from modules.Cheetah.Template import Template
 
 from modules import ajaxPage
 from modules import optionsPage
@@ -46,6 +45,7 @@ import tornado.options
 import tornado.netutil
 import tornado.process
 import tornado.httputil
+import tornado.template
 
 import os
 import sys
@@ -189,7 +189,7 @@ class index(BaseHandler):
         if not sortby:
             sortby = "none"
 
-        handler = torrentHandler.Handler()
+        handler = torrentHandler.Handler(self.application)
 
         torrentList = self.application._pyrtRT.getTorrentList2(view)
         self.write(handler.torrentHTML(torrentList, sortby, view, reverse))
@@ -202,10 +202,9 @@ class createHandler(BaseHandler):
     """Page handler for creating torrents"""
     @tornado.web.authenticated
     def get(self):
-        searchList = [{
-            "ROOT_DIR": self.application._pyrtRT.getGlobalRootPath()
-        }]
-        HTML = Template(file="htdocs/createHTML.tmpl", searchList=searchList).respond()
+        HTML = self.application._pyrtTemplate.load("createHTML.tmpl").generate(
+            ROOT_DIR=self.application._pyrtRT.getGlobalRootPath(),
+        )
         self.write(HTML)
 
     post = get
@@ -278,9 +277,8 @@ class options(BaseHandler):
 class logHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
-        logHTML = self.application._pyrtLog.html()
-        with open("htdocs/logHTML.tmpl") as template:
-            self.write(template.read() % {"logHTML": logHTML})
+        logHTML = self.application._pyrtTemplate.load("logHTML.tmpl").generate()
+        self.write(logHTML)
 
     post = get
 
@@ -324,11 +322,13 @@ class autoHandler(BaseHandler):
     def get(self):
         which = self.get_argument("which", None)
         if not which or which.upper() == "IRC":
-            with open("htdocs/autoIRCHTML.tmpl") as doc:
-                self.write(doc.read() % {"PERM_SALT": self.application._pyrtL.getPermSalt()})
+            self.write(self.application._pyrtTemplate.load("autoIRCHTML.tmpl").generate(
+                PERM_SALT=self.application._pyrtL.getPermSalt()
+            ))
         else:
-            with open("htdocs/autoRSSHTML.tmpl") as doc:
-                self.write(doc.read() % {"PERM_SALT": self.application._pyrtL.getPermSalt()})
+            self.write(self.application._pyrtTemplate.load("autoRSSHTML.tmpl").generate(
+                PERM_SALT=self.application._pyrtL.getPermSalt()
+            ))
     post = get
 
 
@@ -826,10 +826,11 @@ class Main(object):
         application._pyrtSockets = SocketStorage()
         application._pyrtLog = weblog.Logger(sockets=application._pyrtSockets)
         application._pyrtRT = rtorrent.rtorrent(c.get("rtorrent_socket"))
+        application._pyrtTemplate = tornado.template.Loader("htdocs")
         application._pyrtL = login.Login(conf=c, log=application._pyrtLog)
         application._pyrtAliasStorage = aliases.AliasStore(application._pyrtLog, application._pyrtRT)
         application._pyrtDownloadHandler = downloadHandler.downloadHandler(application._pyrtLog)
-        application._pyrtAJAX = ajaxPage.Ajax(conf=c, RT=application._pyrtRT, Log=application._pyrtLog, Sockets=application._pyrtSockets, Aliases=application._pyrtAliasStorage, DLHandler=application._pyrtDownloadHandler)
+        application._pyrtAJAX = ajaxPage.Ajax(conf=c, app=application)
         application._pyrtOPTIONS = optionsPage.Options(conf=c, RT=application._pyrtRT, aliases=application._pyrtAliasStorage)
         application._pyrtSTATS = statsPage.Index(conf=c, RT=application._pyrtRT, aliases=application._pyrtAliasStorage)
         application._pyrtRemoteStorage = remotes.RemoteStorage(log=application._pyrtLog)
@@ -844,6 +845,7 @@ class Main(object):
             "sockets": application._pyrtSockets,
             "remoteStorage": application._pyrtRemoteStorage,
             "aliasStorage": application._pyrtAliasStorage,
+            "template": application._pyrtTemplate,
         }
 
         http_server = tornado.httpserver.HTTPServer(application, ssl_options=ssl_options, xheaders=True)

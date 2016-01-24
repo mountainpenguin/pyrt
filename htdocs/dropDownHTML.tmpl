@@ -1,27 +1,27 @@
-<div class="drop_down_container" id="drop_down_container_$torrent_id">
+<div class="drop_down_container" id="drop_down_container_{{ torrent_id }}">
     <ol>
         <li>
             <h2 class="drop_down_h2"><span>Details</span></h2>
-            <div id="drop_down_main_$torrent_id" class="drop_down_main drop_down_div">
-                <div class='column strong new'>ID:</div><div class='column value'>$torrent_id</div>
-                <div class='column strong new'>Size:</div><div class='column value'>$size</div>
-                <div class='column strong new'>Percentage:</div><div class='column value'>$percentage%</div>
-                <div class='column strong new'>Downloaded:</div><div class='column value'>$downloaded</div>
-                <div class='column strong new'>Uploaded:</div><div class='column value'>$uploaded</div>
-                <div class='column strong new'>Ratio:</div><div class='column value'>$ratio</div>
-                <div class='column strong new'>Peers:</div><div class='column value'>$peers</div>
-                <div class='column strong new'>Created:</div><div class='column value'>$created</div>
+            <div id="drop_down_main_{{ torrent_id }}" class="drop_down_main drop_down_div">
+                <div class='column strong new'>ID:</div><div class='column value'>{{ torrent_id }}</div>
+                <div class='column strong new'>Size:</div><div class='column value'>{{ size }}</div>
+                <div class='column strong new'>Percentage:</div><div class='column value'>{{ percentage }}%</div>
+                <div class='column strong new'>Downloaded:</div><div class='column value'>{{ downloaded }}</div>
+                <div class='column strong new'>Uploaded:</div><div class='column value'>{{ uploaded }}</div>
+                <div class='column strong new'>Ratio:</div><div class='column value'>{{ ratio }}</div>
+                <div class='column strong new'>Peers:</div><div class='column value'>{{ peers }}</div>
+                <div class='column strong new'>Created:</div><div class='column value'>{{ created }}</div>
                 <div class='column strong new'>Trackers:</div>
                 <div class='column value'>
-                 #for $tracker in $trackers
-                   <img alt="$tracker.root_url" title="$tracker.root_url" src="$tracker.favicon_url" width=16 height=16>
-                 #end for
+                {% for tracker in trackers %}
+                   <img alt="{{ tracker["root_url"] }}" title="{{ tracker["root_url"] }}" src="{{ tracker["favicon_url"] }}" width=16 height=16>
+                {% end %}
                 </div>
             </div>
         </li>
         <li>
             <h2 class="drop_down_h2"><span>Peers</span></h2>
-            <div id="drop_down_peers_$torrent_id" class="drop_down_peers drop_down_div">
+            <div id="drop_down_peers_{{ torrent_id }}" class="drop_down_peers drop_down_div">
                 <table class="drop_down_peers_inner">
                     <thead class="drop_down_peers">
                         <tr>
@@ -38,20 +38,20 @@
                         </tr>
                     </thead>
                     <tbody class="drop_down_peers">
-                      #for $peer in $peer_details
+                    {% for peer in peer_details %}
                         <tr>
-                            <td class="peer_address">$peer.address</td>
-                            <td class="peer_port">$peer.port</td>
-                            <td class="peer_client">$peer.client_version</td>
-                            <td class="peer_completed">$peer.completed_percent%</td>
-                            <td class="peer_dlrate">$peer.dlrate/s</td>
-                            <td class="peer_dltot">$peer.dltot</td>
-                            <td class="peer_uprate">$peer.uprate/s</td>
-                            <td class="peer_uptot">$peer.uptot</td>
-                            <td class="peer_rate">$peer.rate/s</td>
-                            <td class="peer_tot">$peer.total</td>
+                            <td class="peer_address">{{ peer["address"]}}</td>
+                            <td class="peer_port">{{ peer["port"]}}</td>
+                            <td class="peer_client">{{ peer["client_version"]}}</td>
+                            <td class="peer_completed">{{ peer["completed_percent"]}}%</td>
+                            <td class="peer_dlrate">{{ peer["dlrate"]}}/s</td>
+                            <td class="peer_dltot">{{ peer["dltot"]}}</td>
+                            <td class="peer_uprate">{{ peer["uprate"]}}/s</td>
+                            <td class="peer_uptot">{{ peer["uptot"]}}</td>
+                            <td class="peer_rate">{{ peer["rate"]}}/s</td>
+                            <td class="peer_tot">{{ peer["total"]}}</td>
                         </tr>
-                      #end for
+                    {% end %}
                     </tbody>
                 </table>
             </div>
@@ -59,12 +59,12 @@
         <li>
             <h2 class="drop_down_h2"><span>Files</span></h2>
             <div>
-                <div id="drop_down_files_$torrent_id" class="drop_down_files drop_down_div">
-                    $file_tree
+                <div id="drop_down_files_{{ torrent_id }}" class="drop_down_files drop_down_div">
+                    {{ file_tree }}
                 </div>
             </div>
         </li>
     </ol>
         
-    <div class='column value' style='clear : left;'><span class='fakelink' onClick='drop_up("$torrent_id");'>Close</span> <!-- <a style='color : blue;' href='detail?torrent_id=$torrent_id'>Detailed View</a> --> </div>
+    <div class='column value' style='clear : left;'><span class='fakelink' onClick='drop_up("{{ torrent_id }}");'>Close</span> <!-- <a style='color : blue;' href='detail?torrent_id={{ torrent_id }}'>Detailed View</a> --> </div>
 </div>

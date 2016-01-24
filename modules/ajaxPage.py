@@ -39,9 +39,10 @@ import random
 import string
 import hashlib
 
-from modules.Cheetah.Template import Template
-from modules import rtorrent, torrentHandler, login
-from modules import config, system
+from modules import torrentHandler
+from modules import login
+from modules import config
+from modules import system
 
 
 class Handle(object):
@@ -52,18 +53,17 @@ class Handle(object):
 
 
 class Ajax:
-    def __init__(self, conf=config.Config(), RT=None, Log=None, Sockets=None, Aliases=None, DLHandler=None):
+    def __init__(self, conf=config.Config(), app=None):
         self.config = conf
-        if not RT:
-            self.RT = rtorrent.rtorrent(self.config.get("rtorrent_socket"))
-        else:
-            self.RT = RT
+        self.RT = app._pyrtRT
         self.handler = torrentHandler.Handler()
+        self.login = app._pyrtL
         self.login = login.Login(conf=self.config)
-        self.log = Log
-        self.sockets = Sockets
-        self.aliases = Aliases
-        self.downloadHandler = DLHandler
+        self.log = app._pyrtLog
+        self.sockets = app._pyrtSockets
+        self.aliases = app._pyrtAliasStorage
+        self.downloadHandler = app._pyrtDownloadHandler
+        self.templater = app._pyrtTemplate
         self.public_commands = {
             "get_torrent_info": Handle(self.get_torrent_info, ["torrent_id"], ["html"]),
             "get_info_multi": Handle(self.get_info_multi, ["view"], ["sortby", "reverse", "drop_down_ids"]),
@@ -377,7 +377,7 @@ class Ajax:
         if not html:
             return json.dumps(jsonObject)
         else:
-            return Template(file="htdocs/dropDownHTML.tmpl", searchList=jsonObject).respond()
+            return self.templater.load("dropDownHTML.tmpl").generate(**jsonObject)
 
     def pause_torrent(self, torrent_id):
         try:
