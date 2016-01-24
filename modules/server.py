@@ -153,7 +153,10 @@ class BaseHandler(tornado.web.RequestHandler):
 class loginHandler(BaseHandler):
     def get(self):
         if self.current_user:
-            self.redirect("./")
+            if self.get_argument("next"):
+                self.redirect(self.get_argument("next"))
+            else:
+                self.redirect("./")
         else:
             self.write(self.application._pyrtL.loginHTML())
 
@@ -163,7 +166,10 @@ class loginHandler(BaseHandler):
         if pCheck:
             # set cookie
             self.set_secure_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
-            self.redirect("./")
+            if self.get_argument("next"):
+                self.redirect(self.get_argument("next"))
+            else:
+                self.redirect("./")
         else:
             self.write(self.application._pyrtL.loginHTML("Incorrect Password"))
 
