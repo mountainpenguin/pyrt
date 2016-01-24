@@ -8,9 +8,9 @@
         <script type="text/javascript" src="javascript/login-combined.min.js"></script>
     </head>
     <body>
-        <input type="hidden" id="permanent_salt" value="${PERM_SALT}">
+        <input type="hidden" id="permanent_salt" value="{{ PERM_SALT }}">
         <div id="login_div">
-            <div class="notice">${msg}</div>
+            <div class="notice">{{ msg }}</div>
             <h1>Login to your rTorrent webUI</h1>
             <form method="POST" action="" id="login_form">
                 <label>Enter Password: </label>

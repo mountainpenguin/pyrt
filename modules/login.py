@@ -30,7 +30,6 @@ import time
 import math
 import logging
 import traceback
-from modules.Cheetah.Template import Template
 
 
 class User(object):
@@ -41,9 +40,10 @@ class User(object):
 
 
 class Login:
-    def __init__(self, conf=config.Config(), log=None):
+    def __init__(self, conf=config.Config(), app=None):
         self.C = conf
-        self.Log = log
+        self.Log = app._pyrtLog
+        self.application = app
         # get this from a pickled object
         # get pyrt root dir
         try:
@@ -147,14 +147,10 @@ class Login:
         return "$%s$%s" % (salt_encoded, hash_2)
 
     def loginHTML(self, msg=""):
-        searchList = {
-            "PERM_SALT": self.PERM_SALT,
-            "msg": msg
-        }
-        HTML = Template(
-            file="htdocs/loginHTML.tmpl",
-            searchList=searchList
-        ).respond()
+        HTML = self.application._pyrtTemplate.load("loginHTML.tmpl").generate(
+            PERM_SALT=self.PERM_SALT,
+            msg=msg
+        )
         return HTML
 
     def sendCookie(self, ipaddr):

@@ -40,7 +40,6 @@ import string
 import hashlib
 
 from modules import torrentHandler
-from modules import login
 from modules import config
 from modules import system
 
@@ -58,7 +57,6 @@ class Ajax:
         self.RT = app._pyrtRT
         self.handler = torrentHandler.Handler()
         self.login = app._pyrtL
-        self.login = login.Login(conf=self.config)
         self.log = app._pyrtLog
         self.sockets = app._pyrtSockets
         self.aliases = app._pyrtAliasStorage
