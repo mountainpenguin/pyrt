@@ -154,7 +154,7 @@ class loginHandler(BaseHandler):
     def get(self):
         if self.current_user:
             if self.get_argument("next"):
-                self.redirect(self.get_argument("next"))
+                self.redirect(".{0}".format(self.get_argument("next")))
             else:
                 self.redirect("./")
         else:
@@ -167,7 +167,7 @@ class loginHandler(BaseHandler):
             # set cookie
             self.set_secure_cookie("sess_id", self.application._pyrtL.sendCookie(self.request.remote_ip))
             if self.get_argument("next"):
-                self.redirect(self.get_argument("next"))
+                self.redirect(".{0}".format(self.get_argument("next")))
             else:
                 self.redirect("./")
         else:
