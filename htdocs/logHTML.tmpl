@@ -27,7 +27,9 @@
                     </div>
                     <table id="log_table">
                     <!-- Start Log Content -->
-                    %(logHTML)s
+                    {% for msg in RECORDS %}
+                        {% include logRow.tmpl %}
+                    {% end %}
                     <!-- End Log Content -->
                     </table>
                 </div>

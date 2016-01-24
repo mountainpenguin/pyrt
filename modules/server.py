@@ -277,7 +277,7 @@ class options(BaseHandler):
 class logHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
-        logHTML = self.application._pyrtTemplate.load("logHTML.tmpl").generate()
+        logHTML = self.application._pyrtLog.html()
         self.write(logHTML)
 
     post = get
@@ -823,10 +823,10 @@ class Main(object):
             (r"/RPCSocket", RPCSocket),
         ], **settings)
 
-        application._pyrtSockets = SocketStorage()
-        application._pyrtLog = weblog.Logger(sockets=application._pyrtSockets)
-        application._pyrtRT = rtorrent.rtorrent(c.get("rtorrent_socket"))
         application._pyrtTemplate = tornado.template.Loader("htdocs")
+        application._pyrtSockets = SocketStorage()
+        application._pyrtLog = weblog.Logger(app=application)
+        application._pyrtRT = rtorrent.rtorrent(c.get("rtorrent_socket"))
         application._pyrtL = login.Login(conf=c, log=application._pyrtLog)
         application._pyrtAliasStorage = aliases.AliasStore(application._pyrtLog, application._pyrtRT)
         application._pyrtDownloadHandler = downloadHandler.downloadHandler(application._pyrtLog)

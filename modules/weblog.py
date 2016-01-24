@@ -35,6 +35,7 @@ class Message(object):
             self.text = unicode(text, errors="replace")
         self.level = level
         self.level_name = level_name
+        self.new = False
 
 
 class Logger(object):
@@ -47,10 +48,11 @@ class Logger(object):
     ERROR = 1
     DEBUG = 4
 
-    def __init__(self, sockets):
+    def __init__(self, app):
         self.RECORDS = []  # contains id tags sorted by time (most recent first)
         self.RECORD = {}  # log information with key `id`
-        self.SOCKETS = sockets  # instance of SocketStorage class (defined in modules/server.py)
+        self.SOCKETS = app._pyrtSockets  # instance of SocketStorage class (defined in modules/server.py)
+        self.application = app
 
     def id_gen(self):
         return "".join([random.choice(string.letters+string.digits) for x in range(20)])
@@ -114,17 +116,16 @@ class Logger(object):
         return msg
 
     def html_format(self, msg, addnewflag=False):
-        if addnewflag:
-            msg.new = " new_message"
-        else:
-            msg.new = ""
-        return """
-                        <tr class='log_row log_message level_%(level)s%(new)s' id='%(msg_id)s'>
-                            <td class='log_level level_%(level)s'>%(level_name)s</td>
-                            <td class='log_message'>%(fmt)s</td>
-                        </tr>""" % msg.__dict__
+        msg.new = addnewflag
+        return self.application._pyrtTemplate.load("logRow.tmpl").generate(
+            msg=msg
+        )
 
     def html(self):
+        HTML = self.application._pyrtTemplate.load("logHTML.tmpl").generate(
+            RECORDS=[self.RECORD[x] for x in reversed(self.RECORDS)]
+        )
+        return HTML
         construct = ""
         for _id in reversed(self.RECORDS):
             construct += self.html_format(self.RECORD[_id])
