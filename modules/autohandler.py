@@ -22,7 +22,7 @@
 from __future__ import print_function
 from modules import irc
 from modules import remotes
-from modules import torrentHandler
+from modules import misc
 
 import urlparse
 import logging
@@ -38,7 +38,6 @@ class AutoHandler(object):
         self.LOGIN = login
         self.LOG = log
         self.STORE = remoteStorage
-        self.HANDLER = torrentHandler.Handler()
         self.METHODS = {
             "get_sources": self.get_sources,
             "get_source_single": self.get_source_single,
@@ -115,11 +114,11 @@ class AutoHandler(object):
             subfilters += [filter_neg % regex.pattern]
         if sizelim[0] or sizelim[1]:
             if not sizelim[1]:
-                sizestring = ">%s" % self.HANDLER.humanSize(sizelim[0])
+                sizestring = ">%s" % misc.humanSize(sizelim[0])
             elif not sizelim[0]:
-                sizestring = "<%s" % self.HANDLER.humanSize(sizelim[1])
+                sizestring = "<%s" % misc.humanSize(sizelim[1])
             else:
-                sizestring = "%s - %s" % (self.HANDLER.humanSize(sizelim[0]), self.HANDLER.humanSize(sizelim[1]))
+                sizestring = "%s - %s" % (misc.humanSize(sizelim[0]), misc.humanSize(sizelim[1]))
             subfilters += [filter_size % sizestring]
         return subfilters
 

@@ -22,7 +22,7 @@
 from __future__ import print_function
 from modules import config
 from modules import rtorrent
-from modules import torrentHandler
+from modules import misc
 from modules import system
 import os
 import json
@@ -35,7 +35,6 @@ class Index(object):
             self.RT = rtorrent.rtorrent(self.Config.get("rtorrent_socket"))
         else:
             self.RT = RT
-        self.handler = torrentHandler.Handler()
         self.aliases = aliases
 
     def handle_request(self, request):
@@ -52,18 +51,18 @@ class Index(object):
                 "uprate": uprate,
                 "downrate": downrate,
                 "loadavg": loadavg,
-                "uprate_str": self.handler.humanSize(uprate),
-                "downrate_str": self.handler.humanSize(downrate),
+                "uprate_str": misc.humanSize(uprate),
+                "downrate_str": misc.humanSize(downrate),
                 "memusage": memusage[0],
                 "memmax": memusage[1],
                 "memperc": memperc,
-                "memusage_human": self.handler.humanSize(memusage[0]),
-                "memmax_human": self.handler.humanSize(memusage[1]),
+                "memusage_human": misc.humanSize(memusage[0]),
+                "memmax_human": misc.humanSize(memusage[1]),
                 "hdperc": hdperc,
                 "hdusage": hdusage[0],
                 "hdmax": hdusage[1],
-                "hdusage_human": self.handler.humanSize(hdusage[0]),
-                "hdmax_human": self.handler.humanSize(hdusage[1]),
+                "hdusage_human": misc.humanSize(hdusage[0]),
+                "hdmax_human": misc.humanSize(hdusage[1]),
             })
         elif request == "trackers":
             # calculate up/down totals for each torrent
@@ -115,8 +114,8 @@ class Index(object):
                     tDict[t]["ratioShare"] = tDict[t]["ratio"] / ratioTotal
                 else:
                     tDict[t]["ratioShare"] = 0
-                tDict[t]["up_total"] = self.handler.humanSize(tDict[t]["up_total"])
-                tDict[t]["down_total"] = self.handler.humanSize(tDict[t]["down_total"])
+                tDict[t]["up_total"] = misc.humanSize(tDict[t]["up_total"])
+                tDict[t]["down_total"] = misc.humanSize(tDict[t]["down_total"])
             return json.dumps({
                 "type": "trackers",
                 "data": tDict,

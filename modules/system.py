@@ -19,13 +19,11 @@
     along with pyRT.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import statvfs
 import os
 import time
-import rtorrent
-import config
-import torrentHandler
-import re
+from modules import rtorrent
+from modules import config
+from modules import misc
 import psutil
 try:
     import json
@@ -76,6 +74,7 @@ def mem():
     used = total - memusage.available
     return (used, total)
 
+
 def uptime():
     """
         returns the number of seconds since the system was booted
@@ -86,27 +85,26 @@ def uptime():
 def get_global(encode_json=False):
     C = config.Config()
     RT = rtorrent.rtorrent(C.get("rtorrent_socket"))
-    handler = torrentHandler.Handler()
 
     diskused, disktotal = hdd(C.get("root_directory"))
     memused, memtotal = mem()
     load1, load5, load15 = os.getloadavg()
 
     data = {
-        "uprate": handler.humanSize(RT.getGlobalUpRate()),
-        "downrate": handler.humanSize(RT.getGlobalDownRate()),
-        "uptot": handler.humanSize(RT.getGlobalUpBytes()),
-        "downtot": handler.humanSize(RT.getGlobalDownBytes()),
-        "diskused": handler.humanSize(diskused),
-        "disktotal": handler.humanSize(disktotal),
-        "memused": handler.humanSize(memused),
-        "memtotal": handler.humanSize(memtotal),
+        "uprate": misc.humanSize(RT.getGlobalUpRate()),
+        "downrate": misc.humanSize(RT.getGlobalDownRate()),
+        "uptot": misc.humanSize(RT.getGlobalUpBytes()),
+        "downtot": misc.humanSize(RT.getGlobalDownBytes()),
+        "diskused": misc.humanSize(diskused),
+        "disktotal": misc.humanSize(disktotal),
+        "memused": misc.humanSize(memused),
+        "memtotal": misc.humanSize(memtotal),
         "load1": "%.02f" % load1,
         "load5": "%.02f" % load5,
         "load15": "%.02f" % load15,
-        "throttle_up": handler.humanSize(RT.getGlobalUpThrottle()),
-        "throttle_down": handler.humanSize(RT.getGlobalDownThrottle()),
-        "server_uptime": handler.humanTimeDiff(uptime()),
+        "throttle_up": misc.humanSize(RT.getGlobalUpThrottle()),
+        "throttle_down": misc.humanSize(RT.getGlobalDownThrottle()),
+        "server_uptime": misc.humanTimeDiff(uptime()),
     }
     if not encode_json:
         return Global(**data)

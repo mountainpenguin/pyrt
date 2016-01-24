@@ -257,7 +257,7 @@ class rtorrent:
             the torrent object returned by this function has attributes:
                 torrent_id, name, up_rate, up_total,
                 down_rate, down_total, ratio, size, status
-            i.e. only information required by torrentHandler.getTorrentRow
+            i.e. only information required by misc.getTorrentRow
         """
         return Torrent(
             id,

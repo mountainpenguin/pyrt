@@ -39,7 +39,7 @@ import random
 import string
 import hashlib
 
-from modules import torrentHandler
+from modules import misc
 from modules import config
 from modules import system
 
@@ -55,7 +55,6 @@ class Ajax:
     def __init__(self, conf=config.Config(), app=None):
         self.config = conf
         self.RT = app._pyrtRT
-        self.handler = torrentHandler.Handler()
         self.login = app._pyrtL
         self.log = app._pyrtLog
         self.sockets = app._pyrtSockets
@@ -339,12 +338,12 @@ class Ajax:
         return "Nothing yet!"
 
     def _peerProcess(self, peer):
-        peer.dlrate = self.handler.humanSize(peer.down_rate)
-        peer.dltot = self.handler.humanSize(peer.down_total)
-        peer.uprate = self.handler.humanSize(peer.up_rate)
-        peer.uptot = self.handler.humanSize(peer.up_total)
-        peer.rate = self.handler.humanSize(peer.peer_rate)
-        peer.total = self.handler.humanSize(peer.peer_total)
+        peer.dlrate = misc.humanSize(peer.down_rate)
+        peer.dltot = misc.humanSize(peer.down_total)
+        peer.uprate = misc.humanSize(peer.up_rate)
+        peer.uptot = misc.humanSize(peer.up_total)
+        peer.rate = misc.humanSize(peer.peer_rate)
+        peer.total = misc.humanSize(peer.peer_total)
         return peer.__dict__
 
     def get_torrent_info(self, torrent_id, html=None):
@@ -359,18 +358,18 @@ class Ajax:
         peers = self.RT.getPeers(torrent_id)
         jsonObject = {
             "name": self.RT.getNameByID(torrent_id),
-            "uploaded": self.handler.humanSize(self.RT.getUploadBytes(torrent_id)),
-            "downloaded": self.handler.humanSize(self.RT.getDownloadBytes(torrent_id)),
+            "uploaded": misc.humanSize(self.RT.getUploadBytes(torrent_id)),
+            "downloaded": misc.humanSize(self.RT.getDownloadBytes(torrent_id)),
             "peers": len(peers),
             "torrent_id": torrent_id,
             "created": created,
-            "size": self.handler.humanSize(size),
+            "size": misc.humanSize(size),
             "ratio": "%.02f" % (float(self.RT.getRatio(torrent_id))/1000),
             "percentage": "%i" % ((float(self.RT.getCompletedBytes(torrent_id)) / size) * 100),
             "completed": completed,
             "trackers": [x.__dict__ for x in self.RT.getTrackers(torrent_id)],
             "peer_details": [self._peerProcess(x) for x in peers],
-            "file_tree": self.handler.fileTreeHTML(self.RT.getFiles(torrent_id), self.RT.getRootDir()),
+            "file_tree": misc.fileTreeHTML(self.RT.getFiles(torrent_id), self.RT.getRootDir()),
         }
         if not html:
             return json.dumps(jsonObject)
@@ -539,7 +538,7 @@ class Ajax:
             else:
                 self.RT.load_from_file(os.path.join(os.getcwd(), "torrents/%s" % fileName))
             self.log.info("AJAX: '%s' (uploaded via /ajax) loaded%s successfully", fileName, (start and " and started" or ""))
-            return self.handler.HTMLredirect(".")
+            return misc.HTMLredirect(".")
 
     def get_info_multi(self, view, sortby=None, reverse=None, drop_down_ids=None):
         drop_downs = {}
@@ -554,7 +553,7 @@ class Ajax:
         # wanted:
         #   system info
         #   ratio, dl speed, ul speed, status
-        torrentList = self.handler.sortTorrents(self.RT.getTorrentList2(view), sortby, reverse)
+        torrentList = misc.sortTorrents(self.RT.getTorrentList2(view), sortby, reverse)
         returnDict = {
             "torrents": {},
             "system": system.get_global(encode_json=True),
@@ -571,13 +570,13 @@ class Ajax:
                 perc = int((float(t.completed_bytes) / t.size)*100)
             returnDict["torrents"][t.torrent_id] = {
                 "ratio": "%.02f" % (float(t.ratio)/1000),
-                "uprate": self.handler.humanSize(t.up_rate),
-                "downrate": self.handler.humanSize(t.down_rate),
-                "status": self.handler.getState(t),
+                "uprate": misc.humanSize(t.up_rate),
+                "downrate": misc.humanSize(t.down_rate),
+                "status": misc.getState(t),
                 "name": t.name,
-                "size": self.handler.humanSize(t.size),
-                "up_total": self.handler.humanSize(t.up_total),
-                "down_total": self.handler.humanSize(t.down_total),
+                "size": misc.humanSize(t.size),
+                "up_total": misc.humanSize(t.up_total),
+                "down_total": misc.humanSize(t.down_total),
                 "completed": completed,
                 "percentage": perc,
             }
@@ -585,7 +584,7 @@ class Ajax:
 
     def get_torrent_row(self, torrent_id):
         torrentObj = self.RT.getTorrentObj_less(torrent_id)
-        return self.handler.getTorrentRow(torrentObj)
+        return misc.getTorrentRow(torrentObj)
 
     def start_batch(self, torrentListStr):
         torrentList = torrentListStr.split(",")

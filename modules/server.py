@@ -28,7 +28,7 @@ from modules import autohandler
 from modules import remotes
 from modules import create
 from modules import rss
-from modules import torrentHandler
+from modules import misc
 from modules import aliases
 from modules import downloadHandler
 from modules import xmlrpc2scgi
@@ -36,6 +36,8 @@ from modules import xmlrpc2scgi
 from modules import ajaxPage
 from modules import optionsPage
 from modules import statsPage
+
+from modules import system
 
 import tornado.ioloop
 import tornado.web
@@ -189,11 +191,19 @@ class index(BaseHandler):
         if not sortby:
             sortby = "none"
 
-        handler = torrentHandler.Handler(self.application)
-
         torrentList = self.application._pyrtRT.getTorrentList2(view)
-        self.write(handler.torrentHTML(torrentList, sortby, view, reverse))
+
+        sorted_list = misc.sortTorrents(torrentList, sortby, reverse)
+        processed_list = misc.process_list(sorted_list)
+        lookup = {
+            "global_stats": system.get_global(),
+            "torrent_list": processed_list,
+            "this_view": view,
+            "this_sort": sortby,
+            "this_reverse": reverse,
+        }
         self.set_header("Cache-Control", "no-cache")
+        self.render("torrentHTML.tmpl", **lookup)
 
     post = get
 
@@ -792,6 +802,7 @@ class Main(object):
                 random.choice(string.printable) for x in range(50)
             ]),
             "login_url": "./login",
+            "template_path": "htdocs",
         }
         application = tornado.web.Application([
             (r"/css/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.getcwd(), "static/css/")}),
