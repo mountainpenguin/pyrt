@@ -336,8 +336,8 @@ class logHandler(BaseHandler):
 class stats(BaseHandler):
     @tornado.web.authenticated
     def get(self):
-        with open("htdocs/statHTML.tmpl") as doc:
-            self.write(doc.read())
+        self.render("statHTML.tmpl")
+
     post = get
 
 
@@ -372,13 +372,10 @@ class autoHandler(BaseHandler):
     def get(self):
         which = self.get_argument("which", None)
         if not which or which.upper() == "IRC":
-            self.write(self.application._pyrtTemplate.load("autoIRCHTML.tmpl").generate(
-                PERM_SALT=self.application._pyrtL.getPermSalt()
-            ))
+            self.render("autoIRCHTML.tmpl", PERM_SALT=self.application._pyrtL.getPermSalt())
         else:
-            self.write(self.application._pyrtTemplate.load("autoRSSHTML.tmpl").generate(
-                PERM_SALT=self.application._pyrtL.getPermSalt()
-            ))
+            self.render("autoRSSHTML.tmpl", PERM_SALT=self.application._pyrtL.getPermSalt())
+
     post = get
 
 
