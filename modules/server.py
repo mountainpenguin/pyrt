@@ -34,7 +34,6 @@ from modules import downloadHandler
 from modules import xmlrpc2scgi
 
 from modules import ajaxPage
-from modules import optionsPage
 from modules import statsPage
 
 from modules import system
@@ -269,14 +268,58 @@ class ajax(BaseHandler):
 
 class options(BaseHandler):
     """Handler for options page view (/options)
-
-            *** Currently a work in progress ***
-            Can only be viewed if "test" is passed as an argument.
-            If it is, writes optionsPage.Options.index()
     """
     @tornado.web.authenticated
     def get(self):
-        self.write(self.application._pyrtOPTIONS.index())
+        RT = self.application._pyrtRT
+        aliases = self.application._pyrtAliasStorage.STORE
+        portrange = RT.getGlobalPortRange()
+        maxpeers = RT.getGlobalMaxPeers()
+        maxpeersseed = RT.getGlobalMaxPeersSeed()
+        if maxpeersseed == -1:
+            maxpeersseed = maxpeers
+
+        try:
+            performancereadahead = int(float(RT.getGlobalHashReadAhead()))
+        except:
+            performancereadahead = None
+
+        gmc_bool, gmc_value = RT.getGlobalMoveTo()
+        gmc_enabled = gmc_bool and "checked" or ""
+        if gmc_bool:
+            gmc_hidden = ""
+        else:
+            gmc_hidden = "hidden"
+        gmc_value = gmc_value and gmc_value or ""
+
+        conf = self.application._pyrtGLOBALS["config"]
+
+        definitions = {
+            "config": conf.CONFIG,
+            "throttleup": int(float(RT.getGlobalUpThrottle()) / 1024),
+            "throttledown": int(float(RT.getGlobalDownThrottle()) / 1024),
+            "generaldir": RT.getGlobalRootPath(),
+            "generalmovecheckbool": gmc_enabled,
+            "generalmovecheckvalue": gmc_value,
+            "generalmovecheckhidden": gmc_hidden,
+            "networkportfrom": portrange.split("-")[0],
+            "networkportto": portrange.split("-")[1],
+            "aliases": aliases,
+            "performancemaxmemory": int(float(RT.getGlobalMaxMemoryUsage())/1024/1024),
+            "performancereceivebuffer": int(float(RT.getGlobalReceiveBufferSize())/1024),
+            "performancesendbuffer": int(float(RT.getGlobalSendBufferSize())/1024),
+            "performancemaxopenfiles": RT.getGlobalMaxOpenFiles(),
+            "performancemaxfilesize": int(float(RT.getGlobalMaxFileSize())/1024/1024),
+            "performancereadahead": performancereadahead,
+            "networksimuluploads": RT.getGlobalMaxUploads(),
+            "networksimuldownloads": RT.getGlobalMaxDownloads(),
+            "networkmaxpeers": maxpeers,
+            "networkmaxpeersseed": maxpeersseed,
+            "networkmaxopensockets": RT.getGlobalMaxOpenSockets(),
+            "networkmaxopenhttp": RT.getGlobalMaxOpenHttp(),
+        }
+
+        self.render("optionsHTML.tmpl", **definitions)
 
     post = get
 
@@ -839,13 +882,11 @@ class Main(object):
         application._pyrtAliasStorage = aliases.AliasStore(application._pyrtLog, application._pyrtRT)
         application._pyrtDownloadHandler = downloadHandler.downloadHandler(application._pyrtLog)
         application._pyrtAJAX = ajaxPage.Ajax(conf=c, app=application)
-        application._pyrtOPTIONS = optionsPage.Options(conf=c, app=application)
         application._pyrtSTATS = statsPage.Index(conf=c, RT=application._pyrtRT, aliases=application._pyrtAliasStorage)
         application._pyrtRemoteStorage = remotes.RemoteStorage(log=application._pyrtLog)
         application._pyrtGLOBALS = {
             "login": application._pyrtL,
             "ajaxPage": application._pyrtAJAX,
-            "optionsPage": application._pyrtOPTIONS,
             "statsPage": application._pyrtSTATS,
             "log": application._pyrtLog,
             "RT": application._pyrtRT,
