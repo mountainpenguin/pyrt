@@ -121,15 +121,8 @@ class Logger(object):
             msg=msg
         )
 
-    def html(self):
-        HTML = self.application._pyrtTemplate.load("logHTML.tmpl").generate(
-            RECORDS=[self.RECORD[x] for x in reversed(self.RECORDS)]
-        )
-        return HTML
-        construct = ""
-        for _id in reversed(self.RECORDS):
-            construct += self.html_format(self.RECORD[_id])
-        return construct
+    def records(self):
+        return [self.RECORD[x] for x in reversed(self.RECORDS)]
 
     def returnNew(self, lastID):
         try:

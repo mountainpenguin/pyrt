@@ -327,8 +327,8 @@ class options(BaseHandler):
 class logHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
-        logHTML = self.application._pyrtLog.html()
-        self.write(logHTML)
+        records = self.application._pyrtLog.records()
+        self.render("logHTML.tmpl", RECORDS=records)
 
     post = get
 
