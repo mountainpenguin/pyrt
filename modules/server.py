@@ -212,10 +212,7 @@ class createHandler(BaseHandler):
     """Page handler for creating torrents"""
     @tornado.web.authenticated
     def get(self):
-        HTML = self.application._pyrtTemplate.load("createHTML.tmpl").generate(
-            ROOT_DIR=self.application._pyrtRT.getGlobalRootPath(),
-        )
-        self.write(HTML)
+        self.render("createHTML.tmpl", ROOT_DIR=self.application._pyrtRT.getGlobalRootPath())
 
     post = get
 
