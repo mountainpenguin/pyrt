@@ -394,8 +394,9 @@ class RemoteStorage(object):
     def _randomID(self, length=10):
         return "".join([random.choice(string.letters + string.digits) for x in range(length)])
 
-    def __init__(self, log):
-        self.LOG = log
+    def __init__(self, app):
+        self.application = app
+        self.LOG = app._pyrtLog
         try:
             self.STORE = pickle.load(open(".remotes.pickle"))
         except:

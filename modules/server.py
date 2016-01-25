@@ -730,7 +730,7 @@ class autoSocket(WebSocketHandler):
     @tornado.web.authenticated
     def open(self):
         self.socketID = self.application._pyrtSockets.add("autoSocket", self, self.get_secure_cookie("sess_id"))
-        self._autoHandler = autohandler.AutoHandler(login=self.application._pyrtL, log=self.application._pyrtLog, remoteStorage=self.application._pyrtRemoteStorage)
+        self._autoHandler = autohandler.AutoHandler(self.application)
         logging.info("%d autoSocket opened (%s)", self.get_status(), self.request.remote_ip)
 
     @tornado.web.authenticated
@@ -779,7 +779,7 @@ class RPCSocket(WebSocketHandler):
                 _pid = msg["PID"]
                 _name = msg["name"]
                 if _name != "RSS":
-                    _autohandler = autohandler.AutoHandler(login=self.application._pyrtL, log=self.application._pyrtLog, remoteStorage=self.application._pyrtRemoteStorage)
+                    _autohandler = autohandler.AutoHandler(self.application)
                     self.application._pyrtLog.debug("RPC: got pid %d and name %s", _pid, _name)
                     _autohandler.stop_bot(_name)
                     self.application._pyrtLog.debug("RPC: stopping bot")
@@ -871,27 +871,30 @@ class Main(object):
             (r"/RPCSocket", RPCSocket),
         ], **settings)
 
+        application._pyrtConfig = c
         application._pyrtTemplate = tornado.template.Loader("htdocs")
         application._pyrtSockets = SocketStorage()
-        application._pyrtLog = weblog.Logger(app=application)
+        application._pyrtLog = weblog.Logger(application)
         application._pyrtRT = rtorrent.rtorrent(c.get("rtorrent_socket"))
-        application._pyrtL = login.Login(conf=c, app=application)
-        application._pyrtAliasStorage = aliases.AliasStore(application._pyrtLog, application._pyrtRT)
-        application._pyrtDownloadHandler = downloadHandler.downloadHandler(application._pyrtLog)
-        application._pyrtAJAX = ajaxPage.Ajax(conf=c, app=application)
-        application._pyrtSTATS = statsPage.Index(conf=c, RT=application._pyrtRT, aliases=application._pyrtAliasStorage)
-        application._pyrtRemoteStorage = remotes.RemoteStorage(log=application._pyrtLog)
+        application._pyrtL = login.Login(application)
+        application._pyrtAliasStorage = aliases.AliasStore(application)
+        application._pyrtDownloadHandler = downloadHandler.downloadHandler(application)
+        application._pyrtAJAX = ajaxPage.Ajax(application)
+        application._pyrtSTATS = statsPage.Stats(application)
+        application._pyrtRemoteStorage = remotes.RemoteStorage(application)
+
         application._pyrtGLOBALS = {
-            "login": application._pyrtL,
-            "ajaxPage": application._pyrtAJAX,
-            "statsPage": application._pyrtSTATS,
+            "config": c,
+            "template": application._pyrtTemplate,
+            "sockets": application._pyrtSockets,
             "log": application._pyrtLog,
             "RT": application._pyrtRT,
-            "config": c,
-            "sockets": application._pyrtSockets,
-            "remoteStorage": application._pyrtRemoteStorage,
+            "login": application._pyrtL,
             "aliasStorage": application._pyrtAliasStorage,
-            "template": application._pyrtTemplate,
+            "downloadHandler": application._pyrtDownloadHandler,
+            "ajax": application._pyrtAJAX,
+            "stats": application._pyrtSTATS,
+            "remoteStorage": application._pyrtRemoteStorage,
         }
 
         http_server = tornado.httpserver.HTTPServer(application, ssl_options=ssl_options, xheaders=True)
@@ -924,7 +927,7 @@ class Main(object):
             sys.exit(0)
 
         logging.info("Starting RSS listener")
-        application._pyrtRSS = rss.RSS(application._pyrtL, application._pyrtLog, application._pyrtRemoteStorage)
+        application._pyrtRSS = rss.RSS(application)
         self._pyrtRSSPID = application._pyrtRSS.start()
 
         self.instance = tornado.ioloop.IOLoop.instance()

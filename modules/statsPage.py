@@ -20,22 +20,18 @@
 """
 
 from __future__ import print_function
-from modules import config
-from modules import rtorrent
 from modules import misc
 from modules import system
 import os
 import json
 
 
-class Index(object):
-    def __init__(self, conf=config.Config(), RT=None, aliases=None):
-        self.Config = conf
-        if not RT:
-            self.RT = rtorrent.rtorrent(self.Config.get("rtorrent_socket"))
-        else:
-            self.RT = RT
-        self.aliases = aliases
+class Stats(object):
+    def __init__(self, app):
+        self.application = app
+        self.Config = app._pyrtConfig
+        self.RT = app._pyrtRT
+        self.aliases = app._pyrtAliasStorage
 
     def handle_request(self, request):
         if request == "global":

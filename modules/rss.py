@@ -40,11 +40,13 @@ _DEBUG = False
 
 
 class RSS(object):
-    def __init__(self, l, log, s, websocketURI=".sockets/rss.interface"):
-        self.LOGIN = l
-        self.LOG = log
-        self.STORE = s
-        self.websocketURI = websocketURI
+#    def __init__(self, l, log, s, websocketURI=".sockets/rss.interface"):
+    def __init__(self, app):
+        self.application = app
+        self.LOGIN = app._pyrtL
+        self.LOG = app._pyrtLog,
+        self.STORE = app._pyrtRemoteStorage
+        self.websocketURI = ".sockets/rss.interface"
         self.authkey = self.LOGIN.getRPCAuth()
 
     def shutdownRSS(self, *args, **kwargs):

@@ -85,8 +85,9 @@ class authStore(object):
 
 
 class downloadHandler(object):
-    def __init__(self, log):
-        self.log = log
+    def __init__(self, app):
+        self.application = app
+        self.log = app._pyrtLog
         self.authStore = authStore()
 
     def addToken(self, auth, path):

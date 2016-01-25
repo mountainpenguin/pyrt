@@ -34,10 +34,11 @@ import signal
 
 
 class AutoHandler(object):
-    def __init__(self, login, log, remoteStorage):
-        self.LOGIN = login
-        self.LOG = log
-        self.STORE = remoteStorage
+    def __init__(self, app):
+        self.application = app
+        self.LOGIN = app._pyrtL
+        self.LOG = app._pyrtLog
+        self.STORE = app._pyrtRemoteStorage
         self.METHODS = {
             "get_sources": self.get_sources,
             "get_source_single": self.get_source_single,

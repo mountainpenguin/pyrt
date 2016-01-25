@@ -25,7 +25,6 @@ import hashlib
 import base64
 import random
 import string
-import config
 import time
 import math
 import logging
@@ -40,8 +39,8 @@ class User(object):
 
 
 class Login:
-    def __init__(self, conf=config.Config(), app=None):
-        self.C = conf
+    def __init__(self, app):
+        self.C = app._pyrtConfig
         self.Log = app._pyrtLog
         self.application = app
         # get this from a pickled object

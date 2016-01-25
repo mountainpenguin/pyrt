@@ -40,7 +40,6 @@ import string
 import hashlib
 
 from modules import misc
-from modules import config
 from modules import system
 
 
@@ -52,8 +51,9 @@ class Handle(object):
 
 
 class Ajax:
-    def __init__(self, conf=config.Config(), app=None):
-        self.config = conf
+    def __init__(self, app):
+        self.application = app
+        self.config = app._pyrtConfig
         self.RT = app._pyrtRT
         self.login = app._pyrtL
         self.log = app._pyrtLog

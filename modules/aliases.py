@@ -58,9 +58,10 @@ class AliasStore(object):
     """Class for storing tracker aliases / favicons
         Same instance should be shared between statsPage, optionsPage, and ajaxPage
     """
-    def __init__(self, log, rt):
-        self.LOG = log
-        self.RT = rt
+    def __init__(self, app):
+        self.application = app
+        self.LOG = app._pyrtLog
+        self.RT = app._pyrtRT
 
         if os.path.exists(".aliases.pickle"):
             self.STORE = pickle.load(open(".aliases.pickle"))
