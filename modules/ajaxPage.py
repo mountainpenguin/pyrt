@@ -374,7 +374,7 @@ class Ajax:
         if not html:
             return json.dumps(jsonObject)
         else:
-            return self.templater.load("dropDownHTML.tmpl").generate(**jsonObject)
+            return self.templater.load("dropDownHTML.html").generate(**jsonObject)
 
     def pause_torrent(self, torrent_id):
         try:

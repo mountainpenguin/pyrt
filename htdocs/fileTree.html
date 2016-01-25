@@ -2,9 +2,9 @@
 {% for obj in file_tree %}
     <!-- {{ repr(obj) }} -->
     {% if obj.ft_type == 1 %}
-        {% include fileTree/directory.tmpl %}
+        {% include fileTree/directory.html %}
     {% elif obj.ft_type == 2 %}
-        {% include fileTree/document.tmpl %}
+        {% include fileTree/document.html %}
     {% elif obj.ft_type == 3 %}
         </ul></li>
     {% else %}
