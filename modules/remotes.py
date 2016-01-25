@@ -619,7 +619,7 @@ class RemoteStorage(object):
             return False
         else:
             del self.RSS[ID]
-            self._flush()
+            self._flushRSS()
             return True
 
     def enableRSSFeed(self, ID):
