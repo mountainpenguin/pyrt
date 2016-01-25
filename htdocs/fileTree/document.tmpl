@@ -1,0 +1,11 @@
+<li>
+    <span class="file {{ obj.file_type }}">
+{% if obj.allowed %}
+        <span class="download allowed" title="Download {{ obj.name }}"></span>
+{% else %}
+        <span class="download" title="Download {{ obj.name }}"></span>
+{% end %}
+        <span class="document_name">{{ obj.name }}</span>
+        <span class="fullpath">{{ obj.fullpath }}</span>
+    </span>
+</li>

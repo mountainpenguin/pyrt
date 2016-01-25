@@ -369,7 +369,7 @@ class Ajax:
             "completed": completed,
             "trackers": [x.__dict__ for x in self.RT.getTrackers(torrent_id)],
             "peer_details": [self._peerProcess(x) for x in peers],
-            "file_tree": misc.fileTreeHTML(self.RT.getFiles(torrent_id), self.RT.getRootDir()),
+            "file_tree": misc.fileTree(self.RT.getFiles(torrent_id), self.RT.getRootDir()),
         }
         if not html:
             return json.dumps(jsonObject)

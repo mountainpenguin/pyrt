@@ -60,7 +60,7 @@
             <h2 class="drop_down_h2"><span>Files</span></h2>
             <div>
                 <div id="drop_down_files_{{ torrent_id }}" class="drop_down_files drop_down_div">
-                    {{ file_tree }}
+                    {% include fileTree.tmpl %}
                 </div>
             </div>
         </li>

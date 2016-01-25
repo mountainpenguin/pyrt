@@ -33,6 +33,35 @@ SORT_METHODS = [
 ]
 
 
+class fileTreeDir(object):
+    def __init__(self, name):
+        self.ft_type = 1
+        self.name = name
+
+    def __repr__(self):
+        return "DIR<{0}>".format(self.name)
+
+
+class fileTreeDoc(object):
+    def __init__(self, file_type, name, allowed, fullpath):
+        self.ft_type = 2
+        self.file_type = file_type
+        self.name = name
+        self.allowed = allowed,
+        self.fullpath = fullpath
+
+    def __repr__(self):
+        return "DOC<{0}>".format(self.name)
+
+
+class fileTreeDirEnd:
+    def __init__(self):
+        self.ft_type = 3
+
+    def __repr__(self):
+        return "DIREND"
+
+
 def humanTimeDiff(secs):
     time_str = ""
     if secs > 60*60*24*7:
@@ -173,7 +202,7 @@ def getFileStructure(files, rtorrent_root):
     return (folder, files_dict)
 
 
-def fileTreeHTML(fileList, RTROOT):
+def fileTree(fileList, RTROOT):
     """
         Takes a list of files as outputted by rtorrent.getFiles and parses it into an html file tree
         Requires the rtorrent root directory
@@ -181,36 +210,28 @@ def fileTreeHTML(fileList, RTROOT):
             abs_path, base_path, path_components, completed_chunks, priority, size, chunks, chunk_size, percentage_complete
     """
 
-    DOCUMENT_DIV = """
-        <li><span class="file %(type)s"><span class="download%(allowed)s" title="Download %(name)s"></span><span class="document_name">%(name)s</span><span class="fullpath">%(fullpath)s</span></span></li>
-    """
-
-    DIRECTORY_DIV = """
-        <li><span class="folder">%s</span><ul>
-    """
-
     def _getFiles(level):
-        html = ""
+        output = []
         files = sorted(level["___files"], key=lambda x: os.path.basename(fileDict[x].abs_path))
 
         for file in files:
-            # html += DOCUMENT_DIV % (HIDDEN, os.path.basename(fileDict[file].abs_path), self.humanSize(fileDict[file].size))
             fileName = os.path.basename(fileDict[file].abs_path)
             fileProgress = fileDict[file].percentage_complete
             if fileProgress == 100:
-                allowed = " allowed"
+                allowed = True
             else:
-                allowed = ""
+                allowed = False
 
-            # html += DOCUMENT_DIV % (_getFileType(fileName), fileName, allowed, fileDict[file].abs_path)
-            html += DOCUMENT_DIV % {
-                "type": _getFileType(fileName),
-                "name": fileName,
-                "allowed": allowed,
-                "fullpath": fileDict[file].abs_path,
-            }
+            output.append(
+                fileTreeDoc(
+                    file_type=_getFileType(fileName),
+                    name=fileName,
+                    allowed=allowed,
+                    fullpath=fileDict[file].abs_path
+                )
+            )
 
-        return html
+        return output
 
     def _getDirs(level):
         level_keys = []
@@ -218,15 +239,14 @@ def fileTreeHTML(fileList, RTROOT):
             if _key[0:3] != "___":
                 level_keys += [_key]
         level_keys.sort()
-        html = ""
+        output = []
         for subDirName in level_keys:
             subLevel = level[subDirName]
-            # html += DIRECTORY_DIV % (HIDDEN, subDirName, self.humanSize(subLevel["___size"]))
-            html += DIRECTORY_DIV % (subDirName)
-            html += _getDirs(subLevel)
-            html += _getFiles(subLevel)
-            html += "</ul></li>"
-        return html
+            output.append(fileTreeDir(subDirName))
+            output += _getDirs(subLevel)
+            output += _getFiles(subLevel)
+            output.append(fileTreeDirEnd())
+        return output
 
     def _getFileType(fileName):
         fileType = "file_unknown"
@@ -253,32 +273,24 @@ def fileTreeHTML(fileList, RTROOT):
         fileProgress = fileObj.percentage_complete
         if fileProgress == 100:
             # insert download icon
-            allowed = " allowed"
+            allowed = True
         else:
-            allowed = ""
-        return """
-            <ul id="files_list" class="filetree">
-                %s
-            </ul>
-        """ % {
-            "type": _getFileType(fileName),
-            "name": fileName,
-            "allowed": allowed,
-            "fullpath": fileObj.abs_path,
-        }
-        # % (DOCUMENT_DIV % (_getFileType(fileName), fileName, allowed, fileObj.abs_path))
-        # % (DOCUMENT_DIV % ("", os.path.basename(fileObj.abs_path), self.humanSize(fileObj.size)))
+            allowed = False
+        output = [fileTreeDoc(
+            file_type=_getFileType(fileName),
+            name=fileName,
+            allowed=allowed,
+            fullpath=fileObj.abs_path,
+        )]
     else:
         # walk through dictionary
         # should only ever be one root_key, "." or the base directory
-        html = "<ul class=\"filetree\">"
         root = fileStruct[root_keys[0]]
-        # html += DIRECTORY_DIV % ("", root_keys[0], self.humanSize(root["___size"]))
-        html += DIRECTORY_DIV % (root_keys[0])
-        html += _getDirs(root)
-        html += _getFiles(root)
-        html += "</ul></li></ul>"
-        return html
+        output = [fileTreeDir(root_keys[0])]
+        output += _getDirs(root)
+        output += _getFiles(root)
+        output.append(fileTreeDirEnd())
+    return output
 
 
 def sortTorrents(torrentList, sort=None, reverse=False):

@@ -1,0 +1,15 @@
+<ul class="filetree">
+{% for obj in file_tree %}
+    <!-- {{ repr(obj) }} -->
+    {% if obj.ft_type == 1 %}
+        {% include fileTree/directory.tmpl %}
+    {% elif obj.ft_type == 2 %}
+        {% include fileTree/document.tmpl %}
+    {% elif obj.ft_type == 3 %}
+        </ul></li>
+    {% else %}
+        <!-- unknown type ({{ obj.ft_type }}) -->
+    {% end %}
+{% end %}
+</ul>
+   
