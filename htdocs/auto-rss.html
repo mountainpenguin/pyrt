@@ -1,0 +1,43 @@
+{% extends auto.html %}
+{% block ircsel %}{% end %}
+{% block rsssel %}selected{% end %}
+{% block source %}RSS{% end %}
+{% block variable %}
+                <div id="add_feed">
+                    <img id="add_feed_img" src="images/add-rss.png" width=20 height=20>
+                    <span id="add_feed_txt">Add Feed</span>
+                </div>
+                <fieldset class="hidden" id="add_feed_hidden">
+                    <div class="fake_form" id="alias_fake">
+                        <label>Alias: </label>
+                        <input type="text" id="alias" placeholder="Feed nickname">
+                    </div>
+                    <div class="fake_form" id="ttl_fake">
+                        <label>TTL: </label>
+                        <input type="text" id="ttl" placeholder="Refresh rate (minutes)">
+                    </div>
+                    <div class="fake_form" id="url_fake">
+                        <label>URI: </label>
+                        <input type="text" id="url" placeholder="RSS Feed URI">
+                    </div>
+                    <div class="fake_form" id="submit_fake">
+                        <button type="submit" id="rss_submit">Add</button>
+                    </div>
+                    </div>
+                </fieldset>
+                <div id="current_feeds">
+                    <div id="temp">
+                        <img src="images/loading.gif" id="feeds_placeholder">
+                    </div>
+                    <table id="feeds">
+                        <thead>
+                            <tr><td class="enabled"></td><td></td><th class="available_heading">Current Feeds</th><td></td></tr>
+                            <tr class="sub_heading"><th></th><th class="sub_title">Alias</th><th class="sub_title">TTL</th><th class="sub_title">URI</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot>
+                            <tr><td class="enabled"></td><td></td><td></td><td></td></tr>
+                        </tfoot>
+                    </table>
+                </div>
+{% end %}

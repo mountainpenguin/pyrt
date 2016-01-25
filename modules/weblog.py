@@ -117,7 +117,7 @@ class Logger(object):
 
     def html_format(self, msg, addnewflag=False):
         msg.new = addnewflag
-        return self.application._pyrtTemplate.load("logRow.tmpl").generate(
+        return self.application._pyrtTemplate.load("logRow.html").generate(
             msg=msg
         )
 

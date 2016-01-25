@@ -145,13 +145,6 @@ class Login:
         hash_2 = hashlib.sha256(hash_1 + salt_encoded).hexdigest()
         return "$%s$%s" % (salt_encoded, hash_2)
 
-    def loginHTML(self, msg=""):
-        HTML = self.application._pyrtTemplate.load("loginHTML.tmpl").generate(
-            PERM_SALT=self.PERM_SALT,
-            msg=msg
-        )
-        return HTML
-
     def sendCookie(self, ipaddr):
         randstring = "".join([random.choice(string.letters + string.digits) for i in range(20)])
         # add sess_id to self.USER

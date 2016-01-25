@@ -1,0 +1,26 @@
+{% extends base.html %}
+{% block title %}Auto{% end %}
+{% block body %}
+    <div id="header">
+        <div id="topbar">
+            <a href="." class="topbar-tab" title="main" id="tab_main">Main</a>
+            <a class="topbar-tab_options {% block ircsel %}{% end %}" href="?which=IRC" title="IRC" id="tab_IRC">IRC</a>
+            <a class="topbar-tab_options {% block rsssel %}{% end %}" href="?which=RSS" title="RSS" id="tab_RSS">RSS</a>
+        </div>
+    </div>
+    <div id="main_body">
+        <div id="wrapper">
+            <div class="sub_wrapper" id="default_wrapper">
+                <h2>Set your {% block source %}{% end %} sources</h2>
+                {% block variable %}{% end %}
+            </div>
+        </div>
+    </div>
+    <div id="dialog_form" title="Enter Password">
+        <p class="tip">Enter your application password</p>
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" class="text ui-widget-content ui-corner-all">
+    </div>
+    <input type="hidden" id="permanent_salt" value="{{ PERM_SALT }}">
+{% end %}
+

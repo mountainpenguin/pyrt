@@ -159,7 +159,17 @@ class loginHandler(BaseHandler):
             else:
                 self.redirect("./")
         else:
-            self.write(self.application._pyrtL.loginHTML())
+            lookup = {
+                "PERM_SALT": self.application._pyrtL.PERM_SALT,
+                "msg": "",
+                "css": [
+                    "main.css",
+                ],
+                "javascript": [
+                    "login-combined.min.js",
+                ]
+            }
+            self.render("login.html", **lookup)
 
     def post(self):
         passw = self.get_argument("password", None)
@@ -172,7 +182,17 @@ class loginHandler(BaseHandler):
             else:
                 self.redirect("./")
         else:
-            self.write(self.application._pyrtL.loginHTML("Incorrect Password"))
+            lookup = {
+                "PERM_SALT": self.application._pyrtL.PERM_SALT,
+                "msg": "Incorrect Password",
+                "css": [
+                    "main.css",
+                ],
+                "javascript": [
+                    "login-combined.min.js",
+                ]
+            }
+            self.render("login.html", **lookup)
 
 
 class index(BaseHandler):
@@ -200,9 +220,22 @@ class index(BaseHandler):
             "this_view": view,
             "this_sort": sortby,
             "this_reverse": reverse,
+            "css": [
+                "main.css",
+                "liteAccordion/liteaccordion.css",
+                "jquery.treeview.css"
+            ],
+            "javascript": [
+                "jquery-ui-1.8.17.custom.min.js",
+                "jquery.contextmenu.r2.js",
+                "jquery-sliderow.js",
+                "liteaccordion.jquery.min.js",
+                "jquery.treeview.js",
+                "jquery.cookie.js",
+                "main.min.js"
+            ]
         }
-        self.set_header("Cache-Control", "no-cache")
-        self.render("torrentHTML.tmpl", **lookup)
+        self.render("index.html", **lookup)
 
     post = get
 
@@ -211,7 +244,20 @@ class createHandler(BaseHandler):
     """Page handler for creating torrents"""
     @tornado.web.authenticated
     def get(self):
-        self.render("createHTML.tmpl", ROOT_DIR=self.application._pyrtRT.getGlobalRootPath())
+        lookup = {
+            "ROOT_DIR": self.application._pyrtRT.getGlobalRootPath(),
+            "css": [
+                "main.css",
+                "jquery.treeview.css",
+                "create.css",
+            ],
+            "javascript": [
+                "jquery-ui-1.8.17.custom.min.js",
+                "jquery.treeview.js",
+                "create.min.js",
+            ],
+        }
+        self.render("create.html", **lookup)
 
     post = get
 
@@ -317,9 +363,16 @@ class options(BaseHandler):
             "networkmaxpeersseed": maxpeersseed,
             "networkmaxopensockets": RT.getGlobalMaxOpenSockets(),
             "networkmaxopenhttp": RT.getGlobalMaxOpenHttp(),
+            "css": [
+                "options.css",
+            ],
+            "javascript": [
+                "jquery-ui-1.8.17.custom.min.js",
+                "options.min.js",
+            ]
         }
 
-        self.render("optionsHTML.tmpl", **definitions)
+        self.render("options.html", **definitions)
 
     post = get
 
@@ -328,7 +381,18 @@ class logHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
         records = self.application._pyrtLog.records()
-        self.render("logHTML.tmpl", RECORDS=records)
+        lookup = {
+            "RECORDS": records,
+            "css": [
+                "main.css",
+                "log.css",
+            ],
+            "javascript": [
+                "jquery-ui-1.8.17.custom.min.js",
+                "log.min.js",
+            ],
+        }
+        self.render("log.html", **lookup)
 
     post = get
 
@@ -336,7 +400,19 @@ class logHandler(BaseHandler):
 class stats(BaseHandler):
     @tornado.web.authenticated
     def get(self):
-        self.render("statHTML.tmpl")
+        lookup = {
+            "css": [
+                "stats.css",
+                "main.css",
+                "smoothness/jquery-ui-1.8.13.custom.css",
+            ],
+            "javascript": [
+                "jquery-ui-1.8.17.custom.min.js",
+                "kinetic-v3.9.5.min.js",
+                "stats.min.js"
+            ]
+        }
+        self.render("stats.html", **lookup)
 
     post = get
 
@@ -371,10 +447,25 @@ class autoHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
         which = self.get_argument("which", None)
+        lookup = {
+            "PERM_SALT": self.application._pyrtL.getPermSalt(),
+            "css": [
+                "main.css",
+                "auto.css",
+                "smoothness/jquery-ui-1.8.13.custom.css"
+            ],
+            "javascript": [
+                "jquery-ui-1.8.17.custom.min.js",
+                None,
+                "auto-combined.min.js"
+            ]
+        }
         if not which or which.upper() == "IRC":
-            self.render("autoIRCHTML.tmpl", PERM_SALT=self.application._pyrtL.getPermSalt())
+            lookup["javascript"][1] = "auto-irc.min.js"
+            self.render("auto-irc.html", **lookup)
         else:
-            self.render("autoRSSHTML.tmpl", PERM_SALT=self.application._pyrtL.getPermSalt())
+            lookup["javascript"][1] = "auto-rss.min.js"
+            self.render("auto-rss.html", **lookup)
 
     post = get
 

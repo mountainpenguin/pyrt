@@ -1,0 +1,20 @@
+{% extends auto.html %}
+{% block ircsel %}selected{% end %}
+{% block rsssel %}{% end %}
+{% block source %}IRC{% end %}
+{% block variable %}
+                <div id="available_handlers">
+                    <div id="available">
+                        <img src="images/loading.gif" id="available_placeholder">
+                    </div>
+                    <table id="available">
+                        <thead>
+                            <tr><td></td><th class='available_heading'>Available Sources</th><td></td></tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot>
+                            <tr><td></td><td></td><td></td></tr>
+                        </tfoot>
+                    </table>
+                </div>
+{% end %}

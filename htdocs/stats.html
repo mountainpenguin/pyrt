@@ -1,0 +1,43 @@
+{% extends base.html %}
+
+{% block title %}Statistics{% end %}
+
+{% block body %}
+    <div id="header">
+        <div id="topbar">
+            <a href="." class="topbar-tab" title="main" id="tab_main">Main</a>
+            <a href="stats" class="topbar-tab_options selected" title="Stats" id="tab_stats">Stats</a>
+        </div>
+    </div>
+    <div id="main_body">
+        <div id="wrapper">
+            <div id="stats_wrapper">
+                <div id="status-div"></div>
+                <div class="canvas-div" id="canvas-network">
+                    <div class="canvas-title">Current network usage stats <span id="canvas-title-dynamic"></span></div>
+                    <canvas id="canvas-net" width=300 height=200>
+                    </canvas>
+                    <div class="status-current">
+                        <div id="status-uprate"></div>
+                        <div id="status-downrate"></div>
+                    </div>
+                </div>
+        
+                <div class="canvas-div">
+                    <div class="canvas-title">Current system usage stats</div>
+                    <canvas id="canvas-system" width=300 height=200>
+                    </canvas>
+                    <div class="status-current">
+                        <div id="status-loadavg"></div>
+                        <div id="status-mem"></div>
+                        <div id="status-hdd"></div>
+                    </div>
+                </div>
+                
+                <div id="canvas-io"></div>
+            </div>
+        </div>
+    </div>
+{% end %}
+
+

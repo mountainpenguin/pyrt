@@ -1,0 +1,65 @@
+{% extends base.html %}
+
+{% block title %}Create Torrent{% end %}
+
+{% block body %}
+    <div id="header">
+        <div id="topbar">
+            <a href="." class="topbar-tab" title="main" id="tab_main">Main</a>
+        </div>
+    </div>
+    <div id="main_body">
+        <div id="wrapper">
+            <div class="sub_wrapper" id="default_wrapper">
+                <h2>Create a new torrent</h2>
+                <fieldset id="creationbox">
+                    <div class="fake_form" id="path_">
+                        <label>Path: </label>
+                        <input type="text" id="path" name="path" value="{{ ROOT_DIR }}">
+                        <button id="path_browse">Browse</button>
+                        <div class="hidden" id="path_browse_div"></div>
+                    </div>
+                    <div class="fake_form" id="announce_">
+                        <label>Announce: </label>
+                        <input type="text" id="announce" name="announce" placeholder="Announce URL">
+                    </div>
+                    <div class="fake_form" id="piece_">
+                        <label>Piece Length:</label>
+                        <select id="piece" name="piece">
+                            <option value=16384>16 KiB</option>
+                            <option value=32768>32 KiB</option>
+                            <option value=65536>64 KiB</option>
+                            <option value=131072>128 KiB</option>
+                            <option value=262144 selected=1>256 KiB</option>
+                            <option value=524288>512 KiB</option>
+                            <option value=1048576>1 MiB</option>
+                            <option value=2097152>2 MiB</option>
+                            <option value=4194304>4 MiB</option>
+                            <option value=8388608>8 MiB</option>
+                        </select>
+                    </div>
+                    <div class="fake_form" id="private_">
+                        <label>Private</label>
+                        <select name="private" id="private">
+                            <option value=1 selected=1>Yes</option>
+                            <option value=0>No</option>
+                        </select>
+                    </div>
+                    <div class="fake_form" id="comment_">
+                        <label>Comment</label>
+                        <input type="text" name="comment" id="comment" placeholder="Created by PyRT">
+                    </div>
+                    <div class="fake_form" id="output_">
+                        <label>Output name</label>
+                        <input type="text" name="output" id="output" placeholder=".torrent">
+                    </div>
+                </fieldset>
+                <button id="create">Create!</button>
+                <div id="progressbar" class="hidden"></div>
+            </div>
+        </div>
+    </div>
+    <!-- RANDOM STATIC DATA -->
+    <div class="hidden" id="root_dir">{{ ROOT_DIR }}</div>
+    <!-- END RANDOM DATA -->
+{% end %}

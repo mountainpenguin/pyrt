@@ -1,0 +1,31 @@
+{% extends base.html %}
+
+{% block title %}Log{% end %}
+
+{% block body %}
+    <div id="header">
+        <div id="topbar">
+            <a href="." class="topbar-tab" title="main" id="tab_main">Main</a>
+            <a href="log" class="topbar-tab_options selected" title="log" id="tab_log">Log</a>
+        </div>
+    </div>
+    <div id="main_body">
+        <div id="wrapper">
+            <div id="log_wrapper">
+                <div id="log_control_wrapper">
+                    <div class="log_control level_1 selected" id="log_control_1">ERROR</div>
+                    <div class="log_control level_2 selected" id="log_control_2">INFO</div>
+                    <div class="log_control level_3 selected" id="log_control_3">WARNING</div>
+                    <div class="log_control level_4 selected" id="log_control_4">DEBUG</div>
+                </div>
+                <table id="log_table">
+                <!-- Start Log Content -->
+                {% for msg in RECORDS %}
+                    {% include logRow.html %}
+                {% end %}
+                <!-- End Log Content -->
+                </table>
+            </div>
+        </div>
+    </div>
+{% end %}
