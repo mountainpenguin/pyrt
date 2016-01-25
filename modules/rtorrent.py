@@ -418,14 +418,14 @@ class rtorrent:
             "f.get_completed_chunks=",
             "f.get_priority=",
         )
-        for file in resp:
-            path_split = file[0]
+        for f in resp:
+            path_split = f[0]
             rel_path = "/".join(path_split)
-            size_bytes = file[1]
-            size_chunks = file[2]
-            completed_chunks = file[3]
+            size_bytes = f[1]
+            size_chunks = f[2]
+            completed_chunks = f[3]
             chunk_size = self.conn.d.get_chunk_size(id)
-            priority = file[4]
+            priority = f[4]
             base_path = self.getPath(id)
             absolute_path = os.path.join(base_path, rel_path)
             files += [File(absolute_path, base_path, path_split, completed_chunks, priority, size_bytes, size_chunks, chunk_size)]
