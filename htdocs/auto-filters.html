@@ -1,0 +1,45 @@
+<div class="filters">
+    <h4>Filters</h4>
+    {% set idx = 0 %}
+    {% for f_obj in filters %}
+        <label for="filter{{ idx }}">Filter:</label>
+        <div name="filter{{ idx }}" class="filter_group">
+            {% for regex in f_obj.positive %}
+            <div class="filter_positive filter"><code>{{ regex.pattern }}</code></div>
+            {% end %}
+            {% for regex in f_obj.negative %}
+            <div class="filter_negative filter"><code>{{ regex.pattern }}</code></div>
+            {% end %}
+            {% if f_obj.sizelim[0] or f_obj.sizelim[1] %}
+                <div class="filter_size filter"><code>
+                {% if not f_obj.sizelim[1] %}
+                    &gt;{{ humanSize(f_obj.sizelim[0]) }}
+                {% elif not f_obj.sizelim[0] %}
+                    &lt;{{ humanSize(f_obj.sizelim[1]) }}
+                {% else %}
+                    {{ humanSize(f_obj.sizelim[0]) }} - {{ humanSize(f_obj.sizelim[1]) }}
+                {% end %}
+                </code></div>
+            {% end %}
+        </div>
+        {% set idx = idx + 1 %}
+    {% end %}
+    <div class="add_filter_div">
+        <label for="add_filter">
+            <button class="add_filter_button">Add Filter</button>
+        </label>
+        <div class="add_filter">
+            <div class="regex_checkbox_parent">
+                <span class="regex_checkbox_label">Regex?</span>
+                <input type="checkbox" class="regex_checkbox" checked=1>
+            </div>
+            <input name="add_filter" class="input_filter" type="text" placeholder="Filter">
+            <select class="filter_select">
+                <option selected="selected">---</option>
+                <option value="and">and</option>
+                <option value="not">not</option>
+                <option value="size">size</option>
+            </select>
+        </div>
+    </div>
+</div>

@@ -272,8 +272,7 @@ function onMessage (evt) {
                var load = $("div#available").remove();
                var tab = $("table#available > tbody");
                for (i=0; i<response.response.length; i++) {
-                    tab.append($(response.response[i].row));
-                    tab.append($(response.response[i].req_row));
+                   tab.append($(response.response[i]));
                }
                runSocketPostInit();
           } else if (response.request == "get_source_single") {
@@ -323,7 +322,7 @@ function refresh_drop_down(name) {
     socket.send("request=get_source_single&arguments=" + name);
 }
 function refresh_drop_down_respond(data) {
-    var row = $(data.req_row);
+    var row = $($(data)[2]);
     var name = row.attr("id").split("remote_settings_")[1];
     var started = $(".bot_button", row).attr("id");
     if (started.indexOf("start_") == 0) {

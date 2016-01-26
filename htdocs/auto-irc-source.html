@@ -1,0 +1,29 @@
+<tr class="remote_row" id="remote_name_{{ name }}">
+    <td class="name">{{ name }}</td>
+    <td class="desc">{{ desc }}</td>
+    <td class="status status-{{ status }} status-{{ name }}">{{ status }}</td>
+</tr>
+
+<tr class="is_hidden remote_setting" id="remote_settings_{{ name }}">
+    <td colspan=10>
+        <div class="settings">
+            <h4>Settings</h4>
+                {% for key, key_desc in keys %}
+                    <label for="{{ key }}">{{ key }}</label>
+                    <input type="text" name="{{ key }}" placeholder="{{ key_desc }}">
+                {% end %}
+            <div class="submit_buttons">
+                <button type="submit" class="submit_button" id="submit_{{ name }}">
+                    <img src="images/submit.png" width=20 height=20>
+                    <span>Submit</span>
+                </button>
+
+                <button class="bot_button" id="{{ botstatus["str"] }}_{{ name }}">
+                    <img src="images/{{ botstatus["img"] }}" width=20 height=20>
+                    <span>{{ botstatus["msg"] }}</span>
+                </button>
+            </div>
+        </div>
+        {% include auto-filters.html %}
+    </td>
+</tr>

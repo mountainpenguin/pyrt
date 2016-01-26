@@ -1,0 +1,24 @@
+<tr class="remote_row" id="feed_id_{{ id }}">
+    <td class="enabled feed_enabled_{{ enabled }}"></td>
+    <td class="alias">{{ alias }}</td>
+    <td class="ttl">{{ ttl_str }}</td>
+    <td class="url" title="{{ url }}">{{ url }}</td>
+</tr>
+
+<tr class="hidden remote_setting" id="feed_{{ id }}">
+    <td colspan=10>
+        <div class="rss_controls">
+            <img class="rss_{{ enabled_str }} rss_status" 
+                 src="{{ enabled_image }}" 
+                 alt="{{ enabled_str }}" 
+                 title="{{ enabled_str}}" width=48 height=48>
+            <img class="rss_delete" 
+                 src="images/delete48.png" 
+                 alt="delete" 
+                 title="Delete" 
+                 width=48 
+                 height=48>
+        </div>
+        {% include auto-filters.html %}
+    </td>
+</tr>

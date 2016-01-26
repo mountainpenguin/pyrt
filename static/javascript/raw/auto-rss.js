@@ -229,9 +229,9 @@ function onMessage (evt) {
             // replace
             var ID = response.name;
             var resp = response.response;
-            $("#feed_id_" + ID).replaceWith($(resp[0]));
+            $("#feed_id_" + ID).replaceWith($($(resp)[0]));
             //var hid = $("#feed_" + ID).hasClass("hidden");
-            var drop = $(resp[1]);
+            var drop = $($(resp)[2]);
             $("#feed_" + ID).children().replaceWith(drop.children());
             
         } else {

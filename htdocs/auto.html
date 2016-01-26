@@ -16,11 +16,13 @@
             </div>
         </div>
     </div>
+    {% block dialog %}
     <div id="dialog_form" title="Enter Password">
         <p class="tip">Enter your application password</p>
         <label for="password">Password</label>
         <input type="password" name="password" id="password" class="text ui-widget-content ui-corner-all">
     </div>
+    {% end %}
     <input type="hidden" id="permanent_salt" value="{{ PERM_SALT }}">
 {% end %}
 
