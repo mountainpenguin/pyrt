@@ -686,8 +686,7 @@ function add_torrentrow(torrent_id, torrent_data, torrent_index) {
                                                              );
     }
     
-    
-    $("#torrent_list > tbody > tr:eq(" + torrent_index + ")").after(newrow);
+    $("#torrent_list > tbody > .torrent-div:first").before(newrow);
     
      //$("#torrent_id_" + torrent_id).slideRow("down", 1000, function () {
      //     $("#torrent_id_" + torrent_id).fadeTo(2000, 1.0, function() {
