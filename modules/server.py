@@ -223,7 +223,8 @@ class index(BaseHandler):
             "css": [
                 "main.css",
                 "liteAccordion/liteaccordion.css",
-                "jquery.treeview.css"
+                "jquery.treeview.css",
+                "jquery-ui.min.css",
             ],
             "javascript": [
                 "jquery-ui-1.8.17.custom.min.js",

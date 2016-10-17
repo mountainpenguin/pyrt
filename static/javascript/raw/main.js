@@ -253,7 +253,7 @@ $(document).ready(function () {
      });
      $(".control_delete_me").live("click", function (event) {
           torrent_id = $(this).parents(".torrent-div").attr("id").split("torrent_id_")[1];
-          command("delete_torrent", torrent_id);
+          command("delete_query", torrent_id);
           return false; 
      });
      $(".download.allowed").live("click", function (event) {
@@ -261,6 +261,22 @@ $(document).ready(function () {
           var t_id = $(this).closest(".drop_down_container").attr("id").split("drop_down_container_")[1];
           ws.send("request=download_file&torrentID=" + t_id + "&path=" + encodeURIComponent(fullpath));
      });
+
+    $("#delete_confirmation").dialog({
+        resizable: true,
+        height: "auto",
+        width: "auto",
+        modal: true,
+        buttons: {
+            "Delete": function () {
+                delete_dialog_confirm($(this).attr("data-torrent_id"));
+            },
+            Cancel: function () {
+                $(this).dialog("close");
+            }
+        },
+        autoOpen: false,
+    });
 });
 function select_group_torrent(elem, e) {
      sel_index = SELECTED.indexOf(elem.id);
@@ -334,7 +350,7 @@ function loadRClickMenus() {
                },
                "delete" : function (t) {
                    var torrent_id = t.id.split("torrent_id_")[1];
-                   command("delete_torrent", torrent_id);
+                   command("delete_query", torrent_id);
                },
                "rehash" : function (t) {
                    var torrent_id = t.id.split("torrent_id_")[1];
@@ -718,7 +734,7 @@ function command(cmd, t_id) {
      if ($.inArray(t_id, DELETING) != -1) {
           return false;
      }
-     if (cmd === "pause_torrent" || cmd === "start_torrent" || cmd === "stop_torrent" || cmd == "remove_torrent" || cmd == "delete_torrent" || cmd == "hash_torrent") {
+     if (cmd === "pause_torrent" || cmd === "start_torrent" || cmd === "stop_torrent" || cmd == "remove_torrent" || cmd == "delete_query" || cmd == "hash_torrent") {
           var resp;
           if (cmd === "remove_torrent") {
                resp = confirm("Are you sure you want to remove this torrent?");
@@ -774,6 +790,24 @@ function destroyDragOverlay() {
      }
 }
 
+function delete_dialog(target, torrent_id, msg) {
+    console.log("target:", target);
+    console.log("torrent_id:", torrent_id);
+    console.log("msg:", msg);
+    $("#delete_confirmation").attr("data-torrent_id", torrent_id);
+    if (msg) {
+        $("#delete_message").show().html(msg);
+    } else {
+        $("#delete_message").hide();
+    }
+    $("#delete_target").html(target);
+    $("#delete_confirmation").dialog("open");
+}
+
+function delete_dialog_confirm(torrent_id) {
+    console.log("torrent_id: " + torrent_id);
+}
+
 function messageHandler(evt) {
      if (evt.data == "pong") {
          return;
@@ -794,6 +828,24 @@ function messageHandler(evt) {
           newcellcontents.css({"display" : "none"});
           $(newcell).html(newcellcontents);
           newcellcontents.slideDown('slow');
+     } else if (d.request == "delete_query") {
+         var resp = d.response;
+         console.log("delete_query response: ", resp);
+         // response/message/target/torrent_id
+         if (resp.result == "OK") {
+             delete_dialog(resp.target, resp.torrent_id, null);
+         } else {
+             if (resp.result == "CONFIRM") {
+                 if (resp.message == "extra") {
+                     msg = "There are extra files in directory '" + resp.target + "'";
+                 } else if (resp.message == "size") {
+                     msg = "Directory '" + resp.target + "' size is unexpected";
+                 } else {
+                     msg = "Unknown reason (report this)";
+                 }
+                 delete_dialog(resp.target, resp.torrent_id, msg);
+             }
+         }
      } else if (d.request == "pause_torrent" || d.request === "start_torrent" || d.request === "stop_torrent" || d.request == "remove_torrent" || d.request == "delete_torrent" || d.request == "hash_torrent") {
           var resp = d.response.trim();
           if (resp == "OK") {
