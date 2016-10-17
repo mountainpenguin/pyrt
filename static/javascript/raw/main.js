@@ -192,20 +192,27 @@ $(document).ready(function () {
           }
      });
      $(".batch-control").live("click", function (e) {
-          action = this.id.split("batch-")[1];
-          torrentIDs = new Array();
-          for (i=0; i<SELECTED.length; i++) {
-               torrentIDs.push(SELECTED[i].split("torrent_id_")[1]);
-          }
-          if (action == "delete" || action == "remove") {
-               SELECTED = new Array();
-               destroyBatchActionBox();
-          }
-          sendme = "request=" + action + "_batch";
-          sendme = sendme + "&torrentIDs=" + torrentIDs.join(",");
-          ws.send(sendme)
-          //refresh_content("no");
-     })
+        action = this.id.split("batch-")[1];
+        torrentIDs = new Array();
+        for (i=0; i<SELECTED.length; i++) {
+            torrentIDs.push(SELECTED[i].split("torrent_id_")[1]);
+        }
+
+        if (action == "delete") {
+            // use confirmation dialog
+            $("#delete_targets").empty();
+            sendme = "request=delete_query_batch&torrentIDs=" + torrentIDs.join(",");
+            ws.send(sendme);
+            return;
+        } else if (action == "remove") {
+            SELECTED = new Array();
+            destroyBatchActionBox();
+        }
+        sendme = "request=" + action + "_batch";
+        sendme = sendme + "&torrentIDs=" + torrentIDs.join(",");
+        ws.send(sendme)
+        //refresh_content("no");
+     });
      
      $("#batch-deselect").live("click", function (e) {
           for (i=0; i<SELECTED.length; i++) {
@@ -215,7 +222,7 @@ $(document).ready(function () {
           }
           SELECTED = new Array();
           destroyBatchActionBox();
-     })
+     });
 
      $("#torrent_table")
        .live("selectableselected", function(event, ui) {
@@ -269,7 +276,43 @@ $(document).ready(function () {
         modal: true,
         buttons: {
             "Delete": function () {
-                delete_dialog_confirm($(this).attr("data-torrent_id"));
+                var torrent_id = $(this).attr("data-torrent_id");
+                $("#torrent_id_" + torrent_id).addClass("deleting-torrent-row").removeClass("blue green");
+                DELETING.push(torrent_id);
+                $(this).attr("data-torrent_id", null);
+                $(this).dialog("close");
+                var params = "request=delete_torrent&torrent_id=" + torrent_id + "&confirmation=true";
+                ws.send(params);
+            },
+            Cancel: function () {
+                $(this).dialog("close");
+            }
+        },
+        autoOpen: false,
+    });
+
+    $("#delete_confirmation_batch").dialog({
+        resizable: true,
+        height: "auto",
+        width: "auto",
+        modal: true,
+        buttons: {
+            "Delete": function () {
+                torrentIDs = new Array();
+                for (i=0; i<SELECTED.length; i++) {
+                    var torrent_id = SELECTED[i].split("torrent_id_")[1];
+                    torrentIDs.push(torrent_id);
+                    $("#" + SELECTED[i])
+                        .addClass("deleting-torrent-row")
+                        .removeClass("blue green ui-selected ui-selecting")
+                        .css({"background-color": ""});
+                    DELETING.push(torrent_id);
+                }
+                SELECTED = new Array();
+                destroyBatchActionBox();
+                sendme = "request=delete_batch&torrentIDs=" + torrentIDs.join(",");
+                ws.send(sendme)
+                $(this).dialog("close");
             },
             Cancel: function () {
                 $(this).dialog("close");
@@ -801,16 +844,6 @@ function delete_dialog(target, torrent_id, msg) {
     $("#delete_confirmation").dialog("open");
 }
 
-function delete_dialog_confirm(torrent_id) {
-    $("#torrent_id_" + torrent_id).addClass("deleting-torrent-row").removeClass("blue green");
-    DELETING.push(torrent_id);
-    $("#delete_confirmation")
-        .attr("data-torrent_id", null)
-        .dialog("close");
-    var params = "request=delete_torrent&torrent_id=" + torrent_id + "&confirmation=true";
-    ws.send(params);
-}
-
 function messageHandler(evt) {
      if (evt.data == "pong") {
          return;
@@ -831,9 +864,23 @@ function messageHandler(evt) {
           newcellcontents.css({"display" : "none"});
           $(newcell).html(newcellcontents);
           newcellcontents.slideDown('slow');
+     } else if (d.request == "delete_query_batch") {
+         var resp = d.response;
+         console.log("delete_query_batch response: ", resp);
+         for (i=0; i<resp.torrents.length; i++) {
+             var s = document.createElement("span");
+             s.className += "delete_target";
+             if (resp.torrents[i].result == "CONFIRM") {
+                 s.classList += " delete_confirm";
+             }
+             s.innerHTML = resp.torrents[i].target;
+             s.style.padding = 0;
+             $(s).attr("data-torrent_id", resp.torrents[i].torrent_id);
+             $("#delete_targets").append(s);
+         }
+         $("#delete_confirmation_batch").dialog("open");
      } else if (d.request == "delete_query") {
          var resp = d.response;
-         console.log("delete_query response: ", resp);
          // response/message/target/torrent_id
          if (resp.result == "OK") {
              delete_dialog(resp.target, resp.torrent_id, null);

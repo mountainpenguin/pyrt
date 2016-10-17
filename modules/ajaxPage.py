@@ -81,6 +81,7 @@ class Ajax:
             "stop_batch": Handle(self.stop_batch, ["torrentIDs"]),
             "remove_batch": Handle(self.remove_batch, ["torrentIDs"]),
             "delete_batch": Handle(self.delete_batch, ["torrentIDs"]),
+            "delete_query_batch": Handle(self.delete_query_batch, ["torrentIDs"]),
             "get_tracker_favicon": Handle(self.get_tracker_favicon, ["torrent_id"]),
             "verify_conf_value": Handle(self.verify_conf_value, ["key", "value"]),
             "set_config_multiple": Handle(self.set_config_multiple, ["keys", "values"]),
@@ -669,11 +670,20 @@ class Ajax:
             respList.append(self.remove_torrent(torrent_id))
         return json.dumps(respList)
 
+    def delete_query_batch(self, torrentListStr):
+        torrentList = torrentListStr.split(",")
+        respList = []
+        for torrent_id in torrentList:
+            respList.append(self.delete_query(torrent_id))
+        return {
+            "torrents": respList
+        }
+
     def delete_batch(self, torrentListStr):
         torrentList = torrentListStr.split(",")
         respList = []
         for torrent_id in torrentList:
-            respList.append(self.delete_torrent(torrent_id))
+            respList.append(self.delete_torrent(torrent_id, True))
         return json.dumps(respList)
 
     def get_tracker_favicon(self, torrent_id):

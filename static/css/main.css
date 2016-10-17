@@ -431,3 +431,19 @@ tr.red {
   min-height: 450px;
   height: auto !important;
   height: 100%; }
+
+  #delete_message {
+      padding: .5em;
+      border-radius: 5px;
+      background-color: rgba(255, 0, 0, 0.35);
+      word-wrap: break-word;
+  }
+  .delete_target {
+      display: block;
+      font-family: monospace;
+      font-size: .8em;
+      padding: 10px 0;
+  }
+  .delete_confirm {
+      color: red;
+  }
