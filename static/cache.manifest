@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# 26.01.2016.11:10:585d7e9c8029198323e845d8dc9977ed8e1ca9cf
+# 17.10.2016.15:07:b93c25002549a68531bc4ad71d02f2612285010e
 # dd.mm.yyyy.HH:MM:last-commit
 
 CACHE:
@@ -33,6 +33,12 @@ images/submit.png
 images/treeview-default.gif
 images/treeview-default-line.gif
 images/up_icon.gif
+images/ui-icons_444444_256x240.png
+images/ui-icons_555555_256x240.png
+images/ui-icons_777620_256x240.png
+images/ui-icons_777777_256x240.png
+images/ui-icons_cc0000_256x240.png
+images/ui-icons_ffffff_256x240.png
 css/smoothness/images/ui-bg_flat_0_aaaaaa_40x100.png
 css/smoothness/images/ui-bg_glass_75_dadada_1x400.png
 css/smoothness/images/ui-bg_glass_75_e6e6e6_1x400.png
@@ -50,6 +56,7 @@ css/stats.css
 css/smoothness/jquery-ui-1.8.13.custom.css
 css/liteAccordion/liteaccordion.css
 css/jquery.treeview.css
+css/jquery-ui.min.css
 
 #javascript
 javascript/auto-combined.min.js
