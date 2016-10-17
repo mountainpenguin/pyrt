@@ -69,7 +69,8 @@ class Ajax:
             "stop_torrent": Handle(self.stop_torrent, ["torrent_id"]),
             "start_torrent": Handle(self.start_torrent, ["torrent_id"]),
             "remove_torrent": Handle(self.remove_torrent, ["torrent_id"]),
-            "delete_torrent": Handle(self.delete_torrent, ["torrent_id"]),
+            "delete_torrent": Handle(self.delete_torrent, ["torrent_id"], ["confirmation"]),
+            "delete_query": Handle(self.delete_query, ["torrent_id"]),
             "hash_torrent": Handle(self.hash_torrent, ["torrent_id"]),
             "get_file": Handle(self.get_file, ["torrent_id", "filepath"]),
             "upload_torrent_socket": Handle(self.upload_torrent_socket, ["torrent"], ["start"]),
@@ -439,20 +440,73 @@ class Ajax:
         self.log.info("AJAX: torrent deleted (ID: %s)", torrent_id)
         self.remove_torrent(torrent_id)
 
-    def delete_torrent(self, torrent_id):
-        response = self.stop_torrent(torrent_id)
-        if response == "OK":
-            files = self.RT.getFiles(torrent_id)
-            if len(files) == 1:
-                # single file
-                rootDir = os.path.abspath(os.path.expanduser(os.path.expandvars(self.RT.getRootDir())))
-                if files[0].base_path == rootDir:
-                    delete = files[0].abs_path
-                else:
-                    delete = files[0].base_path
+    def _get_delete_path(self, torrent_id):
+        files = self.RT.getFiles(torrent_id)
+        if len(files) == 1:
+            # single file
+            rootDir = os.path.abspath(os.path.expanduser(os.path.expandvars(self.RT.getRootDir())))
+            if files[0].base_path == rootDir:
+                delete = files[0].abs_path
             else:
                 delete = files[0].base_path
+            if not os.path.isfile(delete):
+                existing_files = os.listdir(delete)
+                if len(existing_files) != 1:
+                    delete = files[0].abs_path
+        else:
+            delete = files[0].base_path
+        return delete, files
 
+    def delete_query(self, torrent_id):
+        delete, files = self._get_delete_path(torrent_id)
+        # check that there aren't additional files in the delete directory
+        if os.path.isfile(delete):
+            return {
+                "result": "OK",
+                "message": "",
+                "target": delete,
+                "torrent_id": torrent_id,
+            }
+        else:
+            existing_files = os.listdir(delete)
+
+        if len(existing_files) > len(files):
+            return {
+                "result": "CONFIRM",
+                "message": "extra",
+                "target": delete,
+                "torrent_id": torrent_id,
+            }
+
+        # check that existing_files are the expected size
+        total_size = sum([x.size for x in files])
+        total_existing_size = sum(
+            os.path.getsize(os.path.join(d, f)) for d, n, fs in os.walk(delete) for f in fs
+        )
+        if total_size != total_existing_size:
+            return {
+                "result": "CONFIRM",
+                "message": "size",
+                "target": delete,
+                "torrent_id": torrent_id,
+            }
+            return "CONFIRM/size"
+
+        return {
+            "result": "OK",
+            "message": "",
+            "target": delete,
+            "torrent_id": torrent_id,
+        }
+
+    def delete_torrent(self, torrent_id, confirmation=False):
+        if not confirmation:
+            self.log.error("AJAX: torrent delete error - attempted without confirmation (ID: %s)", torrent_id)
+            return "ERROR/attempted to delete files without confirmation"
+
+        response = self.stop_torrent(torrent_id)
+        if response == "OK":
+            delete, files = self._get_delete_path(torrent_id)
             if not os.path.exists(delete):
                 self.log.error("AJAX: torrent delete error - no such file '%s' (ID: %s)", delete, torrent_id)
                 return "ERROR/no such file"

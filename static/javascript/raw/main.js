@@ -791,9 +791,6 @@ function destroyDragOverlay() {
 }
 
 function delete_dialog(target, torrent_id, msg) {
-    console.log("target:", target);
-    console.log("torrent_id:", torrent_id);
-    console.log("msg:", msg);
     $("#delete_confirmation").attr("data-torrent_id", torrent_id);
     if (msg) {
         $("#delete_message").show().html(msg);
@@ -805,7 +802,13 @@ function delete_dialog(target, torrent_id, msg) {
 }
 
 function delete_dialog_confirm(torrent_id) {
-    console.log("torrent_id: " + torrent_id);
+    $("#torrent_id_" + torrent_id).addClass("deleting-torrent-row").removeClass("blue green");
+    DELETING.push(torrent_id);
+    $("#delete_confirmation")
+        .attr("data-torrent_id", null)
+        .dialog("close");
+    var params = "request=delete_torrent&torrent_id=" + torrent_id + "&confirmation=true";
+    ws.send(params);
 }
 
 function messageHandler(evt) {
