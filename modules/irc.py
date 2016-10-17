@@ -142,6 +142,69 @@ class _ModularBot(ircbot.SingleServerIRCBot):
                     self.RPC.RPCCommand("publicLog", "warning", "%s IRCbot (#%d): command failed", self.config.name, self.PID)
                     self.RPC.RPCCommand("privateLog", "warning", "%s IRCbot (#%d): command '%s' failed\n%s", self.config.name, self.PID, cmd, traceback.format_exc())
 
+    def on_inviteonlychan(self, connection, event):
+        self.RPC.RPCCommand(
+            "publicLog",
+            "error",
+            "%s IRCBot (#%d): could not join channel '%s' (invite only)",
+            self.config.name,
+            self.PID,
+            event.arguments()[0],
+        )
+        self.shutdown(None, None)
+
+    def on_bannedfromchan(self, connection, event):
+        self.RPC.RPCCommand(
+            "publicLog",
+            "error",
+            "%s IRCBot (#%d): could not join channel '%s' (banned)",
+            self.config.name,
+            self.PID,
+            event.arguments()[0],
+        )
+        self.shutdown(None, None)
+
+    def on_channelisfull(self, connection, event):
+        self.RPC.RPCCommand(
+            "publicLog",
+            "error",
+            "%s IRCBot (#%d): could not join channel '%s' (full)",
+            self.config.name,
+            self.PID,
+            event.arguments()[0],
+        )
+        self.shutdown(None, None)
+
+    def on_join(self, connection, event):
+        self.RPC.RPCCommand(
+            "publicLog",
+            "debug",
+            "%s IRCBot (#%d): joined channel '%s'",
+            self.config.name,
+            self.PID,
+            event.target(),
+        )
+
+    def on_privmsg(self, connection, event):
+        self.RPC.RPCCommand(
+            "publicLog",
+            "debug",
+            "%s IRCBot (#%d): received private message %r",
+            self.config.name,
+            self.PID,
+            event.arguments()[0].encode("string_escape"),
+        )
+
+    def on_privnotice(self, connection, event):
+        self.RPC.RPCCommand(
+            "publicLog",
+            "debug",
+            "%s IRCBot (#%d): received private notice %r",
+            self.config.name,
+            self.PID,
+            event.arguments()[0].encode("string_escape"),
+        )
+
     def on_pubmsg(self, connection, event):
         self.update()
         self.RPC.RPCCommand("publicLog", "debug", "%s IRCBot (#%d): message %r", self.config.name, self.PID, event.arguments()[0].encode("string_escape"))

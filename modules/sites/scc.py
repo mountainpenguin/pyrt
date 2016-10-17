@@ -44,7 +44,7 @@ IRC_MATCH = re.compile("-> (.*?) \(.*?\) - \(.*?https://sceneaccess\.eu/details\
 
 IRC_COMMANDS = [
     "PRIVMSG NickServ :IDENTIFY %(settings.password)s",
-    "JOIN #announce",
+    "JOIN %s" % IRC_CHANNEL,
 ]
 
 IRC_DELAY = 5
