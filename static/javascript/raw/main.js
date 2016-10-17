@@ -840,7 +840,7 @@ function delete_dialog(target, torrent_id, msg) {
     } else {
         $("#delete_message").hide();
     }
-    $("#delete_target").html(target);
+    $(".delete_target").html(target);
     $("#delete_confirmation").dialog("open");
 }
 
